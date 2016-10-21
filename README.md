@@ -1,6 +1,12 @@
 # dev-tips
 
-개발하다 마주쳤던 작은 문제들과 해결 방법 정리
+언제부터인가 온데간데 없이 사라져버린 기억력..
+
+그래서 기억 대신 기록에 의지하기로..
+
+자잘하지만 해결하고 아무 기록도 없이 그냥 넘어가자니,
+
+언젠가는 다시 마주쳐서 시간을 잡아먹을 것 같은 재발성 개발 문제 해결 방법을 깨작깨작 모아본다.
 
 - [정규표현식을 이용한 문자열 바꾸기 팁](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%A0%95%EA%B7%9C%ED%91%9C%ED%98%84%EC%8B%9D%EC%9D%84%20%EC%9D%B4%EC%9A%A9%ED%95%9C%20%EB%AC%B8%EC%9E%90%EC%97%B4%20%EB%B0%94%EA%BE%B8%EA%B8%B0%20%ED%8C%81.md)
 - [Java8의 새로운 시간 데이터(java.time.\*)를 MySQL에 저장하기](https://github.com/HomoEfficio/dev-tips/blob/master/Java8%EC%9D%98%20%EC%83%88%EB%A1%9C%EC%9A%B4%20%EC%8B%9C%EA%B0%84%20%EB%8D%B0%EC%9D%B4%ED%84%B0(java.time.*)%EB%A5%BC%20MySQL%EC%97%90%20%EC%A0%80%EC%9E%A5%ED%95%98%EA%B8%B0.md)
