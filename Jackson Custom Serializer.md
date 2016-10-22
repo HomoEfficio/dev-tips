@@ -149,7 +149,7 @@ objectMapper.writeValueAsString(serialize_할_객체);
 
 더는 설명할 것도 없다. 잔소리 따위는 접고 그냥 코드를 보면 바로 이해된다. ㅋㅋ
 
-<script src="https://gist.github.com/HomoEfficio/e3cee0071f0ce84ed6d7791d0410d8d5.js"></script>
+https://gist.github.com/HomoEfficio/e3cee0071f0ce84ed6d7791d0410d8d5
 
 ## 정리
 
