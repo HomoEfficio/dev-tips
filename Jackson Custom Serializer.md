@@ -1,4 +1,4 @@
-# Jackson Custom Serializer
+# 알고보면 만만한 Jackson Custom Serialization
 
 API 서버를 만들다보면 어떤 객체를 JSON으로 만들때, 특정 필드만 제외하거나 특정 필드의 이름을 바꿔야 하는 일이 생길 수 있다.
 
