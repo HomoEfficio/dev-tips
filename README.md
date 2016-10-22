@@ -12,22 +12,7 @@
 - [Java8의 새로운 시간 데이터(java.time.\*)를 MySQL에 저장하기](https://github.com/HomoEfficio/dev-tips/blob/master/Java8%EC%9D%98%20%EC%83%88%EB%A1%9C%EC%9A%B4%20%EC%8B%9C%EA%B0%84%20%EB%8D%B0%EC%9D%B4%ED%84%B0(java.time.*)%EB%A5%BC%20MySQL%EC%97%90%20%EC%A0%80%EC%9E%A5%ED%95%98%EA%B8%B0.md)
 - [DTO와 Bean Validation](https://github.com/HomoEfficio/dev-tips/blob/master/DTO%EC%99%80%20Bean%20Validation.md)
 - [SpringMVC에서 Collection의 Validation](https://github.com/HomoEfficio/dev-tips/blob/master/SpringMVC%EC%97%90%EC%84%9C%20Collection%EC%9D%98%20Validation.md)
-
-----
-<div id="disqus_thread">
-    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div>
-
-<script type="text/javascript">
-    var disqus_shortname = 'hanmomhanda';
-    (function() {
-        var dsq = document.createElement('script');
-        dsq.type = 'text/javascript';
-        dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
+- [알고보면 만만한 Jackson Custom Serialization](https://github.com/HomoEfficio/dev-tips/blob/master/Jackson%20Custom%20Serializer.md)
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
