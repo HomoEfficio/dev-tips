@@ -1,6 +1,8 @@
 # 알고보면 만만한 Jackson Custom Serialization
 
-API 서버를 만들다보면 어떤 객체를 JSON으로 만들때, 특정 필드만 제외하거나 특정 필드의 이름을 바꿔야 하는 일이 생길 수 있다.
+API 서버를 만들다보면 어떤 객체를 JSON으로 만들때, 특정 필드만 제외하거나 특정 필드의 이름을 바꿔야 하는 일이 생길 수 있다. 
+
+그 객체를 JSON으로 만들 때 특정 필드의 이름을 항상 바꾸려면 해당 필드에 `@JsonProperty("새이름")`을 명시하면 되고, 특정 필드를 항상 제외한다면 그냥 객체 클래스에 `@JsonIgnoreProperties({"제외할필드명1", "제외할필드명2"})`을 명시하면 된다. 하지만, 항상이 아니라 상황에 따라 다른 방식으로 Serialize 해야한다면 이 방법이 통하지 않는다.
 
 Java 기반 API 서버라면 JSON 처리를 위해 [Jackson](https://github.com/FasterXML/jackson)을 많이 사용하는데, Jackson으로 Java 객체를 JSON으로 Serialize 할 때 앞에서 말한 것 처럼 커스터마이징 하는 방법은 검색해보면 꽤나 다양하게 많이 나오는데, 
 
