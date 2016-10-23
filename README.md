@@ -12,7 +12,7 @@
 - [Java8의 새로운 시간 데이터(java.time.\*)를 MySQL에 저장하기](https://github.com/HomoEfficio/dev-tips/blob/master/Java8%EC%9D%98%20%EC%83%88%EB%A1%9C%EC%9A%B4%20%EC%8B%9C%EA%B0%84%20%EB%8D%B0%EC%9D%B4%ED%84%B0(java.time.*)%EB%A5%BC%20MySQL%EC%97%90%20%EC%A0%80%EC%9E%A5%ED%95%98%EA%B8%B0.md)
 - [DTO와 Bean Validation](https://github.com/HomoEfficio/dev-tips/blob/master/DTO%EC%99%80%20Bean%20Validation.md)
 - [SpringMVC에서 Collection의 Validation](https://github.com/HomoEfficio/dev-tips/blob/master/SpringMVC%EC%97%90%EC%84%9C%20Collection%EC%9D%98%20Validation.md)
-- [알고보면 만만한 Jackson Custom Serialization](https://github.com/HomoEfficio/dev-tips/blob/master/Jackson%20Custom%20Serializer.md)
+- [알고보면 만만한 Jackson Custom Serialization](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%95%8C%EA%B3%A0%EB%B3%B4%EB%A9%B4%20%EB%A7%8C%EB%A7%8C%ED%95%9C%20Jackson%20Custom%20Serializer.md)
 - [조금은 신경써줘야 하는 Jackson Custom Deserialization](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%A1%B0%EA%B8%88%EC%9D%80%20%EC%8B%A0%EA%B2%BD%EC%8D%A8%EC%A4%98%EC%95%BC%20%ED%95%98%EB%8A%94%20Jackson%20Custom%20Deserialization.md)
 
 ----
