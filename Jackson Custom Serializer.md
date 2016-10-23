@@ -85,9 +85,11 @@ public void serialize(FamilyMember value, JsonGenerator gen, SerializerProvider 
     gen.writeString(value.getName());
 
     gen.writeFieldName("cellPhone");
+    // 요 아래 부분이 묘수다. writeObject(object)가 재귀적으로 object의 Serializer를 호출하며, customSerializer가 있다면 customSerializer를 호출한다.
     gen.writeObject(value.getCellPhone());
 
     gen.writeFieldName("children");
+    // 요 아래 부분이 묘수다. writeObject(object)가 재귀적으로 object의 Serializer를 호출하며, customSerializer가 있다면 customSerializer를 호출한다.
     gen.writeObject(value.getChildren());
 
     gen.writeEndObject();
