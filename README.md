@@ -14,6 +14,7 @@
 - [SpringMVC에서 Collection의 Validation](https://github.com/HomoEfficio/dev-tips/blob/master/SpringMVC%EC%97%90%EC%84%9C%20Collection%EC%9D%98%20Validation.md)
 - [알고보면 만만한 Jackson Custom Serialization](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%95%8C%EA%B3%A0%EB%B3%B4%EB%A9%B4%20%EB%A7%8C%EB%A7%8C%ED%95%9C%20Jackson%20Custom%20Serializer.md)
 - [조금은 신경써줘야 하는 Jackson Custom Deserialization](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%A1%B0%EA%B8%88%EC%9D%80%20%EC%8B%A0%EA%B2%BD%EC%8D%A8%EC%A4%98%EC%95%BC%20%ED%95%98%EB%8A%94%20Jackson%20Custom%20Deserialization.md)
+- [JSON에 XSS 처리하기 - Spring](https://github.com/HomoEfficio/dev-tips/blob/master/JSON%EC%97%90%20XSS%20%EB%B0%A9%EC%A7%80%20%EC%B2%98%EB%A6%AC%20%ED%95%98%EA%B8%B0%20-%20Spring.md)
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
