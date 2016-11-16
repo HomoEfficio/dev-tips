@@ -19,7 +19,7 @@ Response 쪽에서 공통적으로 처리해줘야할 일이 있다면 금방 �
 
 다음으로 생각나는 것은 `MessageConverter`다. 어차피 결국에는 Jackson 같은 Mapper를 통해 JSON 문자열로 Response에 담겨지므로, Mapper가 JSON 문자열을 생성할 때 XSS 방지 처리를 해주면 될 것 같다.
 
-찾아보니 역시나 http://stackoverflow.com/questions/25403676/initbinder-with-requestbody-escaping-xss-in-spring-3-2-4 이런 자료가 있다. 좀 오래된 버전이고 군더더기도 있어서 Jackson 2.#, SpringBoot 1.# 버전 기준으로 깔끔하게 정리해봤다.
+찾아보니 역시나 http://stackoverflow.com/questions/25403676/initbinder-with-requestbody-escaping-xss-in-spring-3-2-4 이런 자료가 있다. 좀 오래된 버전이고 군더더기도 있어서 Jackson 2.#, SpringBoot 1.# 버전 기준으로 깔끔하게, 그리고 커스터마이징 할 수 있는 부분을 추가해서 정리해봤다.
 
 큰 흐름은 다음과 같다.
 
@@ -36,23 +36,39 @@ XSS 방지 처리할 특수 문자를 다음과 같이 지정해준다.
 import com.fasterxml.jackson.core.SerializableString;
 import com.fasterxml.jackson.core.io.CharacterEscapes;
 import com.fasterxml.jackson.core.io.SerializedString;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.text.translate.AggregateTranslator;
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
+import org.apache.commons.lang3.text.translate.EntityArrays;
+import org.apache.commons.lang3.text.translate.LookupTranslator;
 
 public class HTMLCharacterEscapes extends CharacterEscapes {
 
     private final int[] asciiEscapes;
 
-    public HTMLCharacterEscapes() {
-        asciiEscapes = CharacterEscapes.standardAsciiEscapesForJSON();
+    private final CharSequenceTranslator translator;
 
+    public HTMLCharacterEscapes() {
+    
         // 1. XSS 방지 처리할 특수 문자 지정
+        translator = new AggregateTranslator(
+            new LookupTranslator(EntityArrays.BASIC_ESCAPE()),
+            new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE()),
+            new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE()),
+            // 여기에서 커스터마이징 가능
+            new LookupTranslator(  
+                new String[][]{
+                    {"(",  "&#40;"},  // open-paren
+                    {")",  "&#41;"},  // close-paren
+                    {"#",  "&#35;"},  // sharp
+                    {"\'", "&#39;"},  // single quote
+                }
+            )
+        );
+    
+        asciiEscapes = CharacterEscapes.standardAsciiEscapesForJSON();
         asciiEscapes['<'] = CharacterEscapes.ESCAPE_CUSTOM;
         asciiEscapes['>'] = CharacterEscapes.ESCAPE_CUSTOM;
-        asciiEscapes['('] = CharacterEscapes.ESCAPE_CUSTOM;
-        asciiEscapes[')'] = CharacterEscapes.ESCAPE_CUSTOM;
-        asciiEscapes['#'] = CharacterEscapes.ESCAPE_CUSTOM;
         asciiEscapes['&'] = CharacterEscapes.ESCAPE_CUSTOM;
-        asciiEscapes['\''] = CharacterEscapes.ESCAPE_CUSTOM;
         asciiEscapes['\"'] = CharacterEscapes.ESCAPE_CUSTOM;
     }
 
@@ -63,9 +79,13 @@ public class HTMLCharacterEscapes extends CharacterEscapes {
 
     @Override
     public SerializableString getEscapeSequence(int ch) {
-        return new SerializedString(StringEscapeUtils.escapeHtml4(Character.toString((char) ch)));
+        return new SerializedString(translator.translate(Character.toString((char) ch)));
+        
+        // 참고 - 커스터마이징이 필요없다면 아래와 같이 Apache Commons Lang3에서 제공하는 메서드를 써도 된다.
+        // return new SerializedString(StringEscapeUtils.escapeHtml4(Character.toString((char) ch)));
     }
 }
+
 ```
 
 ### ObjectMapper에 특수 문자 처리 기능 적용 후 MessageConverter 등록
