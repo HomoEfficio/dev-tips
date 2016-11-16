@@ -17,7 +17,7 @@ Response 쪽에서 공통적으로 처리해줘야할 일이 있다면 금방 �
 
 ## MessageConverter
 
-다음으로 생각나는 것은 `MessageConverter`다. 어차피 결국에는 Jackson 같은 Mapper를 통해 JSON 문자열로 Response에 담겨지므로, Mapper가 JSON 문자열을 생성할 떄 XSS 방지 처리를 해주면 될 것 같다.
+다음으로 생각나는 것은 `MessageConverter`다. 어차피 결국에는 Jackson 같은 Mapper를 통해 JSON 문자열로 Response에 담겨지므로, Mapper가 JSON 문자열을 생성할 때 XSS 방지 처리를 해주면 될 것 같다.
 
 찾아보니 역시나 http://stackoverflow.com/questions/25403676/initbinder-with-requestbody-escaping-xss-in-spring-3-2-4 이런 자료가 있다. 좀 오래된 버전이고 군더더기도 있어서 Jackson 2.#, SpringBoot 1.# 버전 기준으로 깔끔하게 정리해봤다.
 
