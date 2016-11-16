@@ -23,10 +23,10 @@ Response 쪽에서 공통적으로 처리해줘야할 일이 있다면 금방 �
 
 큰 흐름은 다음과 같다.
 
->- 처리할 특수 문자 지정
->- ObjectMapper에 특수 문자 처리 기능 적용
->- MessageConverter에 ObjectMapper 설정
->- WebMvcConfigurerAdapter에 MessageConverter 추가
+>1. 처리할 특수 문자 지정
+>1. ObjectMapper에 특수 문자 처리 기능 적용
+>1. MessageConverter에 ObjectMapper 설정
+>1. WebMvcConfigurerAdapter에 MessageConverter 추가
 
 ### 처리할 특수 문자 지정
 
@@ -45,6 +45,7 @@ public class HTMLCharacterEscapes extends CharacterEscapes {
     public HTMLCharacterEscapes() {
         asciiEscapes = CharacterEscapes.standardAsciiEscapesForJSON();
 
+        // 1. XSS 방지 처리할 특수 문자 지정
         asciiEscapes['<'] = CharacterEscapes.ESCAPE_CUSTOM;
         asciiEscapes['>'] = CharacterEscapes.ESCAPE_CUSTOM;
         asciiEscapes['('] = CharacterEscapes.ESCAPE_CUSTOM;
@@ -77,6 +78,7 @@ public WebMvcConfigurerAdapter controlTowerWebConfigurerAdapter() {
         @Override
         public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
             super.configureMessageConverters(converters);
+            // 4. WebMvcConfigurerAdapter에 MessageConverter 추가
             converters.add(htmlEscapingConveter());
         }
 
@@ -84,7 +86,9 @@ public WebMvcConfigurerAdapter controlTowerWebConfigurerAdapter() {
             MappingJackson2HttpMessageConverter htmlEscapingConverter =
                     new MappingJackson2HttpMessageConverter();
             ObjectMapper objectMapper = new ObjectMapper();
+            // 2. ObjectMapper에 특수 문자 처리 기능 적용
             objectMapper.getFactory().setCharacterEscapes(new HTMLCharacterEscapes());
+            // 3. MessageConverter에 ObjectMapper 설정
             htmlEscapingConverter.setObjectMapper(objectMapper);
             return htmlEscapingConverter;
         }
