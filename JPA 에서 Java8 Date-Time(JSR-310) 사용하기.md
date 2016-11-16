@@ -13,7 +13,7 @@ Caused by: com.mysql.jdbc.MsqlDataTruncation: Data truncation: Incorrect dateme 
 
 ![](http://i.imgur.com/oXXnfnO.png)
 
-어느 경우든, JPA와 Java8 Date/Time은 뭔가 조치를 취해주지 않으면 원하는 대로 쓸 수 없다. 그 조치 방법을 알아보자.
+어느 경우든, JPA와 Java8 Date/Time은 뭔가 조치를 취해주지 않으면 원하는 대로 쓸 수 없다. 날짜/시간 데이터를 사용하는 JPA Auditing을 대상으로 그 조치 방법을 알아보자.
 
 ## Jsr310JpaConverters.class를 활용하는 방법
 
