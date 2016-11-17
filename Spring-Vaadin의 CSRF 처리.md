@@ -1,4 +1,4 @@
-# SpringSecurity-Vaadin의 CSRF 처리
+# Spring-Vaadin의 CSRF 처리
 
 Vaadin에서는 자체적으로 CSRF(Cross Site Request Forgery) 처리를 하고 있기 때문에 Spring Security에서 CSRF 처리를 해주면  Vaadin에 접속하지 못하게 될 수도 있다.
 
