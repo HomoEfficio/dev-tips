@@ -66,6 +66,8 @@ public abstract class BaseEntity implements Serializable {
 }
 ```
 
+`Jsr310JpaConverters` 클래스는 사실 다음에 설명할 *Attribute Converter를 활용하는 방법*을 Spring에서 구현해서 쓰기 편하게 Wrapping 해준 클래스다.
+
 ## Attribute Converter를 활용하는 방법
 
 JPA 2.1 부터 `Attribute Converter`라는 기능이 도입되었다. `AttributeConverter` 클래스를 상속받는 자체 Converter를 만들면, Java8의 날짜/시간 데이터 타입을 JPA에서 인식할 수 있는 타입으로 자동으로 변환되게 할 수 있다.
@@ -97,6 +99,8 @@ public class LocalDateTimePersistenceConverter implements AttributeConverter<Loc
 }
 
 ```
+
+앞에서 말한대로 `Jsr310JpaConverters` 클래스는 `LocalDate`, `LocalTime`, `LocalDateTime`, `Instant`, `ZoneId` 모두에 대한 Converter를 Spring에서 구현해서 제공해주는 클래스다.
 
 자체 Converter를 만든다고 끝은 아니다. 어느 데이터에 이 Converter를 적용할지 지정해줘야 한다. 아래와 같이 Converter에 의한 자동변환이 필요한 데이터에 `@Convert` 애노테이션을 지정해준다.
 
