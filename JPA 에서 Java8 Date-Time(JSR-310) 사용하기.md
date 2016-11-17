@@ -69,7 +69,7 @@ public abstract class BaseEntity implements Serializable {
 ## Attribute Converter를 활용하는 방법
 
 JPA 2.1 부터 `Attribute Converter`라는 기능이 도입되었다. `AttributeConverter` 클래스를 상속받는 자체 Converter를 만들면, Java8의 날짜/시간 데이터 타입을 JPA에서 인식할 수 있는 타입으로 자동으로 변환되게 할 수 있다.
-아래는 `java.time.LocalDate`에 대한 Converter다. 
+아래는 `java.time.LocalDateTime`에 대한 Converter다. 
 
 ```java
 import javax.persistence.AttributeConverter;
