@@ -100,7 +100,7 @@ public class LocalDateTimePersistenceConverter implements AttributeConverter<Loc
 
 ```
 
-앞에서 말한대로 `Jsr310JpaConverters` 클래스는 `LocalDate`, `LocalTime`, `LocalDateTime`, `Instant`, `ZoneId` 모두에 대한 변환 기능을 구현해서 제공해주며, `Jsr310JpaConverters`를 통해 JPA에서 사용할 수 있다.
+앞에서 말한대로 `Jsr310Converters` 클래스는 `LocalDate`, `LocalTime`, `LocalDateTime`, `Instant`, `ZoneId` 모두에 대한 변환 기능을 구현해서 제공해주며, `Jsr310JpaConverters`를 통해 JPA에서 사용할 수 있다.
 
 자체 Converter를 만든다고 끝은 아니다. 어느 데이터에 이 Converter를 적용할지 지정해줘야 한다. 아래와 같이 Converter에 의한 자동변환이 필요한 데이터에 `@Convert` 애노테이션을 지정해준다.
 
