@@ -24,6 +24,7 @@ Response 쪽에서 공통적으로 처리해줘야할 일이 있다면 금방 �
 큰 흐름은 다음과 같다.
 
 >1. 처리할 특수 문자 지정
+>1. 특수 문자 인코딩 값 지정
 >1. ObjectMapper에 특수 문자 처리 기능 적용
 >1. MessageConverter에 ObjectMapper 설정
 >1. WebMvcConfigurerAdapter에 MessageConverter 추가
@@ -50,26 +51,31 @@ public class HTMLCharacterEscapes extends CharacterEscapes {
     public HTMLCharacterEscapes() {
     
         // 1. XSS 방지 처리할 특수 문자 지정
-        translator = new AggregateTranslator(
-            new LookupTranslator(EntityArrays.BASIC_ESCAPE()),
-            new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE()),
-            new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE()),
-            // 여기에서 커스터마이징 가능
-            new LookupTranslator(  
-                new String[][]{
-                    {"(",  "&#40;"},  // open-paren
-                    {")",  "&#41;"},  // close-paren
-                    {"#",  "&#35;"},  // sharp
-                    {"\'", "&#39;"},  // single quote
-                }
-            )
-        );
-    
         asciiEscapes = CharacterEscapes.standardAsciiEscapesForJSON();
         asciiEscapes['<'] = CharacterEscapes.ESCAPE_CUSTOM;
         asciiEscapes['>'] = CharacterEscapes.ESCAPE_CUSTOM;
         asciiEscapes['&'] = CharacterEscapes.ESCAPE_CUSTOM;
         asciiEscapes['\"'] = CharacterEscapes.ESCAPE_CUSTOM;
+        asciiEscapes['('] = CharacterEscapes.ESCAPE_CUSTOM;
+        asciiEscapes[')'] = CharacterEscapes.ESCAPE_CUSTOM;
+        asciiEscapes['#'] = CharacterEscapes.ESCAPE_CUSTOM;
+        asciiEscapes['\''] = CharacterEscapes.ESCAPE_CUSTOM;
+        
+        // 2. XSS 방지 처리 특수 문자 인코딩 값 지정
+        translator = new AggregateTranslator(
+            new LookupTranslator(EntityArrays.BASIC_ESCAPE()),  // <, >, &, " 는 여기에 포함됨
+            new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE()),
+            new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE()),
+            // 여기에서 커스터마이징 가능
+            new LookupTranslator(  
+                new String[][]{
+                    {"(",  "&#40;"},
+                    {")",  "&#41;"},
+                    {"#",  "&#35;"},
+                    {"\'", "&#39;"}
+                }
+            )
+        );        
     }
 
     @Override
@@ -99,16 +105,16 @@ public WebMvcConfigurerAdapter controlTowerWebConfigurerAdapter() {
         public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
             super.configureMessageConverters(converters);
             
-            // 4. WebMvcConfigurerAdapter에 MessageConverter 추가
+            // 5. WebMvcConfigurerAdapter에 MessageConverter 추가
             converters.add(htmlEscapingConveter());
         }
 
         private HttpMessageConverter<?> htmlEscapingConveter() {            
             ObjectMapper objectMapper = new ObjectMapper();
-            // 2. ObjectMapper에 특수 문자 처리 기능 적용
+            // 3. ObjectMapper에 특수 문자 처리 기능 적용
             objectMapper.getFactory().setCharacterEscapes(new HTMLCharacterEscapes());
             
-            // 3. MessageConverter에 ObjectMapper 설정
+            // 4. MessageConverter에 ObjectMapper 설정
             MappingJackson2HttpMessageConverter htmlEscapingConverter =
                     new MappingJackson2HttpMessageConverter();
             htmlEscapingConverter.setObjectMapper(objectMapper);
