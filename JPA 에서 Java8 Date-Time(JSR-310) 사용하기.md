@@ -66,7 +66,7 @@ public abstract class BaseEntity implements Serializable {
 }
 ```
 
-`Jsr310JpaConverters` 클래스는 사실 다음에 설명할 *Attribute Converter를 활용하는 방법*을 Spring에서 구현해서 쓰기 편하게 Wrapping 해준 클래스다.
+`Jsr310JpaConverters` 클래스는 사실 다음에 설명할 Attribute Converter를 활용하는 방법을 Spring에서 구현해서 쓰기 편하게 Wrapping 해준 `Jsr310Converters` 클래스를 JPA에서 사용할 수 있게 해주는 클래스다.
 
 ## Attribute Converter를 활용하는 방법
 
@@ -100,7 +100,7 @@ public class LocalDateTimePersistenceConverter implements AttributeConverter<Loc
 
 ```
 
-앞에서 말한대로 `Jsr310JpaConverters` 클래스는 `LocalDate`, `LocalTime`, `LocalDateTime`, `Instant`, `ZoneId` 모두에 대한 Converter를 Spring에서 구현해서 제공해주는 클래스다.
+앞에서 말한대로 `Jsr310JpaConverters` 클래스는 `LocalDate`, `LocalTime`, `LocalDateTime`, `Instant`, `ZoneId` 모두에 대한 변환 기능을 구현해서 제공해주며, `Jsr310JpaConverters`를 통해 JPA에서 사용할 수 있다.
 
 자체 Converter를 만든다고 끝은 아니다. 어느 데이터에 이 Converter를 적용할지 지정해줘야 한다. 아래와 같이 Converter에 의한 자동변환이 필요한 데이터에 `@Convert` 애노테이션을 지정해준다.
 
@@ -131,7 +131,7 @@ public abstract class BaseEntity implements Serializable {
 
 ## getter, setter를 변형해서 활용하는 방법
 
-이 방법은 특이한 `Jsr310JpaConverters`이나 `AttributeConverter` 등 특별한 클래스를 사용할 것 없이 그냥 getter, setter에 `java.util.Date`-`java.time.LocalDateTime` 변환 로직을 넣는 방법으로 가장 직관적이며 간단하다. getter, setter만으로 해결하므로 다른 클래스 건드릴 것 없이 엔티티 클래스만 건드리면 된다. 타이핑 양은 좀 되지만 복붙신공이면 될 일이고.. ㅋㅋ 
+이 방법은 특이한 `Jsr310JpaConverters`이나 `AttributeConverter` 등에 포함된 변환 로직을 그냥 getter, setter에 직접 심어버리는 방법으로 가장 직관적이고 간단하며, 외부 의존성도 적다. Spring을 사용하지 않는다면 이 방법으로 해결하면 된다. 다만, 타이핑 양은 좀 되지만 복붙신공이면 될 일이고.. ㅋㅋ
 
 ```java
 import org.springframework.data.annotation.CreatedDate;
