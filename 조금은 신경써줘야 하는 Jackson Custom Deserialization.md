@@ -113,3 +113,10 @@ public class FamilyMemberDeserializer extends JsonDeserializer<FamilyMember> {
 >- 단순한 값 필드 뿐 아니라 다른 객체를 필드로 포함하고 있는 객체의 Deserialzation 과정에서는,
 >- 그 다른 객체도 Deserialze 해야 하기 떄문에 `ObjectMapper`가 또 필요하다.
 >- 이 `ObjectMapper`를 `deserialize()` 메서드 실행 시 마다 생성하지 않도록 주의하자.
+
+----
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+<a href='https://www.facebook.com/hanmomhanda' target='_blank'>HomoEfficio</a>가 작성한 이 저작물은
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">크리에이티브 커먼즈 저작자표시-비영리-동일조건변경허락 4.0 국제 라이선스</a>에 따라 이용할 수 있습니다.
