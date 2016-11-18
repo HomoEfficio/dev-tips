@@ -110,7 +110,7 @@ public class FamilyMemberDeserializer extends JsonDeserializer<FamilyMember> {
 
 ## 정리
 
->- 단순한 값 필드 뿐 아니라 다른 객체를 필드로 포함하고 있는 객체의 Deserialzation 과정에서는,
+>- 단순한 primitive 값 필드 뿐 아니라 다른 객체를 필드로 포함하고 있는 객체의 Deserialzation 과정에서는,
 >- 그 다른 객체도 Deserialze 해야 하기 떄문에 `ObjectMapper`가 또 필요하다.
 >- 이 `ObjectMapper`를 `deserialize()` 메서드 실행 시 마다 생성하지 않도록 주의하자.
 
