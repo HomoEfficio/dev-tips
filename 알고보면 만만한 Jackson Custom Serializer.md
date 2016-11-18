@@ -11,7 +11,7 @@ Java 기반 API 서버라면 JSON 처리를 위해 [Jackson](https://github.com/
 - Jackson을 커스터마이징 할 생각은 아예 포기하고, 그 대신 JSON 화 할 대상 객체 A를 커스터마이징해서 별도의 객체 B를 다시 만들고, B를 대상으로 그냥 `objectMapper.writeValueAsString(B)`로 시원하게 처리하는 방법도 있고 ㅋㅋ,
 - 기타 등등 다양하다.
 
-Jackson을 기준으로, 개인적으로 생각할 때 가장 직관적이어서 이해하기 쉽고, 유지보수 하기도 쉽고, 코드량도 적은 커스터마이징 방법을 적어본다.
+Jackson을 기준으로, 개인적으로 생각할 때 가장 직관적이어서 이해하기 쉽고, 유지보수 하기도 쉽고, 코드량도 적은 커스터마이징 방법 중의 하나인 Jackson Custom Serialization을 알아보자.
 
 ## 얼개
 
