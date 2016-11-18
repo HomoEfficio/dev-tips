@@ -7,6 +7,7 @@ API 서버를 만들다보면 어떤 객체를 JSON으로 만들때, 특정 필�
 Java 기반 API 서버라면 JSON 처리를 위해 [Jackson](https://github.com/FasterXML/jackson)을 많이 사용하는데, Jackson으로 Java 객체를 JSON으로 Serialize 할 때 앞에서 말한 것 처럼 커스터마이징 하는 방법은 검색해보면 꽤나 다양하게 많이 나오는데, 
 
 - 뭔 필터를 만들고, 프로바이더를 꽂고 어쩌고 자시고 지지고 볶고 태우는 방법도 있고, 
+- JacksonView라고 하는, 일종의 profile과 비슷한 기능을 하는 애노테이션을 사용하는 방법도 있고,
 - Jackson을 커스터마이징 할 생각은 아예 포기하고, 그 대신 JSON 화 할 대상 객체 A를 커스터마이징해서 별도의 객체 B를 다시 만들고, B를 대상으로 그냥 `objectMapper.writeValueAsString(B)`로 시원하게 처리하는 방법도 있고 ㅋㅋ,
 - 기타 등등 다양하다.
 
