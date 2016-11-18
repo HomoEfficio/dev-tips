@@ -4,14 +4,14 @@ API 서버를 만들다보면 어떤 객체를 JSON으로 만들때, 특정 필�
 
 그 객체를 JSON으로 만들 때 특정 필드의 이름을 항상 바꾸려면 해당 필드에 `@JsonProperty("새이름")`을 명시하면 되고, 특정 필드를 항상 제외한다면 그냥 객체 클래스에 `@JsonIgnoreProperties({"제외할필드명1", "제외할필드명2"})`을 명시하면 된다. 하지만, 항상이 아니라 상황에 따라 다른 방식으로 Serialize 해야한다면 이 방법이 통하지 않는다.
 
-Java 기반 API 서버라면 JSON 처리를 위해 [Jackson](https://github.com/FasterXML/jackson)을 많이 사용하는데, Jackson으로 Java 객체를 JSON으로 Serialize 할 때 앞에서 말한 것 처럼 커스터마이징 하는 방법은 검색해보면 꽤나 다양하게 많이 나오는데, 
+Java 기반 API 서버라면 JSON 처리를 위해 [Jackson](https://github.com/FasterXML/jackson)을 많이 사용하는데, Jackson으로 Java 객체를 JSON으로 Serialize 할 때 특정 필드 제외/이름바꾸기 등 커스터마이징 하는 방법을 검색해보면, 앞에서 말한 `@JsonProperty`나 `@JsonIgnoreProperties`를 포함해서 꽤나 다양하게 많이 나온다. 
 
 - 뭔 필터를 만들고, 프로바이더를 꽂고 어쩌고 자시고 지지고 볶고 태우는 방법도 있고, 
-- @JsonView라고 하는, 일종의 profile과 비슷한 기능을 하는 애노테이션을 사용하는 방법도 있고,
+- `@JsonView`라고 하는, 일종의 profile과 비슷한 기능을 하는 애노테이션을 사용하는 방법도 있고,
 - Jackson을 커스터마이징 할 생각은 아예 포기하고, 그 대신 JSON 화 할 대상 객체 A를 커스터마이징해서 별도의 객체 B를 다시 만들고, B를 대상으로 그냥 `objectMapper.writeValueAsString(B)`로 시원하게 처리하는 방법도 있고 ㅋㅋ,
 - 기타 등등 다양하다.
 
-Jackson을 기준으로, 개인적으로 생각할 때 가장 직관적이어서 이해하기 쉽고, 유지보수 하기도 쉽고, 코드량도 적은 커스터마이징 방법 중의 하나인 Jackson Custom Serialization을 알아보자.
+Jackson을 기준으로, 개인적으로 생각할 때 가장 직관적이어서 이해하기 쉽고, 유지보수 하기도 쉽고, 코드량도 적은 커스터마이징 방법 중의 하나인 **Jackson Custom Serializer**를 만드는 방법을 알아보자.
 
 ## 얼개
 
