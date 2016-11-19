@@ -9,7 +9,7 @@
 언젠가는 다시 마주쳐서 시간을 잡아먹을 것 같은 재발성 개발 문제 해결 방법을 깨작깨작 모아본다.
 
 - [정규표현식을 이용한 문자열 바꾸기 팁](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%A0%95%EA%B7%9C%ED%91%9C%ED%98%84%EC%8B%9D%EC%9D%84%20%EC%9D%B4%EC%9A%A9%ED%95%9C%20%EB%AC%B8%EC%9E%90%EC%97%B4%20%EB%B0%94%EA%BE%B8%EA%B8%B0%20%ED%8C%81.md)
-- [JPA 에서 Java8 Date/Time(JSR-310) 사용하기](https://github.com/HomoEfficio/dev-tips/blob/master/JPA%20%EC%97%90%EC%84%9C%20Java8%20Date-Time(JSR-310)%20%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0.md)
+- [Spring Data JPA 에서 Java8 Date/Time(JSR-310) 사용하기](https://github.com/HomoEfficio/dev-tips/blob/master/Spring%20Data%20JPA%20%EC%97%90%EC%84%9C%20Java8%20Date-Time(JSR-310)%20%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0.md)
 - [DTO와 Bean Validation](https://github.com/HomoEfficio/dev-tips/blob/master/DTO%EC%99%80%20Bean%20Validation.md)
 - [SpringMVC에서 Collection의 Validation](https://github.com/HomoEfficio/dev-tips/blob/master/SpringMVC%EC%97%90%EC%84%9C%20Collection%EC%9D%98%20Validation.md)
 - [알고보면 만만한 Jackson Custom Serialization](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%95%8C%EA%B3%A0%EB%B3%B4%EB%A9%B4%20%EB%A7%8C%EB%A7%8C%ED%95%9C%20Jackson%20Custom%20Serializer.md)
