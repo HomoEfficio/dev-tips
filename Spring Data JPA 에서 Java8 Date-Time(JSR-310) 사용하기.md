@@ -1,4 +1,4 @@
-# JPA 에서 Java8 Date/Time(JSR-310) 사용하기 
+# Spring Data JPA 에서 Java8 Date/Time(JSR-310) 사용하기 
 
 Java8에는 시간 데이터를 더 편리하게 처리할 수 있게 해주는 `LocalDate`, `LocalDateTime` 등의 클래스들이 `java.time` 패키지에 추가되었다. 날짜/시간 차이 계산, 비교, 년/월/일/시/분/초 단위 별 추출 등 풍부한 기능을 제공해주므로 사용성이 아주 좋다.
 
@@ -31,7 +31,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 @EntityScan(
 		basePackageClasses = {Jsr310JpaConverters.class},  // basePackageClasses에 지정
-		basePackages = {"homo.efficio.toy.member.domain"}) // basePackage도 추가로 반드시 지정해줘야 한다
+		basePackages = {"homo.efficio.toy.member.domain"}) // basePackages도 추가로 반드시 지정해줘야 한다
 @SpringBootApplication
 public class MemberApplication {
 
@@ -100,7 +100,7 @@ public class LocalDateTimePersistenceConverter implements AttributeConverter<Loc
 
 ```
 
-앞에서 말한대로 `Jsr310Converters` 클래스는 `LocalDate`, `LocalTime`, `LocalDateTime`, `Instant`, `ZoneId` 모두에 대한 변환 기능을 구현해서 제공해주며, `Jsr310JpaConverters`를 통해 JPA에서 사용할 수 있다.
+위의 코드는 `LocalDateTime`에 대한 구현체만 들어있는데, 앞에서 언급한 `org.springframework.data.convert.Jsr310Converters` 클래스는 `LocalDate`, `LocalTime`, `LocalDateTime`, `Instant`, `ZoneId` 모두에 대한 변환 기능을 구현해서 제공해주며, `Jsr310JpaConverters`를 통해 Spring Data JPA에서 사용할 수 있다.
 
 자체 Converter를 만든다고 끝은 아니다. 어느 데이터에 이 Converter를 적용할지 지정해줘야 한다. 아래와 같이 Converter에 의한 자동변환이 필요한 데이터에 `@Convert` 애노테이션을 지정해준다.
 
@@ -131,7 +131,7 @@ public abstract class BaseEntity implements Serializable {
 
 ## getter, setter를 변형해서 활용하는 방법
 
-이 방법은 특이한 `Jsr310JpaConverters`이나 `AttributeConverter` 등에 포함된 변환 로직을 그냥 getter, setter에 직접 심어버리는 방법으로 가장 직관적이고 간단하며, 외부 의존성도 적다. Spring을 사용하지 않는다면 이 방법으로 해결하면 된다. 다만, 타이핑 양은 좀 되지만 복붙신공이면 될 일이고.. ㅋㅋ
+이 방법은 `Jsr310Converters`이나 `AttributeConverter` 등에 포함된 변환 로직을 그냥 getter, setter에 직접 심어버리는 방법으로 가장 직관적이고 간단하며, 외부 의존성도 적다. Spring을 사용하지 않는다면 이 방법으로 해결하면 된다. 다만, 타이핑 양은 좀 되지만 복붙신공이면 될 일이고.. ㅋㅋ
 
 ```java
 import org.springframework.data.annotation.CreatedDate;
