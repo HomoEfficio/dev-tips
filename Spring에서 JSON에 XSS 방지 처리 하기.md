@@ -1,19 +1,19 @@
-# JSON에 XSS 방지 처리 하기 - Spring
+# Spring에서 JSON에 XSS 방지 처리 하기
 
 ## 고마운 lucy-xss-servlet-filter의 한계
 
 XSS(Cross Site Scripting) 방지를 위해 널리 쓰이는 훌륭한 [lucy-xss-servlet-filter](https://github.com/naver/lucy-xss-servlet-filter)는 Servlet Filter 단에서 `<` 등의 특수 문자를 `&lt;` 등으로 변환해주며, 여러 가지 관련 설정을 편리하게 지정할 수 있어 정말 좋다.
 
-그런데 그 처리가 **form-data에 대해서만 적용되고 Request Raw Body로 넘어가는 JSON에 대해서는 처리해주지 않는다**는 단점이 있다.
+그런데 그 처리가 **form-data에 대해서만 적용되고 Request Raw Body로 넘어가는 JSON에 대해서는 처리해주지 않는다**는 단점이 있다. 그래서 JSON을 주고 받는 API 서버의 경우에는 직접 처리를 해줘야 한다.
 
-그래서 JSON을 주고 받는 API 서버의 경우에는 직접 처리를 해줘야 하는데, xss-lucy-servlet-filter를 JSON에 대해서도 처리하도록 수정하는 방법도 있겠지만, 여기에서는 Response 단에서 처리하는 방법을 알아본다.
+`lucy-xss-servlet-filter`를 수정해서 JSON도 처리하도록 만드는 방법도 있겠지만, 여기에서는 Response를 클라이언트로 내보내는 단계에서 처리하는 방법을 알아본다.
 
 
 ## HandlerInterceptor
 
-Response 쪽에서 공통적으로 처리해줘야할 일이 있다면 금방 떠오르는 것이 `HanderInterceptor`의 `postHandle()`이다. 이 메서드의 파라미터는 `HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView`이고, response에서 Response Body를 꺼내서, `<` => `&lt;` 등의 변환 처리를 하고 다시 response에 넣어주면 될 것 같다.
+Response 쪽에서 공통적으로 처리해줘야할 일이 있다면 금방 떠오르는 것이 `HanderInterceptor`의 `postHandle()`이다. 이 메서드의 파라미터는 `HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView`이고, `response`에서 Response Body를 꺼내서, `<` => `&lt;` 등의 변환 처리를 하고 다시 `response`에 넣어주면 될 것 같다.
 
-하지만 response에서 Response Body를 끄집어 내는 것도 쉽지 않고, 그 내용을 바꿔서 다시 집어넣는 것도 여의치 않다. 다른 방법이 필요하다.
+하지만 `response`에서 Response Body를 끄집어 내는 것도 쉽지 않고, 그 내용을 바꿔서 다시 집어넣는 것도 여의치 않다. 다른 방법이 필요하다.
 
 ## MessageConverter
 
@@ -31,7 +31,7 @@ Response 쪽에서 공통적으로 처리해줘야할 일이 있다면 금방 �
 
 ### 처리할 특수 문자 지정
 
-XSS 방지 처리할 특수 문자를 다음과 같이 지정해준다.
+XSS 방지 처리할 특수 문자를 다음과 같이 `CharacterEscapes`를 상속한 클래스를 직접 만들어서 지정해준다.
 
 ```java
 import com.fasterxml.jackson.core.SerializableString;
@@ -124,6 +124,15 @@ public WebMvcConfigurerAdapter controlTowerWebConfigurerAdapter() {
     };
 }
 ```
+
+## 정리
+
+>`lucy-xss-servlet-filter`는 JSON에 대한 XSS는 처리해주지 않는다.
+>
+>- 따라서, JSON에 대한 XSS가 필요하다면 
+>- Jackson의 `com.fasterxml.jackson.core.io.CharacterEscapes`를 상속하는 클래스 A를 직접 만들어서 처리해야 할 특수문자를 지정하고,
+>- `ObjectMapper`에 `A`를 설정하고,
+>- `ObjectMapper`를 MessageConverter에 등록해서 Response가 클라이언트에 나가기 전에 XSS 방지 처리 해준다.
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
