@@ -19,6 +19,7 @@
 - [Spring-Vaadin의 CSRF 처리](https://github.com/HomoEfficio/dev-tips/blob/master/Spring-Vaadin%EC%9D%98%20CSRF%20%EC%B2%98%EB%A6%AC.md)
 - [(망할)Mac에서 git push 하다 에러나면](https://github.com/HomoEfficio/dev-tips/blob/master/(%EB%A7%9D%ED%95%A0)Mac%EC%97%90%EC%84%9C%20git%20push%20%ED%95%98%EB%8B%A4%20%EC%97%90%EB%9F%AC%EB%82%98%EB%A9%B4.md)
 - [IntelliJ 프로젝트 별로 author 다르게 설정하기](https://github.com/HomoEfficio/dev-tips/blob/master/IntelliJ%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EB%B3%84%EB%A1%9C%20author%20%EB%8B%A4%EB%A5%B4%EA%B2%8C%20%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0.md)
+- [IntelliJ - Dracula 테마 수정 - 식별자 하이라이팅](https://github.com/HomoEfficio/dev-tips/blob/master/IntelliJ%20-%20Dracula%20%ED%85%8C%EB%A7%88%20%EC%88%98%EC%A0%95%20-%20%EC%8B%9D%EB%B3%84%EC%9E%90%20%ED%95%98%EC%9D%B4%EB%9D%BC%EC%9D%B4%ED%8C%85.md)
 
 
 ----
