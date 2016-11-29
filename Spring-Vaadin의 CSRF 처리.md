@@ -6,7 +6,7 @@ Vaadin에서는 자체적으로 CSRF(Cross Site Request Forgery) 처리를 하�
 
 ## csrf().ignoringAntMatchers()로 분기
 
-Spring Security 설정을 담당하는 클래스에서 다음과 같이 `csrf().ignoringAntMatchers()`로 분기해주면, CSRF 방지 처리를 적용하는 경우와 안 하는 경우를 requet url 차원에서 나눠서 처리할 수 있게 된다.
+Spring Security 설정을 담당하는 클래스에서 다음과 같이 `csrf().ignoringAntMatchers()`로 분기해주면, CSRF 방지 처리를 적용하는 경우와 안 하는 경우를 request url 차원에서 나눠서 처리할 수 있게 된다.
 
 ```java
 @Configuration
@@ -22,7 +22,7 @@ public class PocApiSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().ignoringAntMatchers("/api1/**", "/api2/**", "/api3/**")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/abc/**).permitAll()
+                .antMatchers("/abc/**").permitAll()
                 .antMatchers("/def/**").hasRole("USER")                
                 .anyRequest().authenticated()
                 .and()
