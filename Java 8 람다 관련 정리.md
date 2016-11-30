@@ -40,6 +40,12 @@ https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.3.3
 - throws 절
 - instance 메서드냐 class 메서드냐
 
+아래 메서드의 method descriptor는 `(IDLjava/lang/Thread;)Ljava/lang/Object;`이다. 정식은 아니지만 알아볼 수 있게 풀어쓰면 `(integer, double, Thread) Object` 정도로 할 수 있겠다.
+
+```java
+Object m(int i, double d, Thread t) {...}
+```
+
 ## type of a method
 
 https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.2
