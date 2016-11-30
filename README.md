@@ -21,6 +21,7 @@
 - [IntelliJ 프로젝트 별로 author 다르게 설정하기](https://github.com/HomoEfficio/dev-tips/blob/master/IntelliJ%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EB%B3%84%EB%A1%9C%20author%20%EB%8B%A4%EB%A5%B4%EA%B2%8C%20%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0.md)
 - [IntelliJ - Dracula 테마 수정 - 식별자 하이라이팅](https://github.com/HomoEfficio/dev-tips/blob/master/IntelliJ%20-%20Dracula%20%ED%85%8C%EB%A7%88%20%EC%88%98%EC%A0%95%20-%20%EC%8B%9D%EB%B3%84%EC%9E%90%20%ED%95%98%EC%9D%B4%EB%9D%BC%EC%9D%B4%ED%8C%85.md)
 - [윈도우에서 Gradle 사용 시 MS949 인코딩 에러 처리](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%9C%88%EB%8F%84%EC%9A%B0%EC%97%90%EC%84%9C%20Gradle%20%EC%82%AC%EC%9A%A9%20%EC%8B%9C%20MS949%20%EC%9D%B8%EC%BD%94%EB%94%A9%20%EC%97%90%EB%9F%AC%20%EC%B2%98%EB%A6%AC.md)
+- [Java 8 람다 관련 정리](https://github.com/HomoEfficio/dev-tips/blob/master/Java%208%20%EB%9E%8C%EB%8B%A4%20%EA%B4%80%EB%A0%A8%20%EC%A0%95%EB%A6%AC.md)
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
