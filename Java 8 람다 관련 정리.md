@@ -77,7 +77,7 @@ https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.13.2
 
 ## ground target type derived from functional interface
 
-람다 또는 메서드 레퍼런스와 함수형 인터페이스가 합동적인지, 즉 람다나 메서드 레퍼런스가 어떤 함수형 인터페이스의 자리에 들어가서 사용될 수 있는지 판별하는데 기준이 되는 타입으로, 함수형 인터페이스에서 유도되며, 구성 요소는 `type of a method`과 같다.
+람다 또는 메서드 레퍼런스와 함수형 인터페이스가 합동적(congruent)인지, 즉 람다나 메서드 레퍼런스가 어떤 함수형 인터페이스의 자리에 들어가서 사용될 수 있는지 판별하는데 기준이 되는 타입으로, 함수형 인터페이스에서 유도되며, 구성 요소는 `type of a method`과 같다.
 
 groud target type을 유도하는 방식이 스펙에 구구절절 나와있다.
 
