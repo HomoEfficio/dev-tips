@@ -128,7 +128,7 @@ Resolved Exception:
              Type = org.springframework.validation.BindException
 ```
 
-이처럼 Controller에서는 `BindException`을 던지는데도 불구하고, 두 개의 테스트 코드는 모두 실패한다.
+이처럼 Controller에서는 `BindException`을 던지는데도 불구하고, 예외가 발생하면 통과해야 할 두 개의 테스트 코드는 모두 실패한다.
 
 이유는 앞에서 말한대로 **실제로 예외가 발생하더라도 예외가 밖으로 던져지지 않고 `MvcResult`에 담긴 채로 테스트가 종료되기 때문**이다.
 
