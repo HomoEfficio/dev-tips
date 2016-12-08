@@ -40,13 +40,13 @@ public class MemberDto {
 
 ```java
 @RequestMapping(method = {RequestMethod.POST, RequestMethod.PUT})
-    public ResponseEntity<MemberDto> save(@RequestBody @Valid MemberDto memberDto,
-                                          BindingResult bindingResult) throws BindException {
+public ResponseEntity<MemberDto> save(@RequestBody @Valid MemberDto memberDto,
+                                      BindingResult bindingResult) throws BindException {
 
-        if (bindingResult.hasErrors()) throw new BindException(bindingResult);
+    if (bindingResult.hasErrors()) throw new BindException(bindingResult);
 
-        return ResponseEntity.ok(memberService.save(memberDto));
-    }
+    return ResponseEntity.ok(memberService.save(memberDto));
+}
 ```
 
 ### Controller Test
