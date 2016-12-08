@@ -136,9 +136,9 @@ Resolved Exception:
 
 ## andExpect() 안에서 예외 검사
 
-`MockMvc.perform()`를 통해서 HTTP Request를 테스트하려면 `ResultActions`에 있는 `andExpect()`, `andReturn()`, `andDo()` 이 세가지 메서드를 사용하는 수 밖에는 없다. 어떤 것을 검사하는 로직은 그 중에서도 `andExpect()`를 사용해야 한다.
+`MockMvc.perform()`를 통해서 HTTP Request를 테스트하려면 `ResultActions`에 있는 `andExpect()`, `andReturn()`, `andDo()` 이 세 가지 메서드를 사용하는 수 밖에는 없다. 예상값과 살제값을 검사하는 로직은 그 중에서도 `andExpect()`를 사용해야 한다.
 
-그리고 **Controller에서 던져진 예외는 `MvcResult.getResolvedException()`으로 알아낼 수 있으므로, `andExpect()`에 다음과 같은 람다를 전달**해주면 예외 발생을 정확히 테스트 할 수 있다.
+**Controller에서 던져진 예외는 `MvcResult.getResolvedException()`으로 알아낼 수 있다**. 그리고 `andExpect()`는 `ResultMatch`를 인자로 받는데, **`ResultMatch`는 `@FunctionalInterface`로 명시되어 있지는 않지만 구현되지 않은 메서드가 단 하나 있는 인터페이스**다. 따라서 **테스트 로직을 람다를 사용해서 전달**할 수 있다.
 
 ```java
 @Test
