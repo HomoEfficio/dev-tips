@@ -26,6 +26,7 @@
 - [SpringMVCTest에서의 예외 테스트](https://github.com/HomoEfficio/dev-tips/blob/master/SpringMVCTest%EC%97%90%EC%84%9C%EC%9D%98%20%EC%98%88%EC%99%B8%20%ED%85%8C%EC%8A%A4%ED%8A%B8.md)
 - [맥에서 한영키 사용 with Karabiner](https://github.com/HomoEfficio/dev-tips/blob/master/%EB%A7%A5%EC%97%90%EC%84%9C%20%ED%95%9C%EC%98%81%ED%82%A4%20%EC%82%AC%EC%9A%A9%20with%20Karabiner.md)
 - [리눅스 - 로그 파일에서 특정 내용의 유일값 구하기](https://github.com/HomoEfficio/dev-tips/blob/master/%EB%A6%AC%EB%88%85%EC%8A%A4%20-%20%EB%A1%9C%EA%B7%B8%20%ED%8C%8C%EC%9D%BC%EC%97%90%EC%84%9C%20%ED%8A%B9%EC%A0%95%20%EB%82%B4%EC%9A%A9%EC%9D%98%20%EC%9C%A0%EC%9D%BC%EA%B0%92%20%EA%B5%AC%ED%95%98%EA%B8%B0.md)
+- [Node.js Debug 설정](https://github.com/HomoEfficio/dev-tips/blob/master/Node.js%20Debug%20%EC%84%A4%EC%A0%95.md)
 
 
 ----
