@@ -30,10 +30,6 @@
     
         ```java
         @RunWith(SpringRunner.class)
-        @ComponentScan(basePackages = {
-                "homo.efficio.toy.member.service",
-                "homo.efficio.toy.member.dto"
-        })
         @SpringBootTest
         ```
    - https://github.com/HomoEfficio/spring-web-api-test-stubber 활용 가능
