@@ -57,9 +57,9 @@
     - Controller 테스트
 
 1. Swagger 적용
-    - http://springboot.tistory.com/24 참고
-        - SwaggerConfig Bean 추가
-        - Swagger UI 추가      
+    - http://springboot.tistory.com/24 참고	     
+      - SwaggerConfig Bean 추가
+      - Swagger UI 추가      
    
 1. Biz: 도메인 작성 ~ controller 작성 까지를 계속 iteration
 
