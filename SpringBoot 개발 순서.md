@@ -57,7 +57,7 @@
       - SwaggerConfig Bean 추가
       - Swagger UI 추가: app_root/swagger-ui.html 에서 확인 가능
    
-1. Biz: 도메인 작성 ~ controller 작성 까지를 계속 iteration
+1. Biz: 도메인 작성 ~ 통합 테스트 실행 까지를 계속 iteration
 
 1. 공통/아키텍트
     - DateTimeFormatter 공통화
