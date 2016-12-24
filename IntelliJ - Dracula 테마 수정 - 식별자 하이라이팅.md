@@ -29,11 +29,11 @@
 
 	![Imgur](http://i.imgur.com/Y0aJWFb.png)
 
-1. 아래와 같이 `Code > Identifier under caret`을 선택하고 우측에 있는 `Background`의 색을 적당한 색으로 바꿔준다.
+1. 아래와 같이 `Code > Identifier under caret`을 선택하고 우측에 있는 `Background`의 색을 적당한 색(ex: 475D55)로 바꿔준다.
 
 	![Imgur](http://i.imgur.com/uDLvfqd.png)
 
-1. `Code > Identifier under caret(write)`를 선택하고 우측에 있는 `Background`의 색을 적당한 색으로 바꿔준다. 이렇게 하면 **할당되어 값이 변할 가능성이 있는 식별자는 다른색으로 하이라이팅** 되어 코드 분석할 때 도움이 된다.
+1. `Code > Identifier under caret(write)`를 선택하고 우측에 있는 `Background`의 색을 적당한 색(ex: 721A20)으로 바꿔준다. 이렇게 하면 **할당되어 값이 변할 가능성이 있는 식별자는 다른색으로 하이라이팅** 되어 코드 분석할 때 도움이 된다.
 
 	![Imgur](http://i.imgur.com/0zHsJf6.png)
 
