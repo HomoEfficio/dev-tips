@@ -11,8 +11,8 @@
     
 1. repository 작성
     - repository 인터페이스 작성
-      - Optional로 작성
-    - repository 테스트 작성
+    - Optional로 작성
+    - repository 테스트 작성
       - 기본 JpaRepository 메서드 외의 메서드만
       - @DataJpaTest
       - @SpringBootTest를 붙이지 않으면 Repository외의 다른 Bean은 @Autowired 불가
