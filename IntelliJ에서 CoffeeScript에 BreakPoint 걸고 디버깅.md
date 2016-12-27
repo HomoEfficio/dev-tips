@@ -90,7 +90,12 @@ File Watcher의 설치와 설정은 다음과 같다.
          */
        ```
 
-개인적으로는 지금 시점(2016.12)에서는 CoffeeScript를 쓰기보다 ES6로 작성하는 것이 훨씬 낫다고 본다.
+## 정리
+
+>- CoffeeScript 파일에 직접 BreakPoint를 지정해도 Break가 걸리지 않는다.
+>- IntelliJ의 File Watcher 플러그인을 통해 CoffeeScript를 JavaScript로 Transpile 하고, JavaScript 파일에 BreakPoint를 지정하면 Break가 걸린다.
+>- 레거시는 File Watcher를 활용해서 CoffeeScript로 작성된 소스를 유지 관리하고
+>- 새로 시작하는 프로젝트라면 CoffeeScript 보다는 ES6로 작성하자.
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
