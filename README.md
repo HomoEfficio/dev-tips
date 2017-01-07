@@ -28,6 +28,7 @@
 - [리눅스 - 로그 파일에서 특정 내용의 유일값 구하기](https://github.com/HomoEfficio/dev-tips/blob/master/%EB%A6%AC%EB%88%85%EC%8A%A4%20-%20%EB%A1%9C%EA%B7%B8%20%ED%8C%8C%EC%9D%BC%EC%97%90%EC%84%9C%20%ED%8A%B9%EC%A0%95%20%EB%82%B4%EC%9A%A9%EC%9D%98%20%EC%9C%A0%EC%9D%BC%EA%B0%92%20%EA%B5%AC%ED%95%98%EA%B8%B0.md)
 - [Node.js Debug 설정](https://github.com/HomoEfficio/dev-tips/blob/master/Node.js%20Debug%20%EC%84%A4%EC%A0%95.md)
 - [IntelliJ에서 CoffeeScript에 BreakPoint 걸고 디버깅](https://github.com/HomoEfficio/dev-tips/blob/master/IntelliJ%EC%97%90%EC%84%9C%20CoffeeScript%EC%97%90%20BreakPoint%20%EA%B1%B8%EA%B3%A0%20%EB%94%94%EB%B2%84%EA%B9%85.md)
+- [윈도우 Git Bash에서 .sh 파일을 실행 파일로 변환하기](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%9C%88%EB%8F%84%EC%9A%B0%20Git%20Bash%EC%97%90%EC%84%9C%20.sh%20%ED%8C%8C%EC%9D%BC%EC%9D%84%20%EC%8B%A4%ED%96%89%20%ED%8C%8C%EC%9D%BC%EB%A1%9C%20%EB%B3%80%ED%99%98%20%ED%95%98%EA%B8%B0.md)
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
