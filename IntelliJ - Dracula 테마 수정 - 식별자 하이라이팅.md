@@ -44,3 +44,12 @@
 감동이다.. 저용량 고휘발성 메모리 보유 지진개발자의 까막눈가에 흐르는 눈물을 닦아본다(내친김에 폰트도 `Menlo`로 바꿨다).
 
 ![Imgur](http://i.imgur.com/5B1hSpE.png)
+
+
+----
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+<a href='https://www.facebook.com/hanmomhanda' target='_blank'>HomoEfficio</a>가 작성한 이 저작물은
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">크리에이티브 커먼즈 저작자표시-비영리-동일조건변경허락 4.0 국제 라이선스</a>에 따라 이용할 수 있습니다.
+
