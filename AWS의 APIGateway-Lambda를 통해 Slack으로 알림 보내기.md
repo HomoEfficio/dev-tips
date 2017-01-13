@@ -21,6 +21,20 @@
 
 ### IAM Role 생성
 
+먼저 API Gateway를 사용할 수 있는 IAM Role을 생성한다.
+
+![Imgur](http://i.imgur.com/2VkBvNx.png)
+
+![Imgur](http://i.imgur.com/yby2Peo.png)
+
+![Imgur](http://i.imgur.com/GXhotsR.png)
+
+![Imgur](http://i.imgur.com/UwCBvYf.png)
+
+![Imgur](http://i.imgur.com/J91pbgf.png)
+
+![Imgur](http://i.imgur.com/8BxNO30.png)
+
 ### API Gateway 생성
 
 
