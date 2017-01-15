@@ -52,66 +52,39 @@ spring.mvc.view:
 ## SiteMesh2
 
 인터넷을 뒤져보면 `SiteMesh 3`과 Spring Boot를 설정하는 내용은 있어도 `SiteMesh 2`에 대한 내용은 도움이 될만한 내용이 거의 없다.
+`SiteMesh 3`으로 올리면 소스 수준에서 decorator를 모두 수정해야 할 판이다.
 
-그래서 일단 `SiteMesh 3`으로 올린다. `SiteMesh 2`와 `SiteMesh 3`은 `GroupId` 마저 다르다. 암튼 Gradle dependency에 `SiteMesh 3`으로 설정 후 다시 import.
+기존에 있던대로 `src/main/webapp/WEB-INF/decorators.xml` 파일을 그대로 두고, `SiteMeshConfig`라는 `@Configration` 클래스로 `SiteMeshFilter`만 `Bean`으로 등록해주면 다행스럽게도 잘 동작한다.
 
-아래와 같은 기존의 `decorators.xml`의 내용을,
+``` java
+import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
+@Configuration
+public class SiteMeshConfig {
 
-<decorators defaultdir="/WEB-INF/decorators">
-    <excludes>
-        <pattern>/user/login*</pattern>
-        <pattern>/admin/login*</pattern>
-        <!--<pattern>/user/signup/save</pattern>-->
-    </excludes>
+    @Bean
+    public FilterRegistrationBean siteMeshFilter() {
 
-
-    <decorator name="main" page="main_decorator.jsp">
-        <pattern>/admin/user*</pattern>
-    </decorator>
-
-    <decorator name="usermode" page="usermode_decorator.jsp">
-        <pattern>/application/*</pattern>
-        <pattern>/mail/*</pattern>
-        <pattern>/payment/*</pattern>
-
-    ... 이하 생략 ...
-```
-
-다음과 같이 ConfigurableSiteMeshFilter을 상속한 클래스에 설정하고, FilterRegistrationBean을 통해 서블릿 필터로 등록한 후,  `decorators.xml`은 삭제한다(내버려둬봐야 `decorators` 요소를 찾을 수 없다는 에러만 난다).
-
-```java
-@Bean
-public FilterRegistrationBean siteMeshFilter() {
-    FilterRegistrationBean filter = new FilterRegistrationBean();
-    filter.setFilter(new ConfigurableSiteMeshFilter() {
-        @Override
-        protected void applyCustomConfiguration(SiteMeshFilterBuilder builder) {
-            builder.addExcludedPath("/user/login*");
-            builder.addExcludedPath("/admin/login*");
-            builder.addDecoratorPath("/admin/user*", "classpath:/decorators/main_decorator.jsp");
-            builder.addDecoratorPath("/admin/*", "classpath:/decorators/adminmode_decorator.jsp");
-            builder.addDecoratorPath("/dbadmin/*", "classpath:/decorators/dbadminmode_decorator.jsp");
-            builder.addDecoratorPath("/template/*", "classpath:/decorators/temp_decorator.jsp");
-            builder.addDecoratorPath("/application/*", "classpath:/decorators/usermode_decorator.jsp");
-            builder.addDecoratorPath("/mail/*", "classpath:/decorators/usermode_decorator.jsp");
-            builder.addDecoratorPath("/payment/*", "classpath:/decorators/usermode_decorator.jsp");
-            builder.addDecoratorPath("/main/*", "classpath:/decorators/usermode_decorator.jsp");
-            builder.addDecoratorPath("/mypage/*", "classpath:/decorators/usermode_decorator.jsp");
-            builder.addDecoratorPath("/qna/*", "classpath:/decorators/usermode_decorator.jsp");
-            builder.addDecoratorPath("/pds/*", "classpath:/decorators/usermode_decorator.jsp");
-            builder.addDecoratorPath("/test/*", "classpath:/decorators/usermode_decorator.jsp");
-            builder.addDecoratorPath("/common/error.jsp", "classpath:/decorators/usermode_decorator.jsp");
-            builder.addDecoratorPath("/common/404.jsp", "classpath:/decorators/usermode_decorator.jsp");
-            builder.addDecoratorPath("/common/displayTransLang.jsp", "classpath:/decorators/usermode_decorator.jsp");
-        }
-    });
-    filter.addUrlPatterns("/*");
-    return filter;
+        FilterRegistrationBean filter = new FilterRegistrationBean();
+        filter.setFilter(new SiteMeshFilter());
+        return filter;
+    }
 }
 ```
+
+`src/main/webapp/WEB-INF/decorators.xml`에서 `<decorators defaultdir="/WEB-INF/decorators">`로 지정했으므로, decorator 파일들은 `src/main/webapp/WEB-INF/decorators` 폴더 내부에 위치한다.
+
+jsp로 된 decorator 파일은 대략 아래와 같은 형식으로 시작한다.
+
+``` jsp
+<%@ page contentType="text/html;charset=UTF-8"%>
+<%@ include file="/WEB-INF/jsp/common/env.jsp"%> // <-- jsp 파일의 위치를 /WEB-INF/jsp/~~로 지정
+<%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator"%>
+```
+
 
 ## 한글 깨짐
 
@@ -175,6 +148,12 @@ JSP 파일이 잘 인식이 되더라도, 실제 JSP 파일을 불러보면 아�
 >The absolute uri: http://www.springframework.org/security/tags cannot be resolved in either web.xml or the jar files deployed with this application
 
 `http://www.springframework.org/security/tags`는 기본적인 `spring-boot-starter-*`에는 포함되어 있지 않으므로 수동으로 `build.gradle`에 `compile group: 'org.springframework.security', name: 'spring-security-taglibs'`을 추가해주면 된다.
+
+## context.getResourceAsStream(strPath)
+
+Spring 1.4.3이라면 읽어오고 싶은 자원을 `src/main/webapp/`를 `/`로 해서 strPath를 기술하면 된다. 예를 들어 `src/main/webapp/WEB-INF/abc.txt` 파일은 `context.getResourceAsStream("/WEB-INF/abc.txt")`로 InputStream에 담을 수 있다.
+
+하지만 `src/main/resources/static/def.txt` 파일을 `context.getResourceAsStream("/def.txt")`로 읽을 수는 없다.
 
 
 ## Spring Boot 설정 관련 일반적인 문제 해법
