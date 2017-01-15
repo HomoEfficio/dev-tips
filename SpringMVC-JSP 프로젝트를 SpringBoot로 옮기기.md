@@ -1,6 +1,6 @@
 # SpringMVC-JSP 프로젝트를 Spring Boot로 옮기기
 
-SpringMVC 3.2.# 기반에 JSP로 되어있던 레거시 프로젝트를 springboot로 전환했다.
+SpringMVC 3.2.# 기반에 JSP로 되어있던 레거시 프로젝트를 Spring Boot로 전환했다.
 역시나 설정 부분에서 어려운 점이 많은데 까먹기 전에 남겨두기로 한다.
 
 ## Spring Security
@@ -8,7 +8,7 @@ SpringMVC 3.2.# 기반에 JSP로 되어있던 레거시 프로젝트를 springbo
 기존 xml로 되어 있던 설정이 Java Config에서 어떻게 매칭되는지 하나하나 파악하기가 어려워 그냥 기존의 xml 그대로 쓰기로 했다.
 
 >MainApplication.java 에 @ImportResource({
-        "classpath:/config/spring/context-security.xml", 로 해결
+        "classpath:/config/spring/context-security.xml", ... 를 지정해주는 걸로 해결
 
 ## static 파일
 
@@ -16,7 +16,7 @@ SpringMVC 3.2.# 기반에 JSP로 되어있던 레거시 프로젝트를 springbo
 
 >webapp/static 에 있던 파일을 resources/static 으로 이동
 
-## WebRoot에 있던 index.html 파일
+## WebRoot(webapp)에 있던 index.html 파일
 
 비교적 간단하다.
 
@@ -24,62 +24,20 @@ SpringMVC 3.2.# 기반에 JSP로 되어있던 레거시 프로젝트를 springbo
 
 ## JSP
 
-결론적으로 [jar로 만드는 SpringBoot에서는 JSP를 사용할 수 없다](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html#boot-features-jsp-limitations).
+기본적으로 [jar로 만드는 SpringBoot에서는 JSP를 사용할 수 없다](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html#boot-features-jsp-limitations).
 
-해결 방법은 http://hillert.blogspot.kr/2016/03/spring-boot-with-jsp-in-executable-jar.html 에 나와있는데, 정리하면,
-
->JSP를 다음의 링크에서 설명하는 것처럼 기존의 /WEB-INF/jsp 에 저장했던 jsp 파일을 Spring Boot에서는 resources/META-INF/resources/WEB-INF/jsp 에 저장해야 한다.
-
-## sitemesh2
-
-인터넷을 뒤져봐도 SiteMesh 3과 Spring Boot를 설정하는 내용은 있어도 SiteMesh2 에 대한 내용은 없다.
-
-그래서 일단 SiteMesh 3으로 올린다. SiteMesh 2와 3은 Group Id 마저 다르다. 암튼 Gradle dependency에 SiteMesh 3으로 설정 후 reimport.
-
-아래와 같은 기존의 decorators.xml은 삭제하고,
-
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-
-<decorators defaultdir="/WEB-INF/decorators">
-    <excludes>
-        <pattern>/user/login*</pattern>
-SpringMVC 3.2.# 기반에 JSP로 되어있던 레거시 프로젝트를 springboot로 전환했다.
-역시나 설정 부분에서 어려운 점이 많은데 까먹기 전에 남겨두기로 한다.
-
-## Spring Security
-
-기존 xml로 되어 있던 설정이 Java Config에서 어떻게 매칭되는지 하나하나 파악하기가 어려워 그냥 기존의 xml 그대로 쓰기로 했다.
-
->MainApplication.java 에 @ImportResource({
-        "classpath:/config/spring/context-security.xml", 로 해결
-
-## static 파일
-
-비교적 간단하다.
-
->webapp/static 에 있던 파일을 resources/static 으로 이동
-
-## WebRoot에 있던 index.html 파일
-
-비교적 간단하다.
-
->webapp/index.html 을 resources/static/index.html 로 이동
-
-## JSP
-
-결론적으로 [jar로 만드는 SpringBoot에서는 JSP를 사용할 수 없다](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html#boot-features-jsp-limitations).
-
-해결 방법은 http://hillert.blogspot.kr/2016/03/spring-boot-with-jsp-in-executable-jar.html 에 나와있는데, 정리하면,
+해결 방법은 http://hillert.blogspot.kr/2016/03/spring-boot-with-jsp-in-executable-jar.html 에 나와있는데 정리하면,
 
 1. application.yml에 다음과 같이 지정
+
 ``` yml
 spring.mvc.view:
     prefix: /WEB-INF/jsp/
     suffix: .jsp
 ```
 
-2. JSP 파일의 물리적 저장 위치
+1. JSP 파일의 물리적 저장 위치
+
 >기존의 /WEB-INF/jsp 에 저장했던 jsp 파일을 Spring Boot에서는 resources/META-INF/resources/WEB-INF/jsp 에 저장해야 한다.
 
 ## sitemesh2
@@ -169,7 +127,7 @@ public Filter characterEncodingFilter() {
 }
 ```
 
-### 2단계
+### 2단계 해결 방법
 
 1단계로 안되면, 2단계로 간다. 이 방법은 검색으로는 금방 안 나오는데 `application.yml`에 다음 내용을 지정한다.
 
@@ -206,6 +164,10 @@ server.tomcat.uri-encoding: UTF-8
 ```
 
 라고 되어 있어서 답을 찾을 수 있었다.
+
+
+
+
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
