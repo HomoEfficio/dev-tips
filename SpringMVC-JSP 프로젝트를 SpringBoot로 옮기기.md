@@ -168,6 +168,14 @@ Gradle의 `jar` 태스크를 실행해서 생성된 jar 파일을 `java -jar`로
 
 이럴 때는 Gradle의 `bootRepackage` 태스크를 실행해서 jar를 만들고, `java -jar`로 실행하면 정상적으로 실행된다.
 
+## Spring Security TagLib 관련 에러
+
+JSP 파일이 잘 인식이 되더라도, 실제 JSP 파일을 불러보면 아래와 같은 에러가 난다.
+
+>The absolute uri: http://www.springframework.org/security/tags cannot be resolved in either web.xml or the jar files deployed with this application
+
+`http://www.springframework.org/security/tags`는 기본적인 `spring-boot-starter-*`에는 포함되어 있지 않으므로 수동으로 `build.gradle`에 `compile group: 'org.springframework.security', name: 'spring-security-taglibs'`을 추가해주면 된다.
+
 
 ## Spring Boot 설정 관련 일반적인 문제 해법
 
