@@ -5,10 +5,22 @@ SpringMVC 3.2.# 기반에 JSP로 되어있던 레거시 프로젝트를 springbo
 
 ## Spring Security
 
-기존 xml로 되어 있던 설정이 Java Config에서 어떻게 매칭되는지 하나하나 파악하기가 어려워 그냥 기존의 xml을 그대로 쓰기로 했다.
+기존 xml로 되어 있던 설정이 Java Config에서 어떻게 매칭되는지 하나하나 파악하기가 어려워 그냥 기존의 xml 그대로 쓰기로 했다.
 
 >MainApplication.java 에 @ImportResource({
         "classpath:/config/spring/context-security.xml", 로 해결
+
+## static 파일
+
+비교적 간단하다.
+
+>webapp/static 에 있던 파일을 resources/static 으로 이동
+
+## WebRoot에 있던 index.html 파일
+
+비교적 간단하다.
+
+>webapp/index.html 을 resources/static/index.html 로 이동
 
 ## JSP
 
