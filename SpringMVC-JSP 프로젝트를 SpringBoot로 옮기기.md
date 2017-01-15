@@ -24,7 +24,11 @@ SpringMVC 3.2.# 기반에 JSP로 되어있던 레거시 프로젝트를 Spring B
 
 ## JSP
 
-기본적으로 [jar로 만드는 SpringBoot에서는 JSP를 사용할 수 없다](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html#boot-features-jsp-limitations).
+기본적으로 [jar로 만드는 SpringBoot에서는 JSP를 사용할 수 없다](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html#boot-features-jsp-limitations)라고 되어 있다.
+
+하지만 방법이 없는 건 아니고, Spring Boot 1.4.3을 기준으로 해법이 나뉜다.
+
+### Spring Boot 1.4.2 이하
 
 해결 방법은 http://hillert.blogspot.kr/2016/03/spring-boot-with-jsp-in-executable-jar.html 에 나와있는데 정리하면,
 
@@ -36,9 +40,14 @@ spring.mvc.view:
     suffix: .jsp
 ```
 
-1. JSP 파일의 물리적 저장 위치
+2. JSP 파일의 물리적 저장 위치
 
->기존의 /WEB-INF/jsp 에 저장했던 jsp 파일을 Spring Boot에서는 resources/META-INF/resources/WEB-INF/jsp 에 저장해야 한다.
+>기존의 `/WEB-INF/jsp` 에 저장했던 jsp 파일을 Spring Boot에서는 `resources/META-INF/resources/WEB-INF/jsp`에 저장해야 한다.
+
+### Spring Boot 1.4.3 이상
+
+1.4.3에서는 그냥 `src/main/webapp` 폴더를 만들어서 예전과 같이 `/webapp/WEB-INF/jsp`에 JSP 파일을 넣으면 된다.
+
 
 ## SiteMesh2
 
@@ -146,6 +155,20 @@ spring.http.encoding:
 server.tomcat.uri-encoding: UTF-8
 ```
 
+### jar로 실행 시 한글 깨짐
+
+이 경우는 java 실행 옵션 문제다. `JAVA_OPTS`라는 환경 변수에 `-Dfile.encoding=UTF-8`을 추가해준다.
+
+
+## jar 파일 생성 후 실행 시 에러
+
+Gradle의 `jar` 태스크를 실행해서 생성된 jar 파일을 `java -jar`로 실행하면 다음과 같은 에러가 날 수 있다.
+
+![Imgur](http://i.imgur.com/oG4w23N.png)
+
+이럴 때는 Gradle의 `bootRepackage` 태스크를 실행해서 jar를 만들고, `java -jar`로 실행하면 정상적으로 실행된다.
+
+
 ## Spring Boot 설정 관련 일반적인 문제 해법
 
 설정 관련 한다고 했는데도 원하는 대로 되지 않는다면, `localhost:8080/configprops` 로 현재 설정 정보 JSON 을 확인해보는 것이 문제 해결에 드는 시간을 줄여준다. 그리고 설정 항목은 [Spring Boot 문서](https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html#common-application-properties)에서 확인할 수 있다.
@@ -174,7 +197,4 @@ server.tomcat.uri-encoding: UTF-8
 <a href='https://www.facebook.com/hanmomhanda' target='_blank'>HomoEfficio</a>가 작성한 이 저작물은
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">크리에이티브 커먼즈 저작자표시-비영리-동일조건변경허락 4.0 국제 라이선스</a>에 따라 이용할 수 있습니다.
-
-
-
 
