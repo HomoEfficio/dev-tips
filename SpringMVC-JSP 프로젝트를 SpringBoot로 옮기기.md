@@ -1,36 +1,15 @@
 # SpringMVC-JSP 프로젝트를 Spring Boot로 옮기기
 
-SpringMVC 3.2.# 기반에 JSP로 되어있던 레거시 프로젝트를 Spring Boot로 전환했다.
+SpringMVC 3.2.# 기반에 JSP-SiteMesh2로 되어있던 레거시 프로젝트를 Spring Boot로 전환했다.
 역시나 설정 부분에서 어려운 점이 많은데 까먹기 전에 남겨두기로 한다.
 
-## war!!
+## Spring Boot 1.4.2
 
-Spring Boot에서 JSP를 사용하려면, 아쉽지만 Fat JAR로는 안되고, WAR로 만들어야 한다!!
+Spring Boot에서 
 
-http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-create-a-deployable-war-file 를 참고해서 WAR로 만들 준비를 한다.
-
-
-## Spring Security
-
-기존 xml로 되어 있던 설정이 Java Config에서 어떻게 매칭되는지 하나하나 파악하기가 어려워 그냥 기존의 xml 그대로 쓰기로 했다.
-
->MainApplication.java 에 @ImportResource({
-        "classpath:/config/spring/context-security.xml", ... 를 지정해주는 걸로 해결
-
-## static 파일
-
-비교적 간단하다.
-
->webapp/static 에 있던 파일을 resources/static 으로 이동
-
-## WebRoot(webapp)에 있던 index.html 파일
-
-비교적 간단하다.
-
->webapp/index.html 을 resources/static/index.html 로 이동
-
-
-## JSP
+>- JSP와 SiteMesh를 사용하면서
+>- FAT JAR로 배포하고 싶다면
+>- Spring Boot 1.4.2를 사용해라.
 
 기본적으로 [jar로 만드는 SpringBoot에서는 JSP를 사용할 수 없다](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html#boot-features-jsp-limitations)라고 되어 있다.
 
@@ -54,8 +33,30 @@ spring.mvc.view:
 
 ### Spring Boot 1.4.3 이상
 
-jar를 만드는 SpringBoot에서는 webapp 폴더가 jar 생성시 그냥 무시된다고 
-1.4.3에서는 그냥 `src/main/webapp` 폴더를 만들어서 예전과 같이 `/webapp/WEB-INF/jsp`에 JSP 파일을 넣으면 IDE 상에서 실행해도 잘 인식 되어 정상적으로 애플리케이션이 동작하고, JAR로 만들어서 `java -jar`로 실행해도 잘 동작한다.
+`resources/META-INF/resources/WEB-INF/`를 사용하는 전략이 먹히지 않는다.
+
+1.4.3을 쓰려면 Fat JAR를 포기하고 webapp 폴더를 쓰는 WAR를 선택하거나, 아니면 JSP-SiteMesh를 포기해야 한다.
+
+
+## Spring Security
+
+기존 xml로 되어 있던 설정이 Java Config에서 어떻게 매칭되는지 하나하나 파악하기가 어려워 그냥 기존의 xml 그대로 쓰기로 했다.
+
+>MainApplication.java 에 @ImportResource({
+        "classpath:/config/spring/context-security.xml", ... 를 지정해주는 걸로 해결
+
+## static 파일
+
+비교적 간단하다.
+
+>webapp/static 에 있던 파일을 resources/static 으로 이동
+
+
+## WebRoot(webapp)에 있던 index.html 파일
+
+비교적 간단하다.
+
+>webapp/index.html 을 resources/static/index.html 로 이동
 
 
 ## SiteMesh2
@@ -63,7 +64,7 @@ jar를 만드는 SpringBoot에서는 webapp 폴더가 jar 생성시 그냥 무�
 인터넷을 뒤져보면 `SiteMesh 3`과 Spring Boot를 설정하는 내용은 있어도 `SiteMesh 2`에 대한 내용은 도움이 될만한 내용이 거의 없다.
 `SiteMesh 3`으로 올리면 소스 수준에서 decorator를 모두 수정해야 할 판이다.
 
-기존에 있던대로 `src/main/webapp/WEB-INF/decorators.xml` 파일을 그대로 두고, `SiteMeshConfig`라는 `@Configration` 클래스로 `SiteMeshFilter`만 `Bean`으로 등록해주면 다행스럽게도 잘 동작한다.
+기존에 `src/main/webapp/WEB-INF/decorators.xml`파일은 `src/main/resources/META-INF/resources/WEB-INF/decorators.xml`로 옮기고, `SiteMeshConfig`라는 `@Configration` 클래스로 `SiteMeshFilter`만 `Bean`으로 등록해주면 다행스럽게도 잘 동작한다.
 
 ``` java
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
@@ -84,7 +85,7 @@ public class SiteMeshConfig {
 }
 ```
 
-`src/main/webapp/WEB-INF/decorators.xml`에서 `<decorators defaultdir="/WEB-INF/decorators">`로 지정했으므로, decorator 파일들은 `src/main/webapp/WEB-INF/decorators` 폴더 내부에 위치한다.
+`src/main/resources/META-INF/resources/WEB-INF/decorators.xml`에서 `<decorators defaultdir="/WEB-INF/decorators">`로 지정했으므로, decorator 파일들은 `src/main/resources/META-INF/resources/WEB-INF/decorators` 폴더 내부에 위치한다.
 
 jsp로 된 decorator 파일은 대략 아래와 같은 형식으로 시작한다.
 
@@ -141,6 +142,8 @@ server.tomcat.uri-encoding: UTF-8
 
 이 경우는 java 실행 옵션 문제다. `JAVA_OPTS`라는 환경 변수에 `-Dfile.encoding=UTF-8`을 추가해준다.
 
+확실하게는 `java -Dfile.encoding=UTF-8 -jar`로 jar 파일을 실행하면 된다.
+
 
 ## jar 파일 생성 후 실행 시 에러
 
@@ -162,7 +165,7 @@ JSP 파일이 잘 인식이 되더라도, 실제 JSP 파일을 불러보면 아�
 
 ## context.getResourceAsStream(strPath)
 
-Spring 1.4.3이라면 읽어오고 싶은 자원을 `src/main/webapp/`를 `/`로 해서 strPath를 기술하면 된다. 예를 들어 `src/main/webapp/WEB-INF/abc.txt` 파일은 `context.getResourceAsStream("/WEB-INF/abc.txt")`로 InputStream에 담을 수 있다.
+Spring 1.4.2이라면 읽어오고 싶은 자원을 `src/main/resources/META-INF/resources/`를 `/`로 해서 strPath를 기술하면 된다. 예를 들어 `src/main/resources/META-INF/resources/WEB-INF/abc.txt` 파일은 `context.getResourceAsStream("/WEB-INF/abc.txt")`로 InputStream에 담을 수 있다.
 
 하지만 `src/main/resources/static/def.txt` 파일을 `context.getResourceAsStream("/def.txt")`로 읽을 수는 없다.
 
