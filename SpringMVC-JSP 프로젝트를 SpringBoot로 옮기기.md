@@ -40,13 +40,13 @@ spring.mvc.view:
 
 >기존의 /WEB-INF/jsp 에 저장했던 jsp 파일을 Spring Boot에서는 resources/META-INF/resources/WEB-INF/jsp 에 저장해야 한다.
 
-## sitemesh2
+## SiteMesh2
 
-인터넷을 뒤져봐도 SiteMesh 3과 Spring Boot를 설정하는 내용은 있어도 SiteMesh2 에 대한 내용은 없다.
+인터넷을 뒤져보면 `SiteMesh 3`과 Spring Boot를 설정하는 내용은 있어도 `SiteMesh 2`에 대한 내용은 도움이 될만한 내용이 거의 없다.
 
-그래서 일단 SiteMesh 3으로 올린다. SiteMesh 2와 3은 Group Id 마저 다르다. 암튼 Gradle dependency에 SiteMesh 3으로 설정 후 reimport.
+그래서 일단 `SiteMesh 3`으로 올린다. `SiteMesh 2`와 `SiteMesh 3`은 `GroupId` 마저 다르다. 암튼 Gradle dependency에 `SiteMesh 3`으로 설정 후 다시 import.
 
-아래와 같은 기존의 decorators.xml은 삭제하고,
+아래와 같은 기존의 `decorators.xml`의 내용을,
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -71,7 +71,7 @@ spring.mvc.view:
     ... 이하 생략 ...
 ```
 
-다음과 같이 ConfigurableSiteMeshFilter을 상속한 클래스에 설정하고, FilterRegistrationBean을 통해 서블릿 필터로 등록한다.
+다음과 같이 ConfigurableSiteMeshFilter을 상속한 클래스에 설정하고, FilterRegistrationBean을 통해 서블릿 필터로 등록한 후,  `decorators.xml`은 삭제한다(내버려둬봐야 `decorators` 요소를 찾을 수 없다는 에러만 난다).
 
 ```java
 @Bean
@@ -110,7 +110,7 @@ public FilterRegistrationBean siteMeshFilter() {
 
 ### 1단계 해결 방법
 
-검색해보면 가장 많이 나오는 방법이다.
+검색해보면 쉽게 찾을 수 있는 방법이다.
 
 ``` java
 @Bean
@@ -127,9 +127,11 @@ public Filter characterEncodingFilter() {
 }
 ```
 
+그런데 이걸로 안 될때도 있더라.. 그럴땐 2단계로.
+
 ### 2단계 해결 방법
 
-1단계로 안되면, 2단계로 간다. 이 방법은 검색으로는 금방 안 나오는데 `application.yml`에 다음 내용을 지정한다.
+이 방법은 검색으로는 금방 안 나오는데 `application.yml`에 다음 내용을 지정하면 된다.
 
 ``` yml
 spring.http.encoding:
@@ -138,7 +140,7 @@ spring.http.encoding:
     force-response: true
 ```
 
-하는 김에 아래 내용도 추가하자. standalone Tomcat 시절에 server.xml에 항상 해주던 설정이다.
+하는 김에 아래 내용도 추가하자. standalone Tomcat 시절에 `server.xml`에 항상 해주던 설정이다.
 
 ``` yml
 server.tomcat.uri-encoding: UTF-8
@@ -164,9 +166,6 @@ server.tomcat.uri-encoding: UTF-8
 ```
 
 라고 되어 있어서 답을 찾을 수 있었다.
-
-
-
 
 
 ----
