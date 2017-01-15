@@ -34,5 +34,64 @@ SpringMVC 3.2.# 기반에 JSP로 되어있던 레거시 프로젝트를 springbo
 
 인터넷을 뒤져봐도 SiteMesh 3과 Spring Boot를 설정하는 내용은 있어도 SiteMesh2 에 대한 내용은 없다.
 
-그래서 고전 중..
+그래서 일단 SiteMesh 3으로 올린다. SiteMesh 2와 3은 Group Id 마저 다르다. 암튼 Gradle dependency에 SiteMesh 3으로 설정 후 reimport.
+
+아래와 같은 기존의 decorators.xml은 삭제하고,
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<decorators defaultdir="/WEB-INF/decorators">
+    <excludes>
+        <pattern>/user/login*</pattern>
+        <pattern>/admin/login*</pattern>
+        <!--<pattern>/user/signup/save</pattern>-->
+    </excludes>
+
+
+    <decorator name="main" page="main_decorator.jsp">
+        <pattern>/admin/user*</pattern>
+    </decorator>
+
+    <decorator name="usermode" page="usermode_decorator.jsp">
+        <pattern>/application/*</pattern>
+        <pattern>/mail/*</pattern>
+        <pattern>/payment/*</pattern>
+
+    ... 이하 생략 ...
+```
+
+다음과 같이 ConfigurableSiteMeshFilter을 상속한 클래스에 설정하고, FilterRegistrationBean을 통해 서블릿 필터로 등록한다.
+
+```java
+@Bean
+public FilterRegistrationBean siteMeshFilter() {
+    FilterRegistrationBean filter = new FilterRegistrationBean();
+    filter.setFilter(new ConfigurableSiteMeshFilter() {
+        @Override
+        protected void applyCustomConfiguration(SiteMeshFilterBuilder builder) {
+            builder.addExcludedPath("/user/login*");
+            builder.addExcludedPath("/admin/login*");
+            builder.addDecoratorPath("/admin/user*", "classpath:/decorators/main_decorator.jsp");
+            builder.addDecoratorPath("/admin/*", "classpath:/decorators/adminmode_decorator.jsp");
+            builder.addDecoratorPath("/dbadmin/*", "classpath:/decorators/dbadminmode_decorator.jsp");
+            builder.addDecoratorPath("/template/*", "classpath:/decorators/temp_decorator.jsp");
+            builder.addDecoratorPath("/application/*", "classpath:/decorators/usermode_decorator.jsp");
+            builder.addDecoratorPath("/mail/*", "classpath:/decorators/usermode_decorator.jsp");
+            builder.addDecoratorPath("/payment/*", "classpath:/decorators/usermode_decorator.jsp");
+            builder.addDecoratorPath("/main/*", "classpath:/decorators/usermode_decorator.jsp");
+            builder.addDecoratorPath("/mypage/*", "classpath:/decorators/usermode_decorator.jsp");
+            builder.addDecoratorPath("/qna/*", "classpath:/decorators/usermode_decorator.jsp");
+            builder.addDecoratorPath("/pds/*", "classpath:/decorators/usermode_decorator.jsp");
+            builder.addDecoratorPath("/test/*", "classpath:/decorators/usermode_decorator.jsp");
+            builder.addDecoratorPath("/common/error.jsp", "classpath:/decorators/usermode_decorator.jsp");
+            builder.addDecoratorPath("/common/404.jsp", "classpath:/decorators/usermode_decorator.jsp");
+            builder.addDecoratorPath("/common/displayTransLang.jsp", "classpath:/decorators/usermode_decorator.jsp");
+        }
+    });
+    filter.addUrlPatterns("/*");
+    return filter;
+}
+```
+
 
