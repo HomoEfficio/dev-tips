@@ -3,6 +3,13 @@
 SpringMVC 3.2.# 기반에 JSP로 되어있던 레거시 프로젝트를 Spring Boot로 전환했다.
 역시나 설정 부분에서 어려운 점이 많은데 까먹기 전에 남겨두기로 한다.
 
+## war!!
+
+Spring Boot에서 JSP를 사용하려면, 아쉽지만 Fat JAR로는 안되고, WAR로 만들어야 한다!!
+
+http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-create-a-deployable-war-file 를 참고해서 WAR로 만들 준비를 한다.
+
+
 ## Spring Security
 
 기존 xml로 되어 있던 설정이 Java Config에서 어떻게 매칭되는지 하나하나 파악하기가 어려워 그냥 기존의 xml 그대로 쓰기로 했다.
@@ -21,6 +28,7 @@ SpringMVC 3.2.# 기반에 JSP로 되어있던 레거시 프로젝트를 Spring B
 비교적 간단하다.
 
 >webapp/index.html 을 resources/static/index.html 로 이동
+
 
 ## JSP
 
@@ -46,7 +54,8 @@ spring.mvc.view:
 
 ### Spring Boot 1.4.3 이상
 
-1.4.3에서는 그냥 `src/main/webapp` 폴더를 만들어서 예전과 같이 `/webapp/WEB-INF/jsp`에 JSP 파일을 넣으면 된다.
+jar를 만드는 SpringBoot에서는 webapp 폴더가 jar 생성시 그냥 무시된다고 
+1.4.3에서는 그냥 `src/main/webapp` 폴더를 만들어서 예전과 같이 `/webapp/WEB-INF/jsp`에 JSP 파일을 넣으면 IDE 상에서 실행해도 잘 인식 되어 정상적으로 애플리케이션이 동작하고, JAR로 만들어서 `java -jar`로 실행해도 잘 동작한다.
 
 
 ## SiteMesh2
@@ -141,6 +150,7 @@ Gradle의 `jar` 태스크를 실행해서 생성된 jar 파일을 `java -jar`로
 
 이럴 때는 Gradle의 `bootRepackage` 태스크를 실행해서 jar를 만들고, `java -jar`로 실행하면 정상적으로 실행된다.
 
+
 ## Spring Security TagLib 관련 에러
 
 JSP 파일이 잘 인식이 되더라도, 실제 JSP 파일을 불러보면 아래와 같은 에러가 난다.
@@ -148,6 +158,7 @@ JSP 파일이 잘 인식이 되더라도, 실제 JSP 파일을 불러보면 아�
 >The absolute uri: http://www.springframework.org/security/tags cannot be resolved in either web.xml or the jar files deployed with this application
 
 `http://www.springframework.org/security/tags`는 기본적인 `spring-boot-starter-*`에는 포함되어 있지 않으므로 수동으로 `build.gradle`에 `compile group: 'org.springframework.security', name: 'spring-security-taglibs'`을 추가해주면 된다.
+
 
 ## context.getResourceAsStream(strPath)
 
