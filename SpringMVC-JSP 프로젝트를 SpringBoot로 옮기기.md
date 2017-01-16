@@ -227,6 +227,39 @@ Spring 1.4.2 라면 읽어오고 싶은 자원을 **`src/main/resources/META-INF
 라고 되어 있어서, 이를 발판 삼아 답을 찾을 수 있었다.
 
 
+## MyBatis
+
+SpringMVC 에서는 Mapper.xml 파일이 src/main/java 아래에 있어도 classpath에 포함이 되었지만, Spring Boot에서는 포함되지 않아서 실행 시 클래스패스에서 Mapper.xml 파일을 찾지 못한다.
+
+>Mapper.xml 파일은 src/main/resources/sqlmapper 아래에 폴더별로 모아두고,
+>
+>Databaseconfig.java에서 다음과 같이 Mapper의 위치를 지정
+
+``` java
+@Bean("sqlSessionFactory")
+public SqlSessionFactory sqlSessionFactoryBean(DataSource dataSource) throws Exception {
+    SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+    sqlSessionFactoryBean.setDataSource(dataSource);
+    sqlSessionFactoryBean.setConfigLocation(applicationContext.getResource("classpath:/config/mybatis/mybatis-config.xml"));
+    sqlSessionFactoryBean.setMapperLocations(applicationContext.getResources("classpath:/sqlmapper/**/*Mapper.xml"));  // <-- 이렇게 지정
+    return sqlSessionFactoryBean.getObject();
+}
+```
+
+
+## Uncaught SyntaxError: Unexpected token o
+
+SpringMVC에서는 Response의 content-type이 application/json이 아닌 경우, javascript에서 JSON.parse(result)를 해줘야 result 내의 데이터에 접근할 수 있었는데,
+
+Spring Boot에서는 Response의 content-type이 application/json으로 넘어오므로, JSON.parse(result)를 실행하면 `Uncaught SyntaxError: Unexpected token o`라는 에러가 발생한다. 이유는 이미 result가 이미 JSON 객체라서 JSON.parse("[object Object]")와 같이 해석되어 object의 o에서 에러가 발생한다.
+
+따라서 다음과 같이 JSON.parse()를 벗겨낸다.
+
+>var parsedData = JSON.parse(result); 를 
+>
+>var parsedData = result; 로 수정한다.
+
+
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
 
