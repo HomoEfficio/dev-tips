@@ -247,13 +247,13 @@ public SqlSessionFactory sqlSessionFactoryBean(DataSource dataSource) throws Exc
 ```
 
 
-## Uncaught SyntaxError: Unexpected token o
+## Uncaught SyntaxError: Unexpected token o in JSON at position 1
 
 SpringMVC에서는 Response의 content-type이 application/json이 아닌 경우, javascript에서 JSON.parse(result)를 해줘야 result 내의 데이터에 접근할 수 있었는데,
 
-Spring Boot에서는 Response의 content-type이 application/json으로 넘어오므로, JSON.parse(result)를 실행하면 `Uncaught SyntaxError: Unexpected token o`라는 에러가 발생한다. 이유는 이미 result가 이미 JSON 객체라서 JSON.parse("[object Object]")와 같이 해석되어 object의 o에서 에러가 발생한다.
+Spring Boot에서는 Response의 content-type이 `application/json`으로 넘어오므로, `JSON.parse(result)`를 실행하면 `Uncaught SyntaxError: Unexpected token o in JSON at position 1`라는 에러가 발생한다. 이유는 이미 result가 이미 JSON 객체라서 `JSON.parse("[object Object]")`와 같이 해석되어 object의 o에서 에러가 발생한다.
 
-따라서 다음과 같이 JSON.parse()를 벗겨낸다.
+따라서 다음과 같이 `JSON.parse()`를 벗겨낸다.
 
 >var parsedData = JSON.parse(result); 를 
 >
