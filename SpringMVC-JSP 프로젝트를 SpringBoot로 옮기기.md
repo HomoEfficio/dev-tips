@@ -34,6 +34,8 @@ spring.mvc.view:
 2. JSP 파일의 물리적 저장 위치
 
 >기존의 `/WEB-INF/jsp` 에 저장했던 jsp 파일을 Spring Boot에서는 **`resources/META-INF/resources/WEB-INF/jsp`에 저장**해야 한다.
+>
+>- 참고: https://dzone.com/articles/spring-boot-with-jsps-in-executable-jars-1
 
 그리고 아래 `jar 파일 생성 후 실행 시 에러`에서 설명한 것처럼 `bootRepackage` task로 jar를 만들어야 제대로 실행된다.
 
@@ -258,6 +260,13 @@ Spring Boot에서는 Response의 content-type이 `application/json`으로 넘어
 >var parsedData = JSON.parse(result); 를 
 >
 >var parsedData = result; 로 수정한다.
+
+또는 상황에 따라 아래와 같이 할 수도 있다. 성능 관점에서 올바르지는 않지만 레거시라는 점을 감안하면 작업 관점에서는 더 효율적일 수 있다.
+
+```java
+result = JSON.stringify(result);  // 이렇게 다시 문자열화.. 전혀 아름답진 않다..
+var parsedData = JSON.parse(result);
+```
 
 
 ## The code of method _jspService(HttpServletRequest, HttpServletResponse) is exceeding the 65535 bytes limit
