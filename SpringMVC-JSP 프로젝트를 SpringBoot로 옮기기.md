@@ -260,6 +260,61 @@ Spring Boot에서는 Response의 content-type이 `application/json`으로 넘어
 >var parsedData = result; 로 수정한다.
 
 
+## The code of method _jspService(HttpServletRequest, HttpServletResponse) is exceeding the 65535 bytes limit
+
+크기가 큰 JSP의 경우 Servlet Java 파일로 전환되면 doService() 메서드 하나에 JSP의 내용이 대부분 들어가서 `code_length`가 64k를 넘을 수가 있으며 이는 JVM 스펙에 위배되어 발생하는 에러다.
+
+web.xml이 있던 시절에는 톰캣인 경우 아래와 같이 설정해주면 에러가 나지 않게 할 수 있었다.
+
+```java
+<servlet>
+    <servlet-name>jsp</servlet-name>
+    <servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+    <init-param>
+        <param-name>mappedfile</param-name>
+        <param-value>false</param-value>
+    </init-param>
+</servlet>
+```
+
+Spring Boot에서는 `JspServlet`이라는 클래스를 제공해주고 있으며, `EmbeddedServletContainerCustomizer`를 통해 임베디드 서블릿 컨테이너를 커스터마이징 할 수 있으므로 다음과 같이 설정하면 된다.
+
+```java
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.context.embedded.JspServlet;
+//... 이하 import 생략 ...
+
+@Configuration
+public class WebConfig {
+
+    @Bean
+    public EmbeddedServletContainerCustomizer customizer() {
+        return container -> {
+            JspServlet jspServlet = new JspServlet();
+            HashMap<String, String> initParams = new HashMap<>();
+            initParams.put("mappedfile", "false");
+            jspServlet.setInitParameters(initParams);
+            container.setJspServlet(jspServlet);
+        };
+
+        // Java 8 미만이라면 다음과 같이 해준다.
+//        return new EmbeddedServletContainerCustomizer() {
+//            @Override
+//            public void customize(ConfigurableEmbeddedServletContainer container) {
+//                JspServlet jspServlet = new JspServlet();
+//                HashMap<String, String> initParams = new HashMap<>();
+//                initParams.put("mappedfile", "false");
+//                jspServlet.setInitParameters(initParams);
+//                container.setJspServlet(jspServlet);
+//            }
+//        };
+    }    
+}
+
+
+```
+
+
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
 
