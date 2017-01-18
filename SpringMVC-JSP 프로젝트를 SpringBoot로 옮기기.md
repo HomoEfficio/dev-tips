@@ -255,13 +255,14 @@ SpringMVC에서는 Response의 content-type이 application/json이 아닌 경우
 
 Spring Boot에서는 Response의 content-type이 `application/json`으로 넘어오므로, `JSON.parse(result)`를 실행하면 `Uncaught SyntaxError: Unexpected token o in JSON at position 1`라는 에러가 발생한다. 이유는 이미 result가 이미 JSON 객체라서 `JSON.parse("[object Object]")`와 같이 해석되어 object의 o에서 에러가 발생한다.
 
-따라서 다음과 같이 `JSON.parse()`를 벗겨낸다.
+~~따라서 다음과 같이 `JSON.parse()`를 벗겨낸다.~~
 
->var parsedData = JSON.parse(result); 를 
->
->var parsedData = result; 로 수정한다.
+~~var parsedData = JSON.parse(result); 를~~
+~~var parsedData = result; 로 수정한다.~~
 
-또는 상황에 따라 아래와 같이 할 수도 있다. 성능 관점에서 올바르지는 않지만 레거시라는 점을 감안하면 작업 관점에서는 더 효율적일 수 있다.
+단순히 벗겨내기만 하면 `data`의 내부에 `[{...}, {...}, {...}]`와 같은 배열이 있는 경우 파싱이 안 될 수 있으므로 다음과 같이 앞에 `JSON.stringify()`를 앞에 추가해준다.
+
+성능 관점에서 올바르지는 않지만 레거시라는 점을 감안하면 작업 관점에서는 더 효율적일 수 있다.
 
 ```java
 result = JSON.stringify(result);  // 이렇게 다시 문자열화.. 전혀 아름답진 않다..
