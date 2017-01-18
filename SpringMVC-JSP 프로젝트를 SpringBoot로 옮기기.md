@@ -258,6 +258,7 @@ Spring Boot에서는 Response의 content-type이 `application/json`으로 넘어
 ~~따라서 다음과 같이 `JSON.parse()`를 벗겨낸다.~~
 
 ~~var parsedData = JSON.parse(result); 를~~
+
 ~~var parsedData = result; 로 수정한다.~~
 
 단순히 벗겨내기만 하면 `data`의 내부에 `[{...}, {...}, {...}]`와 같은 배열이 있는 경우 파싱이 안 될 수 있으므로 다음과 같이 앞에 `JSON.stringify()`를 앞에 추가해준다.
