@@ -17,20 +17,20 @@ request parameter로 넘어온 값을 쿠키에 넣어주는 서버를 만들게
 
 ## 시나리오
 
-- my.ck-server.com/set/cookie/?a_id=QWE&b_id=ZXC 와 같은 요청을 받으면
+- cookie.mydomain.com/set/cookie/?a_id=QWE&b_id=ZXC 와 같은 요청을 받으면
 - 쿠키에 a_id=QWE, b_id=ZXC 라는 값을 심는다.
 
 ## 쿠키 세팅
 
 Nginx에서는 nginx.conf에서 `add_header Set_Cookie` 명령을 쓰는 것 만으로 쿠키에 원하는 값을 넣어줄 수 있다. 대략 아래와 같은 형식이다.
 
->add_header Set-Cookie "a_id=QWE;Domain=.recopick.com;Path=/;Max-Age=31536000";
+>add_header Set-Cookie "a_id=QWE;Domain=.mydomain.com;Path=/;Max-Age=31536000";
 
 쿠키 값을 더 넣으려면 아래와 같이 추가할 수 있다.
 
->add_header Set-Cookie "a_id=QWE;Domain=.recopick.com;Path=/;Max-Age=31536000";
+>add_header Set-Cookie "a_id=QWE;Domain=.mydomain.com;Path=/;Max-Age=31536000";
 >
->add_header Set-Cookie "b_id=ZXC;Domain=.recopick.com;Path=/;Max-Age=31536000";
+>add_header Set-Cookie "b_id=ZXC;Domain=.mydomain.com;Path=/;Max-Age=31536000";
 
 ## 파라미터로 받은 값 세팅
 
@@ -38,9 +38,9 @@ Nginx에서는 nginx.conf에서 `add_header Set_Cookie` 명령을 쓰는 것 만
 
 그리고 "my $name is homo.efficio" 와 같은 식으로 문자열 interpolation이 가능하다. 따라서 아래와 같이 하면 파라미터로 받은 값을 쿠키에 저장할 수 있다.
 
->add_header Set-Cookie "a_id=@arg_a_id;Domain=.recopick.com;Path=/;Max-Age=31536000";
+>add_header Set-Cookie "a_id=@arg_a_id;Domain=.mydomain.com;Path=/;Max-Age=31536000";
 >
->add_header Set-Cookie "b_id=@arg_b_id;Domain=.recopick.com;Path=/;Max-Age=31536000";
+>add_header Set-Cookie "b_id=@arg_b_id;Domain=.mydomain.com;Path=/;Max-Age=31536000";
 
 다음과 같이 set 명령을 활용해서 default 값을 주는 것도 좋은 방법이다.
 
@@ -53,10 +53,11 @@ if ($arg_a_id) {
 if ($arg_a_id) {
     set $b_id $arg_b_id;
 }
-add_header Set-Cookie "a_id=$a_id;Domain=.recopick.com;Path=/;Max-Age=31536000";
-add_header Set-Cookie "b_id=$b_id;Domain=.recopick.com;Path=/;Max-Age=31536000";
+add_header Set-Cookie "a_id=$a_id;Domain=.mydomain.com;Path=/;Max-Age=31536000";
+add_header Set-Cookie "b_id=$b_id;Domain=.mydomain.com;Path=/;Max-Age=31536000";
 ```
 
 ## URI 처리
 
-hostname/set/cookie/ 를 처리해야 하므로 nginx.conf에 
+cookie.mydomain.com/set/cookie 를 처리해야 하므로 nginx.conf에 다음과 같이 location을 설정한다.
+@aiu
