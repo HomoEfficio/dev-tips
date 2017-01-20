@@ -325,6 +325,25 @@ public class WebConfig {
 
 ```
 
+## 파일 업로드 관련
+
+### CommonsMultipartResolver vs StandardServletMultipartResolver
+
+파일 업로드 처리에 CommonsMultipartResolver를 사용하면 request에 file이 담겨있지 않을 수 있다.
+
+>참고: (참고: http://stackoverflow.com/questions/37951569/multipartfile-is-null-when-i-use-commonsmultipartresolver-in-my-spring-boot-app)
+
+`CommonsMultipartResolver` 대신에 Spring 3.1부터 추가된 `StandardServletMultipartResolver`를 사용하면 정상적으로 file이 담겨 있는 request를 받을 수 있는데, Spring Boot에서는 MultipartResolover 관련 별다른 설정이 없다면 기본으로 `StandardServletMultipartResolver`를 사용한다.
+
+따라서, `CommonsMultipartResolver`를 별도로 설정하고 있었다면 해당 빈 설정 내용을 제거한다.
+
+### DefaultMultipartHttpServletRequest vs StandardServletMultipartResolver
+
+`DefaultMultipartHttpServletRequest`도 마찬가지로 request에 client가 보낸 정보가 담겨있지 않은 채로 넘어올 수 있다. 
+
+Spring Boot에서는 Spring 3.1부터 추가된 `StandardServletMultipartResolver`을 사용하므로, `DefaultMultipartHttpServletRequest` 대신 `StandardServletMultipartResolver`를 사용한다.
+
+
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
