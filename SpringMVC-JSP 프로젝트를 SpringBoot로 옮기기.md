@@ -344,6 +344,18 @@ public class WebConfig {
 Spring Boot에서는 Spring 3.1부터 추가된 `StandardServletMultipartResolver`을 사용하므로, `DefaultMultipartHttpServletRequest` 대신 `StandardServletMultipartResolver`를 사용한다.
 
 
+## 캐쉬
+
+Spring Boot에서는 `starter-cache`로 캐쉬도 자동 설정을 지원한다.
+
+EhCache 2.*를 사용하고 있었다면 CacheManager 관련 별도의 Bean을 설정할 필요는 없고, 두 가지만 설정해주면 된다. 
+
+1. MainApplication에 `@EnableCaching`를 추가
+
+2. `application.yml`에서 `ehcache.xml` 파일의 위치 지정
+
+    >spring.cache.ehcache.config: classpath:config/ehcache/ehcache.xml
+
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
