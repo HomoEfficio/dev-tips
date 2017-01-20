@@ -352,7 +352,7 @@ EhCache 2.*를 사용하고 있었다면 CacheManager 관련 별도의 Bean을 �
 
 1. MainApplication에 `@EnableCaching`를 추가
 
-2. `application.yml`에서 `ehcache.xml` 파일의 위치 지정
+2. `application.yml`에 아래의 내용을 추가해서 `ehcache.xml` 파일의 위치 지정
 
     >spring.cache.ehcache.config: classpath:config/ehcache/ehcache.xml
 
