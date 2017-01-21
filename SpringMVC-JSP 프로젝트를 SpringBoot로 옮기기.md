@@ -335,7 +335,7 @@ public class WebConfig {
 
 `CommonsMultipartResolver` 대신에 Spring 3.1부터 추가된 `StandardServletMultipartResolver`를 사용하면 정상적으로 file이 담겨 있는 request를 받을 수 있는데, Spring Boot에서는 MultipartResolover 관련 별다른 설정이 없다면 기본으로 `StandardServletMultipartResolver`를 사용한다.
 
-따라서, `CommonsMultipartResolver`를 별도로 설정하고 있었다면 해당 빈 설정 내용을 제거한다.
+따라서, `CommonsMultipartResolver`를 별도로 설정하고 있었다면 해당 Bean 설정 내용을 제거한다.
 
 ### DefaultMultipartHttpServletRequest vs StandardServletMultipartResolver
 
@@ -356,6 +356,52 @@ EhCache 2.*를 사용하고 있었다면 CacheManager 관련 별도의 Bean을 �
 
     >spring.cache.ehcache.config: classpath:config/ehcache/ehcache.xml
 
+
+## Interceptors
+
+`<mvc:annotation-driven>`으로 설정하던 Interceptor는 다음과 같은 방식으로 설정한다.
+
+
+```java
+@Configuration
+public class WebConfig extends WebMvcConfigurerAdapter {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
+        localeChangeInterceptor.setParamName("lang");
+        registry.addInterceptor(localeChangeInterceptor);
+
+        registry.addInterceptor(new KeyInfoBlockInterceptor(
+                        applicationContext.getBean(CommonService.class)
+                ))
+                .addPathPatterns("/application/**")
+                .addPathPatterns("/pdf/**")
+                .addPathPatterns("/sysadmin/**");
+
+        registry.addInterceptor(new MessageResolverInterceptor(
+                        applicationContext.getBean("messageResolver", MessageResolver.class),
+                        applicationContext.getBean("localeResolver", LocaleResolver.class)
+                ))
+                .addPathPatterns("/application/**")
+                .addPathPatterns("/user/**")
+                .addPathPatterns("/sysadmin/**");
+    }
+}
+```
+
+`WebMvcConfigurerAdapter` 관련 주의할 점은 `@EnableWebMvc`를 주의해서 사용해야 한다는 점이다.
+
+http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html 에 보면 다음과 같이 되어 있으니 주의하자.
+
+>If you want to keep Spring Boot MVC features, and you just want to add additional MVC configuration (interceptors, formatters, view controllers etc.) you can add your own @Configuration class of type WebMvcConfigurerAdapter, but without @EnableWebMvc.
+>
+>Spring Boot MVC의 기능을 유지한채로 interceptors formatters, view controller 등을 추가하기만 한다면 `@Configuration` 애노테이션이 적용된 클래스가 `WebMvcConfigurerAdapter`를 상속하게 하되, **@EnableWebMvc** 애노테이션을 붙이지 말아야 한다**.
+
+Spring Boot의 MVC 관련 자동 설정을 사용하지 않고 모두 자체적으로 만들때만 `@EnableWebMvc`를 주석을 사용한다. 
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
