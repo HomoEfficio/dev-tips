@@ -405,6 +405,69 @@ http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-deve
 >
 >Spring Boot의 MVC 관련 자동 설정을 사용하지 않고, **Spring MVC의 설정을 모두 자체적으로 정의하려면 @EnableWebMvc를 사용한다.** 
 
+
+# Transaction 설정
+
+기존에는 AOP를 사용해서 서비스 메서드의 위치 및 이름을 기준으로 Transaction을 설정하는 방식을 사용했었다.
+
+Spring Boot에서는 일반적으로는 서비스 클래스 또는 메서드 단위로 @Transactional 또는 @Transactional(readonly = true) 를 적용하는 방식을 사용하는데, 지금처럼 레거시를 전환할 때는 일일이 @Transactional을 붙여주는 것이 일이 많기도 하고 실수의 가능성도 높아서 기존 방식을 그대로 유지하는 것이 좋을 것 같다.
+
+XML 기반의 AOP 방식의 Transaction 설정을 하려면 다음과 같은 처리가 필요하다.
+
+1. starter-aop dependency 추가
+
+    build.gradle에 다음과 같이 추가
+
+    >compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+
+1. Auto-config에서 Transaction 관리 제외
+
+    Application.java에서 다음과 같은 애노테이션 적용
+
+    ```java
+    @EnableAutoConfiguration(exclude = {
+        // MyBatis 사용 시 DataSource 구현체를 직접 등록해야 하므로 아래 내용을 exclude 처리
+        DataSourceTransactionManagerAutoConfiguration.class,
+        DataSourceAutoConfiguration.class
+    })
+    @ImportResource({
+        "classpath:/config/spring/context-transaction.xml"
+    })
+    ```
+
+1. 다음과 같은 AOP 방식의 xml 설정 파일을 위 @ImportResource로 지정한 위치에 저장
+
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans  xmlns="http://www.springframework.org/schema/beans"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:tx="http://www.springframework.org/schema/tx"
+              xmlns:aop="http://www.springframework.org/schema/aop"
+              xsi:schemaLocation="http://www.springframework.org/schema/beans       http://www.springframework.org/schema/beans/spring-beans.xsd
+              http://www.springframework.org/schema/tx        http://www.springframework.org/schema/tx/spring-tx.xsd
+              http://www.springframework.org/schema/aop       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+        <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+            <property name="dataSource" ref="dataSource" />
+        </bean>
+        <tx:advice id="txAdvice" transaction-manager="transactionManager">
+            <tx:attributes>
+                <tx:method name="*TxNew"    propagation="REQUIRES_NEW"  rollback-for="Throwable"/>
+                <tx:method name="get*"      propagation="SUPPORTS"      read-only="true"/>
+                <tx:method name="retrieve*" propagation="SUPPORTS"      read-only="true"/>
+                <tx:method name="select*"   propagation="SUPPORTS"      read-only="true"/>
+                <tx:method name="find*"     propagation="SUPPORTS"      read-only="true"/>
+                <tx:method name="*"         propagation="REQUIRED"      rollback-for="Throwable"/>
+            </tx:attributes>
+        </tx:advice>
+
+        <aop:config>
+            <aop:pointcut id="serviceMethod" expression="execution(* kr.co.xxxxx.yyyyy.*..*Service.*(..))" />
+            <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethod"/>
+        </aop:config>
+    </beans>
+    ```
+
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
 
