@@ -403,7 +403,7 @@ http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-deve
 
 >If you want to take complete control of Spring MVC, you can add your own @Configuration annotated with @EnableWebMvc
 >
->Spring Boot의 MVC 관련 자동 설정을 사용하지 않고, **Spring MVC의 설정을 모두 자체적으로 정의하려면 `@EnableWebMvc`를 주석을 사용한다.** 
+>Spring Boot의 MVC 관련 자동 설정을 사용하지 않고, **Spring MVC의 설정을 모두 자체적으로 정의하려면 @EnableWebMvc를 사용한다.** 
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
