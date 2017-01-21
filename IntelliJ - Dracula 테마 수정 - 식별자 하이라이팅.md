@@ -84,7 +84,7 @@ http://color-themes.com/ 에는 좋은 테마가 많다. 그 중에서 가장 �
 
 위에 식별자 하이라이팅에 나온 것에서 `Code > Identifier under caret(write)`에 대한 값만 `721A20`로 해주면 아주 좋다!!
 
-![](https://i.imgur.com/SogTRQd.png)
+![](https://i.imgur.com/c127Fb8.png)
 
 
 ----
