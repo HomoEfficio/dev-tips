@@ -399,9 +399,11 @@ http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-deve
 
 >If you want to keep Spring Boot MVC features, and you just want to add additional MVC configuration (interceptors, formatters, view controllers etc.) you can add your own @Configuration class of type WebMvcConfigurerAdapter, but without @EnableWebMvc.
 >
->Spring Boot MVC의 기능을 유지한채로 interceptors formatters, view controller 등을 추가하기만 한다면 `@Configuration` 애노테이션이 적용된 클래스가 `WebMvcConfigurerAdapter`를 상속하게 하되, **@EnableWebMvc** 애노테이션을 붙이지 말아야 한다**.
+>Spring Boot MVC의 기능을 유지한채로 interceptors formatters, view controller 등을 추가할 필요가 있다면, `@Configuration` 애노테이션이 적용된 클래스가 `WebMvcConfigurerAdapter`를 상속하게 하되, **@EnableWebMvc 애노테이션을 붙이지 말아야 한다**.
 
-Spring Boot의 MVC 관련 자동 설정을 사용하지 않고 모두 자체적으로 만들때만 `@EnableWebMvc`를 주석을 사용한다. 
+>If you want to take complete control of Spring MVC, you can add your own @Configuration annotated with @EnableWebMvc
+>
+>Spring Boot의 MVC 관련 자동 설정을 사용하지 않고, **Spring MVC의 설정을 모두 자체적으로 정의하려면 `@EnableWebMvc`를 주석을 사용한다.** 
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
