@@ -467,6 +467,12 @@ XML 기반의 AOP 방식의 Transaction 설정을 하려면 다음과 같은 처
         </aop:config>
     </beans>
     ```
+    
+    
+### Java Config
+
+<tx:advice ...> 를 자바 설정으로 푸는 것이 사실 상 불가능하므로 그냥 xml 적용 
+
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
