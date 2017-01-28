@@ -59,5 +59,32 @@ add_header Set-Cookie "b_id=$b_id;Domain=.mydomain.com;Path=/;Max-Age=31536000";
 
 ## URI 처리
 
-cookie.mydomain.com/set/cookie 를 처리해야 하므로 nginx.conf에 다음과 같이 location을 설정한다.
-@aiu
+hostname/set/cookie/ 를 처리해야 하므로 nginx.conf에 다음과 같이 location 설정한다. 204는 반환할 resource가 없음을 의미하는 코드다.
+
+```
+location /set/cookie {
+    set $dmp_id -1;
+    set $recopick_id -1;
+    if ($arg_dmp_id) {
+        set $dmp_id $arg_dmp_id;
+    }
+    if ($arg_recopick_id) {
+        set $recopick_id $arg_recopick_id;
+    }
+    add_header Set-Cookie "dmp_id=$dmp_id;Domain=.recopick.com;Path=/;Max-Age=31536000";
+    add_header Set-Cookie "recopick_id=$recopick_id;Domain=.recopick.com;Path=/;Max-Age=31536000";
+    return 204;
+}
+```
+
+## Nginx 실행
+
+>sudo /usr/local/nginx/sbin/nginx
+
+## 쿠키 생성 접근 url
+
+>localhost/recopick/pixel/?dmp_id=asdf&recopick_id=qwer
+
+## Nginx 종료
+
+>sudo kill -QUIT $( cat /usr/local/nginx/logs/nginx.pid )
