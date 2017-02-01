@@ -1,39 +1,77 @@
 # Learn Clojure In 15 Minutes
 
-https://adambard.com/blog/clojure-in-15-minutes/ 에 있는 내용을 실제 해보면서 몇 가지 추가해봤다.
+https://adambard.com/blog/clojure-in-15-minutes/ 에 있는 내용을 번역, 추가 및 재구성했다.
 
 ```clojure
-; Comments start with semicolons.
+; 클로저에서 주석은 세미콜론으로 시작한다.
+;
+; 클로저는 괄호와 괄호 안에서 공백으로 구분되는 인자로 구성되는 form이라는 형태로 작성된다
+; (인자0 인자1 인자2 ...)
+;
+; form 내부의 첫번째 인자는 보통 함수이거나 매크로이고, 나머지 인자는 그 함수나 매크로의 인자다.
 
-; Clojure is written in "forms", which are just
-; lists of things inside parentheses, separated by whitespace.
-;
-; The clojure reader  assumes that the first thing is a
-; function or macro to call, and the rest are arguments.
-;
-; Here's a function that sets the current namespace:
+; 다음과 같은 form은 namespace를 test라고 설정한다.
 (ns test)
 
-; More basic examples:
+;;;;;;;;;;;;;;;;;;;;;;
+; 감을 잡기 위한 기본 예제
+;;;;;;;;;;;;;;;;;;;;;;
 
-; str will create a string out of all its arguments
-(str "Hello" " " "World") ; => "Hello World"
+; 기본 산술 연산
+(+ 1 2) ; 3
+(- 2 1) ; 1
+(* 3 2) ; 6
+(/ 4 2) ; 2
 
-; Math is straightforward
-(+ 1 1) ; => 2
-(- 2 1) ; => 1
-(* 1 2) ; => 2
-(/ 2 1) ; => 2
 
-; Equality is =
-(= 1 1) ; => true
-(= 2 1) ; => false
+; 인자가 여러 개 일 수도 있다.
+(+ 1 2.5 3) ; 6.5
+(- 4 5 6) ; -1
+(* 2 3 4) ; 24 
+(/ 2 3 4) ; 1/6 클로저에는 분수 타입이 있다.
 
-; You need not for logic, too
-(not true) ; => false
 
-; Nesting forms works as you expect
-(+ 1 (- 3 2)) ; = 1 + (3 - 2) => 2
+; 논리 연산
+(and true true) ; true
+(and false true) ; false
+(and true false) ; false
+(and true true false) ; false 인자가 3개 이상일 수도 있다.
+(and true true true) ; true
+(or true true) ; true
+(or false true) ; true
+(or true false) ; true
+(or false false) ; false
+(or false false true) ; true 인자가 3개 이상일 수도 있다.
+(not true) ; false
+(not false) ; true
+(not true true) ; clojure.lang.ArityException: Wrong number of args (2) passed to: core$not
+
+
+; 비교 연산
+(= 1 1) ; true
+(= 1 2) ; false
+(= 1 1 1) ; true
+(= 1 1 2) ; false 인자가 3개 이상일 수도 있다.
+(= 2 1 1) ; false
+(not= 1 1) ; false
+(not= 1 2) ; true
+(not= 1 2 1 3) ; true. (and (not= 1 2) (not= 2 1) (not= 1 3))와 같다.  
+(> 3 2) ; true
+(< 3 2) ; false
+(>= 3 2) ; true
+(>= 3 3) ; true
+(<= 3 2) ; false
+(<= 3 3) ; true
+(> 3 2 1 0) ; true. (and (> 3 2) (> 2 1) (> 1 0))와 같다.
+(> 3 1 2) ; false. (and (> 3 1) (> 1 2))와 같다.
+(>= 3 2.2 2.1 1) ; true. (and (>= 3 2.2) (>= 2.2 2.1) (>= 2.1 1))
+
+
+; 중첩
+(+ 1 (- 1 4)) ; = 1 + (1 - 4) = -2
+(/ 6 (- 1 4 -1)) ; = 6 / (1 - 4 - 1) = -3
+(/ 6 (- 1 4 -1) 2) ; = (6 / (1 - 4 - 1)) / 2 = -3/2
+
 
 ; Types
 ;;;;;;;;;;;;;
