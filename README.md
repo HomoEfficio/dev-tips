@@ -30,6 +30,7 @@
 - [IntelliJ에서 CoffeeScript에 BreakPoint 걸고 디버깅](https://github.com/HomoEfficio/dev-tips/blob/master/IntelliJ%EC%97%90%EC%84%9C%20CoffeeScript%EC%97%90%20BreakPoint%20%EA%B1%B8%EA%B3%A0%20%EB%94%94%EB%B2%84%EA%B9%85.md)
 - [윈도우 Git Bash에서 .sh 파일을 실행 파일로 변환하기](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%9C%88%EB%8F%84%EC%9A%B0%20Git%20Bash%EC%97%90%EC%84%9C%20.sh%20%ED%8C%8C%EC%9D%BC%EC%9D%84%20%EC%8B%A4%ED%96%89%20%ED%8C%8C%EC%9D%BC%EB%A1%9C%20%EB%B3%80%ED%99%98%20%ED%95%98%EA%B8%B0.md)
 - [SpringMVC-JSP 프로젝트를 Spring Boot로 옮기기](https://github.com/HomoEfficio/dev-tips/blob/master/SpringMVC-JSP%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC%20SpringBoot%EB%A1%9C%20%EC%98%AE%EA%B8%B0%EA%B8%B0.md)
+- [쿠키 삭제](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%BF%A0%ED%82%A4%20%EC%82%AD%EC%A0%9C.md)
 
 
 ----
