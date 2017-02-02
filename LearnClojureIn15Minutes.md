@@ -27,7 +27,7 @@ https://adambard.com/blog/clojure-in-15-minutes/ 에 있는 내용을 번역, �
 ; 인자가 여러 개 일 수도 있다.
 (+ 1 2.5 3) ; 6.5
 (- 4 5 6) ; -1
-(* 2 3 4) ; 24 
+(* 2 3 4) ; 24
 (/ 2 3 4) ; 1/6 클로저에는 분수 타입이 있다.
 
 
@@ -55,7 +55,7 @@ https://adambard.com/blog/clojure-in-15-minutes/ 에 있는 내용을 번역, �
 (= 2 1 1) ; false
 (not= 1 1) ; false
 (not= 1 2) ; true
-(not= 1 2 1 3) ; true. (and (not= 1 2) (not= 2 1) (not= 1 3))와 같다.  
+(not= 1 2 1 3) ; true. (and (not= 1 2) (not= 2 1) (not= 1 3))와 같다.
 (> 3 2) ; true
 (< 3 2) ; false
 (>= 3 2) ; true
@@ -73,26 +73,72 @@ https://adambard.com/blog/clojure-in-15-minutes/ 에 있는 내용을 번역, �
 (/ 6 (- 1 4 -1) 2) ; = (6 / (1 - 4 - 1)) / 2 = -3/2
 
 
-; Types
-;;;;;;;;;;;;;
 
-; Clojure uses Java's object types for booleans, strings and numbers.
-; Use `class` to inspect them.
-(class 1) ; Integer literals are java.lang.Long by default
-(class 1.); Float literals are java.lang.Double
-(class ""); Strings always double-quoted, and are java.lang.String
-(class false) ; Booleans are java.lang.Boolean
-(class nil); The "null" value is called nil
+
+;======================
+; 타입
+;======================
+
+; 클로저는 불리언(booean), 문자열(string), 숫자(number)는 자바의 데이터 타입을 그대로 사용
+
+; class 함수로 타입 확인 가능
+(class 1) ; java.lang.Long
+(class 1.) ; java.lang.Double
+(class "") ; java.lang.String 문자열은 언제나 쌍따옴표
+;(class '') ; 클로저에서 '는 다른 의미로 사용
+(class false) ; java.lang.Boolean
+(class nil); 클로저에서는 nil 이 자바의 null과 비슷하다.
+
+(class +) ; clojure.core$_PLUS_
 (class class) ; clojure.core$class
 (class inc) ; clojure.core$inc
 (class def) ; Macro를 class의 인자로 쓰면 에러. clojure.lang.Compiler$CompilerException: java.lang.RuntimeException: Can't take value of a macro
 
+(class (def a)) ; clojure.lang.Var
+(class :a) ; clojure.lang.Keyword
 
-; If you want to create a literal list of data, use ' to make a "symbol"
-'(+ 1 2) ; => (+ 1 2)
 
-; You can eval symbols.
-(eval '(+ 1 2)) ; => 3
+; Collections
+(class '(1 2 3)) ; clojure.lang.PersistentList
+(class [1 2 3]) ; clojure.lang.PersistentVector
+(class #{1 2 3}) ; clojure.lang.PersistentHashSet
+(class {:1 1 :b 2}) ; clojure.lang.PersistentArrayMap
+
+(coll? '(1 2 3)) ; 리스트는 collection인가? true
+(coll? [1 2 3]) ; 벡터는 collection인가? true
+(coll? #{1 2 3}) ; 셋은 collection인가? true
+(coll? {:1 1 :b 2}) ; 맵은 collection인가? true
+
+; 컬렉션 주요 함수
+(count '(0 1 2 3)) ; 4
+
+(cons 4 '(0 1 2 3)) ; (4 0 1 2 3)
+(cons 4 [0 1 2 3]) ; (4 0 1 2 3) cons의 결과는 언제나 리스트. 리스트는 언제나 맨 앞에 데이터가 추가된다.
+(cons 4 #{0 1 2 3}) ; (4 0 1 2 3) cons의 결과는 언제나 리스트. 리스트는 언제나 맨 앞에 데이터가 추가된다.
+(cons {:3 3} {:1 1, :2 2}) ; ({:3 3} [:1 1] [:2 2]) cons의 결과는 언제나 리스트. 리스트는 언제나 맨 앞에 데이터가 추가된다.
+(cons {:0 0} {:1 1, :2 2}) ; ({:0 0} [:1 1] [:2 2]) cons의 결과는 언제나 리스트. 리스트는 언제나 맨 앞에 데이터가 추가된다.
+(cons {:-1 -1} {:1 1, :2 2}) ; ({:-1 -1} [:1 1] [:2 2]) cons의 결과는 언제나 리스트. 리스트는 언제나 맨 앞에 데이터가 추가된다.
+
+(conj '(0 1 2 3) 4) ; (4 0 1 2 3) conj는 컬렉션의 타입이 보존됨. 리스트는 언제나 맨 앞에 데이터가 추가된다.
+(conj [0 1 2 3] 4) ; [0 1 2 3 4] conj는 컬렉션의 타입이 보존됨. 벡터는 언제나 맨 뒤에 데이터가 추가된다.
+(conj #{0 1 2 3} 4) ; #{0 1 2 3 4} conj는 컬렉션의 타입이 보존됨.
+(conj #{0 1 2 3} -1) ; #{0 -1 1 2 3} 셋은 키의 해쉬값에 따라 정렬됨.
+(conj {:1 1, :2 2} {:3 3}) ; {:3 3, :1 1, :2 2} conj는 컬렉션의 타입이 보존됨. 맵은 맨 앞에 데이터가 추가된다.
+(conj {:1 1, :2 2} {:0 0}) ; {:0 0, :1 1, :2 2} conj는 컬렉션의 타입이 보존됨. 맵은 맨 앞에 데이터가 추가된다.
+(conj {:1 1, :2 2} {:-1 -1}) ; {:-1 -1, :1 1, :2 2} conj는 컬렉션의 타입이 보존됨. 맵은 맨 앞에 데이터가 추가된다.
+
+(cons 3 4 '(0 1 2)) ; clojure.lang.ArityException: Wrong number of args (3) passed to: core$cons
+
+(conj '(0 1 2) 3 4) ; (4 3 0 1 2)
+(conj [0 1 2] 3 4) ; [0 1 2 3 4]
+(conj #{0 1 2} -1 3) ; #{0 -1 1 2 3}
+(conj {:0 0 :1 1 :2 2} {:-1 -1} {:3 3}) ; {:3 3, :-1 -1, :0 0, :1 1, :2 2} 
+
+(concat '(1 3) '(2 4)) ; (1 3 2 4) 
+(concat '(1 3) [2 4]) ; (1 3 2 4) 
+(concat [1 3] '(2 4)) ; (1 3 2 4)
+
+
 
 ; Collections & Sequences
 ;;;;;;;;;;;;;;;;;;;
