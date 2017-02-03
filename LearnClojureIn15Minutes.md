@@ -132,11 +132,57 @@ https://adambard.com/blog/clojure-in-15-minutes/ 에 있는 내용을 번역, �
 (conj '(0 1 2) 3 4) ; (4 3 0 1 2)
 (conj [0 1 2] 3 4) ; [0 1 2 3 4]
 (conj #{0 1 2} -1 3) ; #{0 -1 1 2 3}
-(conj {:0 0 :1 1 :2 2} {:-1 -1} {:3 3}) ; {:3 3, :-1 -1, :0 0, :1 1, :2 2} 
+(conj {:0 0 :1 1 :2 2} {:-1 -1} {:3 3}) ; {:3 3, :-1 -1, :0 0, :1 1, :2 2}
 
-(concat '(1 3) '(2 4)) ; (1 3 2 4) 
-(concat '(1 3) [2 4]) ; (1 3 2 4) 
+(concat '(1 3) '(2 4)) ; (1 3 2 4)
+(concat '(1 3) [2 4]) ; (1 3 2 4)
 (concat [1 3] '(2 4)) ; (1 3 2 4)
+(concat [1 3] [2 4]) ; (1 3 2 4)
+
+
+(first '(0 1 2)) ; 0
+(rest '(0 1 2)) ; (1 2)
+(first (rest '(0 1 2))) ; 1
+
+(peek '(0 1 2)) ; 0 리스트나 큐에서는 first는 peek과 같다.
+(pop '(0 1 2)) ; (1 2) 리스트나 큐에서는 pop은 첫번째 아이템을 제외한 나머지 아이템을 리스트나 큐로 반환
+
+(first '()) ; nil
+(rest '()) ; ()
+(rest '(0)) ; ()
+
+(peek '()) ; nil
+(pop '()) ; java.lang.IllegalStateException: Can't pop empty list
+(pop '(0)) ; ()
+
+
+(first [0 1 2]) ; 0
+(rest [0 1 2]) ; (1 2)
+(first (rest [0 1 2])) ; 1
+
+(peek [0 1 2]) ; 0 리스트나 큐에서는 first는 peek과 같다.
+(pop '(0 1 2)) ; (1 2) 리스트나 큐에서는 pop은 첫번째 아이템을 제외한 나머지 아이템을 리스트나 큐로 반환
+
+(first '()) ; nil
+(rest '()) ; ()
+(rest '(0)) ; ()
+
+(peek '()) ; nil
+(pop '()) ; java.lang.IllegalStateException: Can't pop empty list
+(pop '(0)) ; ()
+
+
+
+(.indexOf '(3 5 7) 1) ; -1
+(.indexOf '(3 5 7) 3) ; 0(rest '()) ; ()
+(.indexOf '(3 5 7) 5) ; 1
+(nth '(3 5 7) 0) ; 3
+(nth '(3 5 7) 2) ; 7
+(nth '(3 5 7) -1) ; java.lang.IndexOutOfBoundsException
+(nth '(3 5 7) -3) ; java.lang.IndexOutOfBoundsException
+
+
+
 
 
 
