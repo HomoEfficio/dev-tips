@@ -28,7 +28,8 @@ https://adambard.com/blog/clojure-in-15-minutes/ 에 있는 내용을 번역, �
 (+ 1 2.5 3) ; 6.5
 (- 4 5 6) ; -1
 (* 2 3 4) ; 24
-(/ 2 3 4) ; 1/6 클로저에는 분수 타입이 있다.
+(/ 2 3 4) ; 1/6 클로저에는 비율(분수) 타입이 있다.
+(+ 0 1 nil) ; java.lang.NullPointerException nil은 null 비슷하다.
 
 
 ; 논리 연산
@@ -41,6 +42,7 @@ https://adambard.com/blog/clojure-in-15-minutes/ 에 있는 내용을 번역, �
 (or false true) ; true
 (or true false) ; true
 (or false false) ; false
+(or nil false) ; false nil은 논리연산에서는 NullPointerException이 발생하지 않고 false로 평가된다.
 (or false false true) ; true 인자가 3개 이상일 수도 있다.
 (not true) ; false
 (not false) ; true
@@ -65,6 +67,7 @@ https://adambard.com/blog/clojure-in-15-minutes/ 에 있는 내용을 번역, �
 (> 3 2 1 0) ; true. (and (> 3 2) (> 2 1) (> 1 0))와 같다.
 (> 3 1 2) ; false. (and (> 3 1) (> 1 2))와 같다.
 (>= 3 2.2 2.1 1) ; true. (and (>= 3 2.2) (>= 2.2 2.1) (>= 2.1 1))
+(> 0 nil) ; java.lang.NullPointerException nil은 비교 연산에서도 NullPointerExcpetion 발생
 
 
 ; 중첩
@@ -103,126 +106,194 @@ https://adambard.com/blog/clojure-in-15-minutes/ 에 있는 내용을 번역, �
 (class [1 2 3]) ; clojure.lang.PersistentVector
 (class #{1 2 3}) ; clojure.lang.PersistentHashSet
 (class {:1 1 :b 2}) ; clojure.lang.PersistentArrayMap
+(class {:1 1, :b 2}) ; clojure.lang.PersistentArrayMap 쉼표는 써도 되고 안 써도 되지만 맵에서만 관례적으로 쉼표로 구분한다.
 
 (coll? '(1 2 3)) ; 리스트는 collection인가? true
 (coll? [1 2 3]) ; 벡터는 collection인가? true
 (coll? #{1 2 3}) ; 셋은 collection인가? true
-(coll? {:1 1 :b 2}) ; 맵은 collection인가? true
+(coll? {:1 1, :b 2}) ; 맵은 collection인가? true
 
+;======================
 ; 컬렉션 주요 함수
+;======================
 (count '(0 1 2 3)) ; 4
+(count [0 1 2 3]) ; 4
+(count #{0 1 2 3}) ; 4
+(count {:0 0, :1 1, :2 2, :3 3}) ; 4 맵은 키-값 쌍의 개수를 반환한다.
+
 
 (cons 4 '(0 1 2 3)) ; (4 0 1 2 3)
-(cons 4 [0 1 2 3]) ; (4 0 1 2 3) cons의 결과는 언제나 리스트. 리스트는 언제나 맨 앞에 데이터가 추가된다.
-(cons 4 #{0 1 2 3}) ; (4 0 1 2 3) cons의 결과는 언제나 리스트. 리스트는 언제나 맨 앞에 데이터가 추가된다.
-(cons {:3 3} {:1 1, :2 2}) ; ({:3 3} [:1 1] [:2 2]) cons의 결과는 언제나 리스트. 리스트는 언제나 맨 앞에 데이터가 추가된다.
-(cons {:0 0} {:1 1, :2 2}) ; ({:0 0} [:1 1] [:2 2]) cons의 결과는 언제나 리스트. 리스트는 언제나 맨 앞에 데이터가 추가된다.
-(cons {:-1 -1} {:1 1, :2 2}) ; ({:-1 -1} [:1 1] [:2 2]) cons의 결과는 언제나 리스트. 리스트는 언제나 맨 앞에 데이터가 추가된다.
-
-(conj '(0 1 2 3) 4) ; (4 0 1 2 3) conj는 컬렉션의 타입이 보존됨. 리스트는 언제나 맨 앞에 데이터가 추가된다.
-(conj [0 1 2 3] 4) ; [0 1 2 3 4] conj는 컬렉션의 타입이 보존됨. 벡터는 언제나 맨 뒤에 데이터가 추가된다.
-(conj #{0 1 2 3} 4) ; #{0 1 2 3 4} conj는 컬렉션의 타입이 보존됨.
-(conj #{0 1 2 3} -1) ; #{0 -1 1 2 3} 셋은 키의 해쉬값에 따라 정렬됨.
-(conj {:1 1, :2 2} {:3 3}) ; {:3 3, :1 1, :2 2} conj는 컬렉션의 타입이 보존됨. 맵은 맨 앞에 데이터가 추가된다.
-(conj {:1 1, :2 2} {:0 0}) ; {:0 0, :1 1, :2 2} conj는 컬렉션의 타입이 보존됨. 맵은 맨 앞에 데이터가 추가된다.
-(conj {:1 1, :2 2} {:-1 -1}) ; {:-1 -1, :1 1, :2 2} conj는 컬렉션의 타입이 보존됨. 맵은 맨 앞에 데이터가 추가된다.
-
+(cons 4 [0 1 2 3]) ; (4 0 1 2 3)
+(cons 4 #{0 1 2 3}) ; (4 0 1 2 3)
+(cons {:3 3} {:1 1, :2 2}) ; ({:3 3} [:1 1] [:2 2])
+(cons {:0 0} {:1 1, :2 2}) ; ({:0 0} [:1 1] [:2 2])
+(cons {:-1 -1} {:1 1, :2 2}) ; ({:-1 -1} [:1 1] [:2 2])
+(cons '(4 5) '(0 1 2 3)) ; ((4 5) 0 1 2 3)
+(cons '(4 5) [0 1 2 3]) ; ((4 5) 0 1 2 3)
+(cons [4 5] '(0 1 2 3)) ; ([4 5] 0 1 2 3)
+(cons [4 5] [0 1 2 3]) ; ([4 5] 0 1 2 3)
+(cons [4 5] #{0 1 2 3}) ; ([4 5] 0 1 2 3)
+(cons '(4 5) {:0 0, :1 1, :2 2}) ; ((4 5) [:0 0] [:1 1] [:2 2])
 (cons 3 4 '(0 1 2)) ; clojure.lang.ArityException: Wrong number of args (3) passed to: core$cons
+; (cons 원소A 컬렉션B)은 
+;   컬렉션B를 시퀀스C로 만든 후에 원소A를 시퀀스C의 맨 앞에 추가한 새로운 시퀀스D를 반환한다.
+;     컬렉션B가 맵이라면 하나의 키-값 쌍은 하나의 벡터E로 변환되고, 맵 전체는 벡터E를 원소로 하는 시퀀스C로 변환된다. {:0 0, :1 1, :2 2} -> ([:0 0] [:1 1] [:2 2])
+;     원소A가 컬렉션이더라도 A를 분해하지 않고, 시퀀스로 만들지도 않고 그대로 하나의 원소로 취급한다.
+;   2개의 인자만 허용한다.
 
-(conj '(0 1 2) 3 4) ; (4 3 0 1 2)
-(conj [0 1 2] 3 4) ; [0 1 2 3 4]
+
+(conj '(0 1 2 3) 4) ; (4 0 1 2 3)
+(conj [0 1 2 3] 4) ; [0 1 2 3 4]
+(conj #{0 1 2 3} 4) ; #{0 1 2 3 4}
+(conj #{0 1 2 3} -1) ; #{0 -1 1 2 3}
+(conj {:1 1, :2 2} {:3 3}) ; {:3 3, :1 1, :2 2}
+(conj {:1 1, :2 2} {:0 0}) ; {:0 0, :1 1, :2 2}
+(conj {:1 1, :2 2} {:-1 -1}) ; {:-1 -1, :1 1, :2 2} conj는 컬렉션의 타입이 보존됨. 맵은 맨 앞에 데이터가 추가된다.
+(conj '(0 1 2 3) '(4 5)) ; ((4 5) 0 1 2 3)
+(conj '(0 1 2 3) [4 5]) ; ([4 5] 0 1 2 3)
+(conj [0 1 2] '(3 4)) ; [0 1 2 (3 4)]
+(conj [0 1 2] [3 4] '(5 6)) ; [0 1 2 [3 4] (5 6)]
+(conj [0 1 2] 3 '(4 5) [6 7] #{8 9} {:10 10, :11 11, :12 {:13 13}}) ; 
 (conj #{0 1 2} -1 3) ; #{0 -1 1 2 3}
-(conj {:0 0 :1 1 :2 2} {:-1 -1} {:3 3}) ; {:3 3, :-1 -1, :0 0, :1 1, :2 2}
+(conj {:0 0, :1 1, :2 2} {:-1 -1} {:3 3}) ; {:3 3, :-1 -1, :0 0, :1 1, :2 2}
+; (conj 컬렉션A 원소B)은 
+;   컬렉션A의 타입을 그대로 보존하면서 컬렉션A의 데이터 추가 위치 특성(리스트는 맨 앞, 벡터는 맨 뒤, 셋은 해쉬값에 따라, 맵은 맨 앞)에 따라 원소B를 추가한 새로운 컬렉션C를 반환한다.
+;   원소B가 컬렉션이더라도 A를 분해하지 않고 그대로 하나의 원소로 취급한다.
+;   2개 이상의 인자도 허용한다.
+
 
 (concat '(1 3) '(2 4)) ; (1 3 2 4)
 (concat '(1 3) [2 4]) ; (1 3 2 4)
 (concat [1 3] '(2 4)) ; (1 3 2 4)
 (concat [1 3] [2 4]) ; (1 3 2 4)
+(concat '(1 3) [2 4] #{6 5}) ; (1 3 2 4 5 6)
+(concat '(1 3) [2 4] #{6 5} {:7 7, :8 8}) ; (1 3 2 4 5 6 [:7 7] [:8 8])
+(concat '(1 3) [2 4] #{6 5} {:7 7, :8 8, :9 {:10 10}}) ; (1 3 2 4 5 6 [:7 7] [:8 8] [:9 {:10 10}])
+(concat '(1 3) 0) ; java.lang.IllegalArgumentException: Don't know how to create ISeq from: java.lang.Long
+; (concat 컬렉션A 컬렉션B 컬렉션C ...)은
+;   인자로 받은 컬렉션을 각각 시퀀스a, 시퀀스b, 시퀀스c, ...로 변환한 후 
+;   시퀀스a, 시퀀스b, 시퀀스c, ...의 모든 원소를 하나의 lazy 시퀀스Z에 담아 반환한다.
+
+
+(seq '(1 2 3)) ; (1 2 3)
+(seq? '(1 2 3)) ; true
+(class (seq '(1 2 3))) ; clojure.lang.PersistentList
+
+(seq [1 2 3]) ; (1 2 3)
+(seq? [1 2 3]) ; false
+(class (seq [1 2 3])) ; clojure.lang.PersistentVector$ChunkedSeq
+
+(seq #{1 2 3}) ; (1 2 3)
+(seq? #{1 2 3}) ; false
+(class (seq #{1 2 3})) ; clojure.lang.APersistentMap$KeySeq
+
+(seq {:1 1, :2 2, :3 3}) ; 
+(seq? {:1 1, :2 2, :3 3}) ; false
+(class (seq {:1 1, :2 2, :3 3})) ; clojure.lang.PersistentArrayMap$Seq
+
+(coll? (seq '(1 2 3))) ; true
+(coll? (seq [1 2 3])) ; true
+(coll? (seq #{1 2 3})) ; true
+(coll? (seq {:1 1, :2 2, :3 3})) ; true       
+; 시퀀스는 출력되는 형태는 리스트와 같지만 시퀀스는 추상(abstration, 자바의 인터페이스 개념)이고, 
+; 리스트는 시퀀스의 구현체 중 하나다.
+; 시퀀스도 컬렉션이다.
+
 
 
 (first '(0 1 2)) ; 0
+(last '(0 1 2)) ; 2
 (rest '(0 1 2)) ; (1 2)
 (first (rest '(0 1 2))) ; 1
-
-(peek '(0 1 2)) ; 0 리스트나 큐에서는 first는 peek과 같다.
-(pop '(0 1 2)) ; (1 2) 리스트나 큐에서는 pop은 첫번째 아이템을 제외한 나머지 아이템을 리스트나 큐로 반환
-
 (first '()) ; nil
+(last '()) ; nil
+(last '(0)) ; 0
 (rest '()) ; ()
 (rest '(0)) ; ()
-
-(peek '()) ; nil
-(pop '()) ; java.lang.IllegalStateException: Can't pop empty list
-(pop '(0)) ; ()
-
 
 (first [0 1 2]) ; 0
+(last [0 1 2]) ; 2
 (rest [0 1 2]) ; (1 2)
 (first (rest [0 1 2])) ; 1
+(first []) ; nil
+(last []) ; nil
+(last [0]) ; 0
+(rest []) ; ()
+(rest [0]) ; ()
 
-(peek [0 1 2]) ; 0 리스트나 큐에서는 first는 peek과 같다.
-(pop '(0 1 2)) ; (1 2) 리스트나 큐에서는 pop은 첫번째 아이템을 제외한 나머지 아이템을 리스트나 큐로 반환
+(first #{0 1 2}) ; 0
+(last #{0 1 2}) ; 2
+(rest #{0 1 2}) ; (1 2)
+(first (rest #{0 1 2})) ; 1
+(first #{}) ; nil
+(last #{}) ; nil
+(last #{0}) ; 0
+(rest #{}) ; ()
+(rest #{0}) ; ()
 
-(first '()) ; nil
-(rest '()) ; ()
-(rest '(0)) ; ()
+(first {:0 0 :1 1 :2 2}) ; [:0 0]
+(last {:0 0 :1 1 :2 2}) ; [:2 2]
+(rest {:0 0 :1 1 :2 2}) ; ([:1 1] [:2 2])
+(first (rest {:0 0 :1 1 :2 2})) ; [:1 1]
+(first {}) ; nil
+(last {}) ; nil
+(last {:0 0}) ; [:0 0]
+(rest {}) ; ()
+(rest {:0 0}) ; ()
+; (first 컬렉션A)는 인자인 컬렉션A를 시퀀스B로 변환하고 시퀀스B의 첫번째 원소를 반환한다.
+; (last 컬렉션A)는 인자인 컬렉션A를 마지막 원소를 반환한다. 컬렉션의 길이가 길수록 오래 걸린다.
+;   아래에서 나오지만 벡터에서는 last를 쓰는 것보다 peek을 사용하는 것이 빠르다.
+; (rest는 컬렉션A)는 인자인 컬렉션A를 시퀀스B로 변환하고 시퀀스B의 첫번째 원소를 제외한 나머지 시퀀스C를 반환한다.
 
+
+; Stack 함수
+(peek '(0 1 2)) ; 0
+(pop '(0 1 2)) ; (1 2)
 (peek '()) ; nil
 (pop '()) ; java.lang.IllegalStateException: Can't pop empty list
 (pop '(0)) ; ()
 
+(peek [0 1 2]) ; 2
+(pop [0 1 2]) ; [0 1]
+(peek []) ; nil
+(pop []) ; java.lang.IllegalStateException: Can't pop empty vector
+(pop [0]) ; []
+
+(peek #{0 1 2}) ; java.lang.ClassCastException: clojure.lang.PersistentHashSet cannot be cast to clojure.lang.IPersistentStack 
+(pop #{0 1 2}) ; java.lang.ClassCastException: clojure.lang.PersistentHashSet cannot be cast to clojure.lang.IPersistentStack 
+
+(peek {:0 0 :1 1 :2 2}) ; java.lang.ClassCastException: clojure.lang.PersistentArrayMap cannot be cast to clojure.lang.IPersistentStack 
+(pop {:0 0 :1 1 :2 2}) ; java.lang.ClassCastException: clojure.lang.PersistentArrayMap cannot be cast to clojure.lang.IPersistentStack 
+; peek은 원소 하나를 반환한다.
+;   리스트나 큐에서는 first와 같고, 벡터에서는 last와 같은 값을 반환하지만 훨씬 효율적이다.
+; pop은 peek에서 반환되는 원소 하나를 제외한 나머지 컬렉션을 새로운 컬렉션으로 반환한다.
+; 셋이나 맵은 Stack 타입의 컬렉션이 아니므로 peek이나 pop을 사용할 수 없다.
 
 
-(.indexOf '(3 5 7) 1) ; -1
-(.indexOf '(3 5 7) 3) ; 0(rest '()) ; ()
-(.indexOf '(3 5 7) 5) ; 1
+(.indexOf '(3 5 7) 1) ; -1 찾는 원소가 없으면 -1 반환
+(.indexOf '(3 5 7) 3) ; 0
+(.indexOf [3 5 7] 5) ; 1
+(.indexOf #{3 5 7} 7) ; java.lang.IllegalArgumentException: No matching method found: indexOf for class clojure.lang.PersistentHashSet
+(.indexOf {:3 3 :5 5 :7 7} 7) ; java.lang.IllegalArgumentException: No matching method found: indexOf for class clojure.lang.PersistentArrayMap
 (nth '(3 5 7) 0) ; 3
-(nth '(3 5 7) 2) ; 7
+(nth [3 5 7] 1) ; 5
+(nth #{3 5 7} 2) ; java.lang.UnsupportedOperationException: nth not supported on this type: PersistentHashSet
+(nth {:3 3, :5 5, :7 7} 1) ; java.lang.UnsupportedOperationException: nth not supported on this type: PersistentArrayMap
 (nth '(3 5 7) -1) ; java.lang.IndexOutOfBoundsException
-(nth '(3 5 7) -3) ; java.lang.IndexOutOfBoundsException
+(nth [3 5 7] 3) ; java.lang.IndexOutOfBoundsException
+; .indexOf나 nth는 리스트와 벡터에만 사용 가능
+
+
+(range) ; (0 1 2 3 ...) 0을 포함한 무한한 자연수를 원소로 하는 lazy 시퀀스
+(range 3) ; (0 1 2)
+(range 3 7) ; (3 4 5 6)
+(range 3 11 3) ; (3 6 9) (range start end step)
+(take 2 (range 3 11 3)) ; (3 6)
+; range와 take는 모두 lazy 시퀀스를 반환
 
 
 
-
-
-
-; Collections & Sequences
-;;;;;;;;;;;;;;;;;;;
-
-; Vectors and Lists are java classes too!
-(class [1 2 3]); => clojure.lang.PersistentVector
-(class '(1 2 3)); => clojure.lang.PersistentList
-
-; A list would be written as just (1 2 3), but we have to quote
-; it to stop the reader thinking it's a function.
-; Also, (list 1 2 3) is the same as '(1 2 3)
-
-; Both lists and vectors are collections:
-(coll? '(1 2 3)) ; => true
-(coll? [1 2 3]) ; => true
-
-; Only lists are seqs.
-(seq? '(1 2 3)) ; => true
-(seq? [1 2 3]) ; => false
-
-; Seqs are an interface for logical lists, which can be lazy.
-; "Lazy" means that a seq can define an infinite series, like so:
-(range 4) ; => (0 1 2 3)
-(range) ; => (0 1 2 3 4 ...) (an infinite series)
-(take 4 (range)) ;  (0 1 2 3)
-
-; Use cons to add an item to the beginning of a list or vector
-(cons 4 [1 2 3]) ; => (4 1 2 3)
-(cons 4 '(1 2 3)) ; => (4 1 2 3)
-
-; Use conj to add an item to the beginning of a list,
-; or the end of a vector
-(conj [1 2 3] 4) ; => [1 2 3 4]
-(conj '(1 2 3) 4) ; => (4 1 2 3)
-
-; Use concat to add lists or vectors together
-(concat [1 2] '(3 4)) ; => (1 2 3 4)
-
+;================================
 ; Use filter, map to interact with collections
 (map inc [1 2 3]) ; => (2 3 4)
 (filter even? [1 2 3]) ; => (2)
