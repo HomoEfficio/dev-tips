@@ -292,21 +292,73 @@ https://adambard.com/blog/clojure-in-15-minutes/ 에 있는 내용을 번역, �
 ; range와 take는 모두 lazy 시퀀스를 반환
 
 
+(inc 1) ; 2
+(dec 0) ; -1
+(map inc '(0 1 2)) ; (1 2 3)
+(map dec [0 1 2]) ; (-1 0 1)
+(map inc #{0 1 2}) ; (1 2 3)
+(map inc {:0 0, :1 1, :2 2}) ; java.lang.ClassCastException: clojure.lang.MapEntry cannot be cast to java.lang.Number
+; (map 함수A 컬렉션B)는 
+
+(filter even? '(0 1 2)) ; (0 2)
+(filter even? (map inc [0 1 2])) ; (2)
+(map dec (filter even? #{0 1 2})) ; (-1 1)
+
+(reduce + '(1 2 3 4)) ; 10 (+ (+ (+ 1 2) 3) 4)
+(reduce - [1 2 3 4]) ; -8 (- (- (- 1 2) 3) 4)
+(reduce * #{1 2 3 4}) ; 24 (* (* (* 1 2) 3) 4)
+(reduce / '(1 2 3 4)) ; 1/24 (/ (/ (/ 1 2) 3) 4)
+(reduce + {:1 1, :2 2, :3 3, :4 4}) ; java.lang.ClassCastException: clojure.lang.MapEntry cannot be cast to java.lang.Number
+(reduce conj '() #{1 2 3}) ; (3 2 1) (conj (conj (conj '() 1) 2) 3)
+(reduce conj [] '(1 2 3)) ; [1 2 3] (conj (conj (conj [] 1) 2) 3)
+(reduce conj #{} [1 2 3 2 4]) ; #{1 2 3 4} (conj (conj (conj (conj (conj #{} 1) 2) 3) 2) 4)
+(reduce conj {} {:1 1, :2 2, :3 3}) ; {:3 3, :2 2, :1 1} (conj (conj (conj #{} {:1 1}) {:2 2}) {:3 3})
+(reduce conj #{} {:1 1, :2 2, :3 3}) ; #{[:2 2] [:3 3] [:1 1]}
+(reduce conj [] {:1 1, :2 2, :3 3}) ; [[:1 1] [:2 2] [:3 3]]
+(reduce conj '() {:1 1, :2 2, :3 3}) ; ([:3 3] [:2 2] [:1 1])
+
+
+
+; if
+(if true "a" "b") ; "a"
+(if false "a" "b") ; "b"
+(if (if false false true) "a" "b") ; "a"
+
+; when
+(when true "a") ; "a"
+(when false "a") ; nil
+
+; cond
+(cond true "a"
+      true "b"
+      true "c") ; "a"
+(cond false "a"
+      true "b"
+      true "c") ; "b"
+(cond false "a"
+      false "b"
+      true "c") ; "c"
+(cond false "a"
+      false "b"
+      false "c") ; nil
+
+; case
+(case 1
+    1 "a"
+    2 "b"
+    3 "c") ; "a"
+(case 2
+    1 "a"
+    2 "b"
+    3 "c") ; "b"
+(case 3
+    1 "a"
+    2 "b"
+    3 "c") ; "c"
+
+
 
 ;================================
-; Use filter, map to interact with collections
-(map inc [1 2 3]) ; => (2 3 4)
-(filter even? [1 2 3]) ; => (2)
-
-; Use reduce to reduce them
-(reduce + [1 2 3 4])
-; = (+ (+ (+ 1 2) 3) 4)
-; => 10
-
-; Reduce can take an initial-value argument too
-(reduce conj [] '(3 2 1))
-; = (conj (conj (conj [] 3) 2) 1)
-; => [3 2 1]
 
 ; Functions
 ;;;;;;;;;;;;;;;;;;;;;
