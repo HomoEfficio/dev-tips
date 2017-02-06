@@ -375,6 +375,14 @@ https://adambard.com/blog/clojure-in-15-minutes/ 에 있는 내용을 번역, �
 (my-var-args-func 1 2 3 4 5) ; 5
 
 
+; 맵 destruction
+; 아래와 같이 {함수내에서사용할이름1 :인자로받은맵의key1 함수내에서사용할이름2 :인자로받은맵의key2}의 형식으로 받는다.  
+(defn map-destruction [{k1 :name k2 :email}]
+  (str "k1: " k1)
+  (str "K2: " k2))
+(map-destruction {:name "abc" :email 123}) ; "k2: 123"
+
+
 
 
 ;================================
