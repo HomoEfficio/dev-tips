@@ -14,6 +14,11 @@
 - myFun은 arg1, arg2, ... 을 토대로 자신의 함수 내용을 실행하고 그 결과 또는 에러를 callback에 파라미터로 전달하며 callback 호출
 - callback은 myFun의 인자로 전달되지만, callback의 내용이 myFun의 수행에 입력값으로 사용된다기 보다 myFun이 수행되고 나서 결과적으로 callback이 수행됨
 
+### return callback(err, result)
+
+- callback()의 결과를 반환한다는 의미가 아니라, callback 실행 후 해당 함수에서의 실행을 종료하고 제어를 반환한다는 의미
+- 따라서 callback에서 무엇을 반환하는지 굳이 들여다보지 않아도 됨
+
 ## async
 
 ### async.waterfall(fnArray, [callback])
