@@ -58,7 +58,7 @@ WebGL에서의 Hello, World는 기본 Primitive인 삼각형 그리기다.
 
 ### 코드 해부
 
-<a href="https://github.com/projectBS/S63-WebGL/blob/master/Day2-Triangle.html" target="_blank">github.com/projectBS/S63-WebGL/blob/master/Day2-Triangle.html</a>
+<a href="https://github.com/HomoEfficio/dev-tips/blob/master/WebGL%20-%20Triangle-source.html" target="_blank">https://github.com/HomoEfficio/dev-tips/blob/master/WebGL%20-%20Triangle-source.html</a>
 
 #### 상태 머신
 
