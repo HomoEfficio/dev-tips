@@ -17,6 +17,7 @@
 ### return callback(err, result)
 
 - callback()의 결과를 반환한다는 의미가 아니라, callback 실행 후 해당 함수에서의 실행을 종료하고 제어를 반환한다는 의미
+    - 경우에 따라 return을 안 붙여주면 Callback already executed 비슷한 에러가 발생할 수 있음
 - 따라서 callback에서 무엇을 반환하는지 굳이 들여다보지 않아도 됨
 
 ## async
