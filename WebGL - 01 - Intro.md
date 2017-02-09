@@ -1,4 +1,4 @@
-# ProjectBS S63 WebGL - Day 1
+# WebGL - 01 - Intro
 
 ## 프로그래밍 일반
 
