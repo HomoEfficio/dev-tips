@@ -24,8 +24,9 @@
 
 ### async.waterfall(fnArray, [callback])
 
-fnArray는 [fn1, fn2, fn3] 이라고 하면
+참고: http://hatemogi.com/holiday-project-day-10/
 
+fnArray는 [fn1, fn2, fn3] 이라고 하면
 
 #### fn1
 
