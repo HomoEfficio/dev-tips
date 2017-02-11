@@ -318,11 +318,23 @@ https://adambard.com/blog/clojure-in-15-minutes/ 에 있는 내용을 번역, �
 (reduce conj '() {:1 1, :2 2, :3 3}) ; ([:3 3] [:2 2] [:1 1])
 
 
-
+; do
+; java의 {} 블록과 유사
+(do (println "a")
+    (println "b")) ; a 출력 후 다음 줄에 b출력
+    
 ; if
 (if true "a" "b") ; "a"
 (if false "a" "b") ; "b"
 (if (if false false true) "a" "b") ; "a"
+(if true
+  (do (println "a")
+      (println "b"))
+  (print "c")) ; a 출력 후 다음 줄에 b출력
+(if false
+  (do (println "a")
+      (println "b"))
+  (print "c")) ; c 출력
 
 ; when
 (when true "a") ; "a"
