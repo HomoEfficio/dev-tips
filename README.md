@@ -31,6 +31,7 @@
 - [윈도우 Git Bash에서 .sh 파일을 실행 파일로 변환하기](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%9C%88%EB%8F%84%EC%9A%B0%20Git%20Bash%EC%97%90%EC%84%9C%20.sh%20%ED%8C%8C%EC%9D%BC%EC%9D%84%20%EC%8B%A4%ED%96%89%20%ED%8C%8C%EC%9D%BC%EB%A1%9C%20%EB%B3%80%ED%99%98%20%ED%95%98%EA%B8%B0.md)
 - [SpringMVC-JSP 프로젝트를 Spring Boot로 옮기기](https://github.com/HomoEfficio/dev-tips/blob/master/SpringMVC-JSP%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC%20SpringBoot%EB%A1%9C%20%EC%98%AE%EA%B8%B0%EA%B8%B0.md)
 - [쿠키 삭제](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%BF%A0%ED%82%A4%20%EC%82%AD%EC%A0%9C.md)
+- [간헐적인 Too many connetions 에러](https://github.com/HomoEfficio/dev-tips/blob/master/%EA%B0%84%ED%97%90%EC%A0%81%EC%9D%B8%20Too%20many%20connections%20%EC%97%90%EB%9F%AC.md)
 
 
 ----
