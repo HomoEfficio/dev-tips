@@ -47,3 +47,44 @@ http://www.4clojure.com/problem/28 에 나온 문제다.
 따라서 이 중에서 `sequential?`이 거짓인 애들만 골라내면(`(filter (compliment sequential?))`) 결과적으로 flatten이 된다!!
 
 참고로, [여기](https://mwfogleman.github.io/posts/20-12-2014-flatcat.html)에 flatten에 대한 몇 가지 해법과 좋은 설명이 있다.
+
+여기저기서 긁어모은 몇 가지 풀이 사례를 나열하면 다음과 같다.
+
+```clojure
+(fn [s]
+  (loop [t s]
+    (if (some sequential? t)
+      (recur (reduce (fn [acc v]
+                (if (sequential? v)
+                  (concat acc v)
+                  (concat acc [v])
+                  ))
+              []
+              t))
+      t)
+    )
+)
+
+(fn flat [coll]
+  (lazy-seq
+    (when-let [s (seq coll)]
+      (if (sequential? (first s))
+        (concat (flat (first s)) (flat (rest s)))
+        (cons (first s) (flat (rest s)))))))
+
+
+(fn flat [s]
+  (let [f (first s)
+        r (rest s)]
+    (cond (empty? s) nil
+          ((complement sequential?) f) (cons f (flat r))
+          :else (concat (flat f) (flat r)))))
+
+
+(fn [coll]
+  (letfn [(fltn [x]
+            (if (coll? x)
+                (reduce #(concat % (fltn %2)) '() x)
+                (list x)))]
+  (fltn coll)))
+```
