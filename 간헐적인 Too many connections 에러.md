@@ -182,3 +182,17 @@ spring.datasource:
     tomcat.initial-size: 3  # 적절한 수치로 조정
     tomcat.validation-query: SELECT 1
 ```
+
+참고로 Spring Boot의 application.properties의 파라미터 아래의 링크를 참고하면 된다.
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+
+위에서 `spring.datasource.tomcat.*= # Tomcat datasource specific settings`을 application.yml에서 사용하려면 `*`에 들어갈 이름은 https://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html 에 camelCase로 표시된 속성을 kebab-case로 바꿔서 application.yml에 명시해주면 된다.
+
+----
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+<a href='https://www.facebook.com/hanmomhanda' target='_blank'>HomoEfficio</a>가 작성한 이 저작물은
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">크리에이티브 커먼즈 저작자표시-비영리-동일조건변경허락 4.0 국제 라이선스</a>에 따라 이용할 수 있습니다.
+
