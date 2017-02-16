@@ -48,7 +48,7 @@ http://www.4clojure.com/problem/28 에 나온 문제다.
 
 참고로, [여기](https://mwfogleman.github.io/posts/20-12-2014-flatcat.html)에 flatten에 대한 몇 가지 해법과 좋은 설명이 있다.
 
-여기저기서 긁어모은 몇 가지 풀이 사례를 나열하면 다음과 같다.
+여기저기서 긁어 모은 몇 가지 풀이 사례를 나열하면 다음과 같다.
 
 ```clojure
 (fn [s]
