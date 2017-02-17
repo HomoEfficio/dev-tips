@@ -1,4 +1,4 @@
-# Java 8 람다 관련 정리
+# Java 8 람다 관련 Spec 정리
 
 ## method signature
 
