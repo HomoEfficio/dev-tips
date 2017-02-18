@@ -79,7 +79,7 @@ while(!ft.isDone()) {
     // isDone()은 asyncChannle.read() 작업이 완료되지 않았다면 false를 바로 리턴해준다.
     // isDone()은 물어보면 대답을 해줄 뿐 작업 완료를 스스로 신경쓰지 않고,
     //     isDone()을 호출하는 쪽에서 계속 isDone()을 호출하면서 작업 완료를 신경쓴다.
-    // asyncChannle.read()이 완료되지 않아도 여기에서 다른 작없 수행 가능 
+    // asyncChannle.read()이 완료되지 않아도 여기에서 다른 작업 수행 가능 
 }
 
 // 작업이 완료되면 작업 결과에 따른 다른 작업 처리
