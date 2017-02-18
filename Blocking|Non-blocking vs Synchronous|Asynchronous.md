@@ -100,7 +100,13 @@ while(!ft.isDone()) {
 # 정리
 
 >- **Blocking/NonBlocking은 호출되는 함수가 바로 리턴하느냐 마느냐가 관심사**
+>    - 바로 리턴하지 않으면 Blocking
+>    - 바로 리턴하면 NonBlocking
+>    
 >- **Synchronous/Asynchronous는 호출되는 함수의 작업 완료 여부를 누가 신경쓰냐가 관심사**
+>    - 함수의 작업 완료를 호출한 함수가 신경쓰면 Synchronous
+>    - 함수의 작업 완료를 호출된 함수가 신경쓰면 Asynchronous
+>    
 >- 성능 상으로 가장 유리한 모델은 Async-NonBlocking 모델이다.
 
 ![Imgur](http://i.imgur.com/gKDoKbs.png)
