@@ -32,7 +32,7 @@
 - [SpringMVC-JSP 프로젝트를 Spring Boot로 옮기기](https://github.com/HomoEfficio/dev-tips/blob/master/SpringMVC-JSP%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC%20SpringBoot%EB%A1%9C%20%EC%98%AE%EA%B8%B0%EA%B8%B0.md)
 - [쿠키 삭제](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%BF%A0%ED%82%A4%20%EC%82%AD%EC%A0%9C.md)
 - [간헐적인 Too many connetions 에러](https://github.com/HomoEfficio/dev-tips/blob/master/%EA%B0%84%ED%97%90%EC%A0%81%EC%9D%B8%20Too%20many%20connections%20%EC%97%90%EB%9F%AC.md)
-- [욕 나오는 자바 스펙 - 메서드 ](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%9A%95%20%EB%82%98%EC%98%A4%EB%8A%94%20%EC%9E%90%EB%B0%94%20%EC%8A%A4%ED%8E%99%20-%20%EB%A9%94%EC%84%9C%EB%93%9C%20%EC%8B%9C%EA%B7%B8%EB%84%88%EC%B2%98.md)
+- [욕 나오는 자바 스펙 - 메서드 시그너처](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%9A%95%20%EB%82%98%EC%98%A4%EB%8A%94%20%EC%9E%90%EB%B0%94%20%EC%8A%A4%ED%8E%99%20-%20%EB%A9%94%EC%84%9C%EB%93%9C%20%EC%8B%9C%EA%B7%B8%EB%84%88%EC%B2%98.md)
 
 
 ----
