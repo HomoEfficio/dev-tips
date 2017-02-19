@@ -93,7 +93,7 @@ interface G extends G1, G2 {}
 >
 >A lambda expression is compatible in an assignment context, invocation context, or casting context with a target type T if T is a functional interface type (§9.8) and the expression is congruent with the function type of the ground target type derived from T.
 >
->(대략) 어떤 람다식이, 함수형 인터페이스 T에서 유도된 groun target type의 함수 타입과 합동(congruent)이면, 그 람다식은 할당, 호출, 캐스팅에 대해 함수형 인터페이스 T와 호환된다.
+>(대략) 어떤 람다식이, 함수형 인터페이스 T에서 유도된 ground target type의 함수 타입과 합동(congruent)이면, 그 람다식은 할당, 호출, 캐스팅에 대해 함수형 인터페이스 T와 호환된다.
 
 대략 써도 알아먹기 쉽지 않은데, 일단 욕 해주고 싶은 부분은 람다식의 타입에 대한 정의나 람다식의 타입은 어떤 요소로 구성되는 설명도 없이, 합동이면 콜~ 이라고 얘기하고는 합동 조건에 대해 설명을 이어간다는 점이다.
 
