@@ -134,9 +134,9 @@ Node.js 쪽에서 callback 지옥을 헤치면서 Async로 전진해와도, 결�
 
 Nonblocking과 Async를 관심사 관점이 아니라 다음과 같이 동작 관점에서도 구분할 수 있다는 좋은 의견도 있었다.
 
->-NonBlocking은 제어문 수준에서 지체없이 반환하는 것
+>- NonBlocking은 제어문 수준에서 지체없이 반환하는 것
 >
->-Asynchronous는 별도의 쓰레드로 빼서 실행하고, 완료되면 호출하는 측에 알려주는 것
+>- Asynchronous는 별도의 쓰레드로 빼서 실행하고, 완료되면 호출하는 측에 알려주는 것
 
 # 읽을 거리
 
