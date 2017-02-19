@@ -111,7 +111,7 @@ Node.js 쪽에서 callback 지옥을 헤치면서 Async로 전진해와도, 결�
 
 >Blocking-Async는 별다른 장점이 없어서 일부러 사용할 필요는 없지만, 
 >
->**NonBlocking-Async로 방식을 쓰는데 그 중 하나라도 Blocking으로 동작하는 놈이 포함되어 있다면 의도하지 않게 Blocking-Async로 동작**할 수 있다.
+>**NonBlocking-Async 방식을 쓰는데 그 과정 중에 하나라도 Blocking으로 동작하는 놈이 포함되어 있다면 의도하지 않게 Blocking-Async로 동작**할 수 있다.
 
 
 # 정리
