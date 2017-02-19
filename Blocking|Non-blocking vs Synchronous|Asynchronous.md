@@ -140,6 +140,7 @@ Nonblocking과 Async를 관심사 관점이 아니라 다음과 같이 동작 �
 
 # 읽을 거리
 
+- https://www.lightbend.com/blog/7-ways-washing-dishes-and-message-driven-reactive-systems
 - https://slipp.net/questions/367
 - http://www.slideshare.net/unitimes/sync-asyncblockingnonblockingio
 - http://djkeh.github.io/articles/Boost-application-performance-using-asynchronous-IO-kor/
