@@ -34,7 +34,7 @@
 
 ## 함수 타입
 
-메서드의 타입을 `메서드 타입`으로 규정할 수 있다면, 함수형 인터페이스의 타입은 어떻게 정할 수 있을까? 이에 대한 답이 바로 `함수 타입(Function type)`, 구체적으로는 함수형 인터페이스의 함수 타입(Function type of a functional interface)이다.
+메서드의 타입을 `메서드 타입`으로 규정할 수 있다면, 함수형 인터페이스의 어떤 타입과 비교할 수 있을 것이다. 그 어떤 타입이 무엇일까? 이에 대한 답이 바로 `함수 타입(Function type)`, 구체적으로는 함수형 인터페이스의 함수 타입(Function type of a functional interface)이다.
 
 `함수 타입`은 [JLS 9.9](https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.9)에 기술되어 있다.
 
@@ -42,7 +42,7 @@
 >
 >The function type of a functional interface I is a method type (§8.2) that can be used to override (§8.4.8) the abstract method(s) of I.
 >
->(대략) 함수형 인터페이스 I 함수 타입은 I의 추상 메서드를 override 하는데 사용되는 메서드 타입을 의미한다.
+>(대략) 함수형 인터페이스 I의 함수 타입은 I의 추상 메서드를 override 하는데 사용되는 메서드 타입을 의미한다.
 >
 >The function type of I consists of the following:
 >
@@ -97,7 +97,7 @@ interface G extends G1, G2 {}
 
 대략 써도 알아먹기 쉽지 않은데, 일단 욕 해주고 싶은 부분은 람다식의 타입에 대한 정의나 람다식의 타입은 어떤 요소로 구성되는 설명도 없이, 합동이면 콜~ 이라고 얘기하고는 합동 조건에 대해 설명을 이어간다는 점이다.
 
-암튼 완전히 정확하지는 않더라도 쉬운 이해를 위해 단순화하면, **람다식은 타입 파라미터와 throws 절을 사용할 수 없으므로, 결국 인자 타입과 반환 타입 만으로 함수형 인터페이스와의 호환성을 검사**할 수 있다.
+암튼 완전히 정확하지는 않더라도 쉬운 이해를 위해 단순화하면, **람다식은 언어적으로 타입 파라미터를 사용할 수 없으므로, 결국 인자 타입과 반환 타입, 예외 타입으로 함수형 인터페이스와의 호환성을 검사**할 수 있다.
 
 ## 메서드 레퍼런스 타입
 
@@ -113,7 +113,7 @@ interface G extends G1, G2 {}
 
 ## 호환성 비교
 
-자 이제 람다와 메서드 레퍼런스의 `메서드 타입`과 함수형 인터페이스의 `함수 타입`이 호환성 비교의 기준이라는 건 알게 되었다. 이제 실질적인 호환성 비교, 그러니까 앞에서 congruent라고 표현된 과정을 알아보자. congruent와 함께 ground target type이라는 용어도 나왔는데, 이것부터 먼저 알아보자.
+자 이제 람다와 메서드 레퍼런스의 `메서드 타입`과 함수형 인터페이스의 `함수 타입`이 호환성 비교의 기준이라는 건 알게 되었다. 이제 실질적인 호환성 비교, 그러니까 앞에서 합동(congruent) 여부를 검사하는 과정을 알아보자. congruent와 함께 ground target type이라는 용어도 나왔는데, 이것부터 먼저 알아보자.
 
 ### ground target type derived from functional interface
 
@@ -160,6 +160,70 @@ interface G extends G1, G2 {}
 >    - A가 인자 타입이 명시되지 않은 람다라면, 인자의 타입 추론 결과가 B의 함수 타입의 인자 타입과 같아야 한다.
 >- A의 반환 타입은 B의 함수 타입의 반환 타입에 할당될 수 있어야 한다.
 
+글로만 보면 별로 와닿지 않으니 코드로 요점만 짚어보면 다음과 같다.
+
+```java
+// Integer가 Object를 상속하고 있으므로
+// Object obj = new Integer(3); 은 가능하지만,
+// 아래와 같이 람다식의 인자 파라미터가 명시된 경우
+// 함수 타입의 인자 파라미터와 람다식의 인자 파라미터 타입은 할당 가능이 아니라 일치 해야만 한다.
+Consumer<Object> consumer1 = (Integer i) -> System.out.println(i);  // 컴파일 에러(Incompatible parameter type)
+
+// 람다식의 인자 파라미터가 명시되지 않으면 추론에 의해 아래와 같은 람다 사용이 가능하다.
+Consumer<Object> consumer2 = (i) -> System.out.println(i);  // 이건 가능(cf가 Object로 추론됨)
+
+// 람다식의 반환 타입 Integer은 Object에 할당가능하므로 아래와 같은 람다 사용이 가능하다.
+Callable<Object> callable1 = () -> new Integer(1);
+
+// 함수 타입의 반환 타입이 void인 Runnable에 statement expression이 아닌 단순한 값 3은 사용 불가
+Runnable runnable1 = () -> 3;  // 컴파일 에러(Bad return type)
+
+// Runnable의 함수 타입의 반환 타입은 void지만, statement expression이 해당하는 인스턴스 생성식은 사용 가능
+Runnable runnable2 = () -> new Integer(3);
+
+// 함수 타입에 타입 파라미터가 있는 경우 람다를 쓸 수 없다.
+interface Lister {
+    <T> List<T> makeList();
+}
+Lister lister = () -> ...어쩌라고... // 람다식은 언어 차원에서 타입 파라미터가 지원되지 않는다.
+
+// 함수 타입에 throws가 있는 경우
+interface WithThrows {
+    Integer makeTrouble() throws IOException;
+}
+// 함수 타입에 throws IOException 이 있으므로
+// 아래와 같이 body에서 IOException을 던지는 람다 사용 가능
+WithThrows withThrows1 = () -> {
+    if (1 == 1)
+        throw new IOException();
+    return new Integer(3);
+};
+// 함수 타입의 throws IOException을 상속한 EOFException을 던지는 람다도 사용 가능
+WithThrows withThrows2 = () -> {
+    if (1 == 1)
+        throw new EOFException();
+    return new Integer(1);
+};
+// 함수 타입의 throws IOException을 상속하지 않은 예외를 던지는 람다는 사용 불가
+WithThrows withThrows3 = () -> {
+    if (1 == 1)
+        throw new InterruptedException();  // 컴파일 에러(Unhandled exception)
+    return new Integer(1);
+};
+// body에서 Unchecked Exception을 던지는 람다는 함수 타입의 예외 타입과 관계 없이 사용 가능 
+WithThrows withThrows4 = () -> {
+    if (1 == 1)
+        throw new RuntimeException();
+    return new Integer(1);
+};
+// body에서 Unchecked Exception을 던지는 람다는 함수 타입에 throws 가 없더라도 사용 가능
+Runnable runnable3 = () -> {
+    if (1 != 1)
+        throw new RuntimeException();
+    System.out.println("Unchecked Exception in a lambda body is OK");
+};
+```
+
 ### 메서드 레퍼런스 타입과 함수 타입의 합동
 
 메서드 레퍼런스 타입과 함수 타입의 합동은 [JLS 15.13.2](https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.13.2)에 설명되어 있다. 분량 상 원문 생략하고 간단하게 합동 조건을 요약하면,
@@ -168,7 +232,7 @@ interface G extends G1, G2 {}
 >
 >메서드 레퍼런스 타입과 함수 타입이 합동이려면 다음의 모든 조건을 만족해야 한다.
 >
->-함수 타입이 컴파일 시점에 메서드 레퍼런스가 지칭하는 메서드의 선언부를 식별할 수 있어야 한다.
+>- 함수 타입이 컴파일 시점에 메서드 레퍼런스가 지칭하는 메서드의 선언부를 식별할 수 있어야 한다.
 >
 >- 다음 둘 중의 하나가 참이어야 한다.
 >
@@ -184,6 +248,29 @@ interface G extends G1, G2 {}
 >
 >- 함수 타입의 반환값이 void 이거나, 
 >- 반환값이 void가 아니라면, 컴파일 시점에 메서드 레퍼런스가 가리키는 메서드 선언부에 명시된 반환 타입이 함수 타입의 반환 타입에 할당될 수 있어야 한다.
+
+글로만 보면 별로 와닿지 않으니 역시 코드로 요점만 짚어보면 다음과 같다.
+
+```java
+// 함수 타입의 반환 타입이 void이고, 메서드 레퍼런스의 반환 타입도 void
+Runnable runnable4 = System.out::println;
+
+// 함수 타입의 반환 타입이 void이면, 반환 타입이 void가 아닌 메서드 레퍼런스도 사용 가능
+Integer integer2 = new Integer(2);
+Runnable runnable6 = integer2::doubleValue;
+
+// 함수 타입에 타입 파라미터가 있는 경우에도 메서드 레퍼런스 사용 가능
+interface Lister {
+    <T> List<T> makeList();
+}
+Lister lister1 = ArrayList::new;
+
+// 함수 타입의 반환 타입이 void가 아니고, 반환 타입이 함수 타입의 반환 타입에 할당 불가능한 레퍼런스는 사용 불가
+Integer integer1 = new Integer(1);
+Callable<Integer> callable2 = integer1::doubleValue;  // 컴파일 에러(Bad return type)
+// 함수 타입의 반환 타입이 void가 아니고, 반환 타입이 함수 타입의 반환 타입에 할당 가능한 메서드 레퍼런스는 가능
+Callable<Object> callable3 = integer1::doubleValue;
+```
 
 
 ## 람다와 메서드 레퍼런스의 차이
@@ -243,6 +330,33 @@ statement expression의 예는 다음과 같다.
 // 반환 타입이 void인 accept(T t) 메서드를 가진 Consumer<T>에 할당 가능
 Consumer<String> b = s -> list.add(s);   
 ```
+
+# 정리
+
+>- **메서드의 타입**은 **타입 파라미터, 인자 타입, 반환 타입, 예외 타입**으로 구성된다.
+>
+>- **함수 타입**은 함수형 인터페이스 I의 함수 타입은 I의 추상 메서드를 override 하는데 사용되는 메서드 타입을 의미
+>
+>- 따라서 **람다나 메서드 레퍼런스의 메서드 타입과 함수형 인터페이스의 함수 타입의 호환성**을 검사하면, 어떤 람다나 메서드 레퍼런스가 어떤 함수형 인터페이스 대신 사용될 수 있는지 판단할 수 있다.
+>
+>- 람다식은 메서드 타입의 4가지 구성 요소 중 문법적으로 타입 파라미터를 지정할 수 없게 되어 있으므로, 인자 타입과 반환 타입, 예외 타입이 함수 타입의 인자 타입과 반환 타입, 예외 타입과 호환, 즉, 개수가 같고 타입이 호환되어야 한다.
+>
+>    - 타입 파라미터가 있는 함수 타입은 람다식과 호환되지 않는다.
+>    
+>    - 인자 타입이 명시된 람다는 인자 타입과 함수 타입의 인자 타입이 **동일**해야 한다.
+>    
+>    - 람다식의 반환 타입과 예외 타입은 함수 타입의 반환 타입과 예외 타입에 각각 할당 가능하면 동일하지 않아도 호환된다.
+>    
+>    - 람다식의 body가 할당, 전위덧셈, 전위뺄셈, 전위덧셈, 전위뺄셈, 메서드호출, 클래스인스턴스생성, 이렇게 7개 중의 하나에 해당한다면 void 호환성이 적용된다.
+>
+>- 메서드 레퍼런스는 메서드 타입의 4가지 구성 요소 모두가 함수 타입의 구성 요소 4가지 모두와 호환되어야 한다.
+>
+>    - 함수 타입이 컴파일 시점에 메서드 레퍼런스가 가리키는 메서드의 선언부를 식별할 수 있어야 한다.
+>
+>    - 함수 타입의 반환값이 void 이거나,
+>     
+>    - 반환값이 void가 아니라면, 컴파일 시점에 메서드 레퍼런스가 가리키는 메서드 선언부에 명시된 반환 타입이 함수 타입의 반환 타입에 할당될 수 있어야 한다.
+
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
