@@ -85,6 +85,8 @@ while(!ft.isDone()) {
 // 작업이 완료되면 작업 결과에 따른 다른 작업 처리
 ```
 
+참고로 위 코드는 NonBlocking-Sync라는 특성 이해에 집중할 수 있도록 간략화한 예제고, 실무적으로는 `Future`보다는 `CompletableFuture`를 쓰거나, `Future`를 쓴다면 위의 while 블록은 별도의 쓰레드로 빼서 실행하는 것이 좋다.
+
 ## Blocking-Async
 
 이제 마지막 조각인 Blocking-Async다.
@@ -96,6 +98,21 @@ while(!ft.isDone()) {
 ![Imgur](http://i.imgur.com/zKF0CgK.png)
 
 이런 사례는 사실 생각해봐도 떠오르는 게 없다. 어차피 Blocking되어 대기하는 것 외에는 다른 일도 못 하게된 마당에, 그냥 작업 끝날 때까지 기다렸다가 결과를 반환 받아서 처리하는 Blocking-Sync 방식과 성능적으로 거의 차이가 나지 않을 것 같은 방식이라서가 아닐까..
+
+글을 올리고 보니 다른 분께서 좋은 의견을 주셨다. Blocking-Async는 별로 이점이 없어서 일부러 이 방식을 사용할 필요가 없기는 한데, 의도하지 않게 Blocking-Async로 동작하는 경우가 있다고 한다. 원래는 NonBlocking-Async를 추구하다가 의도와는 다르게 실제로는 Blocking-Async가 되어버리는 경우라고 하는데 그것은 바로..
+
+**Blocking-Async의 대표적인 케이스가 Node.js와 MySQL의 조합**이라고 한다.
+
+Node.js 쪽에서 callback 지옥을 헤치면서 Async로 전진해와도, 결국 DB 작업 호출 시에는 MySQL에서 제공하는 드라이버를 호출하게 되는데, 이 드라이버가 Blocking 방식이라고 한다. 
+
+이건 사실 Node.js 뿐아니라 Java의 JDBC도 마찬가지다. 다만 Node.js가 싱글 쓰레드 루프 기반이라 멀티 쓰레드 기반인 Java의 Servlet 컨테이너보다 문제가 더 두드러져 보일 뿐, Blocking-Async라는 근본 원인은 같다.
+
+그래서 Blocking-Async는 이렇게 정리해도 좋을 것 같다.
+
+>Blocking-Async는 별다른 장점이 없어서 일부러 사용할 필요는 없지만, 
+>
+>**NonBlocking-Async로 방식을 쓰는데 그 중 하나라도 Blocking으로 동작하는 놈이 포함되어 있다면 의도하지 않게 Blocking-Async로 동작**할 수 있다.
+
 
 # 정리
 
@@ -111,14 +128,21 @@ while(!ft.isDone()) {
 
 ![Imgur](http://i.imgur.com/gKDoKbs.png)
 
+# 기타
+
+공유하면 좋은 건 피드백을 받을 수 있다는 것이다.
+
+Nonblocking과 Async를 관심사 관점이 아니라 다음과 같이 동작 관점에서도 구분할 수 있다는 좋은 의견도 있었다.
+
+>-NonBlocking은 제어문 수준에서 지체없이 반환하는 것
+>-Asynchronous는 별도의 쓰레드로 빼서 실행하고, 완료되면 호출하는 측에 알려주는 것
+
 # 읽을 거리
 
 - https://slipp.net/questions/367
 - http://www.slideshare.net/unitimes/sync-asyncblockingnonblockingio
 - http://djkeh.github.io/articles/Boost-application-performance-using-asynchronous-IO-kor/
 - https://www.ibm.com/developerworks/library/l-async/
-
-
 
 
 ----
