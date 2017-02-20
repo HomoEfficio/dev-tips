@@ -12,8 +12,9 @@
 
 ![IBM developerWorks의 단순화된 리눅스 I/O 모델 매트릭스](https://www.ibm.com/developerworks/library/l-async/figure1.gif)
 
-위 그림만으로도 딱 와닿는다면 이 글은 더 이상 읽을 필요가 없다. ^^
-와닿지 않는다면 조금 더 읽어보자.
+위 그림만으로도 딱 와닿는다면 이미 Blocking-NonBlocking-Synchronous-Asynchronous의 구분에 대한 감이 있다고 볼 수 있으므로, 이 글은 더 이상 읽을 필요가 없다. ^^
+
+와닿지 않는다면 조금 더 읽어보자. 하지만 앞으로 전개될 내용을 보면서, 이젠 너무 오래되어 버린 위의 IBM 그림(특히 I/O Multiplexing이 Blocking-Async로 구분되어 있는 점)에 구애 받을 필요는 없다. 
 
 # 익숙한 것
 
@@ -97,7 +98,7 @@ while(!ft.isDone()) {
 
 ![Imgur](http://i.imgur.com/zKF0CgK.png)
 
-이런 사례는 사실 생각해봐도 떠오르는 게 없다. 어차피 Blocking되어 대기하는 것 외에는 다른 일도 못 하게된 마당에, 그냥 작업 끝날 때까지 기다렸다가 결과를 반환 받아서 처리하는 Blocking-Sync 방식과 성능적으로 거의 차이가 나지 않을 것 같은 방식이라서가 아닐까..
+이런 사례는 사실 생각해봐도 금방 떠오르는 게 없다. 어차피 Blocking되어 대기하는 것 외에는 다른 일도 못 하게된 마당에, 그냥 작업 끝날 때까지 기다렸다가 결과를 반환 받아서 처리하는 Blocking-Sync 방식과 성능적으로 거의 차이가 나지 않을 것 같은 방식이라서가 아닐까..
 
 글을 올리고 보니 다른 분께서 좋은 의견을 주셨다. Blocking-Async는 별로 이점이 없어서 일부러 이 방식을 사용할 필요가 없기는 한데, 의도하지 않게 Blocking-Async로 동작하는 경우가 있다고 한다. 원래는 NonBlocking-Async를 추구하다가 의도와는 다르게 실제로는 Blocking-Async가 되어버리는 경우라고 하는데 그것은 바로..
 
@@ -138,7 +139,42 @@ Nonblocking과 Async를 관심사 관점이 아니라 다음과 같이 동작 �
 >
 >- Asynchronous는 별도의 쓰레드로 빼서 실행하고, 완료되면 호출하는 측에 알려주는 것
 
-# 읽을 거리
+다음과 같이 입장(?)을 통해 구분한다는 의견도 좋아 보인다.
+
+>- Blocking/NonBlocking은 호출한 입장에서의 특징
+>- Sync/Async는 처리되는 방식의 특징
+
+## I/O Multiplexing
+
+아래 댓글에도 있지만, 페북 등 다른 채널을 통해서도 역시나 I/O Multiplexing에 대한 피드백이 많았다. 사실 어느 정도 예상을 하고 의도적으로 I/O Multiplexing에 대한 언급을 하지 않았는데, 그로 인해 오히려 의도하지 않은 부작용이 있는 것 같아서 지금이라도 언급을 하고 넘어가는 것이 좋을 것 같다.
+
+결론부터 말하면, I/O Multiplexing이 IBM의 그림에서 Blocking-Async로 분류되어 있는 것에 동의하지 않는다.
+
+일단 범위를 작게 해서 I/O Multiplexing 중에서 `select()` 호출 부분에만 국한해서 살펴보자.
+[리눅스 man페이지의 select](http://man7.org/linux/man-pages/man2/select.2.html)의 description에는 아래와 같이 기술되어 있다.
+
+>select() and pselect() allow a program to monitor multiple file
+descriptors, **waiting** until one or more of the file descriptors become
+"ready" for some class of I/O operation (e.g., input possible).  A
+file descriptor is considered ready if it is possible to perform a
+corresponding I/O operation (e.g., read(2) without blocking, or a
+sufficiently small write(2))
+>
+>(대략) 하나 이상의 fd가 ready 상태가 될 때까지 wating, 즉, 기다린다. 
+
+이렇게 보면 **OS 수준에서 `select()` 자체는 기다리는 Sync 방식**이라고 할 수 있다.
+
+그럼 Blocking/NonBlocking은 어느쪽이냐 하는 문제가 남는데, 이는 구현에 따라 달라진다. Java를 예로 들면 API 문서에 [select()](https://docs.oracle.com/javase/8/docs/api/java/nio/channels/Selector.html#select--)는 Blocking 방식이라고 기술되어 있으며, [selectNow()](https://docs.oracle.com/javase/8/docs/api/java/nio/channels/Selector.html#selectNow--)는 NonBlocking 방식이라고 기술되어 있다.
+
+따라서 **I/O Multiplexing 중에서 select의 호출만을 떼어서 말하면 일단 OS 수준에서 Sync 방식인 것은 자명하지만, Sync-Blocking인지 Sync-NonBlocking 인지는 구현 방식에 따라 달라지므로 어느 한 쪽이 맞다고 하기 어렵다**.
+
+하지만, 보통 I/O Multiplexing이라고 하면 미시적으로 select의 호출 부분만을 말하는 것이 아니라, select의 대상이 되는 channel과의 연계까지도 포함하여 언급하려는 의도가 있다고 볼 수 있다. 그리고 이 과정에서의 channel은 NonBlocking 채널을 말한다. 
+
+그 근거는 앞에서 인용한 리눅스 man 페이지의 내용 중에 '읽기에 대해 blocking이 없는 I/O 연산과, 충분히 작은 쓰기 I/O 연산을 수행할 수 있을 때, 해당 fd를 select 될 수 있는 ready 상태로 간주한다'는 내용이 있고, 실무적으로도 Java를 예로 들면 `channel.configureBlocking(false);`와 같이 채널을 NonBlocking으로 설정한다는 점이다.   
+
+따라서 **일반적으로 I/O Multiplexing은 Sync방식의 select와 NonBlocking 방식의 channel이 연계되는 Sync-NonBlocking 방식이라고 해도 틀리지 않게 된다**.
+
+# 더 읽을 거리
 
 - https://www.lightbend.com/blog/7-ways-washing-dishes-and-message-driven-reactive-systems
 - https://slipp.net/questions/367
