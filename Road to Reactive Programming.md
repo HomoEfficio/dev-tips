@@ -11,7 +11,9 @@
         - Read-only contaier vs Promise is writable
             - http://thswave.github.io/java/netty/2015/06/14/future-vs-promise.html
 - Java 7 ForkJoinPool
+    - http://www.baeldung.com/java-fork-join
 - Java 8 CompletableFuture
+    - http://www.baeldung.com/java-completablefuture
     - Promise가 CompletableFuture다? 
 - Blocking, Non-Blocking, Sync, Async
     - http://www.programmr.com/blogs/difference-between-asynchronous-and-non-blocking
