@@ -37,8 +37,14 @@ git clone git://github.com/tpope/vim-fireplace.git
 
 ## 플러그인 설정 후
 
-원래는 흑백으로 밋밋하게 나오는데, 위 플러그인을 설치한 후에는 다음과 같이 나오고, 자동 들여쓰기도 지원이 된다.
+원래는 흑백으로 밋밋하게 나오는데, 
 
-![Imgur](http://i.imgur.com/k3966iz.png)
+![Imgur](http://i.imgur.com/JtmOPUT.png)
+
+위 플러그인을 설치한 후에는 다음과 같이 나오고, 자동 들여쓰기도 지원이 된다.
+
+![Imgur](http://i.imgur.com/HazmLMj.png)
+
+
 
 
