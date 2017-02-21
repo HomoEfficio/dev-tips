@@ -34,6 +34,7 @@
 - [간헐적인 Too many connetions 에러](https://github.com/HomoEfficio/dev-tips/blob/master/%EA%B0%84%ED%97%90%EC%A0%81%EC%9D%B8%20Too%20many%20connections%20%EC%97%90%EB%9F%AC.md)
 - [욕 나오는 자바 스펙 - 메서드 시그너처](https://github.com/HomoEfficio/dev-tips/blob/master/%EC%9A%95%20%EB%82%98%EC%98%A4%EB%8A%94%20%EC%9E%90%EB%B0%94%20%EC%8A%A4%ED%8E%99%20-%20%EB%A9%94%EC%84%9C%EB%93%9C%20%EC%8B%9C%EA%B7%B8%EB%84%88%EC%B2%98.md)
 - [Blocking|Non-blocking vs Synchronous|Asynchronous](https://github.com/HomoEfficio/dev-tips/blob/master/Blocking%7CNon-blocking%20vs%20Synchronous%7CAsynchronous.md)
+- [URL Safe Base64](https://github.com/HomoEfficio/dev-tips/blob/master/URL%20Safe%20Base64.md)
 
 
 ----
