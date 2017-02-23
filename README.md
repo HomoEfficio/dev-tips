@@ -39,6 +39,7 @@
 - [WebGL - 01 - Intro](https://github.com/HomoEfficio/dev-tips/blob/master/WebGL%20-%2001%20-%20Intro.md)
 - [WebGL - 02 - Hello Triangle](https://github.com/HomoEfficio/dev-tips/blob/master/WebGL%20-%2002%20-%20Hello%20Triangle.md)
 - [WebGL - 03 - Basic Concepts](https://github.com/HomoEfficio/dev-tips/blob/master/WebGL%20-%2003%20-%20Basic%20Concepts.md)
+- [쿠키 - Nginx로 쿠키 만들기](https://github.com/HomoEfficio/dev-tips/blob/master/Nginx%EB%A1%9C%20Cookie%20%EB%A7%8C%EB%93%A4%EA%B8%B0.md)
 
 
 ----
