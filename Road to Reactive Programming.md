@@ -15,6 +15,9 @@
 - Java 8 CompletableFuture
     - http://www.baeldung.com/java-completablefuture
     - Promise가 CompletableFuture다? 
+- Java 9 Concurrency
+    - https://www.voxxed.com/blog/2016/10/java-9-series-concurrency-updates/
 - Blocking, Non-Blocking, Sync, Async
+    - http://homoefficio.github.io/2017/02/19/Blocking-NonBlocking-Synchronous-Asynchronous/
     - http://www.programmr.com/blogs/difference-between-asynchronous-and-non-blocking
 
