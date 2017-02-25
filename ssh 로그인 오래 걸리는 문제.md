@@ -5,7 +5,7 @@
 `ssh -vvv 로그인@서버호스트이름`으로 실행하면 디버그 로그가 나오는데 대략 다음과 같은 곳에서 한참을 머문다.
 
 ```
-\debug3: load_hostkeys: loaded 1 keys from server01
+debug3: load_hostkeys: loaded 1 keys from server01
 debug3: hostkeys_foreach: reading file "/Users/1003604/.ssh/known_hosts"
 debug3: record_hostkey: found key type ECDSA in file /Users/1003604/.ssh/known_hosts:37
 debug3: load_hostkeys: loaded 1 keys from 192.168.56.101
