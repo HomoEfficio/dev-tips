@@ -6,6 +6,7 @@
     - Raw Runnable
 - Java 5 Concurrency API
     - ExecutorService
+        - http://winterbe.com/posts/2015/04/07/java8-concurrency-tutorial-thread-executor-examples/
     - Future
         - Future.get()은 blocking이다.
         - Read-only contaier vs Promise is writable
@@ -15,6 +16,7 @@
 - Java 8 CompletableFuture
     - http://www.baeldung.com/java-completablefuture
     - Promise가 CompletableFuture다? 
+    - http://www.deadcoderising.com/java8-writing-asynchronous-code-with-completablefuture/
 - Java 9 Concurrency
     - https://www.voxxed.com/blog/2016/10/java-9-series-concurrency-updates/
 - Blocking, Non-Blocking, Sync, Async
