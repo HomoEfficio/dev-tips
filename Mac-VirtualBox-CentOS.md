@@ -25,7 +25,7 @@
 
 ## 가상 머신 부팅 후
 
-최초 부팅 후에 `환영합니다` 화면에서 한국어를 선택하고, 그 다음 키보드 배치 선택 화면에서 **`한국어(Hangul)** 선택
+최초 부팅 후에 `환영합니다` 화면에서 한국어를 선택하고, 그 다음 키보드 배치 선택 화면에서 **`한국어(Hangul)`** 선택
 
 ## 한영 전환
 
@@ -102,7 +102,6 @@ http://solatech.tistory.com/277 여기에 링크되어 있는 pdf에 VirtualBox�
 ## 가상 머신 부팅 후 설정
 
 가상 머신 부팅 후에는 결론적으로 호스트 이름과 /etc/hosts 파일만 설정하면 된다.
-
 
 나머지는 설정해 줄 필요 없다.
 
@@ -182,4 +181,10 @@ NAT와 Host-only 모두 활성화 시킨 상태에서 인터넷 연결, 호스�
 
 - `ssh bigdata@server01`, `ssh bigdata@server02`, `ssh bigdata@server03`으로 각 가상 머신에 연결 가능한지 확인
 
+## Cloudera Manager
 
+### 클러스터 설치 과정 에러
+
+- 클러스터 노드인 `server02`에 Cloudera Agent를 설치하는 과정에서, Cloudera Manager인 `server01`을 `host -t PTR 192.168.56.101`와 같이 찾는데, `host` 명령은 `/etc/hosts`의 내용을 바탕으로 대상 호스트를 찾는게 아니라, 네임서버의 정보를 바탕으로 대상 호스트를 찾으므로, 별도의 네임서버를 BIND로 설정하지 않으면 `server01.hadoop.com`을 찾지 못함
+
+- `server01`에 BIND로 네임서버, zone 등을 구성해도 찾지 못함 ㅠㅜ
