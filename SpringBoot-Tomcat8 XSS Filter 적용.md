@@ -45,3 +45,11 @@ public FilterRegistrationBean corsFilter() {
 위와 같이 `org.apache.catalina.filters.HttpHeaderSecurityFilter`를 사용하면  Response Header에 다음과 같이 `X-XSS-Protection: 1; mode=block`가 포함되고, 브라우저는 XSS 공격 우려가 있는 스크립트를 실행하지 않는다.
 
 ![Imgur](http://i.imgur.com/0IAn7yU.png)
+
+
+----
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+<a href='https://www.facebook.com/hanmomhanda' target='_blank'>HomoEfficio</a>가 작성한 이 저작물은
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">크리에이티브 커먼즈 저작자표시-비영리-동일조건변경허락 4.0 국제 라이선스</a>에 따라 이용할 수 있습니다.
