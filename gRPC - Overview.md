@@ -185,3 +185,5 @@
 - http://fbsight.com/t/rpc-grpc/49819/5
 - http://www.grpc.io/faq/
 - [HTTP/2](http://www.popit.kr/%EB%82%98%EB%A7%8C-%EB%AA%A8%EB%A5%B4%EA%B3%A0-%EC%9E%88%EB%8D%98-http2/)
+- [Using Google Protocol Buffers with Spring MVC-based REST Services](https://spring.io/blog/2015/03/22/using-google-protocol-buffers-with-spring-mvc-based-rest-services)
+- [SpringOne Platform 2016 Replay: gRPC 101 for Spring developers](https://spring.io/blog/2017/01/16/springone-platform-2016-replay-grpc-101-for-spring-developers)
