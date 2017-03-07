@@ -1,18 +1,77 @@
 # gRPC
 
+## 기
+
 - gRPC가 뭐냐?
     - **g**RPC **R**emote **P**rocedure **C**all
         - GNU is Not Unix 아재
-    - RPC가 뭐냐? 를 알아보기 전에.. gRPC가 누구냐?
-        - Stubby의 오픈소스 버전
-            - Stubby는 뭐냐?
-                - 구글은 1주일에 20억개의 컨테이너를 런칭
-                - 컨테이너들끼리의 어떻게 통신하나?
-                    - borg: 클러스터 관리 담당 -> Kubernetes
-                    - stubby: 통신 담당 -> gRPC(1.0.0 in 2016.08)
-        - RPC의 정의
-        - 입관되신 분들: RMI, CORBA, SOAP
-        - 왜 입관? REST(또는 RESTful API) + JSON
+- RPC가 뭐냐?
+    - 위키피디아 정의
+    - 입관되신 분들
+        - CORBA
+            - www.ejbtutorial.com/programming/tutorial-for-corba-hello-world-using-java
+        - SOAP
+            - 이기종 플랫폼 간 호환성은 좋지만, XML이 무거워서..
+    - 잊혀진..
+        - RMI
+            - CORBA에 비해 매우 간단하지만 Java 끼리만..
+- 패왕 등장 HTTP + REST + JSON
+- 그래서 RPC는 망?
+    - 아니다. 구현체가 좋지 않았을 뿐..
+    - 더군다나 클라우드 환경에서는 효율적인 RPC가 반드시 필요
+- 그래서 구글에서 RPC를 다시 만들었다.
+    - Stubby라는 RPC 구현체를 만들어서
+        - 1주일에 20억개의 컨테이너가 런칭되는 구글 환경에서
+        - 1초에 100억건의 RPC를 처리
+- gRPC는 Stubby의 오픈 소스 후계자
+
+## 승
+
+- gRPC가 HRJ(HTTP REST JSON)보다 나은점
+    - binary protocol(Protocol Buffer 3)
+        - text보다 더 적은 데이터 공간으로 처리 가능 -> 네트워크, 메모리 효율성 좋음
+        - text보다 marshal/unmarshal 부하가 적으므로 CPU 더 적게 사용 -> CPU 효율성 좋음 
+    - HTTP/2
+        - connection multiplexing
+            - 여러 자원 요청을 하나의 커넥션으로 처리 가능 -> 네트워크 효율성 좋음
+        - client/server streaming 가능
+            - websocket과의 비교
+    - 네트워크, 메모리, CPU 효율성 좋음
+        - https://www.youtube.com/watch?v=BOW7jd136Ok
+            - 처리량: 7:25
+            - 처리량CPU: 7:35
+        - 클라우드 환경에서의 서버 간 대규모 통신에 적합
+        - 자원이 빈약한 모바일(또는 IoT까지?)에 적합
+        - 바이트 수, 호출 수, CPU 수 등으로 과금되는 클라우드 환경에서 비용 절감에 도움
+
+## 전
+
+- 구현 예제    
+    - 원격 프로시저 호출의 개념
+        - 호출 대상의 식별 -> known host or Eureka
+        - 메시지를 전송하는 방법 -> IDL
+        - 데이터의 종류 -> IDL
+    - 작성 순서
+        - IDL 작성 및 code Gen
+        - 서버 코드
+        - 클라이언트 코드
+    - 채팅? 대규모 데이터 전송으로 성능 비교? SpringBoot 연동?
+
+- 실무 적용 고려 사항
+    - Versioning updating client
+    - Service discovery
+    - authentication
+    - authorization
+    - exception handling
+    - failure control
+
+## 결
+
+- gRPC가 뭐가 좋은지
+- Microservice와의 관계
+- Reactive Programming과의 관계
+
+----
 
 - RESTful API가 있는데 뭐하러 gRPC?
     - gRPC 특징
@@ -152,6 +211,34 @@
 - kubernetes와 함께 zero downtime update
 - github.com/thesandlord/samples/tree/master/grpc-kubernetes-microservices
 
+# https://www.youtube.com/watch?v=BOW7jd136Ok
+
+- corba가 망한 이유
+    - www.ejbtutorial.com/programming/tutorial-for-corba-hello-world-using-java
+- 백엔드 끼리 통신하는데 휴먼 리더블이 반드시 필요하냐.. 그래서 XML은 비효율적이다.
+- RPC
+    - efficient: binary protocol in network(short) and cpu(marshal/serial low)
+    - accurate: auto gen code
+    - REST로는 안되는 복잡한 연산도 생성 및 처리 가능
+        - 트랜잭션
+- Stubby
+    - 100억 rpc/초
+
+- gRPC
+    - IDL
+    - HTTP/2
+        - connection multiplexing
+        - 요청 되는 자원마다 커넥션을 열지 않고, 여러 자원을 하나의 커넥션에 모아서 회신할 수 있다.
+        - WebSocket과 달리? 클라이언트 스트리임, 서버 스트리밍 모두 가능
+    - ProtoBuffer3
+    - 성능
+        - 처리량: 7:25
+        - 처리량CPU: 7:35
+        - 클라우드 서비스가 바이트 수, 호출 수, CPU 수 등으로 과금되는 걸 생각하면 큰 장점
+    - 모바일 친화적
+        - C#, Obj-C, Java와 같은 모바일 개발 주요 언어 지원
+        - 적은 데이터량(2G, 3G 사용자에게도 좋다)
+        - 낮은 CPU, 배터리
 
 # Protocol Buffer
 
@@ -187,3 +274,5 @@
 - [HTTP/2](http://www.popit.kr/%EB%82%98%EB%A7%8C-%EB%AA%A8%EB%A5%B4%EA%B3%A0-%EC%9E%88%EB%8D%98-http2/)
 - [Using Google Protocol Buffers with Spring MVC-based REST Services](https://spring.io/blog/2015/03/22/using-google-protocol-buffers-with-spring-mvc-based-rest-services)
 - [SpringOne Platform 2016 Replay: gRPC 101 for Spring developers](https://spring.io/blog/2017/01/16/springone-platform-2016-replay-grpc-101-for-spring-developers)
+
+
