@@ -4,10 +4,13 @@
 
 - gRPC가 뭐냐?
     - **g**RPC **R**emote **P**rocedure **C**all
-        - GNU is Not Unix 아재
+        - GNU is Not Unix (아재)
 - RPC가 뭐냐?
-    - 위키피디아 정의
-    - 입관되신 분들
+    - 위키피디아 정의(한글로 풀기)
+        > In distributed computing a remote procedure call (RPC) is when a computer program causes a procedure (subroutine) to execute in another address space (commonly on another computer on a shared network), which is coded as if it were a normal (local) procedure call, without the programmer explicitly coding the details for the remote interaction. That is, the programmer writes essentially the same code whether the subroutine is local to the executing program, or remote.
+    - RPC 절차도
+        - http://lycog.com/distributed-systems/remote-procedure-call/
+    - 입관되신 분들..
         - CORBA
             - www.ejbtutorial.com/programming/tutorial-for-corba-hello-world-using-java
         - SOAP
@@ -15,6 +18,7 @@
     - 잊혀진..
         - RMI
             - CORBA에 비해 매우 간단하지만 Java 끼리만..
+            - 하지만 티안나게 사용되는.. JMX, VisualVM
 - 패왕 등장 HTTP + REST + JSON
 - 그래서 RPC는 망?
     - 아니다. 구현체가 좋지 않았을 뿐..
@@ -47,17 +51,15 @@
 ## 전
 
 - 구현 예제    
-    - 원격 프로시저 호출의 개념
-        - 호출 대상의 식별 -> known host or Eureka
-        - 메시지를 전송하는 방법 -> IDL
-        - 데이터의 종류 -> IDL
+    - 원격 프로시저 호출의 동작 방식
+        - http://lycog.com/distributed-systems/remote-procedure-call/ 의 그림에 IDL, protoc 추가
     - 작성 순서
         - IDL 작성 및 code Gen
         - 서버 코드
         - 클라이언트 코드
     - 채팅? 대규모 데이터 전송으로 성능 비교? SpringBoot 연동?
 
-- 실무 적용 고려 사항
+- 실무 적용 고려 사항(다는 아니고 몇 개만..)
     - Versioning updating client
     - Service discovery
     - authentication
@@ -70,6 +72,7 @@
 - gRPC가 뭐가 좋은지
 - Microservice와의 관계
 - Reactive Programming과의 관계
+- 관련 자료 링크
 
 ----
 
@@ -256,6 +259,9 @@
 
 # 기타
 
+- [RPC 다있음](https://www.cs.rutgers.edu/~pxk/417/notes/08-rpc.html)
+- [RPC 절차 및 설명](http://lycog.com/distributed-systems/remote-procedure-call/)
+- [RPC에서 REST까지](https://www.slideshare.net/WonchangSong1/rpc-restsimpleintro)
 - [gRPC 1.0 - Google Cloud Platform blog](https://cloudplatform.googleblog.com/2016/08/gRPC-a-true-Internet-scale-RPC-framework-is-now-1-and-ready-for-production-deployments.html)
 - [yCombinator - gRPC](https://news.ycombinator.com/item?id=12344995)
 - [gopherAcademy etcd - gRPC vs JSON](https://blog.gopheracademy.com/advent-2015/etcd-distributed-key-value-store-with-grpc-http2/)
