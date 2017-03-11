@@ -39,11 +39,11 @@ logback을 사용하는 SpringBoot 애플리케이션을 AWS Elastic Beanstalk�
 </root>
 ```
 
-## 로깅에 프로파일 적용
+## logback 로깅 설정 파일에 프로파일 적용
 
 위와 같이 하면 Elastic Beanstalk 환경에서는 잘 도는데 로컬 개발 환경에서 문제가 생길 수도 있다. 따라서 로깅 설정에도 프로파일을 적용하는 것이 좋겠다.
 
-로깅 파일에 프로파일을 적용하려면 [공식 문서](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-logging.html#boot-features-logback-extensions)에 따라 먼저 `logback.xml` 파일의 이름을 `logback-spring.xml` 로 바꿔야 한다. 
+로깅 파일에 프로파일을 적용하려면 [스프링 부트 공식 문서](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-logging.html#boot-features-logback-extensions)에 따라 먼저 `logback.xml` 파일의 이름을 `logback-spring.xml` 로 바꿔야 한다. 
 
 그리고나서 다음과 같이 `<springProfile>`을 써서 프로파일을 적용할 수 있다.
 
@@ -72,3 +72,11 @@ logback을 사용하는 SpringBoot 애플리케이션을 AWS Elastic Beanstalk�
 </configuration>
 ```
 
+
+
+----
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+<a href='https://www.facebook.com/hanmomhanda' target='_blank'>HomoEfficio</a>가 작성한 이 저작물은
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">크리에이티브 커먼즈 저작자표시-비영리-동일조건변경허락 4.0 국제 라이선스</a>에 따라 이용할 수 있습니다.
