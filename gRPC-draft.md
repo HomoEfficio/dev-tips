@@ -1,4 +1,4 @@
-# gRPC in SpringCamp 2017
+# gㅏ벼운 RPC, gRPC in SpringCamp 2017
 
 ## 기
 
@@ -75,7 +75,7 @@
 
 ## 결
 
-- gRPC가 뭐가 좋은지
+- gRPC 정리
 - Microservice와의 관계
 - Reactive Programming과의 관계
 - 관련 자료 링크
