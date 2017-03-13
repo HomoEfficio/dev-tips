@@ -4,7 +4,7 @@
 
 - gRPC가 뭐냐?
     - **g**RPC **R**emote **P**rocedure **C**all
-        - GNU is Not Unix (아재)
+        - GNU: **G**nu is **N**ot **U**nix (아재)
 - RPC가 뭐냐?
     - 위키피디아 정의(한글로 풀기)
     
@@ -59,6 +59,11 @@
         - 서버 코드
         - 클라이언트 코드
     - 채팅? 대규모 데이터 전송으로 성능 비교? SpringBoot 연동?
+        - SpringBoot 상에서 용량 크고 재미있는 다수의 gif 파일 전송 비교
+            - 웃프다 gif
+            - 김연아-세종대왕-민망 gif
+            - 송중기 gif
+            - 김희선-강호동-아는형님 gif
 
 - 실무 적용 고려 사항(다는 아니고 몇 개만..)
     - Versioning updating client
