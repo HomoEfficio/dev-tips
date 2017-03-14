@@ -67,7 +67,8 @@
     - DateTimeFormatter 공통화
     - Collection의 validator 공통화
     - BaseEntity로 JPA auditing 적용
-    - JSON response XSS 처리
+    - XSS 필터 적용
+    - JSON response XSS 처리
     - Generic을 활용한 DataConverter 일반화
     - Swagger 설정 및 적용
 
