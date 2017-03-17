@@ -44,7 +44,7 @@ printToScreen("HELLO JSONP");
 
 그런데 `http://ANY_SERVER/jsonp-test?callback=printToScreen`라는 자원이 `printToScreen("HELLO JSONP");`라는 문자열을 반환한다고 해서 언제나 JavaScript로서 실행될 수 있는 것은 아니다.
 
-원칙적으로는 `http://ANY_SERVER/jsonp-test?callback=printToScreen`라는 자원을 가지고 있는 서버가 값을 반환할 때 `Content-Type`을 `text/javascript`나 `applicatino/javascript` 등 실행될 수 있는 타입으로 지정해줘야만, 결과값을 받는 클라이언트에서 `printToScreen("HELLO JSONP");`라는 문자열을 JavaScript로서 실행할 수 있다.
+원칙적으로는 `http://ANY_SERVER/jsonp-test?callback=printToScreen`라는 자원을 가지고 있는 서버가 값을 반환할 때 `Content-Type`을 `text/javascript`나 `application/javascript` 등 JavaScript로 실행될 수 있는 타입으로 지정해줘야만, 결과값을 받는 클라이언트에서 `printToScreen("HELLO JSONP");`라는 문자열을 JavaScript로서 실행할 수 있다.
 
 그런데 실제로는 서버가 `Content-Type`을 명확히 지정해주지 않아도 똑똑한 브라우저가 알아서 판단해서 `printToScreen("HELLO JSONP");`라는 문자열을 JavaScript로서 실행해준다.
 
