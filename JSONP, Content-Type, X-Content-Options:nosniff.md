@@ -2,7 +2,11 @@
 
 ## JSONP
 
-브라우저의 Same Origin Policy를 우회하는 방법 중의 하나로 JSONP(JSON with Padding)가 있다. JSONP는 `<script>` 요소의 `src` 속성으로 가져오는 resource는 Same Origin Policy의 제약을 받지 않는다는 점을 이용한다. 코드로 보자면 이런 식이다.
+브라우저의 Same Origin Policy를 우회하는 방법 중의 하나로 JSONP(JSON with Padding)가 있다. 
+
+JSONP는 `<script>` 요소의 `src` 속성으로 가져오는 resource는 Same Origin Policy의 제약을 받지 않는다는 점을 이용한다. 
+
+코드로 보자면 이런 식이다.
 
 ```html
 <html>
