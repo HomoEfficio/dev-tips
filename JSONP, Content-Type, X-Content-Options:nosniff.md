@@ -54,6 +54,7 @@ printToScreen("HELLO JSONP");
 
 ** 브라우저 에러 캡쳐 **
 
+이는 위에 있는 소스의 (2)에서 처럼 브라우저 쪽에서 아무리 `jsonpResultScript.type = 'text/javascript';`라고 지정해줘도 소용이 없고, 어디까지나 서버에서 지정한 `Content-Type` 값에 따라 에러 여부가 결정된다.
 
 # 정리
 
