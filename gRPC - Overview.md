@@ -260,6 +260,7 @@
 # 기타
 
 - [gRPC substitutes REST API](https://www.sajari.com/blog/grpc-and-displacement-of-rest-apis)
+- [Googley Microservices using gRPC](https://www.slideshare.net/borisovalex/enabling-googley-microservices-with-http2-and-grpc)
 - [gRPC vs JSON thruput](https://cloud.google.com/blog/big-data/2016/03/announcing-grpc-alpha-for-google-cloud-pubsub)
 - [RPC 다있음](https://www.cs.rutgers.edu/~pxk/417/notes/08-rpc.html)
 - [RPC 절차 및 설명](http://lycog.com/distributed-systems/remote-procedure-call/)
