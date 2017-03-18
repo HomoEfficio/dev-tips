@@ -259,6 +259,7 @@
 
 # 기타
 
+- [gRPC substitutes REST API](https://www.sajari.com/blog/grpc-and-displacement-of-rest-apis)
 - [RPC 다있음](https://www.cs.rutgers.edu/~pxk/417/notes/08-rpc.html)
 - [RPC 절차 및 설명](http://lycog.com/distributed-systems/remote-procedure-call/)
 - [RPC에서 REST까지](https://www.slideshare.net/WonchangSong1/rpc-restsimpleintro)
