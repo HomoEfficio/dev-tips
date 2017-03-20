@@ -1,4 +1,4 @@
-# JSONP, Content-Type, X-Content-Options
+# JSONP, Content-Type, X-Content-Type-Options
 
 ## JSONP
 
@@ -48,13 +48,13 @@ printToScreen("HELLO JSONP");
 
 그런데 실제로는 서버가 `Content-Type`을 명확히 지정해주지 않아도 똑똑한 브라우저가 알아서 판단해서 `printToScreen("HELLO JSONP");`라는 문자열을 JavaScript로서 실행해준다.
 
-## X-Content-Options: nosniff
+## X-Content-Type-Options: nosniff
 
 하지만 위와 같이 resource의 소유자인 서버가 `Content-Type`를 지정해주지 않은 결과마저도 브라우저가 알아서 JavaScript로서 실행해버리면 보안 약점으로 악용될 수도 있다.
 
 그래서 서버는 이처럼 브라우저가 마음대로 추측(sniff: 냄새로 무언가를 알아차리기)해서 JavaScript로서 실행하는 일을 강제로 못하게 할 수 있는 장치가 있는데, 바로 `X-Content-Options: nosniff`라는 Response 헤더 값을 지정하는 것이다.
 
-서버가 `Content-Type` 헤더 값을 `text/javascript` 등 JavaScript로서 실행할 수 있는 값으로 지정하지 않은 상태에서 `X-Content-Options: nosniff` 헤더가 지정되면 아래와 같이 브라우저는 에러를 뱉어내게 된다.
+서버가 `Content-Type` 헤더 값을 `text/javascript` 등 JavaScript로서 실행할 수 있는 값으로 지정하지 않은 상태에서 `X-Content-Type-Options: nosniff` 헤더가 지정되면 아래와 같이 브라우저는 에러를 뱉어내게 된다.
 
 ** 브라우저 에러 캡쳐 **
 
@@ -64,7 +64,7 @@ printToScreen("HELLO JSONP");
 
 >- JSONP를 사용한다면
 >
->    - 서버에서는 보안을 위해 `X-Content-Options: nosniff`를 꼭 지정해주자
+>    - 서버에서는 보안을 위해 `X-Content-Type-Options: nosniff`를 꼭 지정해주자
 > 
 >        - Tomcat8에서는 `HttpHeaderSecurityFilter`라는 클래스를 통해 지정 가능
 >        - Node.js + Express에서는 `helmet`라는 모듈을 통해 지정 가능
