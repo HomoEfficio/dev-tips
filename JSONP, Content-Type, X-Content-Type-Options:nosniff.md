@@ -52,7 +52,7 @@ printToScreen("HELLO JSONP");
 
 하지만 위와 같이 resource의 소유자인 서버가 `Content-Type`를 지정해주지 않은 결과마저도 브라우저가 알아서 JavaScript로서 실행해버리면 보안 약점으로 악용될 수도 있다.
 
-그래서 서버는 이처럼 브라우저가 마음대로 추측(sniff: 냄새로 무언가를 알아차리기)해서 JavaScript로서 실행하는 일을 강제로 못하게 할 수 있는 장치가 있는데, 바로 `X-Content-Options: nosniff`라는 Response 헤더 값을 지정하는 것이다.
+그래서 서버는 이처럼 브라우저가 마음대로 추측(sniff: 냄새로 무언가를 알아차리기)해서 JavaScript로서 실행하는 일을 강제로 못하게 할 수 있는 장치가 있는데, 바로 `X-Content-Type-Options: nosniff`라는 Response 헤더 값을 지정하는 것이다.
 
 서버가 `Content-Type` 헤더 값을 `text/javascript` 등 JavaScript로서 실행할 수 있는 값으로 지정하지 않은 상태에서 `X-Content-Type-Options: nosniff` 헤더가 지정되면 아래와 같이 브라우저는 에러를 뱉어내게 된다.
 
