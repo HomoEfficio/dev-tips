@@ -36,6 +36,7 @@
         - text보다 더 적은 데이터 공간으로 처리 가능 -> 네트워크, 메모리 효율성 좋음
         - text보다 marshal/unmarshal 부하가 적으므로 CPU 더 적게 사용 -> CPU 효율성 좋음 
     - HTTP/2
+        - http://http2.golang.org/gophertiles
         - connection multiplexing
             - 여러 자원 요청을 하나의 커넥션으로 처리 가능 -> 네트워크 효율성 좋음
         - client/server streaming 가능
