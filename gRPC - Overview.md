@@ -62,6 +62,7 @@
 - 실무 적용 고려 사항(다는 아니고 몇 개만..)
     - Versioning updating client
     - Service discovery
+    - [gRPC gateway](https://github.com/grpc-ecosystem/grpc-gateway/blob/master/README.md)
     - authentication
     - authorization
     - exception handling
