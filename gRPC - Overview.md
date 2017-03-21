@@ -12,7 +12,7 @@
         - http://lycog.com/distributed-systems/remote-procedure-call/
     - 입관되신 분들..
         - CORBA
-            - www.ejbtutorial.com/programming/tutorial-for-corba-hello-world-using-java
+            - http://docs.oracle.com/javase/8/docs/technotes/guides/idl/jidlExample.html
         - SOAP
             - 이기종 플랫폼 간 호환성은 좋지만, XML이 무거워서..
     - 잊혀진..
@@ -271,6 +271,7 @@
 - [GRPC vs REST on Node.js](https://albertsalim.xyz/grpc-vs-rest-node-js/)
 - [gRPC gateway](https://github.com/grpc-ecosystem/grpc-gateway/blob/master/README.md)
 - [Whats Wrong With Corba](http://wiki.c2.com/?WhatsWrongWithCorba)
+- [CORBA-HelloWorld](www.ejbtutorial.com/programming/tutorial-for-corba-hello-world-using-java)
 - [JSON-RPC example](https://dzone.com/articles/is-java-remote-procedure-call-dead-in-the-rest-age)
 - [SOAP is dead](http://serviceorientedarchitect.com/soap-is-dead-lessons-learned-from-soa-fying-a-monolith/)
 - [SOAP-WSDL 코드 예](http://stackoverflow.com/questions/14541066/difference-between-a-soap-message-and-a-wsdl)
