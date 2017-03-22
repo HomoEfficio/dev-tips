@@ -261,6 +261,7 @@
 
 # 기타
 
+- [gRPC Use Cases](https://tools.ietf.org/html/draft-talwar-rtgwg-grpc-use-cases-00)
 - [gRPC substitutes REST API](https://www.sajari.com/blog/grpc-and-displacement-of-rest-apis)
 - [Googley Microservices using gRPC](https://www.slideshare.net/borisovalex/enabling-googley-microservices-with-http2-and-grpc)
 - [gRPC vs JSON thruput](https://cloud.google.com/blog/big-data/2016/03/announcing-grpc-alpha-for-google-cloud-pubsub)
