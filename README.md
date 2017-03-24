@@ -44,6 +44,7 @@
 - [SpringBoot-Tomcat8 XSS Filter 적용](https://github.com/HomoEfficio/dev-tips/blob/master/SpringBoot-Tomcat8%20XSS%20Filter%20%EC%A0%81%EC%9A%A9.md)
 - [SpringBoot 애플리케이션을 AWS Elastic Beanstalk에 배포할 때 발생할 수 있는 spring.log 관련 문제](https://github.com/HomoEfficio/dev-tips/blob/master/SpringBoot%20%EC%95%A0%ED%94%8C%EB%A6%AC%EC%BC%80%EC%9D%B4%EC%85%98%EC%9D%84%20AWS%20Elastic%20Beanstalk%EC%97%90%20%EB%B0%B0%ED%8F%AC%ED%95%A0%20%EB%95%8C%20%EB%B0%9C%EC%83%9D%ED%95%A0%20%EC%88%98%20%EC%9E%88%EB%8A%94%20spring.log%20%EA%B4%80%EB%A0%A8%20%EB%AC%B8%EC%A0%9C.md)
 - [JSONP, Content-Type, X-Content-Type-Options](https://github.com/HomoEfficio/dev-tips/blob/master/JSONP%2C%20Content-Type%2C%20X-Content-Type-Options:nosniff.md)
+- [Gradle Wrapper 버전 변경](https://github.com/HomoEfficio/dev-tips/blob/master/Gradle%20Wrapper%20%EB%B2%84%EC%A0%84%20%EB%B3%80%EA%B2%BD.md)
 
 
 
