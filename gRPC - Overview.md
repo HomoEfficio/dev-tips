@@ -55,8 +55,17 @@
     - 원격 프로시저 호출의 동작 방식
         - http://lycog.com/distributed-systems/remote-procedure-call/ 의 그림에 IDL, protoc 추가
     - 작성 순서
+    	- 프로젝트 생성 및 build.gradle
+    		- dependencies
+    		- protobuf-gradle-plugin
         - IDL 작성 및 code Gen
+        	- Gen 된 코드 소개
+        	- 뻘건 Compile Error 없애기
+        		- Mark Directory As ...
+        		- Add library '***' classpath ...
         - 서버 코드
+        	- ImplBase를 extends 하는 서비스 모듈
+        	- 특정 포트에서 listening 하는 서버 모듈
         - 클라이언트 코드
     - 채팅? 대규모 데이터 전송으로 성능 비교? SpringBoot 연동?
 
