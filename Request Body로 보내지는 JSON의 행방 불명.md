@@ -4,7 +4,7 @@
 
 api 테스트 시 Postman을 자주 사용하는데, 다음과 같이 JSON을 서버에 보내면,
 
-![Imgur](http://i.imgur.com/bFcpAXd.png)
+![Imgur](http://i.imgur.com/XVxcdns.png)
 
 서버의 Request에서 JSON 정보를 찾을 수 없다.
 
@@ -27,9 +27,7 @@ tester.addEventListener('click', function(e) {
 	        url: 'http://---------/v1/logs/view/33/55',
 //	        contentType: 'application/json',
 	        method: 'POST',
-	        xhrFields: {
-	            withCredentials: true
-	        },
+	        crossDomain: true,
 	        data: {
 	            url: "++++++++++++++++++++++++++++++++++++",
 	            ref: "====================================",
@@ -56,6 +54,8 @@ tester.addEventListener('click', function(e) {
 
 둘의 결정적인 차이는 ContentType 헤더의 값이다.
 
+Postman에서 보낼 떄는 ContentType을 `application/json`으로 보냈고, 그 때문에 request에서 찾을 수 없었다.
+
 jQuery의 ajax로 보낼 때 ContentType을 명시하지 않으면 디폴트로 `application/x-www-form-urlencoded; charset=UTF-8`로 지정되며([여기 참고](http://api.jquery.com/jQuery.ajax/)), Request 요청을 브라우저에서 살펴봐도 아래와 같이 Request Body에 포함되고,
 
 ![Imgur](http://i.imgur.com/3ZAtT6n.png)
@@ -66,6 +66,24 @@ jQuery의 ajax로 보낼 때 ContentType을 명시하지 않으면 디폴트로 
 
 ## 호기심
 
-- @RequestMapping(consumes="application/json")로 해도 안 잡힐까?
+참고로 jQuery ajax로 보내더라도, ContentType을 강제로 `application/json`으로 주면 요청은 아래와 Form-Data가 아니라 Payload로 날라가므로,
+
+![Imgur](http://i.imgur.com/MTE7wEJ.png)
+
+서버에서는 아래와 같이 `request.getParameterMap()`으로는 읽을 수 없고,
+
+![Imgur](http://i.imgur.com/sbVbEB9.png)
+
+대신 아래와 같이 `request.getReader()`로는 읽을 수 있다. 
+
+![Imgur](http://i.imgur.com/jYT2dAG.png)
+
+하지만 이걸 사용하려면 또 parsing을 해야하고, stream에서는 한 번만 읽을 수 있는 등 불편한점이 많으므로, JSON을 보낼 떄는 ContentType을 `application/x-www-form-urlencoded; charset=UTF-8`로 하고, 서버에서는 `request.getParameterMap()`을 이용해서 처리하는 것이 좋겠다.
+
+----
+
+- @RequestMapping(consumes="application/json")로 하고 controller 메서드에 해당 DTO 객체를 주입시키면 스프링이 알아서 DTO에 넣어줄까?
+
+
 
 
