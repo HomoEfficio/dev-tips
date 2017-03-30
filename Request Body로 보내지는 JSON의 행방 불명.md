@@ -66,7 +66,7 @@ jQuery의 ajax로 보낼 때 ContentType을 명시하지 않으면 디폴트로 
 
 ## 호기심
 
-참고로 jQuery ajax로 보내더라도, ContentType을 강제로 `application/json`으로 주면 요청은 아래와 Form-Data가 아니라 Payload로 날라가므로,
+참고로 jQuery ajax로 보내더라도, ContentType을 강제로 `application/json`으로 주면 요청은 아래와 Form Data가 아니라 Payload로 날라가므로,
 
 ![Imgur](http://i.imgur.com/MTE7wEJ.png)
 
