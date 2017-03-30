@@ -4,7 +4,7 @@
 
 api 테스트 시 Postman을 자주 사용하는데, 다음과 같이 JSON을 서버에 보내면,
 
-![Imgur](http://i.imgur.com/iGfNshb.png)
+![Imgur](http://i.imgur.com/bFcpAXd.png)
 
 서버의 Request에서 JSON 정보를 찾을 수 없다.
 
