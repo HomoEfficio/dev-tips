@@ -68,7 +68,7 @@ jQuery의 ajax로 보낼 때 ContentType을 명시하지 않으면 디폴트로 
 
 서버에서 읽힌다고는 하지만, 아무리 그래도 데이터를 JSON으로 넘기는데, ContentType을 `application/json`이 아닌 `application/x-www-form-urlencoded; charset=UTF-8`으로 주는 건 좀 아닌 것 같다.
 
-참고로 jQuery ajax로 보내더라도, ContentType을 강제로 `application/json`으로 주면 요청은 아래와 Form Data가 아니라 Payload로 날라가므로,
+그렇다고 ContentType을 강제로 `application/json`으로 주면 요청은 아래와 Form Data가 아니라 Payload로 날라가므로,
 
 ![Imgur](http://i.imgur.com/MTE7wEJ.png)
 
@@ -152,4 +152,6 @@ $.ajax({
 - 프론트: JSON 데이터를 `application/json`으로 보내되, JSON 객체를 `JSON.stringify()`로 문자열화 해서 서버에 보내야 한다.
 
 - 스프링 백엔드: JSON 데이터와 구조가 같은 DTO를 만들고, 컨트롤러 메서드에 `@RequestBody`를 붙여서 DTO를 파라미터에 추가하면 Spring이 Jackson을 통해 JSON의 값을 읽어서 DTO에 잘 넣어준다.
+
+
 
