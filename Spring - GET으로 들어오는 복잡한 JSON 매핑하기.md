@@ -1,4 +1,4 @@
-# Spring - GET으로 오는 JSON 매핑하기
+# Spring - GET으로 들어오는 복잡한 JSON 매핑하기
 
 중첩된 객체와 배열을 포함하고 있는 JSON을 POST로 받으면 `@RequestBody`를 붙인 DTO 또는 모델 객체에 쉽게 매핑할 수 있다.
 
