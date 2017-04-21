@@ -101,11 +101,9 @@ git status로 확인해봐도 수정한 커밋을 포함하여 그 이후 5개�
 >
 >- 다만 공동작업자가 있다면 미리 해당 내용을 공유하고 뒤처리를 최소화 할 수 있는  계획을 수립한 후에 진행한다.
 
+----
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
 
+<a href='https://www.facebook.com/hanmomhanda' target='_blank'>HomoEfficio</a>가 작성한 이 저작물은
 
-
-
-
-
-
-
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">크리에이티브 커먼즈 저작자표시-비영리-동일조건변경허락 4.0 국제 라이선스</a>에 따라 이용할 수 있습니다.
