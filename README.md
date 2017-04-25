@@ -46,7 +46,7 @@
 - [JSONP, Content-Type, X-Content-Type-Options](https://github.com/HomoEfficio/dev-tips/blob/master/JSONP%2C%20Content-Type%2C%20X-Content-Type-Options:nosniff.md)
 - [Gradle Wrapper 버전 변경](https://github.com/HomoEfficio/dev-tips/blob/master/Gradle%20Wrapper%20%EB%B2%84%EC%A0%84%20%EB%B3%80%EA%B2%BD.md)
 - [Git 과거의 특정 커밋 수정하기](https://github.com/HomoEfficio/dev-tips/blob/master/Git%20%EA%B3%BC%EA%B1%B0%EC%9D%98%20%ED%8A%B9%EC%A0%95%20%EC%BB%A4%EB%B0%8B%20%EC%88%98%EC%A0%95%ED%95%98%EA%B8%B0.md)
-
+- [Spring - \[ \]가 포함된 URL 파라미터 바인딩 하기](https://github.com/HomoEfficio/dev-tips/blob/master/Spring%20-%20%5B%20%5D%EA%B0%80%20%ED%8F%AC%ED%95%A8%EB%90%9C%20URL%20%ED%8C%8C%EB%9D%BC%EB%AF%B8%ED%84%B0%20%EB%B0%94%EC%9D%B8%EB%94%A9%20%ED%95%98%EA%B8%B0.md)
 
 
 ----
