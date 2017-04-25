@@ -113,3 +113,10 @@ public void object인덱스형_key를_dot형으로_변환() throws Exception {
 
 단, 한 가지 제약 조건이 있는데 **[] 안에 들어가는 parameterName이 숫자로 시작하면 안된다**는 점이다.
 
+
+----
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+<a href='https://www.facebook.com/hanmomhanda' target='_blank'>HomoEfficio</a>가 작성한 이 저작물은
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">크리에이티브 커먼즈 저작자표시-비영리-동일조건변경허락 4.0 국제 라이선스</a>에 따라 이용할 수 있습니다.
