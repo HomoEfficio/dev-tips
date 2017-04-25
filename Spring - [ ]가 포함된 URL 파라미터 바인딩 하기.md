@@ -67,6 +67,11 @@ GET /어쩌구-서버-API?id=321&items[0][id]=abc987&items[0][count]=3&emails[]=
 그래서 이를 보완할 수 있는 유틸 메서드를 만들어봤다.
 
 ```java
+/**
+ * @param parameterMap  request.getParameterMap()
+ * @param dto           바인딩 할 DTO의 클래스 리터럴
+ * @param <T>           바인딩 할 DTO의 타입
+ */
 public static <T> T getDTOFromParamMap(Map<String, String[]> parameterMap, Class<T> dto) 
         throws IllegalAccessException, InstantiationException {
 
