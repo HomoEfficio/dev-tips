@@ -67,10 +67,21 @@ GET /어쩌구-서버-API?id=321&items[0][id]=abc987&items[0][count]=3&emails[]=
 그래서 이를 보완할 수 있는 유틸 메서드를 만들어봤다.
 
 ```java
-public static <T> T getDTOFromParamMap(Map<String, String[]> parameterMap, Class<T> dto)
+public static <T> T getDTOFromParamMap(Map<String, String[]> parameterMap, Class<T> dto) 
         throws IllegalAccessException, InstantiationException {
 
-    final MutablePropertyValues sourceProps = new MutablePropertyValues();
+    final MutablePropertyValues sourceProps = getPropsFrom(parameterMap);
+
+    T targetDTO = dto.newInstance();
+    DataBinder binder = new DataBinder(targetDTO);
+    binder.bind(sourceProps);
+
+    return targetDTO;
+}
+
+private static MutablePropertyValues getPropsFrom(Map<String, String[]> parameterMap) {
+    
+    final MutablePropertyValues mpvs = new MutablePropertyValues();
 
     parameterMap.forEach(
             (k, v) -> {
@@ -79,15 +90,11 @@ public static <T> T getDTOFromParamMap(Map<String, String[]> parameterMap, Class
                          .replaceAll("\\[(\\D+)", ".$1")
                          .replaceAll("]\\[(\\D)", ".$1")
                          .replaceAll("(\\.\\w+)]", "$1");
-                sourceProps.addPropertyValue(dotKey, v);
+                mpvs.addPropertyValue(dotKey, v);
             }
     );
 
-    T targetDTO = dto.newInstance();
-    DataBinder binder = new DataBinder(targetDTO);
-    binder.bind(sourceProps);
-
-    return targetDTO;
+    return mpvs;
 }
 ```
 
