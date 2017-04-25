@@ -4,7 +4,7 @@
 
 큰 흐름을 살펴보면 다음과 같다.
 
-1. parameterName을 key로, parameterValue를 value로 해서 모든 parameter를 `MutablePropertyValues`에 넣은 후, 
+1. parameterName을 key로, parameterValue를 value로 해서 request 내의 모든 parameter를 `MutablePropertyValues`에 넣은 후, 
 2. `MutablePropertyValues`에 저장된 값을 `DataBinder`를 통해 모델 객체(또는 DTO 객체)로 바인딩힌다.
 
 ## 문제
@@ -23,9 +23,11 @@ org.springframework.beans.InvalidPropertyException:
 `items[0][count]`가 가리키는 값이 배열도, 리스트도, 맵도 아니라서 예외 발생
 ```
 
-그런데 저런 형식의 데이터가 들어올까?
+참고로 위 예외가 발생하는 정확한 위치는 스프링의 `AbstractNestablePropertyAccessor` 클래스의 `setPropertyValue` 메서드다.
 
-들어온다. jQuery에서 다음과 같이 데이터를 서버에 보내면,
+암튼, 저런 형식의 데이터가 들어올까?
+
+들어온다. 브라우저에서 jQuery로 다음과 같이 데이터를 서버에 보내면,
 
 ```javascript
 $.ajax({
@@ -54,13 +56,19 @@ $.ajax({
 GET /어쩌구-서버-API?id=321&items%5B0%5D%5Bid%5D=abc987&items%5B0%5D%5Bcount%5D=3&emails%5B%5D=abc%40abc.com&emails%5B%5D=sdf%40sdf.com
 ```
 
-URL Decoding하면 다음과 같다.
+눈으로 읽을 수 있도록 URL Decoding하면 다음과 같다.
 
 ```
 GET /어쩌구-서버-API?id=321&items[0][id]=abc987&items[0][count]=3&emails[]=abc@abc.com&emails[]=sdf@sdf.com
 ```
 
-이처럼 실제로는 들어올 수 있는 데이터 형식인데, 이런 형식은 스프링이 자연스럽게 모델 객체로 바인딩 해주지 못한다.
+물론 이런 경우라면 원론적으로는 GET 보다는 POST로 보내는 게 적절하다. 
+
+POST로 보내고(POST로 보낸다면 클라이언트에서도 `JSON.stringify()`를 이미 했을테고), 스프링의 컨트롤러에서 `@RequestBody`로 모델 객체에 바인딩하면 문제 없이 바인딩 된다.
+
+하지만 이미 클라이언트가 모두 GET 방식으로 보내고 있고, 클라이언트가 한 군데가 아니라 꽤 많다면, 현실적으로는 그냥 서버 쪽에서 해결하는 것이 좋다.
+
+하지만 서버 쪽의 스프링은, 앞에서 얘기한 것처럼 이런 형식의 URL 파라미터를 자연스럽게 모델 객체로 바인딩 해 주지 못한다는..
 
 ## 해결
 
@@ -103,7 +111,7 @@ private static MutablePropertyValues getPropsFrom(Map<String, String[]> paramete
 }
 ```
 
-핵심 로직은 아래 부분의 람다식 안의 정규표현식에 담겨 있는데, 테스트 코드를 보면 금방 이해할 수 있다.
+핵심 로직은 private 메서드의 람다식 안의 정규표현식에 담겨 있는데, 테스트 코드를 보면 금방 이해할 수 있다.
 
 ```java
 @Test
