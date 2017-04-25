@@ -103,7 +103,7 @@ private static MutablePropertyValues getPropsFrom(Map<String, String[]> paramete
 }
 ```
 
-핵심 로직은 중간의 람다식 안의 정규표현식에 담겨 있는데, 테스트 코드를 보면 금방 이해할 수 있다.
+핵심 로직은 아래 부분의 람다식 안의 정규표현식에 담겨 있는데, 테스트 코드를 보면 금방 이해할 수 있다.
 
 ```java
 @Test
