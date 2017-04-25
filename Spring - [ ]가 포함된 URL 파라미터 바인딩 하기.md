@@ -116,9 +116,9 @@ public void object인덱스형_key를_dot형으로_변환() throws Exception {
 }
 ```
 
-쉽게 말해 `[]`로 구성된 parameterName을 스프링이 이해할 수 있는 `.` 형식으로 적절하게 변환해서 `MutablePropertyValues`에 에러 없이 집어넣을 수 있게 하고, `DataBinder`를 통해 모델 객체로 바인딩 하게 해준다.
+쉽게 말해 `[ ]`로 구성된 parameterName을 스프링이 이해할 수 있는 `.` 형식으로 적절하게 변환해서 `MutablePropertyValues`에 에러 없이 집어넣을 수 있게 하고, `DataBinder`를 통해 모델 객체로 바인딩 하게 해준다.
 
-단, 한 가지 제약 조건이 있는데 **[] 안에 들어가는 parameterName이 숫자로 시작하면 안된다**는 점이다.
+단, 한 가지 제약 조건이 있는데 **[ ] 안에 들어가는 parameterName이 숫자로 시작하면 안된다**는 점이다.
 
 
 ----
