@@ -18,20 +18,16 @@
 
 대략 아래와 같은 설정을 통해 쉽게 만들 수 있으며, 사실 결국 중요한 것은 WebHook URL 이다.
 
-1. 
-    ![Imgur](http://i.imgur.com/XaDRyIz.png)
-   
-1. 
-    ![Imgur](http://i.imgur.com/EvL2mMh.png)
-    
-1. 
-    ![Imgur](http://i.imgur.com/mUWplBV.png)
-    
-1. 
-    ![Imgur](http://i.imgur.com/fWd9Oe6.png)
-    
-1. 
-    ![Imgur](http://i.imgur.com/fj9MHgQ.png)
+1. Slack Incoming WebHook 페이지 접속
+    ![Imgur](http://i.imgur.com/XaDRyIz.png)   
+1. Add Incoming WebHook
+    ![Imgur](http://i.imgur.com/EvL2mMh.png)    
+1. 중요한 건 나중에 AWS Lambda가 수신자 주소로 사용할 이 WebHook URL. 자동으로 생성된다.
+    ![Imgur](http://i.imgur.com/mUWplBV.png)    
+1. 기타 여러가지 설정 사항이 있다.
+    ![Imgur](http://i.imgur.com/fWd9Oe6.png)    
+1. Save settings를 눌러서 Incoming WebHook 생성(정확하게는 2번 단계에서 생성이 되고 3번 이하는 수정이다.)
+    ![Imgur](http://i.imgur.com/fj9MHgQ.png)
 
 
 
