@@ -7,13 +7,22 @@
 
 ## 큰 흐름
 
-1. AWS에서 날라온 알림 메시지를 받을 수 있도록 Slack에 WebHook을 만든다.
+1. AWS에서 날라온 알림 메시지를 Slack이 받을 수 있도록 Slack에 Incoming WebHook을 만든다.
 1. Application에서의 이상 상황 발생 시 요청을 보낼 대상인 API Gateway를 만든다.
 1. Slack의 WebHook으로 메시지를 보내는 Lambda를 만든다.
 1. API Gateway의 특정 endpoint에 앞에서 만든 Lambda를 연동한다.
 
 ## Slack WebHook 생성
 
+[api.slack.com/incoming-webhooks](https://api.slack.com/incoming-webhooks) 에서 Slack에 메시지를 보낼 수 있는, Slack 입장에서는 메시지를 받을 수 있는 Incoming webhooks를 생성한다.
+
+대략 아래와 같은 설정을 통해 쉽게 만들 수 있으며, 사실 결국 중요한 것은 WebHook URL 이다.
+
+1. [Imgur](http://i.imgur.com/XaDRyIz.png)
+1. [Imgur](http://i.imgur.com/EvL2mMh.png)
+1. [Imgur](http://i.imgur.com/mUWplBV.png)
+1. [Imgur](http://i.imgur.com/fWd9Oe6.png)
+1. [Imgur](http://i.imgur.com/fj9MHgQ.png)
 
 
 
