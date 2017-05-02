@@ -20,12 +20,16 @@
 
 1. 
     ![Imgur](http://i.imgur.com/XaDRyIz.png)
+   
 1. 
     ![Imgur](http://i.imgur.com/EvL2mMh.png)
+    
 1. 
     ![Imgur](http://i.imgur.com/mUWplBV.png)
+    
 1. 
     ![Imgur](http://i.imgur.com/fWd9Oe6.png)
+    
 1. 
     ![Imgur](http://i.imgur.com/fj9MHgQ.png)
 
