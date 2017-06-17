@@ -64,6 +64,12 @@
 
 이제 결과를 보자.
 
+## 주석 글자색 변경
+
+Dracula의 주석 글자색은 좀 어두운 편이라서 조금 밝게 해주면 좋다. 다음과 같이 Editor > Colors & Fonts > Java 의 Comments에서 Block comment, JavaDoc>Text, Line comment 의 Foreground 색을 적당한 값(ex: B6C8FF)으로 바꿔준다.
+
+![Imgur](http://i.imgur.com/MkBKMVL.png)
+
 
 ## Dracula 테마 수정 결과
 
