@@ -13,7 +13,9 @@
 
 ## 1. 인증 면제 처리
 
-Spring Security를 적용하면서 인증 면제 목록에 `h2-console`을 추가해주지 않으면, `localhost:8080/h2-console`에 접근할 때마다 디폴트 로그인창으로 자동으로 리다이렉트 되므로, H2 Console에 접근할 수 없게 된다. 따라서 아래와 같이 `h2-console`을 Spring Security 설정 클래스의 `permitAll()`로 인증 면제 처리를 해줘야 한다.
+Spring Security를 적용하면서 인증 면제 목록에 `h2-console`을 추가해주지 않으면, `localhost:8080/h2-console`에 접근할 때마다 디폴트 로그인창으로 자동으로 리다이렉트 되므로, H2 Console에 접근할 수 없게 된다. 
+
+따라서 아래와 같이 `h2-console`을 Spring Security 설정 클래스의 `permitAll()`로 인증 면제 처리를 해줘야 한다.
 
 ```java
 @Configuration
@@ -48,7 +50,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 ## 2. CSRF 면제 처리
 
-Spring Security에서는 Cross Site Request Forgery(CSRF)를 방지 장치가 기본으로 탑재되어 있다. 하지만 H2 Console의 로그인 화면에는 CSRF 처리가 되어 있지 않으므로 위와 같은 에러를 만나게 된다. 그렇다고 h2-console을 사용하기 위해 CSRF를 완전히 disable 하는 것은 애플리케이션 전체의 보안 수준이 낮아지므로 좋은 방법이 아니다. 대신에 `h2-console`에 대해서만 CSRF 면제 처리를 해주는 것이 좋다.
+Spring Security에서는 Cross Site Request Forgery(CSRF)를 방지 장치가 기본으로 탑재되어 있다. 
+
+하지만 H2 Console의 로그인 화면에는 CSRF 처리가 되어 있지 않으므로 위와 같은 에러를 만나게 된다. 그렇다고 h2-console을 사용하기 위해 CSRF를 완전히 disable 하는 것은 애플리케이션 전체의 보안 수준이 낮아지므로 좋은 방법이 아니다. 
+
+대신에 `h2-console`에 대해서만 CSRF 면제 처리를 해주는 것이 좋다.
 
 ```java
 @Configuration
