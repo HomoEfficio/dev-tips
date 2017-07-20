@@ -4,7 +4,11 @@
 
 Karabiner 없으면 맥 못쓸 듯..
 
-![Imgur](http://i.imgur.com/rwyBGBY.png)
+![Imgur](http://i.imgur.com/PJvLnjp.png)
+
+![Imgur](http://i.imgur.com/u79fijs.png)
+
+![Imgur](http://i.imgur.com/ALgHQCn.png)
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
