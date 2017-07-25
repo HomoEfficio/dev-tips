@@ -10,3 +10,17 @@
 
     ![Imgur](http://i.imgur.com/4Yi7uUY.png)
 
+## 한영 전환
+
+일단 기본으로 CapsLock 키로 한영 전환이 가능하다.
+조금 어색하긴 하지만 한 번 적응해보기로..
+
+## Karabiner 삭제
+
+결론적으로 예전 El Capitan에서 사용하던 Karabiner는 필요없으므로 삭제!
+
+혹시나 필요하다면 Sierra에서는 https://github.com/tekezo/Karabiner-Elements 를 써야 한다능..
+
+## 기타
+
+위와 같이 설정하고 나니 USB 키보드에서 Home과 End가 동작한다!!
