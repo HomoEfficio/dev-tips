@@ -14,7 +14,7 @@
 
 일단 기본으로 `CapsLock` 키로 한영 전환이 가능하다.
 
-    ![Imgur](http://i.imgur.com/rMzvWCS.png)
+![Imgur](http://i.imgur.com/rMzvWCS.png)
 
 하지만, 적응이 안된다.. `한/영`키가 안된다면 `Shift+Space`로 하자.
 
