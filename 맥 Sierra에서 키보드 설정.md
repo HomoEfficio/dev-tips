@@ -26,7 +26,7 @@ http://macnews.tistory.com/297 이걸 보고 따라하자!
 
 ~/Library/KeyBindings/DefaultKeyBinding.dict 파일을 만들고, 다음의 내용을 입력하고 저장한다.
 
-```json
+```
 {
   "\UF729" = "moveToBeginningOfLine:"; /* Home */
   "\UF72B" = "moveToEndOfLine:"; /* End */
