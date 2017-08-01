@@ -88,3 +88,5 @@ ga('send', 'pageview');
 - 모바일 앱을 통해 들어올 때도 페이지 유입처 정보가 없을 수 있음
 - HTTPS 페이지에서 HTTP 페이지로 들어올 경우
 - 기타 다양한 케이스 존재
+
+`(direct) / (none)` 관련 내용은 http://marketingopener.com/blog/gseries/directnone/ 여기에 잘 정리되어 있다.
