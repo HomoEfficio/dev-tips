@@ -12,7 +12,7 @@
 
 #### 해결!!
 
-    > **`mysql -h#.#.#.# -P#### -uXXXX -p'YY!YY'`로 해야 인증에 성공한다.**
+> **`mysql -h#.#.#.# -P#### -uXXXX -p'YY!YY'`로 해야 인증에 성공한다.**
 
 ### shell
 
@@ -28,9 +28,9 @@
 
 #### 해결!!
 
-    > **`dummy=$(mysql -h#.#.#.# -P#### -uXXXX -pYY!YY)`로 해야 인증에 성공한다.**
+> **`dummy=$(mysql -h#.#.#.# -P#### -uXXXX -pYY!YY)`로 해야 인증에 성공한다.**
     
-    > **비밀번호를 변수(`DB_PASSWORD`)에 담아서 `dummy=$(mysql -h#.#.#.# -P#### -uXXXX -p${DB_PASSWORD})`로 해야 인증에 성공한다.**
+> **비밀번호를 변수(`DB_PASSWORD`)에 담아서 `dummy=$(mysql -h#.#.#.# -P#### -uXXXX -p${DB_PASSWORD})`로 해야 인증에 성공한다.**
 
 
 ## 기타 특수 문자
