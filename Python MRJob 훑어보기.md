@@ -232,6 +232,6 @@ key, value's'에 있어서는 combiner도 reducer와 같다.
 >- combiner와 reducer는 
 >    - <k0, {v0-0, v0-1, v0-2, ...}>
 >    - <k1, {v1-0, v1-1, v1-2, ...}>
->    - ...의 레코드 단위로 실행된다.
+>    - ... 단위의 레코드 단위로 실행된다.
 >
 >- mapper, combiner, reducer 내부에 존재하는 다수의 yield문은 파라미터로 전달받은 하나의 레코드에 대해 모두 실행된다.
