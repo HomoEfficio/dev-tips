@@ -202,7 +202,7 @@ reducer도 조금 더 살펴보면, 일단 다음과 같이 reducer는 mapper와
     #... 생략 ...
 ```
 
-즉, mrjob 라이브러리 수준에서 먼저 `itertools.groupby(read_lines(), key=lambda k_v: k_v[0])`로 key를 기준으로 key에 해당하는 값만을 values라는 Set으로 만든 후에, 개발자가 작성한 reducer 함수를 `reducer(key, values)`와 같이 호출한다.
+즉, mrjob 라이브러리 수준에서 먼저 `itertools.groupby(read_lines(), key=lambda k_v: k_v[0])`로 key를 기준으로 key에 해당하는 값만을 values라는 Iterable로 만든 후에, 개발자가 작성한 reducer 함수를 `reducer(key, values)`와 같이 호출한다.
 
 다시 정리하면, 개발자가 작성한 mapper에서 key, value로 반환한 여러 행의 데이터를 mrjob 라이브러리가 아래와 같이 key 기준으로 그룹화 한 후에 개발자가 작성한 reducer를 호출한다.
 
