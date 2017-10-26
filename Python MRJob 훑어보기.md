@@ -56,7 +56,11 @@ Removing temp directory /var/folders/v2/7ykd39_d60zc410c_6slt53r0000gn/T/mr_word
 
 신기하다. 
 
-하지만 내부 호출 구조가 직관적으로 눈에 들어오지 않는다. 그래서 mapper를 다음과 같이 바꿔서 어떻게 도는지 봤다.
+하지만 내부 호출 구조가 직관적으로 눈에 들어오지 않는다. 
+
+## Mapper
+
+그래서 mapper를 다음과 같이 바꿔서 어떻게 도는지 봤다.
 
 ```python
     def my_mapper(self, _, line):
@@ -160,9 +164,74 @@ words:  사랑은 얄미운 나비인가봐 3
 lines:  사랑은 얄미운 나비인가봐 1
 ```
 
-이는 mapper뿐만 아니라, combiner나 reducer도 마찬가지다.
+정리하면 mapper의 파라미터로 넘겨지는 한 행의 레코드에 대해 mapper 안에 있는 yield이 모두 실행되며, 이는 mapper뿐만 아니라, combiner나 reducer도 마찬가지다.
 
-다시 정리하면,
+## Reducer
 
->- mapper, combiner, reducer는 하나의 레코드 단위로 실행된다.
->- mapper, combiner, reducer 내부에 존재하는 다수의 yield문은 하나의 행에 대해 모두 실행된다.
+reducer도 조금 더 살펴보면, 일단 다음과 같이 reducer는 mapper와는 다르게 key 하나에 여러 개의 value가 연결된다는 걸 유추할 수 있다.
+
+```
+    def my_mapper(self, _, line):
+        yield "chars", len(line)
+        yield "words", len(line.split())
+        yield "lines", 1
+        
+    #... 생략 ...
+
+    def my_reducer(self, key, values):  # key와 함께 value가 아니라 value's'가 온다.
+        yield key, sum(values)
+```
+
+그래서 maper 관련 python3.6/site-packages/mrjob/job.py 파일을 보면 다음과 같이 되어 있다.
+
+```
+  def run_reducer(self, step_num=0):
+  
+  #... 생략 ...
+  
+        # group all values of the same key together, and pass to the reducer
+        #
+        # be careful to use generators for everything, to allow for
+        # very large groupings of values
+        for key, kv_pairs in itertools.groupby(read_lines(),
+                                               key=lambda k_v: k_v[0]):
+            values = (v for k, v in kv_pairs)
+            for out_key, out_value in reducer(key, values) or ():
+                write_line(out_key, out_value)
+
+    #... 생략 ...
+```
+
+즉, mrjob 라이브러리 수준에서 먼저 `itertools.groupby(read_lines(), key=lambda k_v: k_v[0])`로 key를 기준으로 key에 해당하는 값만을 values라는 Set으로 만든 후에, 개발자가 작성한 reducer 함수를 `reducer(key, values)`와 같이 호출한다.
+
+다시 정리하면, 개발자가 작성한 mapper에서 key, value로 반환한 여러 행의 데이터를 mrjob 라이브러리가 아래와 같이 key 기준으로 그룹화 한 후에 개발자가 작성한 reducer를 호출한다.
+
+```
+# mapper가 반환한 여러 행의 데이터
+key0, value0-0
+key1, value1-0
+key1, value1-1
+key0, value0-1
+key1, value1-2
+...
+
+# reducer에 파라미터로 넘겨지는 데이터
+<key0, {value0-0, value0-1, value0-2, ...}>
+<key1, {value1-1, value1-1, value1-2, ...}>
+```
+
+key, value's'에 있어서는 combiner도 reducer와 같다.
+
+## 정리
+
+>- 하나의 레코드를 <k, v>로 표현하면
+>- mapper는 
+>    - <k0, v0>
+>    - <k1, v1>
+>    - ... 단위의 레코드 단위로 실행되고,
+>- combiner와 reducer는 
+>    - <k0, {v0-0, v0-1, v0-2, ...}>
+>    - <k1, {v1-0, v1-1, v1-2, ...}>
+>    - ...의 레코드 단위로 실행된다.
+>
+>- mapper, combiner, reducer 내부에 존재하는 다수의 yield문은 파라미터로 전달받은 하나의 레코드에 대해 모두 실행된다.
