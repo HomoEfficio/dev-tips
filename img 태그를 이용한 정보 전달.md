@@ -14,7 +14,7 @@ pixel.src = '정보를 보낼 곳?보낼정보항목=보낼정보값&...';
 document.body.appendChild(pixel);
 ```
 
-하지만 IE에서 위와 같이 처리하면 엑스박스가 나와서 화면 UI를 해치게 된다. 그래서 아래와 같이 `width`와 `height`를 0으로 명시해주면, 엑스박스는 안 나오지만 화면에서 눈에 띌 만한 일부 영역을 공백으로 차지하면서 UI를 깨뜨린다.
+하지만 IE에서 위와 같이 처리하면 엑스박스가 나와서 화면 UI를 해치게 된다. 그래서 아래와 같이 `width`와 `height`를 0으로 명시해주면, 엑스박스는 안 나오지만 화면에서 눈에 띌 만한 일부 영역을 공백으로 차지하면서 여전히 UI를 깨뜨린다.
 
 ```javascript
 let pixel = document.createElement('img');
