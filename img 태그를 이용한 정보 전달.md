@@ -22,4 +22,10 @@
 
 이렇게 하면 IE에서도 크롬에서와 마찬가지로 이미지를 렌더링하거나 DOM에 추가하지 않고 `src`에 명시된 곳으로 요청을 보내기만 한다.
 
-이렇게 `img` 태그로 정보를 전달하는 방법은 광고 업계에서 사용자를 식별하는 데 사용되는 쿠키 싱크(https://clearcode.cc/blog/cookie-syncing/) 에서 주로 사용 된다.
+아래와 같이 할 수도 있겠으나, 어차피 DOM에 추가할 것도 아닌데 불필요하게 코드량만 길어져서 검증해보지는 않았다.
+
+>let pixel = document.createElement('img');
+>
+>pixel.src = '정보를 보낼 곳?보낼정보항목=보낼정보값&...';
+
+이렇게 `img` 태그로 정보를 전달하는 방법은 광고 업계에서 사용자를 식별하는 데 사용되는 쿠키 싱크(https://clearcode.cc/blog/cookie-syncing/)에서 주로 사용 된다.
