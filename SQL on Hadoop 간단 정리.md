@@ -66,3 +66,4 @@ HDFS와 MapReduce의 등장(2006년)으로 적은 비용으로도 대용량 데�
 
 ## Hive on Tez
 
+- 느린 MR 대신 Tez로 데이터 질의 실행해서 성능 개선
