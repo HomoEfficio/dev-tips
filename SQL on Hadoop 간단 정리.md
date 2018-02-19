@@ -1,4 +1,4 @@
-# SQL on Hadoop
+# SQL on Hadoop 간단 정리
 
 HDFS와 MapReduce의 등장(2006년)으로 적은 비용으로도 대용량 데이터를 분석할 수 있는 시대가 열렸다.
 
