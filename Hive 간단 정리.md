@@ -66,6 +66,8 @@
 - `Having` 절 사용 불가
 - 스토어드 프로시저 불가, 대신 MR 스크립트 사용 가능
 - 대소문자 구분 안함
+- `auto_increment` 미지원
+  - https://stackoverflow.com/questions/38949699/hive-auto-increment-after-certain-number 이런 우회 방법이 있기는 함
 
 ## Syntax 관련
 
