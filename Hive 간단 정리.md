@@ -118,3 +118,8 @@ hive> set hive.exec.dynamic.partition=true
 ### COLLAPSE
 
 - 여러 열을 행으로 처리
+
+
+## 참고
+
+- https://data-flair.training/blogs/category/hive
