@@ -53,9 +53,9 @@
     - Controller 테스트
 
 1. Swagger 적용
-    - http://springboot.tistory.com/24 참고        
-      - SwaggerConfig Bean 추가
-      - Swagger UI 추가: app_root/swagger-ui.html 에서 확인 가능
+    - http://springboot.tistory.com/24 참고
+        - SwaggerConfig Bean 추가
+        - Swagger UI 추가: app_root/swagger-ui.html 에서 확인 가능
    
 1. Logging 적용
     - Lombok과 @Slf4J 활용
