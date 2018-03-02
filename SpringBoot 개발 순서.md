@@ -58,18 +58,18 @@
         - Swagger UI 추가: app_root/swagger-ui.html 에서 확인 가능
    
 1. Logging 적용
-    - Lombok과 @Slf4J 활용
+    - Lombok과 @Slf4J 활용
     
 1. Biz: 도메인 작성 ~ 통합 테스트 실행 까지를 계속 iteration
 
 1. 공통/아키텍트
-    - JPA Auditing 설정
-    - DateTimeFormatter 공통화
-    - Collection의 validator 공통화
+    - JPA Auditing 설정    
+    - DateTimeFormatter 공통화    
+    - Collection의 validator 공통화    
     - BaseEntity로 JPA auditing 적용
-    - XSS 필터 적용
-    - JSON response XSS 처리
-    - Generic을 활용한 DataConverter 일반화
+    - XSS 필터 적용
+    - JSON response XSS 처리
+    - Generic을 활용한 DataConverter 일반화
     - Swagger 설정 및 적용
 
 
