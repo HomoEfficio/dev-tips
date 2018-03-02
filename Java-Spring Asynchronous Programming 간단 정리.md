@@ -1,6 +1,6 @@
 # Java/Spring Asynchronous Programming
 
-## Java 스레드 풀 관리 및 실행
+## Java 스레드 풀 관리 및 사용
 
 ### Executor
 
@@ -31,6 +31,31 @@
 - `ForkJoinPool.commonPool()`로 공용 스레드 풀 쉽게 생성 가능
 - `CompletableFuture`의 `***Async` 메서드 호출 시 별도의 `Executor`를 인자로 넘기지 않으면 기본값으로 `ForkJoinPool`에서 할당받은 스레드로 비동기 처리 
 
+### ExecutorService의 종료 처리
+
+- `ExecutorService`를 사용하는 애플리케이션 종료 시 `ExecutorService`의 우아한 종료를 위해 Java API 문서는 다음과 같은 코드를 권장한다.
+
+    ```java
+    void shutdownAndAwaitTermination(ExecutorService pool) {
+      pool.shutdown(); // Disable new tasks from being submitted
+      try {
+        // Wait a while for existing tasks to terminate
+        if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
+          pool.shutdownNow(); // Cancel currently executing tasks
+          // Wait a while for tasks to respond to being cancelled
+          if (!pool.awaitTermination(60, TimeUnit.SECONDS))
+            System.err.println("Pool did not terminate");
+        }
+      } catch (InterruptedException ie) {
+        // (Re-)Cancel if current thread also interrupted
+        pool.shutdownNow();
+        // Preserve interrupt status
+        Thread.currentThread().interrupt();
+      }
+    }
+    ```
+
+
 ## Spring 스레드 풀 관리 및 실행
 
 ### TaskExecutor
@@ -54,6 +79,12 @@
 - 스프링 2.0 에서 도입
 - `ThreadPoolExecutor`를 쉽게 만들어 사용할 수 있게 해주는 일종의 Wrapper로서, 실제 스레드 풀 관리 역할은 `ThreadPoolTaskExecutor`의 인스턴스 변수로 포함되어 있는 JDK의 `ThreadPoolExecutor`가 담당
 
+### SimpleAsyncTaskExecutor
+
+- 스프링 2.0 에서 도입
+- `@Async`에 `TaskExecutor`를 명시해주지 않으면 `SimpleAsyncTaskExecutor`가 기본으로 사용됨
+- 스레드를 재사용하지 않고 새로 생성하므로 짧게 수행되는 많은 수의 태스크를 실행할 때는 이 `SimpleAsyncTaskExecutore`를 사용하지 말고 별도의 스레드 풀을 사용하는 것이 좋다.
+
 ### @EnableAsync
 
 - 애플리케이션에 기본적인 Async 기능 부여
@@ -63,12 +94,28 @@
 
 - 애플리케이션에 `@EnableAsync`가 설정되어 있어야 효과 발생
 - 클래스나 메서드에 붙일 수 있다.
-- 클래스에 붙이면 해당 클래스내의 모든 메서드에 @Async 효과 적용
-- @Async("nameOfTaskExecutor")와 같이 `TaskExecutor`의 이름을 명시하면 그 `TaskExecutor`에서 스레드를 할당 받고, 할당 받은 스레드에서 `@Async`가 붙은 메서드를 실행한다.
+- 클래스에 붙이면 해당 클래스내의 모든 메서드에 `@Async` 효과 적용
+- `@Async("nameOfTaskExecutor")`와 같이 `TaskExecutor`의 이름을 명시하면 그 `TaskExecutor`에서 스레드를 할당 받고, 할당 받은 스레드에서 `@Async`가 붙은 메서드를 실행한다.
 - `@Async`와 같이 `TaskExecutor`의 이름을 명시하지 않으면
     - `TaskExecutor` 타입의 Bean을 찾아서 있으면 그 `TaskExecutor`에서 스레드를 할당 받아서 메서드 실행
-    - `TaskExecutor` 타입의 Bean이 하나 이상이면서 `@Primary`도 지정이 안 되어있으면 다음의 INFO 메시지와 함께 `SimpleAsyncTaskExecutor`에서 스레드를 할당 받아서 메서드 실행
+    - `TaskExecutor` 타입의 Bean이 둘 이상이면서 `@Primary`도 지정이 안 되어 있어서 어느 `TaskExecutor`를 사용할 지 결정할 수 없으면 다음과 같은 INFO 메시지와 함께 `SimpleAsyncTaskExecutor`에서 스레드를 할당 받아서 메서드 실행
+        
+        ```
+        2018-03-02 17:29:43.443  INFO 34224 --- [nio-8080-exec-1] .s.a.AnnotationAsyncExecutionInterceptor : More than one TaskExecutor bean found within the context, and none is named 'taskExecutor'. Mark one of them as primary or name it 'taskExecutor' (possibly as an alias) in order to use it for async processing: [threadTaskExecutor, tenThreadTaskExecutor]
+Thread name of @Async without name: SimpleAsyncTaskExecutor-1
+        ```
+    
     - `TaskExecutor` 타입의 Bean이 없으면 `SimpleAsyncTaskExecutor`에서 스레드를 할당 받아서 메서드 실행
+
+### ThreadPoolTaskExecutor의 종료 처리
+
+- `ThreadPoolExecutor`는 `DisposableBean` 인터페이스를 구현하는 `ExecutorConfigurationSupport`를 상속하고 있어서, 스프링 애플리케이션이 종료될 때 `ExecutorConfigurationSupport.destroy()`가 자동으로 호출되면서 아래 로그와 같이 우아하게 종료되므로 개발자가 직접 처리해주지 않아도 된다.
+
+    ```
+    2018-03-02 21:14:10.743  INFO 41729 --- [      Thread-10] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'tenThreadTaskExecutor'
+2018-03-02 21:14:10.744  INFO 41729 --- [      Thread-10] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'threadTaskExecutor'
+    ```
+
 
 ## Java의 Async Task Result Container
 
