@@ -1,3 +1,4 @@
+```
 [alias]
         co = checkout
         ci = commit
@@ -13,3 +14,4 @@
         rb = rebase
         psod = push origin develop
         psom = push origin master
+```
