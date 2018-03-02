@@ -1,11 +1,14 @@
 # Java/Spring Asynchronous Programming
 
+>Blocking/Nonblocking 과 Sync/Async 는 http://homoefficio.github.io/2017/02/19/Blocking-NonBlocking-Synchronous-Asynchronous/ 를 참고한다.
+
 ## Java 스레드 풀 관리 및 사용
 
 ### Executor
 
 - Java 5 에서 도입
 - 단순히 `void execute(Runnable command)`만 포함하고 있는 가장 기본 인터페이스
+- 발음은 외국에서도 혼용하는 것으로 보여 딱히 정답은 없지만 https://www.merriam-webster.com/dictionary/executor 에 따르면 이그제큐터 보다는 엑시큐터 쪽이 더 나은 듯
 
 ### ExecutorService
 
@@ -102,9 +105,9 @@
         
         ```
         2018-03-02 17:29:43.443  INFO 34224 --- [nio-8080-exec-1] .s.a.AnnotationAsyncExecutionInterceptor : More than one TaskExecutor bean found within the context, and none is named 'taskExecutor'. Mark one of them as primary or name it 'taskExecutor' (possibly as an alias) in order to use it for async processing: [threadTaskExecutor, tenThreadTaskExecutor]
-Thread name of @Async without name: SimpleAsyncTaskExecutor-1
+        Thread name of @Async without name: SimpleAsyncTaskExecutor-1
         ```
-    
+
     - `TaskExecutor` 타입의 Bean이 없으면 `SimpleAsyncTaskExecutor`에서 스레드를 할당 받아서 메서드 실행
 
 ### ThreadPoolTaskExecutor의 종료 처리
@@ -113,11 +116,13 @@ Thread name of @Async without name: SimpleAsyncTaskExecutor-1
 
     ```
     2018-03-02 21:14:10.743  INFO 41729 --- [      Thread-10] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'tenThreadTaskExecutor'
-2018-03-02 21:14:10.744  INFO 41729 --- [      Thread-10] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'threadTaskExecutor'
+    2018-03-02 21:14:10.744  INFO 41729 --- [      Thread-10] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'threadTaskExecutor'
     ```
 
 
 ## Java의 Async Task Result Container
+
+
 
 ### Future
 
