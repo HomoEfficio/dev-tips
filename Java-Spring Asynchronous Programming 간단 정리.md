@@ -1,4 +1,4 @@
-# Java/Spring Asynchronous Programming 간단 정리
+# Java/Spring Asynchronous Programming
 
 ## Java 스레드 풀 관리 및 실행
 
@@ -23,6 +23,13 @@
 - Java 5 에서 도입
 - static 메서드로 `ForkJoinPool` 또는 `ThreadPoolExecutor` 기반의 다양한 `ExecutorService` 구현체 생성 기능 제공
 
+### ForkJoinPool
+
+- Java 7 에서 도입
+- 풀에 있는 모든 스레드가 풀에 submit 된 태스크 또는 다른 태스크에 의해 생성된 태스크를 찾아서 실행하는 방식으로 노는 스레드를 최소화하는 work-stealing 개념 포함
+- `ExecutoreService`는 트랜잭션 처리 같은 독립적인 태스크를 처리하는데 적합하고, `ForkJoinPool`은 작게 나누어 재귀적 실행으로 분할 정복 가능한 태스크를 처리하는데 적합
+- `ForkJoinPool.commonPool()`로 공용 스레드 풀 쉽게 생성 가능
+- `CompletableFuture`의 `***Async` 메서드 호출 시 별도의 `Executor`를 인자로 넘기지 않으면 기본값으로 `ForkJoinPool`에서 할당받은 스레드로 비동기 처리 
 
 ## Spring 스레드 풀 관리 및 실행
 
