@@ -20,6 +20,20 @@
 - Java 5 에서 도입
 - `ExecutorService`의 실질적인 구현체
 - 스레드 풀 관리를 위한 다양한 기능 포함
+- Thread는 기본값으로 `Executors.defaultThreadFactory()`에 의해 생성되며, 이렇게 생성된 스레드는모두 동일한 ThreadGroup에 속하며 동일한 NORM_PRIORITY 우선 순위와 non-daemon status를 가진다.
+    - 
+- 주요 인스턴스 변수
+    - corePoolSize: 풀의 기본 사이즈. 기본값 없음
+    - maxPoolSize: 풀의 최대 사이즈. 기본값 없음
+    - maxPoolSize: 풀의 최대 사이즈
+    - keepAliveTime: corePoolSize를 넘는 스레드나 allowCoreThreadTimeOut이 true 일 때 corePoolSize 이내의 idle 스레드는 keepAliveTime이 지나면 TimeOut 된다.
+    - allowCoreThreadTimeOut: true이면 corePoolSize를 넘지 않는 스레드도 idle 상태이면 TimeOut 시킨다.
+- Thread 생성 기본 전략
+    - 풀의 활성화 된 스레드 수가 corePoolSize 보다 작은 상태에서 execute() 호출 시 스레드 새로 생성
+    - 풀의 활성화 된 스레드 수가 corePoolSize와 maxPoolSize 사이에 있으면서 큐가 꽉 차있지 않으면 새 스레드를 생성하지 않고 태스크를 큐로 전송
+    - 풀의 활성화 된 스레드 수가 corePoolSize와 maxPoolSize 사이에 있으면 큐가 꽉 차있으면 스레드 새로 생성
+    - 큐도 꽉 차있고 활성 스레드 수가 maxPoolSize에 도달해있는 상태에서 태스크가 또 들어오면 에러 발생
+    - corePoolSize와 maxPoolSize를 같게 하면 결국 고정 크기 스레드 풀을 생성하게 된다.
 
 ### Executors
 
@@ -81,12 +95,18 @@
 
 - 스프링 2.0 에서 도입
 - `ThreadPoolExecutor`를 쉽게 만들어 사용할 수 있게 해주는 일종의 Wrapper로서, 실제 스레드 풀 관리 역할은 `ThreadPoolTaskExecutor`의 인스턴스 변수로 포함되어 있는 JDK의 `ThreadPoolExecutor`가 담당
+- 주요 설정 변수 기본값
+    - corePoolSize: 1
+    - maxPoolSize: Integer.MAX_VALUE
+    - keepAliveSeconds: 60
+    - queueCapacity: Integer.MAX_VALUE
+    - allowThreadTimeOut: false
 
 ### SimpleAsyncTaskExecutor
 
 - 스프링 2.0 에서 도입
 - `@Async`에 `TaskExecutor`를 명시해주지 않으면 `SimpleAsyncTaskExecutor`가 기본으로 사용됨
-- 스레드를 재사용하지 않고 새로 생성하므로 짧게 수행되는 많은 수의 태스크를 실행할 때는 이 `SimpleAsyncTaskExecutore`를 사용하지 말고 별도의 스레드 풀을 사용하는 것이 좋다.
+- 스레드를 재사용하지 않고 새로 생성하고 사용 후 바로 폐기되므로 짧게 수행되는 많은 수의 태스크를 실행할 때는 이 `SimpleAsyncTaskExecutore`를 사용하지 말고 별도의 스레드 풀을 사용하는 것이 좋다.
 
 ### @EnableAsync
 
