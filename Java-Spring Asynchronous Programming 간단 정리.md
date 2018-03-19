@@ -166,7 +166,7 @@
     }
 ```
 
-```
+```java
     public CompletableFuture<String> returningCompletableFutureFromController(int index) {
 
         CompletableFuture<String> stringCompletableFuture = CompletableFuture.supplyAsync(
