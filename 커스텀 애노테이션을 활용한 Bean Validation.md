@@ -209,7 +209,7 @@ public @interface LimitSearchPeriod {
 ```java
 @Getter
 @Setter
-@LimitSearchPeriod(message = "조회 기간은 30일 이내여야 합니다.")  // validation rule에 맞는 메시지 지정!!!
+@LimitSearchPeriod(message = "조회 기간은 90일 이내여야 합니다.")  // validation rule에 맞는 메시지 지정!!!
 public class SearchDto implements ValidPeriod {
 
     // 앞과 동일
