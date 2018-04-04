@@ -131,10 +131,11 @@ public class SearchDto implements ValidPeriod {
     // 여기!!!
     @Override
     public boolean isValidPeriod() {
-        long startDate = Long.valueOf(this.startDate);
-        long endDate = Long.valueOf(this.endDate);
+        DateTimeFormatter yyyyMMdd = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate startDate = LocalDate.parse(this.startDate, yyyyMMdd);
+        LocalDate endDate = LocalDate.parse(this.endDate, yyyyMMdd);
 
-        return (endDate - startDate) <= 30 && (endDate - startDate) >= 0;
+        return endDate.isBefore(startDate.plusMonths(3)) && (endDate.isEqual(startDate) || endDate.isAfter(startDate));
     }
 
     @Override
