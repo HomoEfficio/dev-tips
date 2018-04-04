@@ -9,9 +9,10 @@ package homo.efficio.springboot.scratchpad.validation;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 
 /**
  * @author homo.efficio@gmail.com
@@ -19,24 +20,23 @@ import javax.validation.constraints.Pattern;
  */
 @Getter
 @Setter
-@MostSearchPeriod
 public class SearchDto {
 
     @NotNull(message = "keyword가 명시되어야 합니다.")
-    private String keyword;  // 검색어
+    private String keyword;
 
     @NotNull(message = "기간 시작 일자가 명시되어야 합니다.")
-    @Pattern(regexp = "\\d{4}[0-1]\\d[0-3]\\d", message = "startDate는 yyyymmdd 형식이어야 합니다.")
-    private String startDate;  // 대상 기간 시작일
+    @DateTimeFormat(pattern = "yyyyMMdd")
+    private LocalDate startDate;
 
     @NotNull(message = "기간 종료 일자가 명시되어야 합니다.")
-    @Pattern(regexp = "\\d{4}[0-1]\\d[0-3]\\d", message = "endDate는 yyyymmdd 형식이어야 합니다.")
-    private String endDate;  // 대상 기간 종료일
+    @DateTimeFormat(pattern = "yyyyMMdd")
+    private LocalDate endDate;
 
     public SearchDto() {
     }
 
-    public SearchDto(String keyword, String startDate, String endDate) {
+    public SearchDto(String keyword, LocalDate startDate, LocalDate endDate) {
         this.keyword = keyword;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -53,11 +53,9 @@ public class SearchDto {
 }
 ```
 
-날짜 regexp가 좀 허술하지만 그냥 예시니까 일단 넘어가자 ㅋ
+여기에 검색 대상 기간을 90일로 한정하고 싶다. 어떻게 하는 것이 좋을까? 
 
-여기에 검색 대상 기간을 30일로 한정하고 싶다. 어떻게 하는 것이 좋을까? 
-
-여러 방법이 있겠지만 Java의 Bean Validation 프레임워크만으로 해결해보자. Java EE 8부터는 기본으로 포함되어 있고, 없다면 MvnRepository에서 검색해서 build.gradle이나 pom.xml에 의존 관계를 추가해야 한다.
+여러 방법이 있겠지만 Java의 Bean Validation 프레임워크만으로 해결해보자. Java EE 8부터는 기본으로 포함되어 있고, 없다면 MvnRepository에서 검색해서 build.gradle이나 pom.xml에 다음과 같은 의존 관계를 추가해야 한다.
 
 ```
 compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
@@ -95,9 +93,10 @@ package homo.efficio.springboot.scratchpad.validation;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 
 /**
  * @author homo.efficio@gmail.com
@@ -111,31 +110,27 @@ public class SearchDto implements ValidPeriod {
     private String keyword;
 
     @NotNull(message = "기간 시작 일자가 명시되어야 합니다.")
-    @Pattern(regexp = "\\d{4}[0-1]\\d[0-3]\\d", message = "startDate는 yyyymmdd 형식이어야 합니다.")
-    private String startDate;
+    @DateTimeFormat(pattern = "yyyyMMdd")
+    private LocalDate startDate;
 
     @NotNull(message = "기간 종료 일자가 명시되어야 합니다.")
-    @Pattern(regexp = "\\d{4}[0-1]\\d[0-3]\\d", message = "endDate는 yyyymmdd 형식이어야 합니다.")
-    private String endDate;
+    @DateTimeFormat(pattern = "yyyyMMdd")
+    private LocalDate endDate;
 
     public SearchDto() {
     }
 
-    public SearchDto(String keyword, String startDate, String endDate) {
+    public SearchDto(String keyword, LocalDate startDate, LocalDate endDate) {
         this.keyword = keyword;
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-
-    // 여기!!!
-    @Override
+    // 여기!!!
+    @Override
     public boolean isValidPeriod() {
-        DateTimeFormatter yyyyMMdd = DateTimeFormatter.ofPattern("yyyyMMdd");
-        LocalDate startDate = LocalDate.parse(this.startDate, yyyyMMdd);
-        LocalDate endDate = LocalDate.parse(this.endDate, yyyyMMdd);
-
-        return endDate.isBefore(startDate.plusMonths(3)) && (endDate.isEqual(startDate) || endDate.isAfter(startDate));
+        return endDate.isBefore(startDate.plusMonths(3))
+                && (endDate.isEqual(startDate) || endDate.isAfter(startDate));
     }
 
     @Override
@@ -220,20 +215,23 @@ public class SearchDto implements ValidPeriod {
 
 ```java
 @RequestMapping("/period")
-public ResponseEntity<String> searchWithinPeriod(@Valid SearchDto dto) {
+public ResponseEntity<String> searchWithinPeriod(@Valid SearchDto dto, BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+        // 바인딩 오류 처리
+    }
     // 어쩌구 그 잘난 비즈니스 로직을 담고 있는 서비스 호출
 }
 ```
 
-이제 다음과 같이 30일이 넘는 기간으로 요청을 날리면
+이제 다음과 같이 90일이 넘는 기간으로 요청을 날리면
 
 ```
-http://localhost:8080/bean-validation/period?keyword=omw&startDate=20180101&endDate=20180303
+http://localhost:8080/bean-validation/period?keyword=omw&startDate=20171201&endDate=20180403
 ```
 
 다음과 같이 `BindException`이 발생한다.
 
 ```
 2018-04-04 15:28:51.382  WARN 75195 --- [nio-8080-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved exception caused by Handler execution: org.springframework.validation.BindException: org.springframework.validation.BeanPropertyBindingResult: 1 errors
-Error in object 'searchDto': codes [LimitSearchPeriod.searchDto,LimitSearchPeriod]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [searchDto.,]; arguments []; default message []]; default message [조회 기간은 30일 이내여야 합니다.]
+Error in object 'searchDto': codes [LimitSearchPeriod.searchDto,LimitSearchPeriod]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [searchDto.,]; arguments []; default message []]; default message [조회 기간은 90일 이내여야 합니다.]
 ```
