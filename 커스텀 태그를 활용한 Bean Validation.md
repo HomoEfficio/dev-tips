@@ -215,7 +215,7 @@ public class SearchDto implements ValidPeriod {
 }
 ```
 
-## Controller에서는 이렇게
+## 스프링 MVC Controller에서는 이렇게
 
 ```java
 @RequestMapping("/period")
