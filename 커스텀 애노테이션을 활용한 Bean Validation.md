@@ -195,7 +195,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = {PeriodValidator.class})
 public @interface LimitSearchPeriod {
 
-    String message() default "기간이 유효하지 않습니다.";
+    String message() default "기간이 유효하지 않습니다.";  // 애노테이션 지정 시 validatino rule에 맞는 메시지 지정 가능!!!
 
     Class<?>[] groups() default {};
 
@@ -208,18 +208,31 @@ public @interface LimitSearchPeriod {
 ```java
 @Getter
 @Setter
-@LimitSearchPeriod
+@LimitSearchPeriod(message = "조회 기간은 30일 이내여야 합니다.")  // validation rule에 맞는 메시지 지정!!!
 public class SearchDto implements ValidPeriod {
 
     // 앞과 동일
 }
 ```
 
-## 스프링 MVC Controller에서는 이렇게
+## 스프링 MVC Controller 사례
 
 ```java
 @RequestMapping("/period")
-public ResponseEntity<String> searchWithinPeriod(@ModelAttribute @Valid SearchDto dto) {
+public ResponseEntity<String> searchWithinPeriod(@Valid SearchDto dto) {
     // 어쩌구 그 잘난 비즈니스 로직을 담고 있는 서비스 호출
 }
+```
+
+이제 다음과 같이 30일이 넘는 기간으로 요청을 날리면
+
+```
+http://localhost:8080/bean-validation/period?keyword=omw&startDate=20180101&endDate=20180303
+```
+
+다음과 같이 `BindException`이 발생한다.
+
+```
+2018-04-04 15:28:51.382  WARN 75195 --- [nio-8080-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved exception caused by Handler execution: org.springframework.validation.BindException: org.springframework.validation.BeanPropertyBindingResult: 1 errors
+Error in object 'searchDto': codes [LimitSearchPeriod.searchDto,LimitSearchPeriod]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [searchDto.,]; arguments []; default message []]; default message [조회 기간은 30일 이내여야 합니다.]
 ```
