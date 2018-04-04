@@ -2,7 +2,7 @@
 
 필드 하나만 검증하는 건 간단한데, 여러 필드 사이에도 제약 조건이 있을 떄는 어떻게 검증하는 것이 좋을까? 예를 들어, 일정 기간을 대상으로 검색하는 시나리오가 있다고 치자.
 
-검색어와 조건을 받아들이는 DTO과 다음과 같다면 `endDate`와 `startDate`는 30일 이내여야 하는 제약 조건을 어떻게 구현할까?
+검색어와 조건을 받아들이는 DTO과 다음과 같다면 '`endDate`는 `startDate`로부터 90일 이내'라는 하는 제약 조건을 어떻게 구현할까?
 
 ```java
 package homo.efficio.springboot.scratchpad.validation;
