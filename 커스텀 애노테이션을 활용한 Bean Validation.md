@@ -88,6 +88,15 @@ public interface ValidPeriod {
 
 ## 2. `SearchDTO`를 `ValidPeriod` 인터페이스를 구현하도록 변경하고, `ValidPeriod` 인터페이스 메서드를 override하는 구현 메서드 A에 실제 validation 로직 구현
 
+기간 유효성 체크 로직을 추가한다. 이 때 `startDate`와 `endDate`에 `null` 체크 로직을 추가해주는 것이 중요하다. 
+
+스프링은 클라이언트에서 넘어온 파라미터 값을 DTO 객체에 바인딩할 때 `20181322` 와 같이 유효하지 않은 값이 넘어오면, 예외를 바로 던지지 않고 일단 DTO의 해당 속성에 `null`을 할당하고, 발생한 예외를 모두 모아서 담아두고 나중에 한 번에 처리를 한다. 
+
+그렇지 않고 오류마다 하나하나 처리하면 사용자가 파라미터1, 파라미터2, 파라미터3에 모두 오류가 있는 값을 입력했을 때, 먼저 파라미터1 오류만 보여주고, 사용자가 파라미터1 값을 바로잡으면 파라미터2 오류를 보여주고, 사용자가 파라미터2 값을 바로잡으면 파라미터3 오류를 보여주는데, 이렇게 하면 여러 번 수정 작업을 거치므로 비효율적이다. 이런 방식 보다는 오류를 모두 담아두고 한 번에 모든 오류를 보여주면 사용자가 한 번에 모든 오류를 수정해서 보낼 수 있으므로 더 효율적이다. 이 과정은 `AbstractPropertyAccessor`의 `setPropertyValues()` 메서드에서 확인할 수 있다.
+
+암튼 그래서 `startDate`나 `endDate`에 바인딩 될 값에 오류가 있으면, Custom Validator가 호출될 때 두 속성에 `null`이 들어와 있으므로, `null` 처리를 해주지 않으면 의도하지 않은 `NullPointerException`이 발생한다.
+
+
 ```java
 package homo.efficio.springboot.scratchpad.validation;
 
@@ -129,6 +138,9 @@ public class SearchDto implements ValidPeriod {
     // 여기!!!
     @Override
     public boolean isValidPeriod() {
+        // 개별 속성에 유효하지 않은 값이 들어오면 null 이 할당된다.
+        if (startDate == null || endDate == null) return false;
+
         return endDate.isBefore(startDate.plusMonths(3))
                 && (endDate.isEqual(startDate) || endDate.isAfter(startDate));
     }
@@ -235,3 +247,58 @@ http://localhost:8080/bean-validation/period?keyword=omw&startDate=20171201&endD
 2018-04-04 15:28:51.382  WARN 75195 --- [nio-8080-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved exception caused by Handler execution: org.springframework.validation.BindException: org.springframework.validation.BeanPropertyBindingResult: 1 errors
 Error in object 'searchDto': codes [LimitSearchPeriod.searchDto,LimitSearchPeriod]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [searchDto.,]; arguments []; default message []]; default message [조회 기간은 90일 이내여야 합니다.]
 ```
+
+## BindException 처리
+
+앞의 컨트롤러에서 다음과 같이 BindException 처리하는 부분이 있는데,
+
+```java
+@RequestMapping("/period")
+public ResponseEntity<String> searchWithinPeriod(@Valid SearchDto dto, BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+        // 바인딩 오류 처리
+    }
+  // 이하 생략
+```
+
+다음과 같은 Helper를 만들어서,
+
+```java
+public class BindingResultHelper {
+
+    public static void throwCustomInvalidParameterException(BindingResult bindingResult) {
+
+        // 개별 필드 오류 처리(ex: startDate에 20181322와 같은 값이 들어왔을 때)
+        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+        if (!fieldErrors.isEmpty()) {
+            String message = fieldErrors.stream()
+                    .map(e -> String.format("Property value [%s] of '%s' is invalid.", e.getRejectedValue(), e.getField()))
+                    .collect(Collectors.joining(" && "));
+            throw new CustomInvalidParameterException(message);
+        }
+
+        // 개별 필드 외의 오류 처리(ex: startDate와 endDate의 차이가 90일을 넘어갈 때)
+        List<ObjectError> objectErrors = bindingResult.getAllErrors();
+        if (!objectErrors.isEmpty()) {
+            String message = objectErrors.stream()
+                    .map(e -> String.format("Error in object '%s': %s", e.getObjectName(), e.getDefaultMessage()))
+                    .collect(Collectors.joining(" && "));
+            throw new CustomInvalidParameterException(message);
+        }
+
+        throw new CustomInvalidParameterException("입력값을 확인해 주십시오.");
+    }
+}
+```
+
+아래와 같이 쓰는 것도 괜찮다.
+
+```java
+@RequestMapping("/period")
+public ResponseEntity<String> searchWithinPeriod(@Valid SearchDto dto, BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+        BindingResultHelper.throwCustomInvalidParameterException(bindingResult);
+    }
+  // 이하 생략
+```
+
