@@ -1,6 +1,6 @@
 # Spring Data JPA 에서 Java8 Date/Time(JSR-310) 사용하기 
 
-Java8에는 시간 데이터를 더 편리하게 처리할 수 있게 해주는 `LocalDate`, `LocalDateTime` 등의 클래스들이 `java.time` 패키지에 추가되었다. 날짜/시간 차이 계산, 비교, 년/월/일/시/분/초 단위 별 추출 등 풍부한 기능을 제공해주므로 사용성이 아주 좋다. [Joda-Time](http://www.joda.org/joda-time/)을 사용하고 있었다면, Java8에서는 `java.time (JSR-310)`으로 마이크레이션 하는 것이 좋다.
+Java8에는 시간 데이터를 더 편리하게 처리할 수 있게 해주는 `LocalDate`, `LocalDateTime` 등의 클래스들이 `java.time` 패키지에 추가되었다. 날짜/시간 차이 계산, 비교, 년/월/일/시/분/초 단위 별 추출 등 풍부한 기능을 제공해주므로 사용성이 아주 좋다. [Joda-Time](http://www.joda.org/joda-time/)을 사용하고 있었다면, Java8에서는 `java.time (JSR-310)`으로 마이그레이션 하는 것이 좋다.
 
 하지만, `java.time (JSR-310)`를 별다른 처리 없이 JPA를 이용해서 MySQL에 저장하면 버전에 따라서 아래와 같은 에러가 날 수도 있다.
 
