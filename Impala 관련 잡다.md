@@ -2,24 +2,37 @@
 
 ## 테이블 메타 정보 갱신
 
-데이터베이스나 테이블 메타 정보는 보통 다음과 같은 경우에 발생한다.
+데이터베이스나 테이블 메타 정보는 보통 다음과 같은 경우에 변경된다.
 
 - Hive: ALTER, CREATE, DROP, INSERT
 - Impalad: CREATE TABLE, ALTER TABLE, INSERT
 
 ### invalidate metadata
 
+- 하이브와 임팔라가 공유하는 메타스토어에 저장된 정보가 변경되면 임팔라에 의해 캐시되어 있는 정보도 업데이트 되어야 하는데, 이 때 `invalidate metadata`를 실행한다.
 - 하나 또는 복수의 테이블의 메타 정보를 무효화(캐시된 메타 정보를 모두 방출)
-    - 다음에 해당 테이블에 대한 쿼리를 실행할 때 임팔라가 해당 테이블의 메타 데이터를 새로 생성하므로, 결국 메타 데이터 갱신 유발
-    - 즉, 메타 데이터 갱신을 위해 사용
-- 하이브 셸에서 테이블을 생성한 후에 `invalidate metadata`를 해줘야 한다.
+    - 다음에 해당 테이블에 대한 쿼리를 실행할 때 임팔라가 해당 테이블의 메타 데이터를 새로 reload 한 후에 쿼리를 실행
+    - 결국 메타 데이터 갱신을 유발하므로 `invalidate metadata`는 메타 데이터 갱신을 위해 사용
+- 하이브 셸에서 테이블을 생성한 후에는 임팔라로 쿼리하기 전에 `invalidate metadata`를 해줘야 한다.
+- 하지만 모든 메타 정보의 갱신에 대해 `invalidate metadata`를 실행해야 하는 것은 아니다.
+- 실행해야 하는 경우
+    - 메타데이터 변경이 발생했고,
+    - 그 변경이 클러스터 내의 다른 impalad 인스턴스나 하이브를 통해 발생했고,
+    - 그 변경이 임팔라 셸이나 ODBC 같은 클라이언트가 직접 붙는 메타스토어 데이터베이스에 발생했을 때
+- 실행하지 않아도 되는 경우
+    - ALTER TABLE, INSERT 등 테이블에 수정을 가한 임팔라 노드와 동일한 노드에서 쿼리를 실행할 때
+- 대용량 테이블에서는 `invalidate metadata` 실행에 몇 분 정도 소요될 수 있다.
+    - 실제 사례
+- `invalidate metadata` 해준 후 `describe`를 해주면 메타 데이터가 바로 reload 되므로, 첫 쿼리의 응답 시간을 줄여준다.
 
 ### refresh
 
 - 기존 테이블에 데이터 파일을 추가한다면 `invalidate metadata`보다 `refresh`가 더 가벼우므로 적합하다.
     - 테이블을 새로 생성했다면 `invalidate metadata`를 해줘야 한다.
 
->참고: http://www.cloudera.com/documentation/cdh/5-1-x/Impala/Installing-and-Using-Impala/ciiu_invalidate_metadata.html
+>참고
+>- http://www.cloudera.com/documentation/cdh/5-1-x/Impala/Installing-and-Using-Impala/ciiu_invalidate_metadata.html
+>- https://www.cloudera.com/documentation/enterprise/latest/topics/impala_invalidate_metadata.html
 
 ## compute stats
 
@@ -30,7 +43,9 @@
 - 파티션된 테이블에 대해 특정 파티션의 정보만 수집하려면 `COMPUTE INCREMENTAL STATS PARTITION_NAME` 실행
 - 동일 테이블에 대해 `COMPUTE STATS`와 `COMPUTE INCREMENTAL STATS`를 모두 실행 금지, 둘 중 하나만 실행해야 함
 
->참고: https://www.cloudera.com/documentation/enterprise/latest/topics/impala_compute_stats.html
+>참고
+>- https://www.cloudera.com/documentation/enterprise/latest/topics/impala_compute_stats.html
+
 
 ## View 연결
 
