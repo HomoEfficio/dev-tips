@@ -23,6 +23,8 @@
     - ALTER TABLE, INSERT 등 테이블에 수정을 가한 임팔라 노드와 동일한 노드에서 쿼리를 실행할 때
 - 대용량 테이블에서는 `invalidate metadata` 실행에 몇 분 정도 소요될 수 있다.
     - 실제 사례
+- 비어있는 테이블 A에 하이브 셸에서 insert 한 후, 임팔라 셸에서 `invalidate metadata A`를 하지 않고 해당 테이블을 조회해 보면 조회 결과가 안 나온다.
+- `invalidate metadata A` 해준 후 조회하면 결과가 나온다.
 - `invalidate metadata` 해준 후 `describe`를 해주면 메타 데이터가 바로 reload 되므로, 첫 쿼리의 응답 시간을 줄여준다.
 
 ### refresh
