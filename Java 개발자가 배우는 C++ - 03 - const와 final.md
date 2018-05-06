@@ -1,3 +1,7 @@
+# Java 개발자가 배우는 C++ - const와 final
+
+Java와 C++의 차이를 깊이 살펴보는 대신 후다닥 살펴보고, C++에 대한 이질감을 최대한 빨리 떨쳐내는 게 목적
+
 ## C++의 const와 Java의 final
 
 ### Java의 final
