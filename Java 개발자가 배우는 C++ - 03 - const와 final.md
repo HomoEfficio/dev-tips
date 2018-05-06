@@ -28,7 +28,7 @@ final Object obj = new Object();
 obj = new Object();  // Cannot assign a value to final variable 'obj'
 ```
 
-`final`로 선언된 객체에 다른 객체를 재할당할 수는 없지만, `final`로 선언된 객체의 상태를 바꾸는 일은 가능하다.
+`final`로 선언된 객체에 다른 객체를 재할당할 수는 없지만, **`final`로 선언된 객체의 상태를 바꾸는 일은 가능**하다.
 
 ```java
 class Tmp {
@@ -52,7 +52,7 @@ tmp.setName("abc");  // 이렇게 객체의 메서드를 호출해서 객체의 
 
 #### const object
 
-`const T tmp`와 같이 선언되면 name 객체는 재할당이 불가하고, public 필드의 변경이나 메서드를 통한 private 필드의 변경 등 **객체의 상태 변경이 불가**하다. const object의 상태를 변경하지 않는 **const method**만 호출할 수 있다.
+`const T tmp`와 같이 선언되면 name 객체는 재할당이 불가하고, public 필드의 변경이나 메서드를 통한 private 필드의 변경 등 **객체의 상태 변경도 불가**하다. const object의 상태를 변경하지 않는 **const method**만 호출할 수 있다.
 
 Java의 `final`과 달리 C++의 `const`는 클래스의 상속과는 관계가 없다.
 
