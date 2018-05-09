@@ -40,6 +40,6 @@ StatementCallback; SQL [INSERT OVERWRITE TABLE 어쩌구_테이블 PARTITION (se
 
 `set hive.exec.dynamic.partition.mode=nonstrict`을 실행하지 않으면 insert가 실행되면서 금방 에러가 발생하고 에러 메시지에 정보도 제공되므로 문제 해결이 비교적 쉽다. 
 
-하지만 `set hive.exec.dynamic.partition.mode=nonstrict; set hive.exec.max.dynamic.partitions=10000`와 같이 한 문장으로 실행해서 **`set hive.exec.max.dynamic.partitions=10000`가 실행되지 않으면 파티션이 10000개가 넘을 때까지 한참 동안 insert가 진행된 후에 에러가 발생**하고, **에러 메시지에 `return code 1` 외에는 별다른 정보도 주어지지 않아 디버깅도 어려워 진다.**
+하지만 `set hive.exec.dynamic.partition.mode=nonstrict; set hive.exec.max.dynamic.partitions=10000`와 같이 한 문장으로 실행해서 **`set hive.exec.max.dynamic.partitions=10000`가 실행되지 않으면 최대 파티션 갯수 기본값인 1000 개가 넘을 때까지 한참 동안 insert가 진행된 후에 에러가 발생**하고, **에러 메시지에 `return code 1` 외에는 별다른 정보도 주어지지 않아 디버깅도 어려워 진다.**
 
 물론 이 글은.. 주의 사항을 지키지 않아 엄청난 삽질을 했다는 증거다..
