@@ -98,13 +98,13 @@ https://github.com/EOSIO/eos/pull/2979/files
 
 몇 가지 화면 캡처를 떠놨으니 미리 구경해보자.
 
-#### Boost
+### Boost
 
 별 문제없이 설치된다.
 
 ![Imgur](https://i.imgur.com/QS1BX2K.png)
 
-#### mongoDB
+### mongoDB
 
 별 문제없이 설치된다.
 
@@ -114,7 +114,7 @@ https://github.com/EOSIO/eos/pull/2979/files
 
 ![Imgur](https://i.imgur.com/AvnGEG0.png)
 
-#### secp256k1-zkp
+### secp256k1-zkp
 
 mongoDB 설치까지 완료된 후 지루할만 하니 에러가 나준다.
 
@@ -134,7 +134,7 @@ mongoDB 설치까지 완료된 후 지루할만 하니 에러가 나준다.
 
 ![Imgur](https://i.imgur.com/QBGDIzg.png)
 
-#### LLVM
+### LLVM
 
 이제 secp256k1-zkp도 깔끔하게 설치되고 다음 단계인 LLVM으로 넘어간다. LLVM은 별 문제없이 설치된다.
 
@@ -142,7 +142,7 @@ mongoDB 설치까지 완료된 후 지루할만 하니 에러가 나준다.
 
 ![Imgur](https://i.imgur.com/zICvgid.png)
 
-#### EOSIO
+### EOSIO
 
 이제 드디어 EOSIO 설치로 넘어간다. EOSIO는 별 문제없이 설치된다.
 
