@@ -54,3 +54,13 @@
 `CREATE VIEW VIEW_NAME AS SELECT ... FROM TARGET_TABLE`로 뷰를 만든 후에, `ALTER TABLE TARGET_TABLE RENAME TO TARGET_TABLE_1`와 같이 뷰의 대상 테이블의 이름을 바꾸면 뷰는 이제는 없어진 `TARGET_TABLE`을 계속 참조하므로 에러가 발생한다.
 
 `ALTER TABLE TARGET_TABLE_1 RENAME TO TARGET_TABLE`로 테이블의 이름을 원래 뷰가 참조하고 있던 이름으로 바꾸면, 뷰에 별다른 처리를 하지 않아도 다시 연결이 복원된다.
+
+## 기타 SQL on Hadoop 잡다
+
+- 동시 조회 실행자가 많으면 리소스 사용 증가
+- 피닉스는 멀티 세션으로 동시 조회 시 응답 못 주는 경우 있음
+- 임팔라도 Like 검색으로 멀티 세션 실행 시 1초 이내 어려울 수 있음
+- 임팔라는 `invalidate metadata`를 해줘야 함, 프레스트는 필요없으므로 유리
+- 임팔라 + kudu 조합이 프레스토보다는 조금이나마 잘 나온다.
+- Kudu는 캐시를 잘 써서 성능 좋고, HDFS는 캐시 개념이 없어서 느리다.
+- 프레스토는 C로 되어 있고, 데몬이 떠 있어 잡 실행 환경 조성 비용이 낮아서 빠르고, 하이브는 Java에 데몬 없이 그때그때 잡 실행 환경을 조성하므로 비용이 높아서 느리다.
