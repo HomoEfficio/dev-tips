@@ -73,30 +73,48 @@ Java에서는 생성자를 작성하는 방식이 한 가지지만, C++의 생�
 C++의 생성자를 Java의 생성자 작성 방식처럼 작성하면 생성자의 body 내부 코드는 할당 방식으로 동작한다. 따라서 다음과 같은 코드는 컴파일 되지 않는다.
 
 ```cpp
+#include <iostream>
+using namespace std;
+
+class OtherTmp {
+private:
+  const int b;
+
+public:
+  OtherTmp(const int b) : b {b} {}
+
+  const int getB() const {
+    return b;
+  }
+};
+
 class Tmp {
 private:
   const int a;
   OtherTmp& otherTmp;
 
 public:
-  Tmp(int a) {
+  Tmp(const int a, OtherTmp& otherTmp) {
     this->a = a;  // const 변수인 this->a 에 할당을 시도하므로 컴파일 에러 발생
+    this->otherTmp = otherTmp;  // 할당이 불가능한 Reference에 할당을 시도하면 default operator=에 의해 의도하지 않은 Shallow Copy 발생
   }
-
-  Tmp(OtherTmp& otherTmp) {
-    // 할당이 불가능한 Reference에 할당을 시도하면 의도하지 않은 Shallow Copy 발생
-    this->otherTmp = otherTmp;  
-  }
-
+  
   int getA() {
     return a;
+  }
+  
+  OtherTmp &getOtherTmp() const {
+    return otherTmp;
   }
 };
 
 int main() {
-  Tmp tmp(1);
+  OtherTmp otherTmp {3};
+  OtherTmp& otherTmpRef = otherTmp;
+  Tmp tmp1 {1, otherTmpRef};
 
-  cout << tmp.getA() << endl;
+  cout << tmp1.getA() << endl;
+  cout << tmp1.getOtherTmp().getB() << endl;
 }
 
 ```
@@ -104,69 +122,52 @@ int main() {
 위와 같이 할당 방식으로 값을 지정해 줄 수 없을 때는 constructor-initializer(ctor-initializer)를 사용해야 한다.
 
 ```cpp
+//
+// Created by homoefficio on 18. 5. 6.
+//
+#include <iostream>
+using namespace std;
+
+class OtherTmp {
+private:
+  const int b;
+
+public:
+  OtherTmp(const int b) : b {b} {}
+
+  const int getB() const {
+    return b;
+  }
+};
+
 class Tmp {
 private:
   const int a;
   OtherTmp& otherTmp;
 
 public:
-  Tmp(): a(a), otherTmp(otherTmp) {}  // constructor-initializer 방식
+  Tmp(const int a, OtherTmp& otherTmp) : a {a}, otherTmp {otherTmp} {}  // ctor-initializer
 
-  int getA() {
+  const int getA() const {
     return a;
   }
 
-  OtherTmp getOtherTmp() const {
+  OtherTmp &getOtherTmp() const {
     return otherTmp;
   }
 };
 
 int main() {
-  Tmp tmp(1);
+  OtherTmp otherTmp {3};
+  OtherTmp& otherTmpRef = otherTmp;
+  Tmp tmp1 {1, otherTmpRef};
 
-  cout << tmp.getA() << endl;
+  cout << tmp1.getA() << endl;
+  cout << tmp1.getOtherTmp().getB() << endl;
 }
 ```
 
-생성자를 위와 같이 기술하면 할당이 아니라 초기화 방식으로 동작하므로, 생성자에서 const 멤버 변수에 값을 초기화할 수 있다.
-
-하지만 위 방식보다 조금 더 나은 방식은 C++11 부터 도입된 Uniform initialization 방식이다.
-
-**쉽게 말해 다음과 같이 `()` 대신 `{}`로 값을 지정**해주는 것이다.
-
-이왕에 개선하는 거 `const`도 개선하면 다음과 같이 바뀐다.
-
-```cpp
-#include <iostream>
-using namespace std;
-
-class Tmp {
-private:
-    const int a;
-    OtherTmp& otherTmp;
-
-public:
-    Tmp(const int a) : a{a}, otherTmp{otherTmp} {}  // (a) 대신 {a} 사용
-
-    // getter는 보통 뒤에 const를 붙여준다. 그래야 const object에 대해서도 호출될 수 있다.
-    // 반환하는 멤버 변수가 const이므로 getter 앞에도 const 붙여줌
-    const int getA() const {
-        return a;
-    }
-
-    OtherTmp& getOtherTmp() const {
-      return this->otherTmp;
-    }
-};
-
-int main() {
-    OtherTmp otherTmp;
-    OtherTmp& otherTmpRef = &otherTmp;
-    Tmp tmp1 {1, otherTmpRef};  // (1, otherTmpRef) 대신 {1, otherTmpRef} 사용
-    
-    cout << tmp1.getA() << endl;
-}
-```
+생성자를 위와 같이 C++11 부터 도입된 **Uniform initialization**(**쉽게 말해 다음과 같이 `()` 대신 `{}`로 값을 지정**)을 활용해서 기술하면 할당이 아니라 초기화 방식으로 동작하므로, 생성자에서 const 멤버 변수에 값을 초기화할 수 있다.
 
 
 ## Default 생성자
@@ -205,4 +206,14 @@ int main() {
 }
 ```
 
-To be Contrinued..
+## 복사 생성자
+
+- 언제 호출 되나
+  - 객체가 인자로 전달될 때
+  - 객체가 반환값으로 반환될 때
+
+## operator=
+
+- default
+
+
