@@ -48,43 +48,76 @@ int main() {
 
 ### Java의 생성자
 
-Java의 생성자는 할당 방식으로만 동작한다. 그래서 다음과 같은 코드는 컴파일 에러를 낸다.
+Java에서는 생성자 안에서도 멤버 변수를 초기화 할 수 있다.
 
 ```java
 class Tmp {
-  final String msg;  // 컴파일 에러 Variable 'msg' might not have been initialized
+  private final String msg;
 
   public Tmp(String msg) {
-    this.msg = msg;
+    // 이미 생성되어 있는 this.msg 라는 변수에 msg를 할당하는 것처럼 보이지만,
+    // 할당할 수 없는 final 변수인 this.msg에 할당이 성공되는 것으로 봐서
+    // 할당이 아니라 초기화로 동작함을 짐작할 수 있다.
+    this.msg = msg;  
   }
 }
 ```
 
-하지만 생성자 말고 멤버 변수 선언에서 초기화를 하면 되므로 초기활 할 방법이 없는 것은 아니다.
-
-```java
-class Tmp {
-  final String msg = "This is a final msg";
-
-  public Tmp() {
-  }
-}
-```
 
 ### C++의 생성자
 
-C++의 생성자도 위와 같이 작성하면 Java와 마찬가지로 할당 방식으로 동작하지만, 작성 방식에 따라 초기화 방식으로도 동작한다.
+Java에서는 생성자를 작성하는 방식이 한 가지지만, C++의 생성자 작성 방식은 여러가지다.
+
+#### 할당 방식
+
+C++의 생성자를 Java의 생성자 작성 방식처럼 작성하면 생성자의 body 내부 코드는 할당 방식으로 동작한다. 따라서 다음과 같은 코드는 컴파일 되지 않는다.
 
 ```cpp
 class Tmp {
 private:
   const int a;
+  OtherTmp& otherTmp;
 
 public:
-  Tmp(): a(a) {}
+  Tmp(int a) {
+    this->a = a;  // const 변수인 this->a 에 할당을 시도하므로 컴파일 에러 발생
+  }
+
+  Tmp(OtherTmp& otherTmp) {
+    // 할당이 불가능한 Reference에 할당을 시도하면 의도하지 않은 Shallow Copy 발생
+    this->otherTmp = otherTmp;  
+  }
 
   int getA() {
     return a;
+  }
+};
+
+int main() {
+  Tmp tmp(1);
+
+  cout << tmp.getA() << endl;
+}
+
+```
+
+위와 같이 할당 방식으로 값을 지정해 줄 수 없을 때는 constructor-initializer(ctor-initializer)를 사용해야 한다.
+
+```cpp
+class Tmp {
+private:
+  const int a;
+  OtherTmp& otherTmp;
+
+public:
+  Tmp(): a(a), otherTmp(otherTmp) {}  // constructor-initializer 방식
+
+  int getA() {
+    return a;
+  }
+
+  OtherTmp getOtherTmp() const {
+    return otherTmp;
   }
 };
 
@@ -110,12 +143,56 @@ using namespace std;
 class Tmp {
 private:
     const int a;
+    OtherTmp& otherTmp;
 
 public:
-    Tmp(const int a) : a {a} {}  // (a) 대신 {a} 사용
+    Tmp(const int a) : a{a}, otherTmp{otherTmp} {}  // (a) 대신 {a} 사용
 
     // getter는 보통 뒤에 const를 붙여준다. 그래야 const object에 대해서도 호출될 수 있다.
     // 반환하는 멤버 변수가 const이므로 getter 앞에도 const 붙여줌
+    const int getA() const {
+        return a;
+    }
+
+    OtherTmp& getOtherTmp() const {
+      return this->otherTmp;
+    }
+};
+
+int main() {
+    OtherTmp otherTmp;
+    OtherTmp& otherTmpRef = &otherTmp;
+    Tmp tmp1 {1, otherTmpRef};  // (1, otherTmpRef) 대신 {1, otherTmpRef} 사용
+    
+    cout << tmp1.getA() << endl;
+}
+```
+
+
+## Default 생성자
+
+### 컴파일러가 만들어 주는 Default 생성자
+
+C++에서도 Java와 마찬가지로 개발자가 어떤 클래스에 아무런 생성자도 정의하지 않으면, 컴파일러가 자동으로 Default 생성자를 만들어 준다.
+
+Default 생성자는 `MyClass myClass;`와 같이 아무 인자 없이 객체 선언만으로 Stack 영역에 객체를 만들 때와 객체 배열을 만들 때 등 아무 인자 없이 객체를 생성할 때 호출된다.
+
+### 개발자가 명시해 주는 Default 생성자
+
+클래스에 개발자가 작성한 생성자가 있으면, 컴파일러는 Default 생성자를 자동으로 만들어주지 않으므로 개발자가 작성해야 한다. 이 때 클래스 헤더 파일에서 다음과 같이 `default` 예약어를 사용하면 클래스 구현 파일에 별도로 Default 생성자를 작성하지 않아도 Default 생성자가 자동으로 만들어진다.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Tmp {
+private:
+    const int a;
+
+public:
+    Tmp() = default;  // default 예약어로 Default 생성자 명시
+    Tmp(const int a) : a{a} {}
+
     const int getA() const {
         return a;
     }
@@ -127,3 +204,5 @@ int main() {
     cout << tmp1.getA() << endl;
 }
 ```
+
+To be Contrinued..
