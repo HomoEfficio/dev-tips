@@ -60,4 +60,26 @@ RDB의 한계의 대칭
 >
 >- 반대로 일부 노드에만 써서 L을 취하고 C를 포기할 수도 있다.
 
+## 주요 데이터 모델
+
+### Key-Value
+
+
+### Document
+
+
+### Column Family
+
+
+### Graph
+
+
+## 분산 모델
+
+### Sharding
+
+
+### Replication
+
+
 
