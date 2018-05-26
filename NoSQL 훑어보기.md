@@ -70,15 +70,23 @@ RDB의 한계의 대칭
 
 ### Key-Value
 
+![https://medium.baqend.com/nosql-databases-a-survey-and-decision-guidance-ea7823a822d](https://cdn-images-1.medium.com/max/1200/1*swUK-eLWsk-wudXSXRgyYQ.png)
+
 - Value의 타입에 대해 신경쓰지 않으므로(opaque) 여러가지 타입(text, binary, list, set, map, ...)의 데이터를 저장할 수 있다(heterogeneous).
 - Key를 Hash한 값을 통해 접근하므로 정렬에 적합하지 않고 결국 Range 쿼리에 적합하지 않다.
+- Redis, DynamoDB, Riak 등
 
 ### Document
 
-- 
+![https://medium.baqend.com/nosql-databases-a-survey-and-decision-guidance-ea7823a822d](https://cdn-images-1.medium.com/max/1200/1*gdxUo2ojiTX2JQIkA2hxcQ.png)
 
+- 쉽게 말해 JSON을 하나의 Document라고 하고, Document 단위로 통째로 저장할 수 있는 데이터 모델
+- Document 안에 다른 Document를 내장(embed)할 수 있으며, 내장 Document의 필드에도 secondary index를 설정할 수 있다.
+- MongoDB, CouchDB 등
 
 ### Column Family
+
+![https://medium.baqend.com/nosql-databases-a-survey-and-decision-guidance-ea7823a822d]()
 
 
 ### Graph
