@@ -86,16 +86,24 @@ RDB의 한계의 대칭
 
 ### Column Family
 
-![https://medium.baqend.com/nosql-databases-a-survey-and-decision-guidance-ea7823a822d]()
+![https://medium.baqend.com/nosql-databases-a-survey-and-decision-guidance-ea7823a822d](https://cdn-images-1.medium.com/max/1600/1*jvxgAtqWADL8E43gs0p8jw.png)
+
 
 
 ### Graph
 
+![https://whatis.techtarget.com/definition/graph-database](https://itknowledgeexchange.techtarget.com/overheard/files/2014/01/Graph-database-sketch.jpg)
+
+- 엔티티(node)와 엔티티 사이의 관계(edge)를 저장
+- NoSQL이지만 ACID와 일관성 보장
 
 ## 분산 모델
 
 ### Sharding
 
+![https://www.cubrid.org/manual/ko/9.3.0/shard.html](https://www.cubrid.org/manual/ko/9.3.0/_images/image39.png)
+
+샤딩은 동일한 스키마를 유지하면서 수평 방향으로 분할선을 그어 행을 기준으로 데이터를 분할하여 분산 DB에 저장하는 것을 말한다.
 
 ### Replication
 
