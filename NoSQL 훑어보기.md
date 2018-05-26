@@ -68,7 +68,7 @@ RDB의 한계의 대칭
 
 모든 주요 데이터 모델이 아래 기술한 특성을 띤다기보다는 대부분의 데이터 모델이 아래 특성을 따른다
 
-### Key-Value
+## Key-Value
 
 ![https://medium.baqend.com/nosql-databases-a-survey-and-decision-guidance-ea7823a822d](https://cdn-images-1.medium.com/max/1200/1*swUK-eLWsk-wudXSXRgyYQ.png)
 
@@ -76,7 +76,7 @@ RDB의 한계의 대칭
 - Key를 Hash한 값을 통해 접근하므로 정렬에 적합하지 않고 결국 Range 쿼리에 적합하지 않다.
 - Redis, DynamoDB, Riak 등
 
-### Document
+## Document
 
 ![https://medium.baqend.com/nosql-databases-a-survey-and-decision-guidance-ea7823a822d](https://cdn-images-1.medium.com/max/1200/1*gdxUo2ojiTX2JQIkA2hxcQ.png)
 
@@ -84,13 +84,13 @@ RDB의 한계의 대칭
 - Document 안에 다른 Document를 내장(embed)할 수 있으며, 내장 Document의 필드에도 secondary index를 설정할 수 있다.
 - MongoDB, CouchDB 등
 
-### Column Family
+## Column Family
 
 ![https://medium.baqend.com/nosql-databases-a-survey-and-decision-guidance-ea7823a822d](https://cdn-images-1.medium.com/max/1600/1*jvxgAtqWADL8E43gs0p8jw.png)
 
 
 
-### Graph
+## Graph
 
 ![https://whatis.techtarget.com/definition/graph-database](https://itknowledgeexchange.techtarget.com/overheard/files/2014/01/Graph-database-sketch.jpg)
 
