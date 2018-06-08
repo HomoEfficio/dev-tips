@@ -32,6 +32,22 @@ StatementCallback; SQL [INSERT OVERWRITE TABLE 어쩌구_테이블 PARTITION (se
 
 특히 이 경우에는 에러 메시지에 별다른 정보가 없어서 디버깅이 힘들다.
 
+참고로 설정 내용을 확인하려면 다음과 같이 값을 주지 않고 `set 설정변수이름`을 실행하면 된다.
+
+>set hive.exec.dynamic.partition.mode;
+```
+OK
+set
+hive.exec.dynamic.partition.mode=nonstrict
+```
+
+>set hive.exec.max.dynamic.partitions;
+```
+OK
+set
+hive.exec.max.dynamic.partitions=10000
+```
+
 ## 주의 사항
 
 애플리케이션에서 `set hive.exec.dynamic.partition.mode=nonstrict`와 `set hive.exec.max.dynamic.partitions=10000`를 실행할 때는 **반드시 별개의 `execute()` 메서드를 호출해서 실행해야 한다.**
