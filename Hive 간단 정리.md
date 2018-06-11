@@ -110,6 +110,11 @@ hive> set hive.exec.dynamic.partition=true
 - `set mapred.reduce.tasks = 2;`와 같이 리듀서의 갯수를 지정해주면 해당 갯수만큼의 리듀서가 리듀서별로 정렬 실행
 - 동일한 컬럼 값을 가진 여러 행이 여러 개의 리듀서에 각각 들어가서 각각 정렬될 수 있으며, 이런 부작용을 방지하기 위해 `DISTRIBUTED BY columnA`를 `SORT BY` 앞에 명시해서 columnA의 값이 같은 행은 같은 리듀서에 들어가게 한다.
 
+#### DISTRIBUTE BY
+
+- `distribute by 컬럼`을 지정하면 리듀서가 해당 컬럼값 기준으로 생성되어 병렬 실행으로 성능 개선 가능
+- 다만 `distribute by 컬럼`을 지정했다고 해서 100% 컬럼값 기준으로 병렬 실행이 된다는 보장은 없다.
+
 #### CLUSTERED BY
 
 - `DISTRIBUTED BY`와 `SORT BY`를 함께 사용하는 것과 동일한 기능
@@ -123,3 +128,4 @@ hive> set hive.exec.dynamic.partition=true
 ## 참고
 
 - https://data-flair.training/blogs/category/hive
+- Hive 성능 튜닝: https://docs.treasuredata.com/articles/performance-tuning
