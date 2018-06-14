@@ -103,6 +103,19 @@ private static MutablePropertyValues getPropsFrom(Map<String, String[]> paramete
                          .replaceAll("\\[(\\D+)", ".$1")
                          .replaceAll("]\\[(\\D)", ".$1")
                          .replaceAll("(\\.\\w+)]", "$1");
+                         
+                    // 숫자로 시작하는 key도 받아주는 버전
+//                                k
+//                                        .replaceAll("\\['", "[")
+//                                        .replaceAll("']", "]")
+//                                        .replaceAll("\\[\"", "[")
+//                                        .replaceAll("\"]", "]")
+//                                        .replaceAll("\\[]", "")
+//                                        .replaceAll("\\[(\\d+)]", "!#%@$1%@#!")
+//                                        .replaceAll("\\[", ".")
+//                                        .replaceAll("]", "")
+//                                        .replaceAll("!#%@(\\d+)%@#!", "[$1]");
+                         
                 mpvs.addPropertyValue(dotKey, v);
             }
     );
