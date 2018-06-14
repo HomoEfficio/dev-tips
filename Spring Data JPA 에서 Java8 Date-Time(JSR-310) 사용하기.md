@@ -17,7 +17,7 @@ Caused by: com.mysql.jdbc.MsqlDataTruncation: Data truncation: Incorrect dateme 
 
 데이터의 생성/수정 시각을 기록하는 JPA Auditing을 대상으로 그 조치 방법을 알아보자. 모든 엔티티가 상속해야 하는 `BaseEntity`라는 추상 클래스를 만들어서 이 클래스에 JPA Auditing을 적용하는 상황이다.
 
-## Jsr310JpaConverters.class를 활용하는 방법
+## Jsr310JpaConverters.class를 활용하는 방법 - 1
 
 **Spring Data JPA 1.8 이상부터 사용가능한 방법**으로, 아마 가장 간단한 방법일 것 같다.
 
@@ -71,6 +71,34 @@ public abstract class BaseEntity implements Serializable {
 위의 코드를 보면 `BaseEntity`에는 따로 무슨 조치를 취한 것 없이 깔끔하다.
 
 `Jsr310JpaConverters` 클래스는 사실 다음에 설명할 Attribute Converter를 활용하는 방법을 Spring에서 구현해서 쓰기 편하게 Wrapping 해준 `Jsr310Converters` 클래스를 JPA에서 사용할 수 있게 해주는 클래스다.
+
+
+## Jsr310JpaConverters.class를 활용하는 방법 - 2
+
+역시 **Spring Data JPA 1.8 이상부터 사용가능한 방법**으로 전체 애플리케이션에 영향을 주지 않고 개별 필드 단위로 적용해야할 때 사용할 수 있다.
+
+`@EntityScan(basePackageClasses= ...)`를 지정할 필요 없이 변환하고자 하는 필드에만 `@Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)`를 붙여주면 된다. `LocalDateTime`뿐아니라 `LocalDate`, `LocalTime`, `LocalDateTime`, `Instant`, `ZoneId` 모두에 대한 변환 기능이 구현되어 있으므로, 필드 타입에 따라 알맞은 구현체를 `converter`로 지정해주면 된다.
+
+```java
+@EntityListeners(AuditingEntityListener.class)
+@MappedSuperclass
+public abstract class BaseEntity implements Serializable {
+
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
+    private LocalDateTime createdDateTime;
+
+    @LastModifiedDate
+    @Column(name = "last_modified_at", updatable = true)
+    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
+    private LocalDateTime lastModifiedDateTime;
+}
+```
+
+개별 필드 단위로 적용가능하지만, 이는 바꿔말하면 변환해야하는 개별 필드에는 모두 붙여줘야 한다는 얘기이기도 하다. 따라서 특별한 이유가 있는 것이 아니라면 Jsr310JpaConverters.class를 활용하는 방법 - 1 을 활용해서 `LocalDateTime` 등 Java8의 Date/Time을 사용하는 모든 필드에 일괄 적용되게 하는 것이 좋다.
+
+
 
 ## Attribute Converter를 활용하는 방법
 
