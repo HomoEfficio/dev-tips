@@ -6,7 +6,7 @@ Ubuntu 18.04 로 설치
 
 Vultr Console로 연결해서 터미널 화면을 보면 apt upgrade에서 진행이 안 되는 걸로 나올 수 있는데, 엔터를 치면 로그인 가능한 화면으로 전환된다.
 
-![Imgur](https://i.imgur.com/7WkyepE.png)
+![Imgur](https://i.imgur.com/Bk0uqND.png)
 
 
 ## 터미널 접속 후 설정
@@ -45,7 +45,8 @@ sudo 권한을 부여한다.
 usermod -a -G sudo hanmomhanda
 ```
 
-### Xfce 데스크탑 설정
+
+## Xfce 데스크탑 설치
 
 참고: https://www.hiroom2.com/2018/05/06/ubuntu-1804-xfce-en/
 
@@ -68,7 +69,7 @@ sudo apt install xubuntu-desktop
 ![Imgur](https://i.imgur.com/hzBPI5w.png)
 
 
-### Xfce로 로그인
+## Xfce로 로그인
 
 Restart 후 아래와 같이 Vultr 대시보드 화면에서 View Console 을 클릭하면
 
@@ -76,7 +77,17 @@ Restart 후 아래와 같이 Vultr 대시보드 화면에서 View Console 을 �
 
 Xfce 데스크탑으로 로그인할 수 있다.
 
-![Imgur](https://i.imgur.com/HBKxnEI.png)
+![Imgur](https://i.imgur.com/R9Zd01Z.png)
+
+
+## 웹 브라우저 실행
+
+lightdm 기반의 Xfce 데스크탑에는 태스크바 조차 없다. 바탕화면에서 우클릭하면 메뉴를 확인할 수 있다.
+
+Application에서 Web Browser를 선택하고 기본으로 설치되어 있는 Debian Sensible Browser를 선택하면 다음과 같이 에러가 발생한다.
+
+![Imgur](https://i.imgur.com/fzAzYtw.png)
+
 
 
 
