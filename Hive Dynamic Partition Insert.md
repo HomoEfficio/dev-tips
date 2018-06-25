@@ -56,7 +56,7 @@ hive.exec.max.dynamic.partitions=10000
 ```
 OK
 set
-hive.exec.max.dynamic.partitions.pernode=10000
+hive.exec.max.dynamic.partitions.pernode=1000
 ```
 
 
