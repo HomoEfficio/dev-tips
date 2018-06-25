@@ -16,7 +16,7 @@ Dynamic Partition Insert를 할 때 지켜야할 전제 조건이 몇 가지 있
 >- 생성될 최대 dynamic 파티션의 수를 `set hive.exec.max.dynamic.partitions=10000`와 같이 지정해줘야 한다.
 >    - 지정해주지 않으면 기본값 1000 이 적용되며, Dynamic Partition Insert 도중 전체 1000 을 넘는 파티션이 생성되면 에러가 발생한다.
 >    - 설정 값은 에러 한계치를 지정해주는 것이므로 높게 잡는다고 해서 성능에 악영향을 미치지는 않는다.
->- 각 mapper/reducer 노드 별 최대 dynamic 파티션의 수를 `set hive.exec.max.dynamic.partitinos=10000`와 같이 지정해줘야 한다.
+>- 각 mapper/reducer 노드 별 최대 dynamic 파티션의 수를 `set hive.exec.max.dynamic.partitinos=1000`와 같이 지정해줘야 한다.
 >    - 지정해주지 않으면 기본값 100 이 적용되며, Dynamic Partition Insert 도중 mapper/reducer 노드 별 100 을 넘는 파티션이 생성되면 에러가 발생한다.
 >    - 설정 값은 에러 한계치를 지정해주는 것으로 높게 잡는다고 해서 성능에 악영향을 미치지는 않지만, 노드의 처리 능력을 넘어서지 않아야 한다.
 >
