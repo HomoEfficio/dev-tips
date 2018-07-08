@@ -186,5 +186,6 @@ Vultr Console 내의 바탕화면 우클릭 > Create Launcher... 클릭 후 아�
 
 ![Imgur](https://i.imgur.com/mWiW0x2.png)
 
+### Linda Master Node 설정
 
-
+https://masternodeguides.com/setup-linda-masternode-linda-masternodes/
