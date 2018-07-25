@@ -1,6 +1,6 @@
 # *ngFor가 적용되는 요소 삭제 시 주의 사항
 
-아래와 같이 `*ngFor`에 의해 렌더링되는 엘레먼트(아래 예에서는 `<li>`)는 `*ngFor`의 근간이 되는 배열(아래 예에서는 `baselines`)의 원소가 변경(pop, push, shift, slice) 되면 DOM에서 완전히 삭제된 후에 다시 생성된다. 이런 특징은 문서로 확인한 것은 아니고 `document.getElementById()`로 확인한 것이다.
+아래와 같이 `*ngFor`에 의해 렌더링되는 엘레먼트(아래 예에서는 `<li>`)는 `*ngFor`의 근간이 되는 배열(아래 예에서는 `baselines`)의 원소가 변경(pop, push, shift, unshift, slice 등) 되면 DOM에서 완전히 삭제된 후에 다시 생성된다. 이런 특징은 문서로 확인한 것은 아니고 `document.getElementById()`로 확인한 것이다.
 
 ```html
 <span *ngFor="let baseline of baselines; index as i">
