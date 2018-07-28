@@ -1,4 +1,4 @@
-# Java9 JAXBException
+# Java 9 JAXBException
 
 Java8 이하에서 잘 돌던 JPA 테스트가 Java9에서 아래와 같이 실패할 때가 있다.
 
