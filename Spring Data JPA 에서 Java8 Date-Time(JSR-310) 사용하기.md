@@ -234,6 +234,7 @@ Java8의 `java.time (JSR-310)` 데이터를 DB에 저장해야 한다면,
 >
 >- 이도 저도 아니라면 `java.time (JSR-310)`과 `java.util.Date`를 상호 변환할 수 있는 로직을 `getter/setter` 안에 직접 구현해서 사용하자.
 
+참고로 `@EnableJpaAuditing`은 소스 루트에 있는 루트 애플리케이션 클래스(`@SpringBootApplication`이 붙어있는 클래스)에만 붙여주면 테스트에도 JPA Auditing이 모두 적용된다.
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
