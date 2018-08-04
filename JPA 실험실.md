@@ -182,7 +182,7 @@ o.h.type.descriptor.sql.BasicBinder      : binding parameter [5] as [DOUBLE] - [
 o.h.type.descriptor.sql.BasicBinder      : binding parameter [6] as [BIGINT] - [1]
 ```
 
-참고로 일반 메서드에서는 `XXXRepository.save()`만으로도 `flush`를 유발한다. 아래 **일반 메서드에 사용되는 `@Transactional`은 `flush`를 유발한다.** 예제에서 함께 확인할 수 있다.
+참고로 일반 메서드에서는 `XXXRepository.save()`만으로도 `flush`를 유발한다. 아래 [일반 메서드에 사용되는 `@Transactional`은 `flush`를 유발한다.](#일반-메서드에-사용되는-transactional은-flush를-유발한다) 예제에서 함께 확인할 수 있다.
 
 하지만 **`save()` 이후에 변경된 사항은 명시적으로 `flush()`를 호출해주지 않으면 DB에 반영되지 않으므로 주의**해야 한다.
 
@@ -335,7 +335,7 @@ Hibernate:
 
 따라서, **테스트 메서드에서는 반드시 명시적으로 `flush()`를 호출해줘야 한다. 그렇지 않으면 위와 같이 사실은 DB에 저장되지 않았음에도 메모리에 저장된 값만으로 비교하므로 테스트는 통과하게 된다.** 이는 로컬 환경에서는 테스트가 통과하지만 실제 운영 환경에서는 실패하는 상황으로 이어질 수 있다.
 
-이에 대해서는 스프링 문서의 [Demonstration of all transaction-related annotations 단원](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-tx-annotation-demo)의 아래 쪽 `Avoid false positives when testing ORM code`에도 특별히 강조되어 있다.
+이에 대해서는 스프링 문서의 [Demonstration of all transaction-related annotations 단원](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-tx-annotation-demo)의 아래 쪽 **Avoid false positives when testing ORM code""에도 특별히 강조되어 있다.
 
 ### 정리
 
