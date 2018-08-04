@@ -184,7 +184,7 @@ o.h.type.descriptor.sql.BasicBinder      : binding parameter [6] as [BIGINT] - [
 
 참고로 일반 메서드에서는 `XXXRepository.save()`만으로도 `flush`를 유발한다. 아래 **일반 메서드에 사용되는 `@Transactional`은 `flush`를 유발한다.** 예제에서 함께 확인할 수 있다.
 
-하지만 `save()` 이후에 변경된 사항은 명시적으로 `flush()`를 호출해주지 않으면 DB에 반영되지 않으므로 주의해야 한다.
+하지만 **`save()` 이후에 변경된 사항은 명시적으로 `flush()`를 호출해주지 않으면 DB에 반영되지 않으므로 주의**해야 한다.
 
 ### 정리
 
