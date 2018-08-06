@@ -333,13 +333,13 @@ Hibernate:
         next_val=?
 ```
 
-따라서, **테스트 메서드에서는 반드시 명시적으로 `flush()`를 호출해줘야 한다. 그렇지 않으면 위와 같이 사실은 DB에 저장되지 않았음에도 메모리에 저장된 값만으로 비교하므로 테스트는 통과하게 된다.** 이는 로컬 환경에서는 테스트가 통과하지만 실제 운영 환경에서는 실패하는 상황으로 이어질 수 있다.
+따라서, **테스트 메서드에서는 반드시 명시적으로 `flush()`를 호출해줘야 한다. 또는 `flush`를 유발하는 commit, JPQL 실행 등을 해줘야 한다. 그렇지 않으면 위와 같이 사실은 DB에 저장되지 않았음에도 메모리에 저장된 값만으로 비교하므로 테스트는 통과하게 된다.** 이는 로컬 환경에서는 테스트가 통과하지만 실제 운영 환경에서는 실패하는 상황으로 이어질 수 있다.
 
 이에 대해서는 스프링 문서의 [Demonstration of all transaction-related annotations 단원](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-tx-annotation-demo)의 아래 쪽 **Avoid false positives when testing ORM code**에도 특별히 강조되어 있다.
 
 ### 정리
 
->**테스트 메서드에서는 반드시 명시적으로 `flush()`를 호출해줘야 한다.**
+>**테스트 메서드에서는 반드시 명시적으로 `flush()`를 호출해주거나, commit, JPQL 쿼리 실행으로 `flush`를 유발해야 한다.**
 
 
 ## 하나의 repository에서만 `flush()`를 호출하면 다른 repository에서의 변경 사항까지 모두 함께 `flush` 된다.
