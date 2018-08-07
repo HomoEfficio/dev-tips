@@ -100,7 +100,7 @@
         for (DateAndCount dnc: this.dateAndCounts) {
             dateAndCountByDateMap.merge(dnc.yyyymmdd.substring(0, 8), dnc.count, (a, b) -> a + b);
         }
-        final ArrayList<DateAndCount> results = new ArrayList<>();
+        final List<DateAndCount> results = new ArrayList<>();
         for (Map.Entry<String, Long> entry: dateAndCountByDateMap.entrySet()) {
             results.add(new DateAndCount(entry.getKey(), entry.getValue()));
         }
