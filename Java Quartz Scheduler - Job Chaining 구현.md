@@ -1,4 +1,4 @@
-# Quartz Scheduler - Job Chaining 구현
+# Java Quartz Scheduler - Job Chaining 구현
 
 Java로 Job Scheduling을 쉽게(참 조심스러운 단어..) 할 수 있게 해주는 [쿼츠(Quartz) 스케줄러](http://www.quartz-scheduler.org/)가 있다.
 
