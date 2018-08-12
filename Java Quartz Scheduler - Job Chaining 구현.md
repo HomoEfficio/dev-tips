@@ -283,7 +283,9 @@ Job과 JobDataMap은 일대일 관계이므로,
 
 ### Chaining 할 여러 Job 생성
 
-Job 3개를 Chaining해서 실행할 수 있도록 테스트 코드를 변경한다. 예제에서는 편의상 3개의 Job에 모두 `HelloJob.class`만을 사용했지만, 실제로는 서로 다른 클래스를 사용해도 무방하다.
+Job 3개를 Chaining해서 실행할 수 있도록 테스트 코드를 변경한다. 
+
+예제에서는 편의상 3개의 Job에 모두 `HelloJob.class`만을 사용했지만, 실제로는 서로 다른 클래스를 사용해도 무방하다. 또한 [JobBuilder API](http://www.quartz-scheduler.org/api/2.2.1/org/quartz/JobBuilder.html)를 참고하면 Job마다 원하는 대로 식별자를 줄 수도 있고 오류 시 재실행 옵션 등 다양하게 설정할 수 있다. [TriggerBuilder API](http://www.quartz-scheduler.org/api/2.2.1/org/quartz/TriggerBuilder.html)를 참고하면 Trigger도 원하는 대로 더 다양하게 구성할 수 있다.
 
 ```java
 public class QuartzTest {
