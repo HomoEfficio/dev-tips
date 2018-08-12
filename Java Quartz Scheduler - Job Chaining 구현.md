@@ -6,7 +6,7 @@ Java로 Job Scheduling을 쉽게(참 조심스러운 단어..) 할 수 있게 �
 
 그런데 옥의 티랄까.. 독립적인 Job은 훌륭한 문서와 쉬운 Fluent API 덕에 간단하게 구현할 수 있는데, 연속적인 Job 실행은 간단하게 구현할 수 있는 방법이 없는 것 같다. 그래서 검색을 해보니 결국에는 Job 실행에 사용되는 Context 객체 안에 다음에 실행할 Job을 넣어주고 스케줄링하는 방식으로 연속적인 Job 실행을 구현할 수 있다. 
 
-그래서 간단하지만 쓸만한 구현 예제를 만들어 봤다. 전체 코드는 https://github.com/HomoEfficio/quartz-scratchpad 에 있다.
+그래서 간단하면서도 용도에 맞게 조금만 확장하면 아주 쓸만한 구현 예제를 만들어 봤다. 전체 코드는 https://github.com/HomoEfficio/quartz-scratchpad 에 있다.
 
 ## Quartz 기초 개념
 
@@ -283,7 +283,7 @@ Job과 JobDataMap은 일대일 관계이므로,
 
 ### Chaining 할 여러 Job 생성
 
-Job 3개를 Chaining해서 실행할 수 있도록 테스트 코드를 변경하고, 
+Job 3개를 Chaining해서 실행할 수 있도록 테스트 코드를 변경한다. 예제에서는 편의상 3개의 Job에 모두 `HelloJob.class`만을 사용했지만, 실제로는 서로 다른 클래스를 사용해도 무방하다.
 
 ```java
 public class QuartzTest {
@@ -398,3 +398,14 @@ public class QuartzTest {
 02:33:47.659 [DefaultQuartzScheduler_Worker-3] INFO io.homo.efficio.scratchpad.quartz.BaseJob - $$$ Schedule Next Job
 ...
 ```
+
+예제에서는 단순함을 위해 여러 연속적으로 실행될 Job을 관리하는 객체 없이 테스트 객체가 그 역할을 담당했지만, 실무에서는 예를 들면 `Batch` 같은 객체를 두고 그 안에 `List<Job>`을 둬서 책임 분리를 하는 것도 좋다.
+
+## 정리
+
+>쿼츠 스케줄러(Quartz Scheduler)는 문서화가 정말로 잘 되어 있고 API 설계도 잘 되어 있어서 정말 금방 익혀서 사용할 수 있다.
+>
+>다만, 연속적으로 Job을 실행할 수 있는 Job Chaining이 기본 사항으로 지원되지 않아 아쉽지만,
+>
+>템플릿 메서드 패턴을 적용하면 어렵지 않게 Job Chaining을 구현해서 적용할 수 있다.
+
