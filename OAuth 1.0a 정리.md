@@ -41,44 +41,56 @@ OAuth 1.0a는 권한을 줬다는 사실을 위와 같은 서명 방식을 이�
 
 ## 등장 인물  
 
-- User: 트위터 계정을 가지고 있는 트위터 사용자. 앱 A에 대한 사용권한도 가지고 있다.  
-- Consumer: 트위터 API를 이용해서 트위터에 글을 남기려는 앱 A.  
-- Provider: API로 서비스를 제공하는 트위터.  
-  
+- Resource Owner: 트위터 계정을 가지고 있는 트위터 사용자. 앱 A에 대한 사용권한도 가지고 있다.  
+- Client: 트위터 API를 이용해서 트위터에 글을 남기려는 앱 A.  
+- Server: API로 서비스를 제공하는 트위터.
+
+참고로 다음과 같이 가리키는 대상은 같지만 OAuth 1.0과 OAuth 1.0a에서의 용어가 다르며, OAuth 1.0의 용어를 그대로 쓰고 있는 자료도 많다. 개인적으로는 1.0의 용어가 더 구별하기 쉽고 직관적이어서 좋다고 생각한다.
+
+OAuth 1.0 | OAuth 1.0a
+---|---
+User | Resource Owner
+Consumer | Client
+Service Provider | Server
+Consumer Key and Secret | Client Credentials
+Request Token and Secret | Temporary Credentials
+Access Token and Secret | Token Credentials
+
+
 ## 사전 조건  
   
-- Consumer는 Provider의 API를 이용할 수 있도록 등록되어 있어야 한다.
-- User는 Consumer와 Provider 모두를 사용할 수 있는 권한을 가지고 있다.
+- Client는 Server의 API를 이용할 수 있도록 등록되어 있어야 한다.
+- Resource Owner는 Client와 Server 모두를 사용할 수 있는 권한을 가지고 있다.
   
-## Provider로부터 확인 받아야 하는 사항  
+## Server로부터 확인 받아야 하는 사항  
 
-- Consumer는 User로부터 권한 부여 요청을 받았다는 사실을 Provider로부터 확인 받아야 함 - (1)  
-- User는 Provider의 사용자임을 Provider로부터 확인 받아야 함 - (2)  
-- User는 Consumer에게 권한을 부여했음을 Provider로부터 확인 받아야 함 - (3)  
+- Client는 Resource Owner로부터 권한 부여 요청을 받았다는 사실을 Server로부터 확인 받아야 함 - (1)  
+- Resource Owner는 Server의 사용자임을 Server로부터 확인 받아야 함 - (2)  
+- Resource Owner는 Client에게 권한을 부여했음을 Server로부터 확인 받아야 함 - (3)  
 
 이 3가지 확인을 받기위한 절차를 개략적으로 생각해보자  
   
 ## 절차 개요  
 
-1. User가 Consumer에 글을 쓰고 'Provider에도 남기기' 버튼을 누른다.  
+1. Resource Owner가 Client에 글을 쓰고 'Server에도 남기기' 버튼을 누른다.  
 
-1. Consumer는 자신의 등록 정보를 바탕으로 Signature를 만들고 Provider에게 보내서 권한 부여 요청을 받았음을 Provider에게 알리고, Provider는 권한 부여 요청을 확인했다는 임시 증표(를 저장하고 임시 증표를 Consumer에게 회신한다. (1)  
+1. Client는 자신의 등록 정보를 바탕으로 Signature를 만들고 Server에게 보내서 권한 부여 요청을 받았음을 Server에게 알리고, Server는 권한 부여 요청을 확인했다는 임시 증표(를 저장하고 임시 증표를 Client에게 회신한다. (1)  
 
-1. Consumer는 권한 부여 요청 확인 증표와 함께 User의 요청을 Provider의 인가(권한 부여) 화면으로 리다이렉트한다.  
+1. Client는 권한 부여 요청 확인 증표와 함께 Resource Owner의 요청을 Server의 인가(권한 부여) 화면으로 리다이렉트한다.  
 
-1. User가 Provider에 로그인 한 상태가 아니라면 로그인 한다. (2)  
+1. Resource Owner가 Server에 로그인 한 상태가 아니라면 로그인 한다. (2)  
 
-1. 인가 화면에는 'Consumer에게 권한 부여' 버튼이 표시된다.  
+1. 인가 화면에는 'Client에게 권한 부여' 버튼이 표시된다.  
 
-1. User가 'Consumer에게 권한 부여' 버튼을 클릭하면, Provider는 권한 부여를 확인하고, 확인 증표를 저장 및 User에게 반환하고 Consumer가 제공하는 callback 화면으로 리다이렉트한다. (3)  
+1. Resource Owner가 'Client에게 권한 부여' 버튼을 클릭하면, Server는 권한 부여를 확인하고, 확인 증표를 저장 및 Resource Owner에게 반환하고 Client가 제공하는 callback 화면으로 리다이렉트한다. (3)  
 
-1. 리다이렉트를 통해 권한 부여 확인 증표를 받은 Consumer는 앱 등록 확인 증표 및 권한 부여 확인 증표의 Signature를 만들고 Provider에게 보낸다.  
+1. 리다이렉트를 통해 권한 부여 확인 증표를 받은 Client는 앱 등록 확인 증표 및 권한 부여 확인 증표의 Signature를 만들고 Server에게 보낸다.  
 
-1. Provider는 Consumer가 보낸 Signature를 확인하고 User만 접근할 수 있었던 보호 자원에 대한 접근 증표를 Consumer에게 발급한다.  
+1. Server는 Client가 보낸 Signature를 확인하고 Resource Owner만 접근할 수 있었던 보호 자원에 대한 접근 증표를 Client에게 발급한다.  
 
-1. 이후 Consumer는 접근 증표를 Provider에게 보여주면서 User를 대신해서 보호 자원에 접근한다.  
+1. 이후 Client는 접근 증표를 Server에게 보여주면서 Resource Owner를 대신해서 보호 자원에 접근한다.  
 
-6번까지 진행되면 확인해야 할 3가지 사항은 모두 확인했으므로 바로 보호 자원에 대한 접근 증표를 발급할 수 있지만, 6번에서 발급하면 증표가 User에게 반환되고 User의 Local Storage나 Session에 남을 수 있으므로 유출 가능성이 발생한다. 따라서 6번에서는 발급하지 않고 8번에서 Consumer에게 발급한다.  
+6번까지 진행되면 확인해야 할 3가지 사항은 모두 확인했으므로 바로 보호 자원에 대한 접근 증표를 발급할 수 있지만, 6번에서 발급하면 증표가 Resource Owner에게 반환되고 Resource Owner의 Local Storage나 Session에 남을 수 있으므로 유출 가능성이 발생한다. 따라서 6번에서는 발급하지 않고 8번에서 Client에게 발급한다.  
 
 위 과정에서 '권한 부여 요청 확인 증표'를 `RequestToken`, '권한 부여 확인 증표'를 `AuthorizationCode`, '보호 자원 접근 증표'를 `AccessToken`이라고 부른다.  
 
@@ -86,7 +98,7 @@ OAuth 1.0a는 권한을 줬다는 사실을 위와 같은 서명 방식을 이�
 
 위 절차 개요를 좀더 상세하게 시퀀스 다이어그램으로 표현해보면 다음과 같다.  
 
-![Imgur](https://i.imgur.com/jhqnHFp.png)  
+![Imgur](https://i.imgur.com/ZLaFRcS.png)
   
 (http://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art014 내용 참고)
 
@@ -94,15 +106,15 @@ OAuth 1.0a는 권한을 줬다는 사실을 위와 같은 서명 방식을 이�
 
 이제 시퀀스 다이어그램을 토대로 실제 구현해보자.
 
-# OAuth 1.0a 구현 - Consumer
+# OAuth 1.0a 구현 - Client
 
-첫 번째 시나리오는 직접 구현한 Consumer를 통해 Provider인 트위터의 API를 통해 트위터에 글을 올리는 것이다. 
+첫 번째 시나리오는 직접 구현한 Client를 통해 Server인 트위터의 API를 통해 트위터에 글을 올리는 것이다. 
 
 ## 사전 조건
 
-먼저 트위터에 내가 만들 Consumer 앱을 등록해야 한다. 참고로 OAuth 1.0a에서 Consumer라고 부르는 애플리케이션을 트위터에서는 트위터 앱(Twitter App)이라고 부른다.
+먼저 트위터에 내가 만들 Client 앱을 등록해야 한다. 참고로 OAuth 1.0a에서 Client라고 부르는 애플리케이션을 트위터에서는 트위터 앱(Twitter App)이라고 부른다.
 
-Consumer 앱을 트위터에 등록하려면 먼저 트위터 개발자 계정이 있어야 한다. [트위터 개발자 포털](https://developer.twitter.com/en/docs/basics/developer-portal/overview)에서 개발자 계정을 신청할 수 있다.
+Client 앱을 트위터에 등록하려면 먼저 트위터 개발자 계정이 있어야 한다. [트위터 개발자 포털](https://developer.twitter.com/en/docs/basics/developer-portal/overview)에서 개발자 계정을 신청할 수 있다.
 
 개발자 계정 신청과 트위터 앱 등록 과정 설명은 아래의 화면 캡처로 대신한다.
 
@@ -145,9 +157,9 @@ Consumer 앱을 트위터에 등록하려면 먼저 트위터 개발자 계정�
 ![Imgur](https://i.imgur.com/SYsQSMF.png)
 
 
-## Consumer 앱 개발
+## Client 앱 개발
 
-Consumer 앱은 OAuth 1.0a 흐름을 파악하는데 필요한 최소한의 기능만을 담아 간단하게 개발한다. 기능은 다음과 같다.
+Client 앱은 OAuth 1.0a 흐름을 파악하는데 필요한 최소한의 기능만을 담아 간단하게 개발한다. 기능은 다음과 같다.
 
 - 글을 쓸 수 있는 폼 화면
 - 권한 부여 요청 전송 (시퀀스 다이어그램 2번)
@@ -158,7 +170,7 @@ Consumer 앱은 OAuth 1.0a 흐름을 파악하는데 필요한 최소한의 기�
 
 편의상 스프링 부트로 개발하며, 프로젝트 생성 등의 자세한 과정은 생략한다.
 
-OAuth 1.0a Spec인 [RFC-5849](https://tools.ietf.org/html/rfc5849)를 따라 Consumer가 갖춰야 할 기능을 구현해보자.
+OAuth 1.0a Spec인 [RFC-5849](https://tools.ietf.org/html/rfc5849)를 따라 Client가 갖춰야 할 기능을 구현해보자.
 
 ### 글 쓰는 폼 화면
 
