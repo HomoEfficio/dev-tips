@@ -23,7 +23,7 @@
   > 내가 A 앱에게 권한을 줬다는 사실을 트위터에게 어떻게 알려줄 수 있을까?  
 
 
-## OAuth 1.0a  
+# OAuth 1.0a  
 
 어떤 행위(내가 트위터에게 권한을 준 행위)가 이루어졌음을 프로그래밍을 통해 증명하는 여러 방식 중에 대표적으로 서명(Signature)라는 것이 있다.
 
@@ -39,18 +39,18 @@
 
 OAuth 1.0a는 권한을 줬다는 사실을 위와 같은 서명 방식을 이용해서 증명한다. 이를 좀더 구체적으로 알아보자.  
 
-### 등장 인물  
+## 등장 인물  
 
 - User: 트위터 계정을 가지고 있는 트위터 사용자. 앱 A에 대한 사용권한도 가지고 있다.  
 - Consumer: 트위터 API를 이용해서 트위터에 글을 남기려는 앱 A.  
 - Provider: API로 서비스를 제공하는 트위터.  
   
-### 사전 조건  
+## 사전 조건  
   
 - Consumer는 Provider의 API를 이용할 수 있도록 등록되어 있어야 한다.
 - User는 Consumer와 Provider 모두를 사용할 수 있는 권한을 가지고 있다.
   
-### Provider로부터 확인 받아야 하는 사항  
+## Provider로부터 확인 받아야 하는 사항  
 
 - Consumer는 User로부터 권한 부여 요청을 받았다는 사실을 Provider로부터 확인 받아야 함 - (1)  
 - User는 Provider의 사용자임을 Provider로부터 확인 받아야 함 - (2)  
@@ -58,11 +58,11 @@ OAuth 1.0a는 권한을 줬다는 사실을 위와 같은 서명 방식을 이�
 
 이 3가지 확인을 받기위한 절차를 개략적으로 생각해보자  
   
-### 절차 개요  
+## 절차 개요  
 
 1. User가 Consumer에 글을 쓰고 'Provider에도 남기기' 버튼을 누른다.  
 
-1. Consumer는 자신의 등록 정보의 Signature를 만들고 Provider에게 보내서 권한 부여 요청을 받았음을 Provider에게 알리고, Provider는 권한 부여 요청을 확인했다는 증표를 저장하고 증표를 Consumer에게 회신한다. (1)  
+1. Consumer는 자신의 등록 정보를 바탕으로 Signature를 만들고 Provider에게 보내서 권한 부여 요청을 받았음을 Provider에게 알리고, Provider는 권한 부여 요청을 확인했다는 임시 증표(를 저장하고 임시 증표를 Consumer에게 회신한다. (1)  
 
 1. Consumer는 권한 부여 요청 확인 증표와 함께 User의 요청을 Provider의 인가(권한 부여) 화면으로 리다이렉트한다.  
 
@@ -82,7 +82,7 @@ OAuth 1.0a는 권한을 줬다는 사실을 위와 같은 서명 방식을 이�
 
 위 과정에서 '권한 부여 요청 확인 증표'를 `RequestToken`, '권한 부여 확인 증표'를 `AuthorizationCode`, '보호 자원 접근 증표'를 `AccessToken`이라고 부른다.  
 
-### Sequence Diagram  
+## Sequence Diagram  
 
 위 절차 개요를 좀더 상세하게 시퀀스 다이어그램으로 표현해보면 다음과 같다.  
 
@@ -94,5 +94,76 @@ OAuth 1.0a는 권한을 줬다는 사실을 위와 같은 서명 방식을 이�
 
 이제 시퀀스 다이어그램을 토대로 실제 구현해보자.
 
-## OAuth 1.0a 구현
+# OAuth 1.0a 구현 - Consumer
+
+첫 번째 시나리오는 직접 구현한 Consumer를 통해 Provider인 트위터의 API를 통해 트위터에 글을 올리는 것이다. 
+
+## 사전 조건
+
+먼저 트위터에 내가 만들 Consumer 앱을 등록해야 한다. 참고로 OAuth 1.0a에서 Consumer라고 부르는 애플리케이션을 트위터에서는 트위터 앱(Twitter App)이라고 부른다.
+
+Consumer 앱을 트위터에 등록하려면 먼저 트위터 개발자 계정이 있어야 한다. [트위터 개발자 포털](https://developer.twitter.com/en/docs/basics/developer-portal/overview)에서 개발자 계정을 신청할 수 있다.
+
+개발자 계정 신청과 트위터 앱 등록 과정 설명은 아래의 화면 캡처로 대신한다.
+
+### 트위터 개발자 계정 신청
+ 
+![Imgur](https://i.imgur.com/OiGrOKX.png)
+
+![Imgur](https://i.imgur.com/Lp1vUPB.png)
+
+![Imgur](https://i.imgur.com/R1NUNqg.png)
+
+![Imgur](https://i.imgur.com/hV1K0xX.png)
+
+![Imgur](https://i.imgur.com/csco9Qs.png)
+
+![Imgur](https://i.imgur.com/J6ltjT6.png)
+
+![Imgur](https://i.imgur.com/ZgGGlFB.png)
+
+![Imgur](https://i.imgur.com/Ap50ZcF.png)
+
+![Imgur](https://i.imgur.com/AXkdALv.png)
+
+![Imgur](https://i.imgur.com/9QjOwMn.png)
+
+![Imgur](https://i.imgur.com/EJKOIXN.png)
+
+### 트위터 앱 등록
+
+![Imgur](https://i.imgur.com/3DWV3GB.png)
+
+![Imgur](https://i.imgur.com/85q36Jq.png)
+
+![Imgur](https://i.imgur.com/ikYSSYN.png)
+
+![Imgur](https://i.imgur.com/4OyDBKp.png)
+
+![Imgur](https://i.imgur.com/P8CcCqg.png)
+
+![Imgur](https://i.imgur.com/SYsQSMF.png)
+
+
+## Consumer 앱 개발
+
+Consumer 앱은 OAuth 1.0a 흐름을 파악하는데 필요한 최소한의 기능만을 담아 간단하게 개발한다. 기능은 다음과 같다.
+
+- 글을 쓸 수 있는 폼 화면
+- 권한 부여 요청 전송 (시퀀스 다이어그램 2번)
+  - 서명 생성 기능
+- 접근 토큰 요청 전송 (시퀀스 다이어그램 13번)
+  - 서명 생성 기능
+- 트위터에 글 쓰기 (시퀀퀀스 다이어그램 18번)
+
+편의상 스프링 부트로 개발하며, 프로젝트 생성 등의 자세한 과정은 생략한다.
+
+OAuth 1.0a Spec인 [RFC-5849](https://tools.ietf.org/html/rfc5849)를 따라 Consumer가 갖춰야 할 기능을 구현해보자.
+
+### 글 쓰는 폼 화면
+
+### Request Token 요청
+
+
+
 
