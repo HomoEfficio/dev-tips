@@ -25,7 +25,7 @@
 
 # OAuth 1.0a
 
-어떤 행위(내가 A 앱에게 트위터에 글을 쓸 권한을 준 행위)가 이루어졌음을 프로그래밍을 통해 증명하는 여러 방식 중에 대표적으로 서명(Signature)라는 것이 있다.
+어떤 행위(내가 A 앱에게 트위터에 글을 쓸 권한을 준 행위)가 이루어졌음을 프로그래밍을 통해 증명하는 여러 방식 중에 대표적으로 서명(Signature)이라는 것이 있다.
 
 아래 그림은 서명 방식 중에서 HMAC(Hashed Message Authentication Code)를 보여주고 있다.
 
@@ -239,18 +239,18 @@ Request Token 발급 요청 내용은 스펙의 [2.1 Temporary Credentials](http
 Signature Base String 생성 방식은 코드로 보는 것이 이해하기 쉬울 것 같다.
 
 ```java
-    private String generateBaseString(AbstractOAuthRequestHeader header) {
-        String httpMethod = header.getHttpMethod();
-        String baseUri = getBaseStringUri(header);
-        String requestParameters = getRequestParameters(header);
+private String generateBaseString(AbstractOAuthRequestHeader header) {
+    String httpMethod = header.getHttpMethod();
+    String baseUri = getBaseStringUri(header);
+    String requestParameters = getRequestParameters(header);
 
-        final StringBuilder sb = new StringBuilder();
-        sb.append(httpMethod)
-                .append('&').append(getUrlEncoded(baseUri))
-                .append('&').append(getUrlEncoded(requestParameters));
+    final StringBuilder sb = new StringBuilder();
+    sb.append(httpMethod)
+            .append('&').append(getUrlEncoded(baseUri))
+            .append('&').append(getUrlEncoded(requestParameters));
 
-        return sb.toString();
-    }
+    return sb.toString();
+}
 ```
 
 요약하면 Signature Base String은 HTTP 메서드, Base String URI(Token 발급 요청 URI), Token 발급 요청 파라미터를 [Percent encoding](https://tools.ietf.org/html/rfc5849#section-3.6) 한 후 &를 구분자로 이어 붙여서 만든다.
@@ -258,19 +258,19 @@ Signature Base String 생성 방식은 코드로 보는 것이 이해하기 쉬�
 여기서 주의할 것은 Java의 `URLEncoder.encode`는 OAuth 1.0a 스펙에서 말하는 Percent encoding과 차이가 있어서 다음과 같이 보완해줘야 한다(이 부분을 간과해서 많은 시간 삽질을 해야했다 ㅠㅜ).
 
 ```java
-    public static String getUrlEncoded(String value) {
-        try {
-            return URLEncoder.encode(value, StandardCharsets.UTF_8.name())
-                    .replaceAll("\\+", "%20")
-                    .replaceAll("%21", "!")
-                    .replaceAll("%27", "'")
-                    .replaceAll("%28", "(")
-                    .replaceAll("%29", ")")
-                    .replaceAll("%7E", "~");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+public static String getUrlEncoded(String value) {
+    try {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8.name())
+                .replaceAll("\\+", "%20")
+                .replaceAll("%21", "!")
+                .replaceAll("%27", "'")
+                .replaceAll("%28", "(")
+                .replaceAll("%29", ")")
+                .replaceAll("%7E", "~");
+    } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
     }
+}
 ```
 
 이 중에서 Token 발급 요청 파라미터를 구성하는 방식은 더 자세히 살펴봐야 한다.
@@ -283,10 +283,10 @@ Token 발급 요청 파라미터는 [3.4.1.3.  Request Parameters](https://tools
 1. Authorization 헤더에 있는 헤더 정보를 이름/값으로 파싱하고 URL decoding 한다.
 1. 발급 요청이 single-part 이고 `Content-Type` 헤더 값이 `application/x-www-form-urlencoded`라면 HTTP 요청 body 값을 이름/값으로 파싱하고 URL decoding 한다.
 1. 위의 값들을 normalization 한다. normalization 방식은 다음과 같다.
-  1. 파라미터 이름과 값을 URL encoding 한다.
-  1. 파라미터를 이름 기준 오름차순으로 정렬한다. 이름이 동일할 경우 값 기준 오름차순으로 정렬한다.
-  1. 파라미터 이름과 값을 `=`로 이어 붙인다.
-  1. 이어 붙인 파라미터를 `&`로 이어 붙인다.
+   1. 파라미터 이름과 값을 URL encoding 한다.
+   1. 파라미터를 이름 기준 오름차순으로 정렬한다. 이름이 동일할 경우 값 기준 오름차순으로 정렬한다.
+   1. 파라미터 이름과 값을 `=`로 이어 붙인다.
+   1. 이어 붙인 파라미터를 `&`로 이어 붙인다.
 
 스펙에서는 고맙게도 이에 대한 테스트 케이스를 제공해주는데 아래와 같은 토큰 발급 요청이 있다면,
 
@@ -314,7 +314,7 @@ dj82h48djs9d2&oauth_nonce=7d8f3e4a&oauth_signature_method=HMAC-SHA1
 &oauth_timestamp=137131201&oauth_token=kkk9d7dh3k39sjv7
 ```
 
-토큰 발급 요청 파라미터를 구하는 로직을 스펙을 읽고 정확하게 이해하는 것이 어렵지만, 일단 이해하면 구현 자체는 어렵지 않다. 필요하다면 [이걸](https://github.com/HomoEfficio/scratchpad-oauth10a-consumer/blob/master/src/main/java/io/homo/efficio/scratchpad/oauth10a/consumer/util/OAuth10aSupport.java) 참고하면 된다.
+토큰 발급 요청 파라미터를 구하는 로직을 스펙을 읽고 정확하게 파악하는 것이 어렵지만, 일단 파악하면 구현 자체는 어렵지 않다. 필요하다면 [이걸](https://github.com/HomoEfficio/scratchpad-oauth10a-consumer/blob/master/src/main/java/io/homo/efficio/scratchpad/oauth10a/consumer/util/OAuth10aSupport.java) 참고하면 된다.
 
 
 ### 서명 생성
@@ -328,22 +328,44 @@ Request Token 발급 요청할 때는 Token Secret이 없는 상태이므로 그
 서명 값은 `javax.crypto.Mac` 클래스를 이용해서 계산할 수 있으며, 검색해보면 찾을 수 있다.
 
 ```java
-    public void fillSignature(AbstractOAuthRequestHeader header) {
-        String key = header.getKey();
-        String baseString = generateBaseString(header);
-        try {
-            final SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), OAuth10aConstants.HMAC_SHA1_ALGORITHM_NAME);
-            final Mac mac = Mac.getInstance(OAuth10aConstants.HMAC_SHA1_ALGORITHM_NAME);
-            mac.init(signingKey);
-            final String signature = Base64.getEncoder().encodeToString(mac.doFinal(baseString.getBytes(StandardCharsets.UTF_8)));
-            header.setOauthSignature(signature);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
-        }
+public void fillSignature(AbstractOAuthRequestHeader header) {
+    String key = header.getKey();
+    String baseString = generateBaseString(header);
+    try {
+        final SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), OAuth10aConstants.HMAC_SHA1_ALGORITHM_NAME);
+        final Mac mac = Mac.getInstance(OAuth10aConstants.HMAC_SHA1_ALGORITHM_NAME);
+        mac.init(signingKey);
+        final String signature = Base64.getEncoder().encodeToString(mac.doFinal(baseString.getBytes(StandardCharsets.UTF_8)));
+        header.setOauthSignature(signature);
+    } catch (NoSuchAlgorithmException e) {
+        throw new RuntimeException(e);
+    } catch (InvalidKeyException e) {
+        throw new RuntimeException(e);
     }
+}
 ```
+
+### 괴로운 부분
+
+결론만 보면 쉬운 것 같지만 **직접 구현한 로직으로 만든 서명이 실제로 맞는지 검증을 하는 쉬운 방법이 없다는 게 OAuth 1.0a Consumer를 구현하는 과정 중에 가장 괴로운 부분이다.** 
+
+서명이 맞는지 확인 하는 유일한 방법은 Service Provider인 트위터에 서명을 전송하고 트위터의 응답을 받아보는 것 밖에 없다. 그런데 서명이 맞지 않을 때는 400 Bad Request 만 확인할 수 있을 뿐이고, 디버거를 활용해서 확인해보면 아래와 같이 트위터가 알려주는 정보를 확인할 수는 있는데,
+
+![Imgur](https://i.imgur.com/4qd0vlF.png)
+
+해당 에러 코드의 내용을 [트위터 응답 코드 문서](https://developer.twitter.com/en/docs/basics/response-codes.html)에서 찾아봐도 아래와 같이 인증 정보가 없거나 잘못되었다는 그다지 건더기 없는 말만 볼 수 있을 뿐이다. 실로 막막하고 괴롭다.
+
+![Imgur](https://i.imgur.com/o5SpdHs.png)
+
+서명 검증이라는 것이 입력값을 하나하나 검증한다기보다 해시 계산 결과 일치 여부만으로 판단하므로 사실 구체적으로 어느 부분이 틀렸는지 알 수 없는 것이 당연하다.
+
+그나마 할 수 있는 방법은 다음과 같다.
+
+- 잘 동작하는 서명 생성 구현체를 찾아서 그 구현체로 구한 서명과 내 서명을 비교하고,
+- 결과값이 다르다면 로직이 잘못되었거나 파라미터 정보 어딘가에 오타가 있다는 얘기이므로,
+- 꼼꼼하게 뒤져서 바로잡는 수 밖에 없다.
+
+그래도 여전히 막막하고 괴롭기는 마찬가지다.
 
 여기까지 Request Token 발급 요청과 Access Token 발급 요청을 위한 서명 생성까지 다뤘다. 실제 화면으로 작업 흐름을 되짚어 보고 Access Token 발급까지 확인해보자.
 
