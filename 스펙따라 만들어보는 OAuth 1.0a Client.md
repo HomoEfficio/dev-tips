@@ -363,8 +363,6 @@ public void fillSignature(AbstractOAuth10aRequestHeader header) {
 
 서버의 서명 검증이라는 것이 결국 HTTP 헤더로 전달받은 정보를 이용해서 계산되므로, 어느 부분이 틀렸는지 더 구체적인 정보를 알려줄 수 있을텐데 보안 때문인지 트위터는 오류 세부 내용을 알려주지 않는다.
 
-게다가 서명 계산 과정에는 외부에 공개되면 안되는 Consumer Secret, Request Token Secret, Access Token Secret이 포함되어야 하므로 공개된 테스크 코드도 찾기 어렵다.
-
 오랜 고생 끝에 결국 성공하고 나서 정리한 최선의 방법론은 다음과 같다.
 
 1. Percent Encoding은 스프링에서 제공하는 `UriUtils` 클래스를 활용해서 처리한다.
@@ -389,6 +387,127 @@ public void fillSignature(AbstractOAuth10aRequestHeader header) {
 ### callback API에서 서명 생성 후 Service Provider에 전송해서 Access Token 발급
 
 ![Imgur](https://i.imgur.com/4eia8Qv.png)
+
+## 보호된 자원에 접근
+
+Access Token 까지 발급 받았으니 이제 Access Token을 사용해서 보호된 자원(Protected Resources)에 사용자를 대신해서 접근하는 과정만 남았다.
+
+앞에서도 언급했지만 일단 여기까지 왔으면 서명 생성 로직은 제대로 구현되었다고 볼 수 있다. 보호된 자원에 접근하는 과정과 앞선 Request Token, Access Token 발급 과정 사이의 가장 큰 차이점 두 가지는 다음과 같다.
+
+1. 보호된 자원에 접근할 때는 드디어 사용자의 데이터(예를 들면 트위터에 남기고자 하는 글)가 처음으로 요청에 포함된다.
+1. 보호된 자원 접근 요청 규격은 Service Provider의 규격을 참고해야 한다.
+
+차례대로 알아보자.
+
+### 자원 접근 요청 발송은 어디에서 해야되나?
+
+최초의 글 남기기 요청에서 권한 부여 확인 후 끊김 없이 연속적으로 글 남기가 까지 완료하려면, 일단 **접근 요청을 날리는 위치는 Access Token 발급 요청을 전송하고, Access Token을 반환받는 callback URL API여야 한다.**
+
+Access Token을 받은 후, `Session`에서 사용자 데이터를 읽어와서 Access Token 정보와 함께 자원 접근 요청을 날리면 된다.
+
+### 사용자 데이터 처리
+
+앞의 작업 흐름 화면에 보면 사용자 데이터는 가장 앞 단계에서 입력된다. 따라서 이 데이터를 Request Token, Access Token 발급 과정을 거쳐서 자원 접근 요청을 보낼때까지 유지시켜줘야 결과적으로 사용자 데이터를 보호된 자원 접근에 사용할 수 있다. 가장 간단한 방법은 `Session`에 담아두는 것이다.
+
+시퀀스 다이어그램 6번 과정에서 사용자 데이터(트위터에 남길 글)를 `Session`에 담아두면 여러 번의 리다이렉트를 거치면서 최종 요청 단계인 20번 과정까지 `Session`에 사용자 데이터가 유지 된다.
+
+![Imgur](https://i.imgur.com/quqloI2.png)
+
+
+### 자원 접근 요청 규격
+
+자원 접근 요청 규격은 Service Provider가 정한 규격에 따라야 한다. 트위터에 글을 남기는 요청 규격은 [여기](https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/post-statuses-update)에 다음과 같이 예제가 나와 있다.
+
+>$ curl --request POST 
+--url 'https://api.twitter.com/1.1/statuses/update.json?
+status=Test%20tweet%20using%20the%20POST%20statuses%2Fupdate%20endpoint' 
+--header 'authorization: OAuth oauth_consumer_key="YOUR_CONSUMER_KEY",
+oauth_nonce="AUTO_GENERATED_NONCE", oauth_signature="AUTO_GENERATED_SIGNATURE",
+oauth_signature_method="HMAC-SHA1", oauth_timestamp="AUTO_GENERATED_TIMESTAMP",
+oauth_token="USERS_ACCESS_TOKEN", oauth_version="1.0"' 
+--header 'content-type: application/json'
+
+POST 방식이지만 사용자 데이터를 request body가 아니라 Query String으로 붙여서 보내고 있다. 따라서 글 남기기 요청 시에도 POST 방식을 쓰되 남길 글을 request body가 아니라 Query String에 붙여서 보내야 하고, 서명 생성 시에도 요청 URL에 Query String이 포함되어야 한다.
+
+### 자원 접근 요청 구현 내용
+
+앞에서 다룬 3가지 주요 내용을 구현한 코드는 다음과 같다.
+
+```java
+@GetMapping("/callback")
+@ResponseBody
+public String requestTokenCredentials(HttpServletRequest request, VerifierResponse verifierResponse) {
+    // Access Token 발급 요청 전송
+    HttpSession session = request.getSession();
+    final String requestTokenSecret = (String) session.getAttribute("RTS");
+    final AbstractOAuth10aRequestHeader tcHeader =
+            new OAuth10aTokenCredentialsRequestHeader(
+                    this.tokenCredentialsUrl,
+                    this.consumerKey,
+                    this.consumerSecret,
+                    verifierResponse.getOauth_token(),
+                    requestTokenSecret,
+                    verifierResponse.getOauth_verifier());
+    final ResponseEntity<TokenCredentials> responseEntity =
+            this.twitterService.getCredentials(tcHeader, TokenCredentials.class);
+
+    log.info("access_token: {}", Objects.requireNonNull(responseEntity.getBody()).toString());
+
+    // 자원 접근 요청 전송
+    final NextAction nextAction = (NextAction) session.getAttribute(OAuth10aConstants.NEXT_ACTION);
+    log.info("nextAction: {}", nextAction);
+    final URI nextUri = nextAction.getUri();
+    final OAuth10aProtectedResourcesRequestHeader resourcesRequestHeader =
+            new OAuth10aProtectedResourcesRequestHeader(
+                    nextAction,
+                    this.consumerKey,
+                    this.consumerSecret,
+                    responseEntity.getBody().getOauth_token(),
+                    responseEntity.getBody().getOauth_token_secret());
+    log.info("OAuth10aProtectedResourcesRequestHeader: {}", resourcesRequestHeader);
+    final ResponseEntity<Object> actionResponseEntity =
+            this.twitterService.doNextAction(resourcesRequestHeader, nextAction);
+
+    // 접근 요청 후처리
+    if (actionResponseEntity.getStatusCode().equals(HttpStatus.OK)) {
+        return "Mention is written!!!";
+    } else {
+        return actionResponseEntity.toString();
+    }
+}
+```
+
+## 실제 글이 트위터에 남겨지는 진행 과정
+
+전체 과정은 다음과 같이 진행된다.
+
+### 글 쓰고 트위터에 남기기 클릭
+
+![Imgur](https://i.imgur.com/AdU3bB6.png)
+
+### Consumer가 서명 생성 후 Service Provider에 전송해서 Request Token을 발급 받고, Service Provider가 제공하는 User의 권한 부여 화면으로 리다이렉트
+
+![Imgur](https://i.imgur.com/A2rXtbb.png)
+
+### User가 앱 인증을 클릭하면 Consumer의 callback API로 리다이렉트
+
+![Imgur](https://i.imgur.com/ZsnjElz.png)
+
+리다이렉트 되면 다음 3가지 과정이 내부적으로 진행됨
+
+1. callback API에서 서명 생성 후 Service Provider에 전송해서 Access Token 발급 요청 전송
+1. Access Token을 발급 받은 후 Service Provider의 자원에 접근 요청 전송(글쓰기 요청 전송)
+
+### 접근 요청이 성공하면 화면에 성공 메시지 표시됨
+
+![Imgur](https://i.imgur.com/7wCyEr2.png)
+
+### 트위터에 접속하면 글이 써진 것을 확인할 수 있음
+
+![Imgur](https://i.imgur.com/Ks3ZjrK.png)
+
+
+
 
 
 
