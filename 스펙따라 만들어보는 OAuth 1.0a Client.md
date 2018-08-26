@@ -66,7 +66,7 @@ Consumer Key and Secret | Client Credentials
 Request Token and Secret | Temporary Credentials
 Access Token and Secret | Token Credentials
 
-1.0의 용어가 더 구별하기 쉽고 직관적이어서 학습하기에 좋으므로 본 글에서는 1.0 용어를 사용한다. 1.0 용어로 이해한 후에는 1.0a의 용어도 쉽게 받아들일 수 있을 것이다.
+**1.0의 용어가 더 구별하기 쉽고 직관적이어서 학습하기에 좋으므로 본 글에서는 1.0 용어를 사용한다.** 1.0 용어로 이해한 후에는 1.0a의 용어도 쉽게 받아들일 수 있을 것이다.
 
 한 가지 짚고 넘어갈 용어로 Secret이 있는데, 서명 방식에서 **Secret은 Service Provider가 Consumer에게 발급하고 둘이 각자 보유하고 있다가 필요할 떄 사용할 뿐 온라인으로 주고 받지 않는 정보**다.
 
@@ -507,8 +507,89 @@ Callback API로 리다이렉트 되면 내부적으로 다음 2가지 과정이 
 ![Imgur](https://i.imgur.com/Ks3ZjrK.png)
 
 
+# 매우 귀중한 보너스!!
+
+고생은 나 하나로 족하다. Request Token 발급 요청, Access Token 발급 요청, 자원 접근 요청에 사용되는 서명값 계산 로직을 검증할 수 있는 테스트 케이스를 선사한다.
+
+중간에 사용되는 `*Header`나 `OAuth10aSignatureSupport` 클래스는 구현 방식에 따라 달라질 수 있으니 신경쓰지 말고 아래 나오는 URL, ConsumerKey, ConsumerSecret, RequestTokenKey, RequestTokenSecret, AccessToken, AccessTokenSecret, Nonce, TimeStamp와 Signature 값으로 각자의 구현 로직을 테스트할 수 있다.
+
+```java
+public class OAuth10aSignatureSupportTest {
+
+    private OAuth10aSignatureSupport oa10aSigSupport = new OAuth10aSignatureSupport();
+
+    @Test
+    public void requestToken__sigTest() {
+        // given
+        OAuth10aTemporaryCredentialRequestHeader header = new OAuth10aTemporaryCredentialRequestHeader(
+                "https://api.twitter.com/oauth/request_token",
+                "YourAppConsumerKey",
+                "YourAppConsumerSecret",
+                "YourAppCallbackURL"
+        );
+        header.setOauthNonce("NDg0ZDNjOTktYTJlMC00YmI5LThhMDktZDBkZGQ0MDA0ZTIw");
+        header.setOauthTimestamp("1535288634");
 
 
+        // when
+        oa10aSigSupport.fillSignature(header);
 
 
+        // then
+        assertThat(header.getOauthSignature()).isEqualTo("DNpRbry9XwYfEf+KXz4tV5Ufbpk=");
+    }
 
+    @Test
+    public void accessToken__sigTest() {
+        // given
+        OAuth10aTokenCredentialsRequestHeader header = new OAuth10aTokenCredentialsRequestHeader(
+                "https://api.twitter.com/oauth/access_token",
+                "YourAppConsumerKey",
+                "YourAppConsumerSecret",
+                "YourRequestToken",
+                "YourRequestTokenSecret",
+                "YourOAuthVerifier"
+        );
+        header.setOauthNonce("ZmRmNDQ5Y2YtN2IwNC00YzFkLTgxODItN2YwZmEzYjRhZTJj");
+        header.setOauthTimestamp("1535289096");
+
+
+        // when
+        oa10aSigSupport.fillSignature(header);
+
+
+        // then
+        assertThat(header.getOauthSignature()).isEqualTo("64lbyOhFJRcmudwWSwrmL1cQhEQ=");
+    }
+
+    @Test
+    public void protectedResources__sigTest() {
+        // given
+        NextAction nextAction = new NextAction(
+                HttpMethod.POST,
+                "https://api.twitter.com/1.1/statuses/update.json?status=OAuth10a%20Test",
+                null
+        );
+
+        OAuth10aProtectedResourcesRequestHeader header =
+                new OAuth10aProtectedResourcesRequestHeader(
+                        nextAction,
+                        "YourAppConsumerKey",
+                        "YourAppConsumerSecret",
+                        "YourAccessToken",
+                        "YourAccessTokenSecret"
+                );
+        header.setOauthTimestamp("1535272771");
+        header.setOauthNonce("Y2I0Yjk4ZDItZjg2OS00Y2VjLThkMjgtY2RmMWY0YzZiOTlj");
+
+
+        // when
+        oa10aSigSupport.fillSignature(header);
+
+
+        // then
+        assertThat(header.getOauthSignature()).isEqualTo("de5B57uqqbMG/Z/6vm5i5kJaxxA=");
+    }
+}
+
+```
