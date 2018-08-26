@@ -493,7 +493,7 @@ public String requestTokenCredentials(HttpServletRequest request, VerifierRespon
 
 ![Imgur](https://i.imgur.com/ZsnjElz.png)
 
-Callback API로 리다이렉트 되면 내부적으로 다음 2가지 과정 진행된다.
+Callback API로 리다이렉트 되면 내부적으로 다음 2가지 과정이 진행된다.
 
 1. callback API에서 서명 생성 후 Service Provider에 전송해서 Access Token 발급 요청 전송
 1. Access Token을 발급 받은 후 Service Provider의 자원에 접근 요청 전송(글쓰기 요청 전송)
