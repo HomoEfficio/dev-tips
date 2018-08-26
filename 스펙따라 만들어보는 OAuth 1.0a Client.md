@@ -4,7 +4,7 @@
 
 - 많은 서비스가 API를 통해 서로 연결
 
-> **내가 A라는 앱에 쓴 글이 내 트위터 타임라인에도 표시되면 좋겠다.**
+  > **내가 A라는 앱에 쓴 글이 내 트위터 타임라인에도 표시되면 좋겠다.**
 
 - 하지만 A 앱은 내 트위터 타임라인에 글을 쓸 권한이 없다.
 
@@ -20,7 +20,7 @@
 
 - **내가 A 앱에 쓴 글을 내 트위터 타임라인에도 표시**하려면 결국 다음의 질문에 대한 답이 필요하다.
 
-> **내가 A 앱에게 권한을 줬다는 사실을 트위터에게 어떻게 알려줄 수 있을까?**
+  > **내가 A 앱에게 권한을 줬다는 사실을 트위터에게 어떻게 알려줄 수 있을까?**
 
 
 # OAuth 1.0a
@@ -111,7 +111,7 @@ Access Token and Secret | Token Credentials
 
 위 절차 개요를 좀더 상세하게 시퀀스 다이어그램으로 표현해보면 다음과 같다.
 
-![Imgur](https://i.imgur.com/LbGTeGn.png)
+![Imgur](https://i.imgur.com/quqloI2.png)
 
 (http://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art014 내용 참고하여 재구성)
 
@@ -239,15 +239,15 @@ Request Token 발급 요청 내용은 스펙의 [2.1 Temporary Credentials](http
 Signature Base String 생성 방식은 코드로 보는 것이 이해하기 쉬울 것 같다.
 
 ```java
-private String generateBaseString(AbstractOAuthRequestHeader header) {
+private String generateBaseString(AbstractOAuth10aRequestHeader header) {
     String httpMethod = header.getHttpMethod();
     String baseUri = getBaseStringUri(header);
     String requestParameters = getRequestParameters(header);
 
     final StringBuilder sb = new StringBuilder();
     sb.append(httpMethod)
-            .append('&').append(getUrlEncoded(baseUri))
-            .append('&').append(getUrlEncoded(requestParameters));
+            .append('&').append(getPercentEncoded(baseUri))
+            .append('&').append(getPercentEncoded(requestParameters));
 
     return sb.toString();
 }
@@ -255,7 +255,9 @@ private String generateBaseString(AbstractOAuthRequestHeader header) {
 
 요약하면 Signature Base String은 HTTP 메서드, Base String URI(Token 발급 요청 URI), Token 발급 요청 파라미터를 [Percent encoding](https://tools.ietf.org/html/rfc5849#section-3.6) 한 후 &를 구분자로 이어 붙여서 만든다.
 
-여기서 주의할 것은 Java의 `URLEncoder.encode`는 OAuth 1.0a 스펙에서 말하는 Percent encoding과 차이가 있어서 다음과 같이 보완해줘야 한다(이 부분을 간과해서 많은 시간 삽질을 해야했다 ㅠㅜ).
+여기서 주의할 것은 **Java의 `URLEncoder.encode`는 OAuth 1.0a 스펙에서 말하는 Percent encoding과 차이가 있다는 점이다.** Percent encoding 값이 잘못되면 서명값이 잘못 나오고, 잘못 나온 서명값은 서버 쪽에서 계산한 서명값과 일치하지 않으므로 요청이 계속 실패하게 된다. 서명값이 틀리면 요청에 사용된 여러 데이터중 어떤 데이터가 잘못 되어 서명값이 틀리는지 찾아내는 데 엄청난 고통이 뒤따른다.
+
+검색해보면 아래와 같은 내용이 나오는데 이걸 사용하면 Request Token 발급과 Access Token 발급에는 성공하지만, 마지막으로 트위터에 특수 문자가 포함된 글을 남길 때 계속 실패한다.
 
 ```java
 public static String getUrlEncoded(String value) {
@@ -273,9 +275,11 @@ public static String getUrlEncoded(String value) {
 }
 ```
 
-이 중에서 Token 발급 요청 파라미터를 구성하는 방식은 더 자세히 살펴봐야 한다.
+정말 며칠동안 계속 Trial-Error로 잘못된 부분을 찾느라 고생했는데, 결국 해결사는 스프링이었다. **스프링의 `UriUtils` 클래스에서 제공하는 `UriUtils.encode()`와 `UriUtils.decode()`가 정확히 Percent Encoding을 구현**하고 있어서 최종적으로 올바른 서명값을 계산해낼 수 있었다.
 
 ### Token 발급 요청 파라미터
+
+Base String URI 구성을 마치면 Token 발급 요청 파라미터를 구성해야 한다.
 
 Token 발급 요청 파라미터는 [3.4.1.3.  Request Parameters](https://tools.ietf.org/html/rfc5849#section-3.4.1.3)에 나와있다. 요약하면 다음과 같다.
 
@@ -328,7 +332,7 @@ Request Token 발급 요청할 때는 Token Secret이 없는 상태이므로 그
 서명 값은 `javax.crypto.Mac` 클래스를 이용해서 계산할 수 있으며, 검색해보면 찾을 수 있다.
 
 ```java
-public void fillSignature(AbstractOAuthRequestHeader header) {
+public void fillSignature(AbstractOAuth10aRequestHeader header) {
     String key = header.getKey();
     String baseString = generateBaseString(header);
     try {
@@ -359,13 +363,14 @@ public void fillSignature(AbstractOAuthRequestHeader header) {
 
 서버의 서명 검증이라는 것이 결국 HTTP 헤더로 전달받은 정보를 이용해서 계산되므로, 어느 부분이 틀렸는지 더 구체적인 정보를 알려줄 수 있을텐데 보안 때문인지 트위터는 오류 세부 내용을 알려주지 않는다.
 
-그나마 할 수 있는 방법은 다음과 같다.
+게다가 서명 계산 과정에는 외부에 공개되면 안되는 Consumer Secret, Request Token Secret, Access Token Secret이 포함되어야 하므로 공개된 테스크 코드도 찾기 어렵다.
 
-- 잘 동작하는 서명 생성 구현체를 찾아서 그 구현체로 구한 서명과 내 서명을 비교하고,
-- 결과값이 다르다면 로직이 잘못되었거나 파라미터 정보 어딘가에 오타가 있다는 얘기이므로,
-- 꼼꼼하게 뒤져서 바로잡는 수 밖에 없다.
+오랜 고생 끝에 결국 성공하고 나서 정리한 최선의 방법론은 다음과 같다.
 
-그래도 여전히 막막하고 괴롭기는 마찬가지다.
+1. Percent Encoding은 스프링에서 제공하는 `UriUtils` 클래스를 활용해서 처리한다.
+1. 스펙에 나온 Base String URI 테스트 케이스를 통과하도록 Base String URI를 구성하는 로직을 정확하게 구현한다.
+1. Request Token 발급과 Access Token 발급까지는 Service Provider 별로 다를 게 없고 스펙대로만 구현하면 되므로, 의도대로 동작하지 않으면 스펙을 보고 구현 내용을 점검한다.
+1. Protected Resources에 대한 접근 요청 규격은 Service Provider 별로 다르므로 Access Token 발급까지는 성공했는데 자원 접근 요청에서 실패한다면 Service Provider의 문서를 꼼꼼히 살펴서 요청 규격을 맞춰준다.
 
 여기까지 Request Token 발급 요청과 Access Token 발급 요청을 위한 서명 생성까지 다뤘다. 실제 화면으로 작업 흐름을 되짚어 보고 Access Token 발급까지 확인해보자.
 
