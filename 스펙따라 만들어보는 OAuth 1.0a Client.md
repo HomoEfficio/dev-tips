@@ -178,8 +178,7 @@ Consumer 앱은 OAuth 1.0a 흐름을 파악하는데 필요한 최소한의 기�
 - 권한 부여 요청 전송 (시퀀스 다이어그램 2번)
 - 서명 생성 기능
 - 접근 토큰 요청 전송 (시퀀스 다이어그램 14번)
-- 서명 생성 기능
-- 트위터에 글 쓰기 (시퀀퀀스 다이어그램 20번)
+- 트위터에 글 쓰기 (시퀀스 다이어그램 20번)
 
 편의상 스프링 부트로 개발하며, 프로젝트 생성 등의 자세한 과정은 생략한다.
 
@@ -318,7 +317,7 @@ dj82h48djs9d2&oauth_nonce=7d8f3e4a&oauth_signature_method=HMAC-SHA1
 &oauth_timestamp=137131201&oauth_token=kkk9d7dh3k39sjv7
 ```
 
-토큰 발급 요청 파라미터를 구하는 로직을 스펙을 읽고 정확하게 파악하는 것이 어렵지만, 일단 파악하면 구현 자체는 어렵지 않다. 필요하다면 [이걸](https://github.com/HomoEfficio/scratchpad-oauth10a-consumer/blob/master/src/main/java/io/homo/efficio/scratchpad/oauth10a/consumer/util/OAuth10aSupport.java) 참고하면 된다.
+토큰 발급 요청 파라미터를 구하는 로직을 스펙을 읽고 정확하게 파악하는 것이 어렵지만, 일단 파악하면 구현 자체는 어렵지 않다. 필요하다면 [이걸](https://github.com/HomoEfficio/scratchpad-oauth10a-consumer/blob/master/src/main/java/io/homo/efficio/scratchpad/oauth10a/consumer/util/OAuth10aSignatureSupport.java) 참고하면 된다.
 
 
 ### 서명 생성
@@ -353,13 +352,15 @@ public void fillSignature(AbstractOAuth10aRequestHeader header) {
 
 결론만 보면 쉬운 것 같지만 **직접 구현한 로직으로 만든 서명이 실제로 맞는지 검증을 하는 쉬운 방법이 없다는 게 OAuth 1.0a Consumer를 구현하는 과정 중에 가장 괴로운 부분이다.** 
 
-서명이 맞는지 확인 하는 유일한 방법은 Service Provider인 트위터에 서명을 전송하고 트위터의 응답을 받아보는 것 밖에 없다. 그런데 서명이 맞지 않을 때는 400 Bad Request 만 확인할 수 있을 뿐이고, 디버거를 활용해서 확인해보면 아래와 같이 트위터가 알려주는 정보를 확인할 수는 있는데,
+서명이 맞는지 확인 하는 유일한 방법은 Service Provider인 트위터에 서명을 전송하고 트위터의 응답을 받아보는 것 밖에 없다. 그런데 서명이 맞지 않을 때는 다음과 같이 401 Authorization Required 만 확인할 수 있을 뿐이고,
 
-![Imgur](https://i.imgur.com/4qd0vlF.png)
+>org.springframework.web.client.HttpClientErrorException: 401 Authorization Required
 
-해당 에러 코드의 내용을 [트위터 응답 코드 문서](https://developer.twitter.com/en/docs/basics/response-codes.html)에서 찾아봐도 아래와 같이 인증 정보가 없거나 잘못되었다는 그다지 건더기 없는 말만 볼 수 있을 뿐이다. 실로 막막하고 괴롭다.
+디버거를 활용해서 확인해보면 아래와 같이 트위터가 알려주는 정보를 확인할 수는 있는데, 빈 문자열이 반환된다.
 
-![Imgur](https://i.imgur.com/o5SpdHs.png)
+![Imgur](https://i.imgur.com/awb2ePA.png)
+
+빈 문자열이 반환되니 [트위터 응답 코드 문서](https://developer.twitter.com/en/docs/basics/response-codes.html)도 도움이 되지 않는다. 실로 막막하고 괴롭다.
 
 서버의 서명 검증이라는 것이 결국 HTTP 헤더로 전달받은 정보를 이용해서 계산되므로, 어느 부분이 틀렸는지 더 구체적인 정보를 알려줄 수 있을텐데 보안 때문인지 트위터는 오류 세부 내용을 알려주지 않는다.
 
@@ -369,6 +370,7 @@ public void fillSignature(AbstractOAuth10aRequestHeader header) {
 1. 스펙에 나온 Base String URI 테스트 케이스를 통과하도록 Base String URI를 구성하는 로직을 정확하게 구현한다.
 1. Request Token 발급과 Access Token 발급까지는 Service Provider 별로 다를 게 없고 스펙대로만 구현하면 되므로, 의도대로 동작하지 않으면 스펙을 보고 구현 내용을 점검한다.
 1. Protected Resources에 대한 접근 요청 규격은 Service Provider 별로 다르므로 Access Token 발급까지는 성공했는데 자원 접근 요청에서 실패한다면 Service Provider의 문서를 꼼꼼히 살펴서 요청 규격을 맞춰준다.
+1. 400 Bad Request 에러가 발생하면 헤더 구성 내용 중 이름 오류나 누락된 항목이 있는지 다시 한 번 살펴보고, 401 Authorization Required 에러가 발생하면 서명값 계산 로직을 다시 살펴본다.
 
 여기까지 Request Token 발급 요청과 Access Token 발급 요청을 위한 서명 생성까지 다뤘다. 실제 화면으로 작업 흐름을 되짚어 보고 Access Token 발급까지 확인해보자.
 
