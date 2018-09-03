@@ -1,5 +1,7 @@
 # 스펙따라 만들어보는 OAuth 1.0a Server
 
+이 글은 [스펙따라 만들어보는 Oauth 1.0a Client](https://github.com/HomoEfficio/dev-tips/blob/master/스펙따라%20만들어보는%20OAuth%201.0a%20Client.md)의 후속편으로, Twitter가 담당했던 OAuth 1.0a Service Provider 역할을 하는 서버를 스펙따라 만드는 과정을 다룬다.
+
 ## OAuth 탄생 배경
 
 - 많은 서비스가 API를 통해 서로 연결
