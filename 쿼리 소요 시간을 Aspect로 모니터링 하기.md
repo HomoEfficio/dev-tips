@@ -106,7 +106,7 @@ public class QueryAspect {
 
 암튼 비동기 호출을 적용한 코드는 다음과 같다. 쿼리 파라미터를 매핑하는 private 메서드는 앞에 나온 코드와 동일하므로 생략한다.
 
-또 한 가지 바뀐 점은 롬복의 `@RequiredArgsConstructor(onConstructor = @__(@Autowired))`를 이번에는 사용하지 않고 명시적으로 생성자를 작성했는데, 동일한 타입의 Bean이 있어서 `@Qualifer`로 구분하는 경우에는 이렇게 명시적으로 생성자를 작성해주지 않으면 Bean이 구별되지 않고 중복된다는 에러가 발생한다.
+또 한 가지 바뀐 점은 롬복의 `@RequiredArgsConstructor(onConstructor = @__(@Autowired))`를 이번에는 사용하지 않고 명시적으로 생성자를 작성했는데, 동일한 타입의 Bean이 있어서 `@Qualifer`로 구분하는 경우에는 이렇게 명시적으로 생성자를 작성해주지 않으면 Bean이 구별되지 않고 중복된다는 에러가 발생한다. 관련 내용은 [여기](https://github.com/HomoEfficio/dev-tips/blob/master/Lombok%20%40RequiredArgsConstructor(onConstructor%20%3D%20%40__(%40Autowired))%20주의%20사항.md)를 참고한다.
 
 ```java
 @Component
