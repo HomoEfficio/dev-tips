@@ -76,7 +76,7 @@ public class OrderItem {
 
 ### 정리
 
-> **결국 단방향 `@OneToMany`을 통해 얻고자 했던 단순함도 얻지 못하고 불필요한 오버헤드만 발생하므로 단방향 `@OneToOne`은 별로 좋은 점이 없다.**
+> **결국 단방향 `@OneToMany`을 통해 얻고자 했던 단순함도 얻지 못하고 불필요한 오버헤드만 발생하므로 단방향 `@OneToMany`은 별로 좋은 점이 없다.**
 
 
 ## 테스트 메서드에서는 `XXXRepository.save()`만으로는 `flush`가 유발되지 않는다.
