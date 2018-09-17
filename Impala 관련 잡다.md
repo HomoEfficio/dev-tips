@@ -55,6 +55,104 @@
 
 `ALTER TABLE TARGET_TABLE_1 RENAME TO TARGET_TABLE`로 테이블의 이름을 원래 뷰가 참조하고 있던 이름으로 바꾸면, 뷰에 별다른 처리를 하지 않아도 다시 연결이 복원된다.
 
+## children max 10000 제한
+
+예를 들어 다음과 같이 IN 안에 10,000개가 넘는 값이 들어가면,
+
+```sql
+select colA, colB 
+from impala_table
+where colA in (value1, value2, ... 1만개 이상)
+```
+
+임팔라는 다음과 같은 에러를 낸다.
+
+>HiveSQLException: nested exception is java.sql.SQLException: AnalysisException: Exceeded the maximum number of child expressions (10000)
+
+유사 사례: https://community.tableau.com/thread/261547
+
+[클라우데라 포럼 글](https://community.tableau.com/thread/261547)에 따르면 위와 같은 경우 in 안에 들어갈 값으로 테이블 B를 만들고 B와 join을 통해 해결하라고 한다.
+
+## in vs in from other table vs join 실행 계획
+
+### in with values
+
+```sql
+explain select * from table_a where col01 in ('a', 'b', 'c', 'd', 'e');
+OK
+Max Per-Host Resource Reservation: Memory=0B
+Per-Host Resource Estimates: Memory=2.62GB
+
+PLAIN-ROOT SINK
+|
+01: EXCHANGE [UNPARTITIONED]
+|
+00: SCAN HDFS [dbXXX.table_a]
+    partitions=25254/25254 files=31069 size=887.23GB
+    predicate: uid IN ('a', 'b', 'c', 'd', 'e')
+time taken: 0.400 seconds, fetched: 10 rows
+```
+
+### in with values from other table
+
+```sql
+explain select * from table_a where col01 in (select col01 from table_b where col02 % 2 = 0);
+OK
+Max Per-Host Resource Reservation: Memory=35.00B
+Per-Host Resource Estimates: Memory=4.69GB
+WARNING: The following tables are missing relevant table and/or column statistics.
+dbXXX.table_b
+
+PLAIN-ROOT SINK
+|
+04: EXCHANGE [UNPARTITIONED]
+|
+02: HASH JOIN [LEFT SEMI JOIN BROADCAST]
+|   hash predicates: col01 = col01
+|   runtime filters: RF000 <- col01
+|
+|--03: EXCHANGE [BROADCAST]
+|  |
+|  01: SCAN HDFS [dbXXX.table_b]
+|      partitions=1/1 files=1 size=4.11MB
+|      predicates: col02 % 2 = 0
+|
+00: SCAN HDFS [dbXXX.table_a]
+    partitions=25254/25254 files=31069 size=887.23GB
+    runtime filters: RF000 -> uid
+time taken: 0.327 seconds, fetched: 22 rows
+```
+
+### join
+
+```sql
+explain select * from table_a a join table_b b on a.col01 = b.col01 where b.col02 % 2 = 0;
+OK
+Max Per-Host Resource Reservation: Memory=35.00B
+Per-Host Resource Estimates: Memory=4.69GB
+WARNING: The following tables are missing relevant table and/or column statistics.
+dbXXX.table_b
+
+PLAIN-ROOT SINK
+|
+04: EXCHANGE [UNPARTITIONED]
+|
+02: HASH JOIN [INNER JOIN BROADCAST]
+|   hash predicates: a.col01 = b.col01
+|   runtime filters: RF000 <- b.col01
+|
+|--03: EXCHANGE [BROADCAST]
+|  |
+|  01: SCAN HDFS [dbXXX.table_b b]
+|      partitions=1/1 files=1 size=4.11MB
+|      predicates: b.col02 % 2 = 0
+|
+00: SCAN HDFS [dbXXX.table_a a]
+    partitions=25254/25254 files=31069 size=887.23GB
+    runtime filters: RF000 -> a.uid
+time taken: 0.343 seconds, fetched: 22 rows
+```
+
 ## 기타 SQL on Hadoop 잡다
 
 - 동시 조회 실행자가 많으면 리소스 사용 증가
