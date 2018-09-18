@@ -86,3 +86,7 @@ time taken: 0.343 seconds, fetched: 22 rows
 
 - `join` 이 RDBMS에서는 인덱스 여부에 따라 나을 수도 있지만, Hive에서는 MR이 한 번 더 유발된다.
 - 단일 테이블 조회고 `in` 이 사용되는 컬럼에 인덱스가 걸려 있다면 `in`이 무조건 빠르다.
+
+## 기타
+
+https://sqlinthewild.co.za/index.php/2010/01/12/in-vs-inner-join/ 여기에 SQL Server 기준이긴 하지만 `in`과 `join`의 비교가 잘 설명되어 있다.
