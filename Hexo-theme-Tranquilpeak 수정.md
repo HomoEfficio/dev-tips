@@ -25,7 +25,7 @@ https://github.com/hanmomhanda/custom-tranquilpeak-hexo-theme/commits/master 참
 
 ### grunt task 직접 실행
 
-`tranquildpeak` 디렉터리에서 `npm build`로 테마 빌드 -> 에러 남 ㅠㅜ
+`tranquildpeak` 디렉터리에서 hexo server를 종료한 상태에서 아래 명령 차례로 수행
 
 >grunt clean:build
 >
