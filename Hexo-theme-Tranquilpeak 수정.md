@@ -25,7 +25,7 @@ https://github.com/hanmomhanda/custom-tranquilpeak-hexo-theme/commits/master 참
 
 ### grunt task 직접 실행
 
-`tranquildpeak` 디렉터리에서 hexo server를 종료한 상태에서 아래 명령 차례로 수행
+`tranquildpeak` 디렉터리에서 hexo server를 종료한 상태에서 `build-theme.sh` 실행 (실제로는 아래 명령 실행)
 
 >grunt clean:build
 >
