@@ -72,7 +72,7 @@ public class OrderItem {
        references orders (order_id)    
     ```
 - 원했던 것은 단순한 `ORDERS`:`ORDER_ITEM` = 1:N 이었지만, 실제로는 `ORDERS`:`ORDERS_ORDER_ITEMS`:`ORDER_ITEMS` = 1:N:1 관계가 형성된다.
-- 이렇게 되면 CUD를 할 때 `ORDER_ORDER_ITEMS`에 대해서도 CUD를 해야하므로 불필요한 오버헤드가 생긴다.
+- 이렇게 되면 CUD를 할 때 `ORDERS_ORDER_ITEMS`에 대해서도 CUD를 해야하므로 불필요한 오버헤드가 생긴다.
 
 ### 정리
 
