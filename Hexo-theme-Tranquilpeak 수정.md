@@ -23,26 +23,26 @@ https://github.com/hanmomhanda/custom-tranquilpeak-hexo-theme/commits/master 참
 
 ## 빌드
 
-- `tranquildpeak` 디렉터리에서 `npm build`로 테마 빌드 -> 에러 남 ㅠㅜ
-
 ### grunt task 직접 실행
 
+`tranquildpeak` 디렉터리에서 `npm build`로 테마 빌드 -> 에러 남 ㅠㅜ
+
 >grunt clean:build
-
+>
 >grunt bower:dev
-
+>
 >grunt syncAssets
-
+>
 >grunt replace:cssFancybox
-
+>
 >grunt replace:cssTranquilpeak
-
+>
 >grunt concat
-
+>
 >grunt cssmin
-
+>
 >grunt uglify
-
+>
 >grunt linkAssetsProd
 
 
