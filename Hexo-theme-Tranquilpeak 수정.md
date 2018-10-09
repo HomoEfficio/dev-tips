@@ -14,10 +14,6 @@ https://github.com/hanmomhanda/custom-tranquilpeak-hexo-theme/commits/master 참
 - https://github.com/HomoEfficio/homoefficio.github.io/commit/e4c32f526a4454911f43000c68b65fb995d8819c
 - https://github.com/HomoEfficio/homoefficio.github.io/commit/c35f9895889ca7d5d3f9870ab0bc4250182aec3b
 
-### 파일 위치
-
-- `tranquilpeak\source\_css\base
-
 
 ## SCSS 커스터마이징
 
@@ -27,8 +23,40 @@ https://github.com/hanmomhanda/custom-tranquilpeak-hexo-theme/commits/master 참
 
 ## 빌드
 
-`npm run prod`로 테마 빌드
+- `tranquildpeak` 디렉터리에서 `npm build`로 테마 빌드 -> 에러 남 ㅠㅜ
+
+### grunt task 직접 실행
+
+>grunt clean:build
+
+>grunt bower:dev
+
+>grunt syncAssets
+
+>grunt replace:cssFancybox
+
+>grunt replace:cssTranquilpeak
+
+>grunt concat
+
+>grunt cssmin
+
+>grunt uglify
+
+>grunt linkAssetsProd
+
 
 ## 배포
 
+### main repo
+
+`homo.efficio.io` 디렉터리에서 
+
+- `git push origin source`
+
+### theme repo (subtree)
+
+`homo.efficio.io` 디렉터리에서 
+
+- `git subtree push --prefix=themes/tranquilpeak/ custom-tranquilpeak dev`
 
