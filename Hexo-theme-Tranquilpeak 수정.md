@@ -51,13 +51,13 @@ scss 관련 변수는 `tranquilpeak/source/_css/util/_variable.css`에 있음
 
 ### main repo
 
-`homo.efficio.io` 디렉터리에서 
+`homoefficio.github.io` 디렉터리에서 
 
 - `git push origin source`
 
 ### theme repo (subtree)
 
-`homo.efficio.io` 디렉터리에서 
+`homoefficio.github.io` 디렉터리에서 
 
 - `git subtree push --prefix=themes/tranquilpeak/ custom-tranquilpeak dev`
 
