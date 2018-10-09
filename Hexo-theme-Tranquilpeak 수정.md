@@ -60,6 +60,7 @@ scss 관련 변수는 `tranquilpeak/source/_css/util/_variable.css`에 있음
 `homoefficio.github.io` 디렉터리에서 
 
 - `git subtree push --prefix=themes/tranquilpeak/ custom-tranquilpeak dev`
+- `git subtree push --prefix=themes/tranquilpeak/ custom-tranquilpeak master`
 
 # h1
 ## h2
