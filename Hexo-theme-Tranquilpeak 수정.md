@@ -49,6 +49,12 @@ scss 관련 변수는 `tranquilpeak/source/_css/util/_variable.css`에 있음
 
 ## 배포
 
+### home page repo
+
+`homoefficio.github.io` 디렉터리에서 
+
+- `hexo generate --deploy`
+
 ### main repo
 
 `homoefficio.github.io` 디렉터리에서 
