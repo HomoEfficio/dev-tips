@@ -70,6 +70,7 @@
 
 ---
 
+Todo
 
 ## URLClassLoader
 
@@ -77,5 +78,7 @@
 - External 클래스가 out 폴더에 없고 외부 폴더에만 있으면 URLClassLoader에 의해 로딩된다.
 - External 클래스의 Field로 Internal을 추가해서 컴파일 후 외부 폴더에만 있는 상태에서 URLClassLoader로 External을 로딩하면 Internal도 애플리케이션 클래스로더에 의해 로딩된다. 즉, 애플리케이션 내에 있는 클래스와 애플리케이션 밖에 있는 클래스를 조합해서 사용할 수 있다.
 
+---
 
+## Java9에서는 ZipInfo.class 가 컴파일도 안됨
 
