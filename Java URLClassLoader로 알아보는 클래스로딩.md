@@ -1,10 +1,11 @@
-# URLClassLoader로 알아보는 클래스로딩
+# Java URLClassLoader로 알아보는 클래스로딩
 
 Bootstrap ClassLoader, Extension ClassLoader, Application ClassLoader 이 3가지 기본 클래스로더 말고도 `URLClassLoader`가 있다. 
-
 사실 Extension ClassLoader와 Application ClassLoader는 `URLClassLoader`를 상속받아서 만들어진 클래스다.
 
-간단한 URLClassLoader 예제로 클래스로딩 과정을 짚어보자.
+3가지 기본 클래스로더에 대한 자세한 내용은 [여기](https://github.com/HomoEfficio/dev-tips/blob/master/Java%20ClassLoader%20훑어보기.md)를 참고한다.
+
+간단한 `URLClassLoader` 예제로 클래스로딩 과정을 짚어보자.
 
 ## URLClassLoader 예제
 
