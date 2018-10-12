@@ -118,7 +118,7 @@ public class External {
 
 External 클래스는 컴파일 한 후에 클래스 파일을 프로젝트(클래스패스) 외부로 옮겨서 URLClassLoader 에 의해 로딩되는 부분을 테스트하는데 사용한다.
 
-Internal 클래스를 필드로 가지고 있는데, 외부에서 로딩될 때 Internal 클래스의 로딩 여부를 확인하는 데 사용한다.
+Internal 클래스를 필드로 가지고 있는데, External 클래스가 외부에서 로딩될 때 Internal 클래스의 로딩 여부를 확인하는 데 사용한다.
 
 ## 실행 결과 - 1
 
@@ -153,7 +153,7 @@ Process finished with exit code 0
 - Bootstrap ClassLoader는 `null` 로 표시된다. 실제로 Bootstrap ClassLoader는 Native C로 구현되어 있다.
 - `jre/lib/ext` 폴더에 있는 jar 파일 안에 있는 `ZipInfo.class`를 통해 Extension ClassLoader를 확인할 수 있다.
   - 참고로 Java 9 에서는 모듈 시스템이 도입되면서 클래스로더에도 변화가 있었으며, `ZipInfo.class` 파일을 찾지 못해 컴파일 에러가 발생한다.
-- External 클래스는 `URLClassLoader`를 통해 로딩을 시도하더라도, **클래스 파일이 프로젝트 외부가 아닌 내부에 존재하고 있으면 클래스로딩 위임에 의해 위에 나온 것처럼 Application ClassLoader에 의해 로딩된다.**
+- External 클래스는 `URLClassLoader`를 통해 로딩을 시도하더라도, **클래스 파일이 프로젝트 외부가 아닌 내부에 존재하고 있으면 클래스로딩 위임에 의해 [여기](https://github.com/HomoEfficio/dev-tips/blob/master/Java%20ClassLoader%20훑어보기.md)에 나온 것처럼 Application ClassLoader에 의해 로딩된다.**
 
 ## External 클래스를 프로젝트 내부에서 외부로 옮긴 후 실행
 
