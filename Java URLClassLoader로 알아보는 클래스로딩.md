@@ -7,6 +7,8 @@ Bootstrap ClassLoader, Extension ClassLoader, Application ClassLoader 이 3가�
 
 간단한 `URLClassLoader` 예제로 클래스로딩 과정을 짚어보자.
 
+# Java 8
+
 ## URLClassLoader 예제
 
 ### ClassLoaderRunner
@@ -80,6 +82,8 @@ public class ClassLoaderRunner {
 간단하다. 먼저 3가지 기본 클래스로더를 출력해보고, 기본 클래스로더 사이의 위계 구조(Hierarchy)를 출력해서 확인해본다.
 
 마지막으로 프로젝트 경로 외부에 있는 클래스를 `URLClassLoader`를 통해 읽어오는 부분이 있다.
+
+유의해야할 점은 **URLClassLoader의 생성자 인자로 URL을 넘겨줄 떄 `/`로 끝나는 문자열을 줘야 `.class` 파일을 인식할 수 있다**는 점이다.
 
 ### Internal
 
@@ -176,3 +180,104 @@ ClassLoader of Internal: sun.misc.Launcher$AppClassLoader@18b4aac2
 - 컴파일 된 클래스 파일을 클래스패스 외부에 두고 `URLClassLoader`로 로딩할 수 있다.
 - 외부에 있는 클래스 파일에 포함되어 있는 Internal는 클래스로더 위임에 따라 원래대로 Application ClassLoader에서 로딩한다.
   - **즉 클래스패스 외부에 있는 클래스 파일이 클래스패스 내부에 있는 클래스를 참조하더라도 둘 모두 문제 없이 로딩해서 조합해서 사용할 수 있다.**
+
+
+# Java 9
+
+## URLClassLoader 예제
+
+### ClassLoaderRunner9
+
+```java
+package homo.efficio.classloader;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+
+/**
+ * @author homo.efficio@gmail.com
+ * Created on 2018-10-11.
+ */
+public class ClassLoaderRunner9 {
+
+    public static void main(String[] args) {
+        System.out.println("-----------------------------------");
+        System.out.println("3 Default ClassLoader\n");
+        // Bootstrap ClassLoader 확인
+        final ClassLoader bootStrapClassLoader = String.class.getClassLoader();
+        System.out.println("Bootstrap Classloader - ClassLoader of String.class: " + bootStrapClassLoader);
+
+        // Platform ClassLoader 확인
+        final ClassLoader platformClassLoader = ClassLoader.getPlatformClassLoader();
+        System.out.println("Platform Classloader - ClassLoader.getPlatformClassLoader(): " + platformClassLoader);
+
+        // System ClassLoader 확인
+        final ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+        System.out.println("System Classloader - ClassLoader.getSystemClassLoader()    : " + systemClassLoader);
+
+        System.out.println("-----------------------------------");
+        System.out.println("ClassLoader Hierarchy\n");
+
+        System.out.println("BootStrap ClassLoader           : " + bootStrapClassLoader);
+        System.out.println("platformClassLoader.getParent() : " + platformClassLoader.getParent());
+
+        System.out.println("Platform ClassLoader             : " + platformClassLoader);
+        System.out.println("systemClassLoader.getParent()    : " + systemClassLoader.getParent());
+
+
+        // 외부 폴더에 있는 파일 존재 확인
+        final File classRepo = new File("C:/Temp/class-repo/");
+//        System.out.println(classRepo.exists());
+        final File abcClassFile = new File("C:/Temp/class-repo", "homo/efficio/classloader/External.class");
+//        System.out.println(abcClassFile.exists());
+
+        try {
+
+            System.out.println("-----------------------------------");
+            System.out.println("ClassLoader for External and Internal\n");
+            final URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{ classRepo.toURI().toURL() });
+            final Class<?> externalFromUrl = urlClassLoader.loadClass("homo.efficio.classloader.External");
+            System.out.println("ClassLoader of External: " + externalFromUrl.getClassLoader());
+            System.out.println("ClassLoader of Internal: " + Internal.class.getClassLoader());
+
+            System.out.println("-----------------------------------");
+
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("URL 형식이 잘못되었습니다.", e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("클래스가 없습니다.", e);
+        }
+    }
+}
+```
+
+Java 8과 달라진 점은 Platform ClassLoader와 System ClassLoader를 `ZipInfo.class`나 `Internal.class`와 같은 개별 클래스의 `getClassLoader()`가 아니라 **`ClassLoader.getPlatformClassLoader()`, `ClassLoader.getSystemClassLoader()`와 같이 `ClassLoader`의 static 메서드를 통해 직접 가졍로 수 있다**는 점이다.
+
+## 실행 결과
+
+```
+-----------------------------------
+3 Default ClassLoader
+
+Bootstrap Classloader - ClassLoader of String.class: null
+Platform Classloader - ClassLoader.getPlatformClassLoader(): jdk.internal.loader.ClassLoaders$PlatformClassLoader@e73f9ac
+System Classloader - ClassLoader.getSystemClassLoader()    : jdk.internal.loader.ClassLoaders$AppClassLoader@726f3b58
+-----------------------------------
+ClassLoader Hierarchy
+
+BootStrap ClassLoader           : null
+platformClassLoader.getParent() : null
+Platform ClassLoader             : jdk.internal.loader.ClassLoaders$PlatformClassLoader@e73f9ac
+systemClassLoader.getParent()    : jdk.internal.loader.ClassLoaders$PlatformClassLoader@e73f9ac
+-----------------------------------
+ClassLoader for External and Internal
+
+ClassLoader of External: java.net.URLClassLoader@96532d6
+ClassLoader of Internal: jdk.internal.loader.ClassLoaders$AppClassLoader@726f3b58
+-----------------------------------
+```
+
+클래스로더의 패키지와 이름이 좀 달라지기는 했지만, 기본 클래스로더의 3계층 구조나 3가지 원칙 등 내용적으로는 Java 8과 같다.
+
