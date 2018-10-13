@@ -70,6 +70,6 @@
 
 ### Uniqueness Principle
 
-유일성 원칙은 **하위 클래스로더는 상위 클래스로더가 로딩한 클래스를 다시 로딩하지 않게 해서 로딩된 클래스의 유일성을 보장**하는 것이다. 유일성을 식별하는 기준은 클래스의 `binary name`이며 자세한 내용은 https://docs.oracle.com/javase/specs/jls/se8/html/jls-13.html#jls-13.1 를 참고한다.
+유일성 원칙은 **하위 클래스로더는 상위 클래스로더가 로딩한 클래스를 다시 로딩하지 않게 해서 로딩된 클래스의 유일성을 보장**하는 것이다. 유일성을 식별하는 기준은 클래스의 `binary name`인데, `toString()`으로 찍다보면 가끔 보이는 `java.lang.String`, `javax.swing.JSpinner$DefaultEditor`, `java.security.KeyStore$Builder$FileBuilder$1`, `java.net.URLClassLoader$3$1` 이런 것들이 바로 `binary name`이다. `binary name`의 자세한 내용은 https://docs.oracle.com/javase/specs/jls/se8/html/jls-13.html#jls-13.1 를 참고한다.
 
 
