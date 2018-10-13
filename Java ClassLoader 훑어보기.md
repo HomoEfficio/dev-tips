@@ -4,6 +4,7 @@
 
 클래스로더는 Java9에 모듈 시스템이 도입되면서 적지 않은 변경이 있었다. 자세한 내용은 https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-D867DCCC-CEB5-4AFA-9D11-9C62B7A3FAB1 를 참고하고, 먼저 Java8 까지 적용됐던 내용을 기준으로 되짚어보자.
 
+# Java 8
 
 ## 3가지 기본 클래스로더
 
@@ -72,4 +73,27 @@
 
 유일성 원칙은 **하위 클래스로더는 상위 클래스로더가 로딩한 클래스를 다시 로딩하지 않게 해서 로딩된 클래스의 유일성을 보장**하는 것이다. 유일성을 식별하는 기준은 클래스의 `binary name`인데, `toString()`으로 찍다보면 가끔 보이는 `java.lang.String`, `javax.swing.JSpinner$DefaultEditor`, `java.security.KeyStore$Builder$FileBuilder$1`, `java.net.URLClassLoader$3$1` 이런 것들이 바로 `binary name`이다. `binary name`의 자세한 내용은 https://docs.oracle.com/javase/specs/jls/se8/html/jls-13.html#jls-13.1 를 참고한다.
 
+# Java 9
 
+https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-EEED398E-AE37-4D12-AB10-49F82F720027 요 내용 중 ClassLoader에 관련된 내용만 추려보면 다음과 같다.
+
+## 한 표 요약
+
+Java 8 | Java 9 | 달라진 점
+--- | --- | ---
+Bootstrap ClassLoader | 이름 그대로 | - rt.jar 등이 없어짐에 따라 로딩할 수 있는 클래스의 범위가 전반적으로 축소 <br> - 따라서 parent classloader 인자로 `null`을 넘겨주며 Bootstrap ClassLoader를 parent classloader로 사용했던 코드 수정 필요할 수 있음
+Extension ClassLoader | Platform ClassLoader | - `jre/lib/ext`, `java.ext.dirs`를 지원하지 않음 <br> - Java SE의 모든 클래스와 Java SE에는 없지만 JCP에 의해 표준화 된 모듈 내의 클래스를 볼 수 있으며, Java 8에 비해 볼 수 있는 범위가 확장됨 <br> - `URLClassLoader`가 아닌 `BuiltinClassLoader`를 상속받아 `ClassLoaders` 클래스의 내부 static 클래스로 구현됨
+Application ClassLoader | System ClassLoader | - 클래스패스, 모듈패스에 있는 클래스 로딩 <br> - `URLClassLoader`가 아닌 `BuiltinClassLoader`를 상속받아 `ClassLoaders` 클래스의 내부 static 클래스로 구현됨
+
+
+## rt.jar, tools.jar 가 제거됨
+
+`rt.jar`, `tools.jar` 등 기본으로 제공되던 jar 파일이 없어지고 그 안에 있던 내용들은 모듈 시스템에 맞게 더 효율적으로 재편되어 `lib` 폴더 안에 저장된다. 이에 따라 `rt.jar`내의 모든 클래스를 로딩할 수 있던 Bootstrap ClassLoader가 로딩할 수 있는 클래스의 범위도 전체적으로 줄어들었다.
+
+따라서 **Bootstrap ClassLoader를 parent classloader로 사용하던 코드에서는 문제가 발생할 수 있다.** 
+
+이럴 때는 **Bootstrap Classloader를 의미하는 `null` 대신 `Classloader.getPlatformClassLoader()`를 인자로 넘겨서 가시 범위가 확장된 Platform ClassLoader를 parent classloader로 사용하면 된다.**
+
+## jre/lib/ext, java.ext.dirs, lib/endorsed, java.endorsed.dirs 가 제거됨
+
+`jre/lib/ext`, `lib/endorsed` 가 파일시스템에 존재하거나 `java.ext.dirs`, `java.endorsed.dirs`가 환경변수로 설정되어 있으면 `javac`나 `java`는 실행이 종료된다.
