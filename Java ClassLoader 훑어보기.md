@@ -75,6 +75,8 @@
 
 # Java 9
 
+Java 9 에서도 기본 클래스로더의 3계층 구조와 3가지 원칙은 그대로 유효하다. 다만 모듈 시스템 도입에 맞춰 이름과 범위, 구현 내용 등이 바뀌었다.
+
 https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-EEED398E-AE37-4D12-AB10-49F82F720027 요 내용 중 ClassLoader에 관련된 내용만 추려보면 다음과 같다.
 
 ## 한 표 요약
