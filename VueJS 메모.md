@@ -77,6 +77,8 @@
 
 ## 라이프 사이클 - CMUD(Create Mount Update Destroy)
 
+![](https://kr.vuejs.org/images/lifecycle.png)
+
 ### beforeCreated
 
 Vue 객체가 생성되고 이벤트와 라이프사이클 초기화 된 직후
