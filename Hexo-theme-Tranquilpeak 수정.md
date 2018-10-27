@@ -49,6 +49,8 @@ scss 관련 변수는 `tranquilpeak/source/_css/util/_variable.css`에 있음
 
 ## 배포
 
+위와 같이 스타일을 변경하고 grunt task 작업 후에도 `public/assets/css` 안에 있는 `style.css`, `style.min.css`, `tranquipeak.css` 파일의 날짜가 변경되지 않았다면, 먼저 `themes/tranquilpeak/source/assets/css` 안에 있는 `style.css`, `style.min.css`, `tranquipeak.css` 파일을 `public/assets/css`에 직접 덮어쓴다.
+
 ### home page repo
 
 `homoefficio.github.io` 디렉터리에서 
