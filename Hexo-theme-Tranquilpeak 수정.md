@@ -19,6 +19,7 @@ https://github.com/hanmomhanda/custom-tranquilpeak-hexo-theme/commits/master 참
 
 - https://github.com/HomoEfficio/homoefficio.github.io/commit/564478f8d0c6d9440fb702eabd8165acac704aa3
 - https://github.com/HomoEfficio/homoefficio.github.io/commit/d5c4008225131656a7b84ea23e8e51f26705a87d
+- https://github.com/HomoEfficio/homoefficio.github.io/commit/242de93d2782e145c984ac4b576cf2def5c94b5d (fontawesome, jquery.fancybox 관련 수정)
 
 scss 관련 변수는 `tranquilpeak/source/_css/util/_variable.css`에 있음
 
