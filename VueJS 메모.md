@@ -49,5 +49,5 @@
   ```
 
 - computed properties가 읽기로 사용되면 computed properties에 할당된 함수는 항상 값을 반환해야 하는데, 이로 인해 `computed` 옵션을 비동기 처리에 사용할 수 없다.
-  - 비동기 처리에는 값을 반환하지 않는 함수를 사용할 수 있는 `watch` 옵션을 사용해야 한다.
+  - 비동기 처리에는 값을 반환하지 않는 함수를 사용할 수 있는 `watch` 옵션을 써서 wachted properties를 사용해야 한다.
 
