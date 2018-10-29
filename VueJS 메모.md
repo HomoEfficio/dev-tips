@@ -112,6 +112,10 @@ Vue 인스턴스가 제거되기 직전
 Vue 인스턴스 제거 직후
 
 
+## function 사용
+
+Vue app이 js를 import로 읽어서 사용하는 환경, 즉 ES6 가 동작하지 않을 수도 있는 환경에서도 동작하도록 `methods`, `computed`, 각종 hook 에서는 arrow function이 아니라 전통적인 function을 사용하도록 의도적으로 구성
+
 
 
 
