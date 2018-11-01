@@ -73,7 +73,7 @@
     @Test
     public void whenStreamingWithGoodGroupingBy__thenSimpleCode() {
         final List<DateAndCount> results = this.dateAndCounts.stream()
-                .collect(groupingBy(dnc -> dnc.yyyymmdd.substring(0, 8), LinkedHashMap::new, summingLong(dnc -> dnc.count)))
+                .collect(groupingBy(dnc -> dnc.yyyymmdd.substring(0, 8), TreeMap::new, summingLong(dnc -> dnc.count)))
                 .entrySet().stream()
                 .map(entry -> new DateAndCount(entry.getKey(), entry.getValue()))
                 .collect(toList());
@@ -96,7 +96,7 @@
 ```java
     @Test
     public void whenForLoop__thenSimpleCode() {
-        final Map<String, Long> dateAndCountByDateMap = new LinkedHashMap<>();
+        final Map<String, Long> dateAndCountByDateMap = new TreeMap<>();
         for (DateAndCount dnc: this.dateAndCounts) {
             dateAndCountByDateMap.merge(dnc.yyyymmdd.substring(0, 8), dnc.count, (a, b) -> a + b);
         }
