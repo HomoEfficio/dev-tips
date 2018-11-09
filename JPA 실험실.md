@@ -284,7 +284,9 @@ binding parameter [5] as [BIGINT] - [1]
 
 ## 테스트 메서드에 사용되는 `@Transactional`은 `flush`를 유발하지 않는다.
 
-하지만 일반 메서드에서와는 달리 테스트 메서드에 사용되는 `@Transactional`은 `flush`를 유발하지 않는다. 게다가 [테스트 메서드에는 `@Transactional`을 붙이지 않아도 기본값으로 롤백을 시켜주므로](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-tx-rollback-and-commit-behavior) 트랜잭션 관리를 별도로 지정할 특별한 사유가 없다면 `@Transactional`을 붙여도 차이가 없으므로 붙일 필요가 없다. 
+하지만 일반 메서드에서와는 달리 테스트 메서드에 사용되는 `@Transactional`은 `flush`를 유발하지 않는다. 게다가 [테스트 메서드에는 `@Transactional`을 붙이지 않아도 기본값으로 롤백을 시켜주므로](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-tx-rollback-and-commit-behavior) 트랜잭션 관리를 별도로 지정할 특별한 사유가 없다면 `@Transactional`을 붙여도 차이가 없으므로 붙일 필요가 없다.
+
+하지만 참고로 `@SpringBootTest`를 사용하는 통합 테스트에서 `@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)`와 같이 `RANDOM_PORT`나 `DEFINED_PORT`를 지정해주면 실제로 서블릿 컨테이너가 구동되며 클라이언트의 HTTP 호출도 실제와 마찬가지로 서버와는 비동기로 동작한다. 따라서 이 경우에는 HTTP 요청과 백엔드 처리가 서로 다른 스레드에서 동작하고 따라서 트랜잭션이 유지되지 않는다. 즉, 다른 테스트 환경과는 다르게 RollBack이 되지 않는다. [여기 참고](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html#boot-features-testing-spring-boot-applications)
 
 ```java
    ...
