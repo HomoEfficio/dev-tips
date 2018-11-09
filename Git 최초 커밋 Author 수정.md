@@ -30,6 +30,10 @@
 
     ![Imgur](https://i.imgur.com/fiLfzwY.png)
     
+1. `git rebase --continue` 명령으로 rebase 마무리
+
+    ![Imgur](https://i.imgur.com/XbYLHwM.png)
+    
 1. git log로 확인하면 Author가 변경된 것을 확인할 수 있다.
 
     ![Imgur](https://i.imgur.com/pLPoeeN.png)
