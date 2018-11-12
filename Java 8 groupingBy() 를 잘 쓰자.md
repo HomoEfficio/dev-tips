@@ -114,3 +114,26 @@
 ```
 
 역시 `for`가 짱이다..=3=3
+
+---
+## groupingBy()의 코드 절감 효과
+
+아래의 두 코드는 정확히 같은 일을 한다.
+
+```java
+List<DataStoreStatistics> dataStoreStatsList = this.dataStoreStatisticsRepository.findByDate(searchStartDate, searchEndDate);
+
+// for 버전
+Map<Long, List<DataStoreStatistics>> datasByDataSourceIdMap = new HashMap<>();
+for (DataStoreStatistics dss: dataStoreStatsList) {
+    Long dataSourceId = dss.getDataSourceId();
+    List<DataStoreStatistics> dssListByDataSource = 
+        Optional.ofNullable(datasByDataSourceIdMap.get(dataSourceId)).orElse(new ArrayList<>());
+    dssListByDataSource.add(dss);
+    datasByDataSourceIdMap.put(dataSourceId, dssListByDataSource);
+}
+
+// groupingBy 버전
+Map<Long, List<DataStoreStatistics>> datasByDataSourceIdMap = dataStoreStatsList.stream()
+        .collect(groupingBy(DataStoreStatistics::getDataSourceId));
+```
