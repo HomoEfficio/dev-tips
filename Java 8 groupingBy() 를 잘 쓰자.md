@@ -89,6 +89,17 @@
 
 이를 잘 활용하면 위와 같이 정렬과 집계를 한 방에 해결할 수 있다.
 
+### 나중에 추가
+
+`groupingBy()`나 `summingLong()`에는 null 방어 코드가 필요하다.
+
+예를 들어 `yyyymmdd`가 null 일 때는 `99991231`로 모으고, `count`가 null 일 때는 0 으로 처리한다면, 
+``` java
+groupingBy(dnc -> Optional.ofNullable(dnc.yyyymmdd).orElse("99991231").substring(0, 8)), TreeMap::new, summingLong(dnc -> Optional.ofNullable(dnc.count).orElse(0L))
+```
+와 같이 해주면 된다.
+
+
 ## 정갈한 `for`
 
 하는 김에 가장 친숙한 for문도 해봤다. 의외로 제일 깔끔한 것 같다..
