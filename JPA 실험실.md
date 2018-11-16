@@ -348,3 +348,50 @@ Hibernate:
 
 TODO
 
+## LazyInitializationException
+
+`@*ToMany`나 `@ElementCollection`으로 연관된 객체의 기본 fetch 전략은 Lazy다.
+
+```java
+@Entity
+@Getter
+class Team {
+
+    @OneToMany(mappedBy = "team")
+    List<Member> members = new ArrayList<>();    
+}
+```
+
+이렇게 팀이 여러 멤버를 가질 수 있는 관계로 설정된 상태에서 아래와 같이 팀에서 멤버를 가져오고 멤버 하나에 접근하려면,
+
+```java
+class TeamService {
+
+    public List<Member> getMembers(Long teamId) {
+        Team team = this.teamRepository.findById(teamId).orElseThrow(() -> new TeamNotFoundException());
+        List<Member> members = team.getMembers();
+        Member member0 = members.get(0);  // 여기서 예외 발생
+    }
+}
+```
+
+다음과 같이 `LazyInitializationException`이 발생한다.
+
+>org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: 어쩌구.저쩌구.Team.members, could not initialize proxy - no Session
+>
+>.. 이하 생략 ..
+
+원인은 예외 메시지에 있는 그대로 세션이 없어서 members에 대한 프록시가 실제 members를 가져올 수 없기 때문이다.
+
+그럼 세션을 살려주면 된다. 세션을 살리는 데는 여러 방법이 있는데 스프링 데이터 JPA에서 가장 간단한 방법은 `@Transactional(readOnly = true)`를 메서드에 추가하는 것이다. 그럼 해당 메서드 종료시까지 트랜잭션이 유지되고 그동안 세션이 살아있으므로 프록시가 실제 members를 가져올 수 있다.
+
+### 정리
+
+>`@*ToMany`, `@ElementCollection`의 기본 Fetch 전략은 Lazy 다.
+>
+>Team을 조회한 후에 세션이 종료되면 Lazy하게 가져올 수 없어 `LazyInitializationException`이 발생한다.
+>
+>이를 해결하려면 Team을 조회한 후에도 세션이 살아있게 해야하며, 스프링 데이터 JPA에서는 `@Transactional(readOnly = true)`를 이용해서 쉽게 해결할 수 있다.
+
+
+
