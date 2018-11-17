@@ -51,6 +51,14 @@
     
 1. 통합 테스트 실행
     - Controller 테스트
+    
+1. Security 적용
+    - WebSecuityConfig 작성
+    - 컨트롤러에 권한 체크 추가
+    - 통합 테스트
+      - Security에 대한 테스트는 로그인이 포함된 모듈에서만 수행
+      - 나머지 모듈은 Security를 disable 하고 수행
+    
 
 1. Swagger 적용
     - http://springboot.tistory.com/24 참고
