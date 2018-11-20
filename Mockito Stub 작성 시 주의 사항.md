@@ -1,5 +1,7 @@
 # Mockito Stub 작성 시 주의 사항
 
+## eq() 의 적절한 사용 
+
 아래와 같이 Stubbing하는 테스트를 실행하면 
 
 ```java
@@ -51,3 +53,35 @@ For more info see javadoc for Matchers class.
 ... 생략
 ```
 
+## doReturn-when-method 활용
+
+간혹 아래와 같이 Stubbing을 하면
+
+```java
+given(this.userRepository.findByEmail(eq("hanmomhanda@gmail.com")))
+                .willReturn(Optional.of(getUser()));
+```
+
+아래와 같은 에러가 난다.
+
+```
+org.mockito.exceptions.misusing.WrongTypeOfReturnValue: 
+Optional cannot be returned by toString()
+toString() should return String
+***
+If you're unsure why you're getting above error read on.
+Due to the nature of the syntax above problem might occur because:
+1. This exception *might* occur in wrongly written multi-threaded tests.
+   Please refer to Mockito FAQ on limitations of concurrency testing.
+2. A spy is stubbed using when(spy.foo()).then() syntax. It is safer to stub spies - 
+   - with doReturn|Throw() family of methods. More in javadocs for Mockito.spy() method.
+```
+
+정확하진 않고 늘 되는지도 모르지만 이럴 때는 given-when-then 을 쓰지 말고 아래와 같이 doReturn-when-method 을 쓰면 된다.
+
+```java
+doReturn(Optional.of(getUser()))
+    .when(this.userRepository).findByEmail("hanmomhanda@gmail.com");
+```
+
+심지어 이렇게 한 번 doReturn-when-method 을 써서 해결한 후 doReturn-when을 지우고 given-when-then을 쓰면 되기도 한다.
