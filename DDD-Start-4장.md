@@ -96,11 +96,12 @@ Order -> List<OrderItem>
 ### 기본 전략
 
 - `@ManyToOne`, `@OneToOne`, 즉 `@*ToOne`: 즉시 로딩
-- `@OneToMany`, `@ManyToMany`, 즉 `@*ToMany` 와 `@ElementCollection`: 즉시 로딩
+- `@OneToMany`, `@ManyToMany`, 즉 `@*ToMany` 와 `@ElementCollection`: 지연 로딩
 - 가능하면 모든 연관 관계에 지연 로딩을 활용하자
 - `@*ToMany`에 즉시 로딩 적용 시 주의 사항
   - 컬렉션을 2개 이상 로딩하면 cartesian product 발생, JPA가 필터링하긴 하지만 성능에 부정적 영향
   - 컬렉션 즉시 로딩 시 항상 외부 조인이 사용됨
+  - List를 즉시 로딩으로 읽어오면 에러 발생
 
 
 ## 애그리거트 영속성 전파
@@ -112,4 +113,4 @@ Order -> List<OrderItem>
 ## 식별자 생성 기능
 
 - 보통 자동 생성되는 대리 키 방식 사용
-- Spring Boot 2 부터는 기본 방식이 바뀌어 `GenerationType.IDENTITY`로 해줘야 함
+- Spring Boot 2 부터는 기본 방식이 바뀌어 H2에서는 `GenerationType.IDENTITY`로 해줘야 테이블 별 auto-increment가 적용됨
