@@ -51,15 +51,46 @@ spring.jackson.deserialization.fail-on-unknown-properties: true
 
 - 테스트 이름에 테스트의 의도/동작 등을 모두 담기 어려우므로 커스텀 애노테이션 사용
 
-	```java
-	@Target(ElementType.METHOD)
-	@Retention(RetentionPolicy.SOURCE)
-	public @interface TestDescription {		
-		String value();
-	}
-	```
+  ```java
+  @Target(ElementType.METHOD)
+  @Retention(RetentionPolicy.SOURCE)
+  public @interface TestDescription {   
+    String value();
+  }
+  ```
 
 - JUnit5 에는 테스트 설명 애노테이션이 제공됨
 
+#### `@JsonComponent`
+
+- Custom Serializer 클래스에 `@JsonComponent`를 붙여주면 Bean으로 등록되는 ObjectMapper에 Custom Serializer가 자동으로 등록된다.
+
+
+#### Parameterized Test
+
+- Dependency 추가: JUnitParams
+- 코드
+
+    ```java
+    @RunWith(JUnitParamsRunner.class)
+    public class XXXTest {
+
+      @Test
+      @Parameters(method = "paramsForTestFree")
+      public void testFree(int basePrice, int maxPrice, boolean isFree) {
+
+      }
+
+      private Object[] paramsForTestFree() {
+          return new Object[] {
+              new Object[] { 0, 0, true },
+              new Object[] { 100, 0, false },
+              new Object[] { 0, 100, false },
+              new Object[] { 100, 200, false }
+          };
+      }
+
+    }    
+    ```
 
 
