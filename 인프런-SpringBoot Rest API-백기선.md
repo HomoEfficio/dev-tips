@@ -1,4 +1,4 @@
-# 백기선 SpringBoot REST API
+# SpringBoot REST API - 인프런 강좌
 
 https://www.inflearn.com/course/spring_rest-api/ 수강 중 참고할 만한 내용 요약
 
