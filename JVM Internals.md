@@ -309,23 +309,23 @@ Constant pool:
     - LineNumberTable: 바이트코드 명령어가 소스 코드의 몇 번째 행에 대응되는지를 보여주며 이 정보는 디버거에게 제공된다. 예를 들어 sayHello 메서드의 경우 자바 코드에서 6행은 바이트코드의 0번 위치에, 7행은 8번 위치에 대응된다.
     - LocalVariableTable: 프레임에 담긴 모든 로컬 변수 목록이 저장된다. 위 두 사례(생성자, sayHello 메서드)에서는 모두 this가 유일한 로컬 변수다.
 
-바이트코드에는 다음과 같은 opcode가 사용되었다.
+바이트코드에는 다음과 같은 연산자(opcode)가 사용되었다.
 
-opcode | 설명
+연산자 | 설명
 --- | ---
-aload_0 | `aload_<n>`의 형식으로 구성되는 opcode 그룹의 하나로서 객체 레퍼런스를 오퍼랜드 스택에 로딩한다. `<n>`은 로컬 변수 배열에서의 위치를 참조하는데, 0, 1, 2, 3만 값으로 가질 수 있다. 비슷한 형식으로 값을 로딩하는 opcode로 `iload_<n>`, `lload_<n>`, `fload_<n>`, `dload_<n>`이 있다. i, l, f, d는 각각 int, long, float, double을 의미한다. 로컬 변수 배열에서의 인덱스가 3보다 큰 로컬 변수는 `iload`, `lload`, `fload`, `dload`를 사용해서 로딩할 수 있다. Xload 류의 opcode는 모두 하나의 오퍼랜드(로딩할 로컬 변수의 로컬 변수 배열에서의 인덱스)만을 받는다.
+aload_0 | `aload_<n>`의 형식으로 구성되는 연산자 그룹의 하나로서 객체 레퍼런스를 오퍼랜드 스택에 로딩한다. `<n>`은 로컬 변수 배열에서의 위치를 참조하는데, 0, 1, 2, 3만 값으로 가질 수 있다. 비슷한 형식으로 값을 로딩하는 연산자로 `iload_<n>`, `lload_<n>`, `fload_<n>`, `dload_<n>`이 있다. i, l, f, d는 각각 int, long, float, double을 의미한다. 로컬 변수 배열에서의 인덱스가 3보다 큰 로컬 변수는 `iload`, `lload`, `fload`, `dload`를 사용해서 로딩할 수 있다. Xload 류의 연산자는 모두 하나의 오퍼랜드(로딩할 로컬 변수의 로컬 변수 배열에서의 인덱스)만을 받는다.
 ldc | 런타임 상수 풀에 있는 상수를 오퍼랜드 스택에 push 한다.
 getstatic | 런타임 상수 풀에 있는 정적 필드에 있는 정적 값을 오퍼랜드 스택에 push 한다.
-invokdespecial, invokevirtual | 메서드를 호출하는 opcode의 하나. 메서드를 호출하는 opcode는 `invokedynamic`, `invokeinterface`, `invokespecial`, `invokestatic`, `invokevirtual`이 있다. `invokevirtual`은 객체의 클래스를 기반으로 메서드를 호출하고, `invokespecial`은 초기화 메서드(생성자)나 private 메서드, 수퍼클래스의 메서드를 호출할 때 사용된다.
+invokdespecial, invokevirtual | 메서드를 호출하는 연산자의 하나. 메서드를 호출하는 연산자는 `invokedynamic`, `invokeinterface`, `invokespecial`, `invokestatic`, `invokevirtual`이 있다. `invokevirtual`은 객체의 클래스를 기반으로 메서드를 호출하고, `invokespecial`은 초기화 메서드(생성자)나 private 메서드, 수퍼클래스의 메서드를 호출할 때 사용된다.
 return | 값을 반환하며 `ireturn`, `lreturn`, `freturn`, `dreturn`과 `areturn`도 있다. i, l, f, d는 각각 int, long, float, double을 의미하며 `areturn`은 객체 참조를 반환한다. `return`은 `void`를 반환한다.
 
-일반적인 바이트코드에서 대부분의 opcode는 로컬 변수, 오퍼랜드 스택, 런타임 상수 풀과 상호작용한다.
+일반적인 바이트코드에서 대부분의 연산자는 로컬 변수, 오퍼랜드 스택, 런타임 상수 풀과 상호작용한다.
 
 SimpleClass의 생성자는 두 개의 명령어로 구성되는데 첫 번째 명령어는 `this`를 오퍼랜드 스택에 push하고, 두 번째 명령어는 수퍼클래스의 생성자를 호출하는데 이 때 오퍼랜드 스택에 있던 `this`를 꺼내어 사용한다.
 
 ![Imgur](https://i.imgur.com/M0TYrpl.png)
 
-sayHello() 메서드는 런타임 상수 풀을 사용해서 심볼릭 참조를 실제 참조로 해석해야하기 때문에 앞에서 다룬 생성자보다 더 복잡하다. 첫 번째 opcode인 `getstatic`은 `System` 클래스의 정적 필드인 `out`에 대한 참조를 오퍼랜드 스택에 push 한다. 두 번째 opcode인 `ldc`는 문자열 "Hello"를 오퍼랜드에 push 한다. 마지막 opcode인 `invokevirtual`은 `System.out`의 `println` 메서드를 호출하면서 오퍼랜드 스택에서 "Hello"를 꺼내서 인자로 사용하고 `println` 메서드를 위한 새 프레임을 현재 실행 중인 스레드 내에 생성한다.
+sayHello() 메서드는 런타임 상수 풀을 사용해서 심볼릭 참조를 실제 참조로 해석해야하기 때문에 앞에서 다룬 생성자보다 더 복잡하다. 첫 번째 연산자인 `getstatic`은 `System` 클래스의 정적 필드인 `out`에 대한 참조를 오퍼랜드 스택에 push 한다. 두 번째 연산자인 `ldc`는 문자열 "Hello"를 오퍼랜드에 push 한다. 마지막 연산자인 `invokevirtual`은 `System.out`의 `println` 메서드를 호출하면서 오퍼랜드 스택에서 "Hello"를 꺼내서 인자로 사용하고 `println` 메서드를 위한 새 프레임을 현재 실행 중인 스레드 내에 생성한다.
 
 ![Imgur](https://i.imgur.com/uZdtM0p.png)
 
@@ -411,7 +411,7 @@ Object foo = new Object();
  2:     invokespecial #3    // Method java/ lang/Object "<init>"( ) V
 ```
 
-`new` opcode 다음에는 `#2`라는 오퍼랜드가 오는데, 이 오퍼랜드는 런타임 상수 풀의 인덱스다. `#2`는 런타임 상수 풀의 두 번째 아이템을 가리킨다. 두 번째 아이템은 클래스 참조이며 이 아이템은 다시 런타임 상수 풀에 UTF-8 문자열로 저장된 클래스의 이름(`// Class java/lang/Object`) 아이템을 가리킨다. 이 심볼릭 링크는 java.lang.Object 클래스를 찾는데 사용된다. `new` opcode는 클래스 인스턴스를 생성하고 값을 초기화한다. 새로 생성된 클래스에 대한 참조는 오퍼랜드 스택에 추가된다. `dup` opcode는 오퍼랜드 스택의 맨 위에 있는 참조에 대한 복사본을 만들어서 오퍼랜드 스택의 맨 위에 추가한다. 마지막으로 인스턴스 초기화 메서드가 `invokespecial`에 의해 호출된다. 이 오퍼랜드는 런타임 상수 풀에 대한 참조를 포함하고 있다. 초기화 메서드는 오퍼랜드 스택의 맨 위에 있는 값을 꺼내서 초기화 메서드의 인자로 사용한다. 오퍼랜드 스택에는 방금 새로 생성되어 초기화 된 객체를 가리키는 참조만 남는다.
+`new` 연산자 다음에는 `#2`라는 오퍼랜드가 오는데, 이 오퍼랜드는 런타임 상수 풀의 인덱스다. `#2`는 런타임 상수 풀의 두 번째 아이템을 가리킨다. 두 번째 아이템은 클래스 참조이며 이 아이템은 다시 런타임 상수 풀에 UTF-8 문자열로 저장된 클래스의 이름(`// Class java/lang/Object`) 아이템을 가리킨다. 이 심볼릭 링크는 java.lang.Object 클래스를 찾는데 사용된다. `new` 연산자는 클래스 인스턴스를 생성하고 값을 초기화한다. 새로 생성된 클래스에 대한 참조는 오퍼랜드 스택에 추가된다. `dup` 연산자는 오퍼랜드 스택의 맨 위에 있는 참조에 대한 복사본을 만들어서 오퍼랜드 스택의 맨 위에 추가한다. 마지막으로 인스턴스 초기화 메서드가 `invokespecial`에 의해 호출된다. 이 오퍼랜드는 런타임 상수 풀에 대한 참조를 포함하고 있다. 초기화 메서드는 오퍼랜드 스택의 맨 위에 있는 값을 꺼내서 초기화 메서드의 인자로 사용한다. 오퍼랜드 스택에는 방금 새로 생성되어 초기화 된 객체를 가리키는 참조만 남는다.
 
 아래와 같은 간단한 클래스를 컴파일하면,
 
