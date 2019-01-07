@@ -146,18 +146,18 @@ Non-Heap 메모리는 다음을 포함한다.
     - 숫자 상수
     - 필드 참조
     - 메서드 참조
-    - 애트리뷰트(자세한 내용은 [JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7) 참고)
+    - 애트리뷰트(역자주: 자세한 내용은 [JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7) 참고)
 - 필드 데이터
     - 이름
     - 타입
     - 수정자(Modifiers)
-    - 애트리뷰트(자세한 내용은 [JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7) 참고)
+    - 애트리뷰트(역자주: 자세한 내용은 [JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7) 참고)
 - 메서드 데이터
     - 이름
     - 반환 타입
     - 파라미터 타입
     - 수정자(Modifiers)
-    - 애트리뷰트(자세한 내용은 [JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7) 참고)
+    - 애트리뷰트(역자주: 자세한 내용은 [JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7) 참고)
 - 메서드 코드
     - 바이트코드
     - 오퍼랜드 스택 크기
@@ -377,7 +377,7 @@ JVM에는 서로 다른 역할을 담당하는 여러 개의 클래스로더가 
 
 Java SE 7의 JVM 스펙에 다음과 같이 명시되어 있다.
 
->메서드 영역은 논리적으로 힙의 일부지만, 간단한 구현체에서는 메서드 영역은 가비지 컬렉션이나 압축(compact)에서 제외할 수 있다.
+>메서드 영역은 논리적으로 힙의 일부지만, 간단한 구현체에서는 메서드 영역은 가비지 컬렉션이나 압축(compact) 대상에서 제외할 수 있다.
 
 하지만 이와 반대로 오라클 JVM 용 jconsole에서는 메서드 영역(코드 캐시 포함)이 Non-Heap 영역에 포함되어있는 것을 볼 수 있다. OpenJDK 코드에서는 VM의 코드 캐시가 ObjectHeap와 분리된 필드로 되어 있다.
 
