@@ -361,15 +361,15 @@ JVM에는 서로 다른 역할을 담당하는 여러 개의 클래스로더가 
 
 - **`부트스트랩 클래스로더(Bootstrap Classloader)`** 는 JVM이 로딩될 때 인스턴스화 되기 때문에 일반적으로 네이티브 코드로 구현된다. 부트스트랩 클래스로더는 예를 들어 rt.jar 처럼 기본적인 자바 API에 사용되는 클래스나 인터페이스의 로딩을 담당한다. 부트스트랩 클래스로더는 부트 클래스패스에 있는 신뢰도가 높은 클래스만을 로딩하기 때문에 일반적인 클래스 로딩 시 수행하는 많은 검증(validation) 과정을 생략한다.
 
-- **`확장 클래스로더(Extension Classloader)`** 는 보안 관련 확장 같은 표준 Java extension API에 사용되는 클래스나 인터페이스를 로딩한다.(옮긴이: Java 9부터는 Platform Classloader로 이름이 바뀌었다.)
+- **`확장 클래스로더(Extension Classloader)`** 는 보안 관련 확장 같은 표준 Java extension API에 사용되는 클래스나 인터페이스를 로딩한다.(역자주: Java 9부터는 Platform Classloader로 바뀌었다.)
 
-- **`애플리케이션 클래스로더(Application Classloader)`** 는 애플리케이션 기본 클래스로더로서 클래스패스에 있는 애플리케이션 클래스나 인터페이스를 로딩한다.
+- **`애플리케이션 클래스로더(Application Classloader)`** 는 애플리케이션 기본 클래스로더로서 클래스패스에 있는 애플리케이션 클래스나 인터페이스를 로딩한다.(역자주: Java 9부터는 System Classloader로 바뀌었다.)
 
 - **`사용자 정의 클래스로더(User Defined Classloader)`** 도 애플리케이션 클래스나 인터페이스를 로딩하기 위해 사용될 수 있다. 사용자 정의 클래스로더는 런타임 리로딩(reloading)이나 톰캣 같은 웹서버의 필요에 의해 다른 그룹으로 분류되어야 하는 클래스나 인터페이스의 로딩 같은 특수 목적의 클래스로딩에 사용된다.
 
 ![Imgur](https://i.imgur.com/kDAmqku.png)
 
-### 고속 클래스로딩
+### 고속 클래스로딩(Faster ClassLoading)
 
 클래스 데이터 공유(Class Data Sharing, CDS) 기능이 HotSpot JVM 버전 5부터 도입되었다. JVM의 설치 과정에서 설치 프로그램은 rt.jar 같은 몇 가지 핵심 JVM 클래스를 메모리 맵 공유 아카이브(memory-mapped shared archive)에 로딩한다. CDS는 클래스로딩 시간을 단축시켜서 JVM 시작 속도를 개선하고 핵심 JVM 클래스가 서로 다른 JVM 인스턴스 사이에도 공유될 수 있도록 해서 메모리 사용량도 줄일 수 있다.
 
@@ -509,6 +509,4 @@ Fieldref, Methodref, InterfaceMethodref | 런타임 상수 풀에 저장된 Clas
 HotSpot JVM 에서는 interned string은 문자열 테이블(String table)에 저장된다. 문자열 테이블은 객체를 심볼에 매핑하는 해시테이블(즉, `Hashtable<oop, Symbol>`)인데 Permanent Generation 안에 저장된다. 문자열 테이블의 모든 아이템은 정식 형식(canonicalized form)으로 저장되어 효율을 개선하고 각 아이템이 유일하게 하나씩만 존재하는 것을 보장한다.
 
 문자열 리터럴은 해당 문자열 리터럴이 사용된 클래스가 로딩될 때 컴파일러에 의해 자동으로 interned 되어 심볼 테이블에 추가된다. String 클래스의 인스턴스는 `String.intern()`을 호출해서 명시적으로 interned 될 수도 있다. `String.intern()`은 해당 문자열이 문자열 테이블에 존재하면 그 문자열에 대한 참조를 반환하고, 문자열 테이블에 없으면 새로 추가하고 새로 추가한 문자열에 대한 참조를 반환한다.
-
-
 
