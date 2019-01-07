@@ -18,7 +18,7 @@ jconsole이나 어떤 디버거를 사용하면 백그라운드로 많은 스레
 
 스레드 이름 | 설명
 --- | ---
-VM thread | JVM이 safe-point에 도달하게 만드는 연산을 기다리는 스레드. JVM이 safe-point에 도달하게 만드는 연산이 분리된 스레드에 발생해야 하는 이유는 그런 연산 모두가 JVM이 힙(heap)에 대한 수정이 발생할 수 없는 safe-point 상태가 되도록 This thread waits for operations to appear that require the JVM to reach a safe-point. The reason these operations have to happen on a separate thread is because they all require the JVM to be at a safe point where modifications to the heap can not occur. The type of operations performed by this thread are "stop-the-world" garbage collections, thread stack dumps, thread suspension and biased locking revocation.
+VM thread | JVM이 safe-point에 도달하게 만드는 연산을 기다리는 스레드. JVM이 safe-point에 도달하게 만드는 연산은 JVM이 힙(heap)에 대한 수정이 발생할 수 없는 safe-point 상태에 놓이게 하기 때문에, 분리된 스레드(VM thread)에서 수행돼야 한다. stop-the-world 가비지 컬렉션, 스레드 스택 덤프, 스레드 보류(suspension), biased locking 취소가 VM thread에 의해 수행되는 연산의 유형이다.
 Periodic task thread | 주기적으로 실행되는 연산을 스케줄링하는 데 사용되는 타이머 이벤트(즉, 인터럽트)를 담당하는 스레드.
 GC threads | JVM에서 발생하는 유형별 가비지 컬렉션을 담당하는 스레드.
 Compiler threads | 런타임에 바이트 코드를 네이티브 코드로 컴파일 하는 스레드.
@@ -46,7 +46,7 @@ JVM은 멀티 스레드의 동시 실행을 지원한다. JVM 스레드는 PC �
 
 ### 프레임
 
-새 프레임은 메서드 호출마다 새로 생성되어 스택의 맨 위에 추가되고, 메서드가 정상적으로 값을 반환하거나 메서드 실행 과정에서 잡히지 않은 예외가 던져지면 스택에서 꺼내어진다. 예외 처리는 아래의 [예외 테이블(Exception Tables)]()을 참고한다.
+새 프레임은 메서드 호출마다 새로 생성되어 스택의 맨 위에 추가되고, 메서드가 정상적으로 값을 반환하거나 메서드 실행 과정에서 잡히지 않은 예외가 던져지면 스택에서 꺼내어진다. 예외 처리는 아래의 [예외 테이블(Exception Tables)](## 예외 테이블) 을 참고한다.
 
 각 프레임은 다음의 구성요소를 가지고 있다.
 
