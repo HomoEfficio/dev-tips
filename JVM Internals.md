@@ -111,7 +111,7 @@ int i;
 - Young Generation
     - Young Generation은 다시 Eden과 Survivor로 분류될 수 있다.
 - Old Generation(Tenured Generation)
-- Permanent Generation
+- Permanent Generation (역자주: Permanent Generation은 Java 8부터 Metaspace로 대체됨)
 
 ### 메모리 관리
 
