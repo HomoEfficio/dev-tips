@@ -55,7 +55,7 @@ Syntax Analyzer(구문 분석기, 파서(Parser)라고도 한다)가 어휘 분�
 
 ![Imgur](https://i.imgur.com/ynDWnl2.gif)
 
-그림 출처: https://en.wikipedia.org/wiki/Compiler
+(그림 출처: https://en.wikipedia.org/wiki/Compiler)
 
 ### 3. Symantic Analysis(의미 분석)
 
@@ -77,14 +77,46 @@ int a = "Hello";
 
 자바의 바이트코드가 바로 이 중간 코드에 해당한다고 볼 수 있다. 위 그림에서 4개의 언어를 나타내는 네모를 각각 자바, 클로저(Clojuer), 스칼라, 코틀린이라고 하고, 녹색 네모를 바이트코드라고 생각하면 쉽게 이해할 수 있다.
 
-어휘 분석에서 만들어져서, 구문 분석, 의미 분석 과정을 거치며 다듬어진 심볼 테이블은 중간 코드 생성 단계에서 클래스나 인터페이스별 [상수 풀(Constant Pool)](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.4)을 만드는 데 사용된다. 상수 풀 안에 담겨 있는 대부분의 자료구조는 정적인 엔티티를 나타내지만, `CONSTANT_Dynamic_info`, `CONSTANT_InvokeDynamic_info`로 표현되는 자료구조는 런타임에 정해지는 동적인 엔티티를 나타낸다. 상수 풀에 저장된 정보는 해당 클래스나 인터페이스가 실제 생성될 때 [런타임 상수 풀(Run-Time Constant Pool)](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.1)을 구성하는데 사용된다.
+어휘 분석에서 만들어져서, 구문 분석, 의미 분석 과정을 거치며 다듬어진 심볼 테이블은 중간 코드 생성 단계에서 클래스나 인터페이스별 [상수 풀(Constant Pool)](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.4)을 만드는 데 사용된다. 
 
-### 5. Code Optimization: 최적화 된 중간 코드 생성 - 코드 인라인화, 메모리 최적화 등
-예시 그림
+상수 풀 안에 담겨 있는 대부분의 자료구조는 정적인 엔티티를 나타내지만, `CONSTANT_Dynamic_info`, `CONSTANT_InvokeDynamic_info`로 표현되는 자료구조는 런타임에 정해지는 동적인 엔티티를 나타낸다. 
 
-참고: https://www.kttpro.com/2017/02/09/six-phases-of-the-compilation-process/
+상수 풀에 저장된 정보는 해당 클래스나 인터페이스가 실제 생성될 때 [런타임 상수 풀(Run-Time Constant Pool)](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.1)을 구성하는데 사용된다.
 
-## Link
+### 5. Code Optimization(중간 코드 최적화)
+
+말 그대로 중간 코드가 더 효율적인 기계어로 변환되도록 최적화하는 과정이 수행된다. 
+
+#### 핍홀(Peephole) 최적화
+
+- 중복 명령어 제거
+- 도달 불가능한 코드 제거
+- 제어 흐름 최적화
+- 비용 낮은 연산자로 변환 등
+
+#### 지역 최적화
+
+- 지역 공통 부분식 제거
+- 복사 전파
+- 상수 폴딩 등
+
+#### 루프 최적화
+
+- 코드 이동
+- 귀납 변수 최적화
+- 루프 융합/교환/전개 등
+
+#### 전역 최적화
+
+- 전역 공통 부분식 제거
+- 상수 폴딩 등
+
+이 외에도 다양한 최적화 기법이 사용된다.
+
+(참고: 컴파일러의 이해 - http://www.hanbit.co.kr/store/books/look.php?p_code=B4565472056)
+
+
+## 링크(Link)
 
 자바는 바이트코드를 실행할 때 링크 과정이 수행된다. 런타임 상수 풀 안에 있는 심볼릭 참조가 가상메모리 상에서의 주소로 대체됨
 
