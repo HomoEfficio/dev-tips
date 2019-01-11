@@ -1,4 +1,4 @@
-# Inside Hello Java.md
+# Back to the Essence - Java 파일이 컴파일되고 실행되는 과정.md
 
 Hello Java 소스 코드가 어떻게 컴파일 되고 실행되는지 살짝 깊게 알아보자.
 
@@ -77,9 +77,9 @@ int a = "Hello";
 
 자바의 바이트코드가 바로 이 중간 코드에 해당한다고 볼 수 있다. 위 그림에서 4개의 언어를 나타내는 네모를 각각 자바, 클로저(Clojuer), 스칼라, 코틀린이라고 하고, 녹색 네모를 바이트코드라고 생각하면 쉽게 이해할 수 있다.
 
-어휘 분석에서 만들어져서, 구문 분석, 의미 분석 과정을 거치며 다듬어진 심볼 테이블은 중간 코드 생성 단계에서 클래스나 인터페이스별 [상수 풀(Constant Pool)](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.4)을 만드는 데 사용된다. 
+어휘 분석에서 만들어져서, 구문 분석, 의미 분석 과정을 거치며 다듬어진 심볼 테이블은 중간 코드인 바이트코드 생성 단계에서 클래스나 인터페이스별 [상수 풀(Constant Pool)](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.4)을 만드는 데 사용된다. 
 
-상수 풀 안에 담겨 있는 대부분의 자료구조는 정적인 엔티티를 나타내지만, `CONSTANT_Dynamic_info`, `CONSTANT_InvokeDynamic_info`로 표현되는 자료구조는 런타임에 정해지는 동적인 엔티티를 나타낸다. 
+상수 풀 안에 담겨 있는 대부분의 자료구조는 이름, 설명자(descriptor), 값 등 테이블에 정적으로 저장된 정보를 조합해서 엔티티를 직접 표현하지만, `CONSTANT_Dynamic_info`, `CONSTANT_InvokeDynamic_info`로 표현되는 자료구조는 런타임에 정해지는 동적인 엔티티를 간접적으로 표현한다.(참고: https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.4.10)
 
 상수 풀에 저장된 정보는 해당 클래스나 인터페이스가 실제 생성될 때 [런타임 상수 풀(Run-Time Constant Pool)](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.1)을 구성하는데 사용된다.
 
@@ -111,10 +111,34 @@ int a = "Hello";
 - 전역 공통 부분식 제거
 - 상수 폴딩 등
 
-이 외에도 다양한 최적화 기법이 사용된다.
+이 외에도 다양한 최적화 기법이 사용되는데, 쉽게 감이 오는 루프 최적화의 코드 이동만 확인해보자. 실제로 최적화되는 것은 바이트코드지만 보기 편하게 자바 코드로 표현한다.
+
+```
+책 내용 참고해서 작성 필요
+
+```
 
 (참고: 컴파일러의 이해 - http://www.hanbit.co.kr/store/books/look.php?p_code=B4565472056)
 
+## 컴파일 과정 정리
+
+자바의 컴파일 과정은 여기까지다. 자바의 컴파일 과정을 한 마디로 요약하면 **자바 코드를 자바 언어 스펙에 따라 분석/검증하고, JVM 스펙의 class 파일 구조에 맞는 바이트코드를 만들어내는 과정** 이라고 할 수 있다.
+
+바이트코드는 로딩, 링크 과정을 거쳐야 하지만 분명히 JVM에서 실행될 수 있는 코드다. 따라서 어떤 언어라도 JVM 스펙의 class 파일 구조에 맞는 바이트코드를 만들어 낼 수 있다면 JVM에서 실행될 수 있다. 클로저(Clojure)나 스칼라, 코틀린 등이 JVM에서 실행될 수 있는 이유가 바로 여기에 있다.
+
+자바 코드의 변수, 상수, 제어문, 연산, 인자, 메서드 호출, 배열, switch문, 예외 처리, finally, synchronization, 애너테이션, 모듈(Java 9 이후) 등이 바이트코드로 어떻게 변환되는지는 [JVM 스펙의 3장](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-3.html)에 나오는 예시를 통해 확인할 수 있다.
+
+그냥 지나치면 허전하니 간단한 자바 파일과 컴파일 된 바이트코드를 한 번 살펴보자.
+
+## 바이트코드 구경하기
+
+TODO: javac, javap, 적절한 사례와 설명 JVM Internals 내용을 실어도 좋을 듯
+
+
+
+# 실행
+
+이제 바이트코드를 실행할 때 어떤 일이 일어나는지 들여다보자.
 
 ## 링크(Link)
 
@@ -141,16 +165,4 @@ A 클래스를 로딩, 확인, 초기화
 
  `public static void main(String[])`를 포함하고 있는 
 
-
-
-
-
-컴파일 과정은 
-
-
-자바 컴파일러에 의해 자바 코드가 어떤 바이트코드로 변환되는지는 [JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-3.html)에 예제와 함께 잘 나와 있다.
-
-
-
-# 실행
 
