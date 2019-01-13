@@ -137,7 +137,7 @@ for (int i = 0 ; i < 100000 ; i++) {
 // i와 관계 없이 값이 고정되어 있는 식을 반복문 밖으로 이동
 
 factor = 2 * (p - q);
-denominator = (sqrt(n) + n)
+denominator = (sqrt(n) + n);
 for (int i = 0 ; i < 100000 ; i++) {
     c[k] = factor * (n - k + 1) / denominator;
 }
@@ -157,7 +157,7 @@ for (int i = 0 ; i < 100000 ; i++) {
 
 ## 바이트코드 구경하기
 
-그냥 헬로월드는 너무 단순하니까 인터페이스를 사용해서 동적 링크가 사용되는 코드 예제를 살펴보자. main 메서드를 가진 `GreetingMain` 클래스가 `Greeting` 인터페이스를 구현하는 `KoreanGreeting` 클래스를 사용하는 예제다.
+그냥 헬로월드는 너무 단순하니까 인터페이스를 사용하는 코드 예제를 살펴보자. main 메서드를 가진 `GreetingMain` 클래스가 `Greeting` 인터페이스를 구현하는 `KoreanGreeting` 클래스를 사용하는 예제다.
 
 먼저 인터페이스인 `Greeting`부터 살펴보자.
 
@@ -396,7 +396,107 @@ invokestatic | 정적 메서드 호출
 invokevirtual | 자바 메서드 호출의 기본 방식이며, 객체 참조(`obj.`)를 붙여서 호출되는 일반적인 메서드 호출
 invokedynamic | JVM에서 실행되는 동적 타입 언어를 위해 Java 7에 추가된 명령어. 람다식도 invokedynamic을 이용해서 구현되었다. 자세한 내용은 [오라클 문서](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/multiple-language-support.html)나 [네이버 문서](https://d2.naver.com/helloworld/4911107) 또는 [DZone 문서](https://dzone.com/articles/dismantling-invokedynamic)를 참고하자.
 
-바이트코드 구경은 여기서 줄이기로 하고 조금 더 보고 싶으면 https://github.com/HomoEfficio/plain-java-scratchpad/tree/master/src/main/java/homo/efficio/jvm/sample 를 참고해도 좋지만, 알고 싶은 부분을 직접 코딩/컴파일하고 `javap`와 JVM 스펙으로 확인해보는 것이 가장 좋다.
+### GreetingMain
+
+`Greeting` 인터페이스와 이를 구현한 `KoreanGreeting` 클래스를 사용해서 인사말을 찍는 클래스다.
+
+```java
+package homo.efficio.jvm.sample;
+
+import java.lang.reflect.InvocationTargetException;
+
+public class GreetingMain {
+
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+
+        KoreanGreeting koreanGreeting = new KoreanGreeting();
+        System.out.println(koreanGreeting.sayHello("Homo Efficio"));
+
+        Greeting greeting = new KoreanGreeting();
+        System.out.println(greeting.sayHello("Homo Efficio"));
+
+        sayHelloFromDynamicallyLoadedClass(args[0]);
+    }
+
+    private static void sayHelloFromDynamicallyLoadedClass(String arg) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        ClassLoader classLoader = GreetingMain.class.getClassLoader();
+        Class<?> aClass = classLoader.loadClass(arg);
+        if (Greeting.class.isAssignableFrom(aClass)) {
+            Greeting aGreeting = (Greeting) aClass.getDeclaredConstructor().newInstance();
+            System.out.println(aGreeting.sayHello("Homo Efficio"));
+        }
+    }
+}
+```
+
+바이트코드 대략적인 구조 설명은 앞에서 했으므로 여기에서는 인터페이스를 통한 자바의 다형성이 발현되는 지점을 알 수 있는 부분만 살펴보자. 나머지 내용이 궁금하다면 https://github.com/HomoEfficio/plain-java-scratchpad/tree/master/src/main/java/homo/efficio/jvm/sample 를 참고한다.
+
+```
+Constant pool:
+    ...
+    #8 = InterfaceMethodref #16.#65       // homo/efficio/jvm/sample/Greeting.sayHello:(Ljava/lang/String;)Ljava/lang/String;
+    ...
+{
+  public static void main(java.lang.String[]) throws java.lang.ClassNotFoundException, java.lang.NoSuchMethodException, java.lang.IllegalAccessException, java.lang.reflect.InvocationTargetException, java.lang.InstantiationException;
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=4, args_size=1
+         0: new           #2                  // class homo/efficio/jvm/sample/KoreanGreeting
+         3: dup
+         4: invokespecial #3                  // Method homo/efficio/jvm/sample/KoreanGreeting."<init>":()V
+         7: astore_1
+         8: getstatic     #4                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: aload_1
+        12: ldc           #5                  // String Homo Efficio
+        14: invokevirtual #6                  // Method homo/efficio/jvm/sample/KoreanGreeting.sayHello:(Ljava/lang/String;)Ljava/lang/String;
+        17: invokevirtual #7                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        20: new           #2                  // class homo/efficio/jvm/sample/KoreanGreeting
+        23: dup
+        24: invokespecial #3                  // Method homo/efficio/jvm/sample/KoreanGreeting."<init>":()V
+        27: astore_2
+        28: getstatic     #4                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        31: aload_2
+        32: ldc           #5                  // String Homo Efficio
+        34: invokeinterface #8,  2            // InterfaceMethod homo/efficio/jvm/sample/Greeting.sayHello:(Ljava/lang/String;)Ljava/lang/String;
+        39: invokevirtual #7                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        ...
+}
+```
+
+상수 풀의 8번쨰 항목에 `InterfaceMethodref`라는 항목으로 `Greeting` 인터페이스의 sayHello 메서드가 등록되어 있다.
+
+자바 소스코드에서 아래와 같이 인터페이스를 사용하지 않는 부분은
+
+```java
+        KoreanGreeting koreanGreeting = new KoreanGreeting();
+        System.out.println(koreanGreeting.sayHello("Homo Efficio"));
+```
+
+다음과 같이 `invokevirtual`이 사용되고,
+
+```
+        12: ldc           #5                  // String Homo Efficio
+        14: invokevirtual #6                  // Method homo/efficio/jvm/sample/KoreanGreeting.sayHello:(Ljava/lang/String;)Ljava/lang/String;
+        17: invokevirtual #7                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+```
+
+인터페이스를 사용하는 아래 코드는
+
+```java
+        Greeting greeting = new KoreanGreeting();
+        System.out.println(greeting.sayHello("Homo Efficio"));
+```
+
+다음과 같이 `invokeinterface`가 사용됨을 확인할 수 있다.
+
+```
+        32: ldc           #5                  // String Homo Efficio
+        34: invokeinterface #8,  2            // InterfaceMethod homo/efficio/jvm/sample/Greeting.sayHello:(Ljava/lang/String;)Ljava/lang/String;
+        39: invokevirtual #7                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+```
+
+바이트코드 구경은 여기서 줄인다. 더 궁금하다면 알고 싶은 부분을 직접 코딩/컴파일하고 `javap`와 JVM 스펙으로 확인해보는 것이 가장 좋다.
 
 
 # 1탄 마무리
@@ -406,10 +506,12 @@ invokedynamic | JVM에서 실행되는 동적 타입 언어를 위해 Java 7에 
 >자바도 전처리, 컴파일, 링크 과정을 통해 최종 실행 파일이 만들어진다.
 >
 >컴파일의 세부 단계는 어휘 분석, 구문 분석, 의미 분석, 중간 코드 생성, 중간 코드 최적화로 구성된다.  
->컴파일의 결과물은 바이너리로 된 JVM 바이트코드다.
+>
+>자바 컴파일은 자바 코드를 자바 언어 스펙에 따라 분석/검증하고, JVM 스펙의 class 파일 구조에 맞는 바이트코드를 만들어내는 과정이다.
 >
 >자바 소스 코드를 컴파일하면,  
->소스 코드에서 정적으로 파악할 수 있는 변수, 상수, 메서드 등의 정보는 클래스 파일 단위의 상수 풀(Constant Pool)에 담고,  
+>소스 코드에서 정적으로 파악할 수 있는 변수, 상수, 메서드 등의 정보가 클래스 파일 단위의 상수 풀(Constant Pool)에 저장되고,  
 >코드 구현 부는 상수 풀의 정보를 오퍼랜드(Operand)로 사용해서 실행되는 JVM 명령어(Instruction)으로 변환된다.
 >
 >javap 명령으로 바이너리 바이트코드를 눈으로 읽을 수 있는 텍스트로 역어셈블해서 확인할 수 있다.
+
