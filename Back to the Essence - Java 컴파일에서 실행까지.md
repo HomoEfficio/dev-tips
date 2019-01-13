@@ -364,11 +364,13 @@ BootstrapMethods:
       #31 \u0001\u0001
 ```
 
-자바 소스 코드 상으로는 `Greeting` 인터페이스와 몇 줄 차이 안 나는데 바이트코드의 양은 큰 차이가 난다.
+자바 소스 코드 상으로는 `Greeting` 인터페이스와 몇 줄 차이 안 나는데 바이트코드의 양은 큰 차이가 난다. 바이트코드를 분석하는 것이 글의 목적이 아니라 컴파일이라는 큰 과정을 살펴보면서 결과물인 바이트코드도 눈으로 구경해보자는 취지이므로 개략적인 생김새와 기본적인 내용만 훑어보자.
 
 #### 상수 풀
 
-상수 풀에는 `Methodref`, `String`, `Fieldref`, `Methodref`, `InvokeDynamic`, `NameAndType`, `MethodHandle` 등 새로운 종류의 상수 항목이 나오는데, 이름과 값을 조금 살펴보면 어떻게 사용되는지 대략 감을 잡을 수 있다. 상수 풀에 저장되는 상수 항목의 종류는 총 17개이며, 자세한 내용은 [JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.4)을 참고한다.
+상수 풀에는 `Methodref`, `String`, `Fieldref`, `Methodref`, `InvokeDynamic`, `NameAndType`, `MethodHandle` 등 새로운 종류의 상수 항목이 나오는데, 이름과 값을 조금 살펴보면 어떻게 사용되는지 대략 감을 잡을 수 있다. 소스 코드 수준에서 정적으로 파악할 수 있는 변수, 상수, 메서드 등의 일람표라고 생각하면 된다.
+
+상수 풀에 저장되는 상수 항목의 종류는 총 17개이며, 자세한 내용은 [JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.4)을 참고한다.
 
 
 #### 바이트코드
@@ -382,7 +384,7 @@ BootstrapMethods:
         - stack, locals, args_size: 스택 높이, 로컬 변수 갯수, 인자 갯수
             - 실제 구현 코드: 코드 위치, 바이트코드 명령어(instruction), 오퍼랜드(operand)
         - LineNumberTable: 자바 코드의 행 번호와 바이트코드의 위치 매핑 테이블
-        - LocalVariableTable: 로컬 변수 
+        - LocalVariableTable: 로컬 변수 테이블
 
 어셈블리어 프로그래밍 경험이 있는 개발자에게는 바이트코드가 그리 낯설지 않을 것이다.
 
@@ -514,4 +516,5 @@ Constant pool:
 >코드 구현 부는 상수 풀의 정보를 오퍼랜드(Operand)로 사용해서 실행되는 JVM 명령어(Instruction)으로 변환된다.
 >
 >javap 명령으로 바이너리 바이트코드를 눈으로 읽을 수 있는 텍스트로 역어셈블해서 확인할 수 있다.
+
 
