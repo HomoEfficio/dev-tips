@@ -1,6 +1,6 @@
 # Back to the Essence - Java 컴파일에서 실행까지 - (1)
 
-Hello Java 소스 코드가 어떻게 컴파일되고 실행되는지 살짝 깊게 알아보자.
+Java 소스 코드가 어떻게 컴파일되고 실행되는지 살짝 깊게 알아보자.
 
 # 컴파일
 
@@ -28,19 +28,19 @@ Hello Java 소스 코드가 어떻게 컴파일되고 실행되는지 살짝 깊
 
 1. 전처리
 
-![Imgur](https://i.imgur.com/6Gixn4m.png)
+    ![Imgur](https://i.imgur.com/6Gixn4m.png)
 
 1. 컴파일
 
-![Imgur](https://i.imgur.com/XgKJv8x.png)
+    ![Imgur](https://i.imgur.com/XgKJv8x.png)
 
 1. 링크
 
-![Imgur](https://i.imgur.com/bjruQVw.png)
+    ![Imgur](https://i.imgur.com/bjruQVw.png)
 
 (그림 참고: https://www.sitesbay.com/cprogramming/c-compile-link-program)
 
-자바는 컴파일 결과로 나온 바이트코드가 JVM에 의해 실행되면서 네이티브 기계어 코드로 변환되므로, 실행 전에 네이티브 기계어 코드를 만들어내는 어셈블리 단계가 없다고 볼 수 있다. 마찬가지로 링크 단계도 실행 전에 수행되지 않고 JVM에 의해 실행되면서 동적으로 수행된다.
+자바는 컴파일 결과로 나온 바이트코드가 JVM에 의해 실행되면서 네이티브 기계어 코드로 변환되므로, 프로그램 실행 전에 네이티브 기계어 코드를 만들어내는 어셈블리 단계가 없다고 볼 수 있다. 마찬가지로 링크 단계도 프로그램 실행 전에 수행되지 않고 JVM에 의해 프로그램이 실행될 때 동적으로 수행된다.
 
 그림으로 살펴본 것처럼 컴파일과 어셈블리 과정을 하나로 뭉쳐서 컴파일이라고 하기도 한다. 아래에서 살펴볼 컴파일 세부 단계는 컴파일과 어셈블리 과정을 하나로 뭉친 개념이다.
 
@@ -73,6 +73,8 @@ Syntax Analyzer(구문 분석기, 파서(Parser)라고도 한다)가 어휘 분�
 
 (그림 출처: https://en.wikipedia.org/wiki/Compiler)
 
+위 그림에서 Parser 아래에 있는 트리가 파스 트리다.
+
 ### 3. Symantic Analysis(의미 분석)
 
 의미 분석 단계에서는 타입 검사, 자동 타입 변환 등이 수행된다. 예를 들어 다음과 같은 코드는 구문 분석 단계에서는 에러가 나지 않지만, 의미 분석 단계에서는 타입 검사가 수행되면서 에러가 발생한다.
@@ -80,6 +82,7 @@ Syntax Analyzer(구문 분석기, 파서(Parser)라고도 한다)가 어휘 분�
 ```
 int a = "Hello";
 ```
+의미 분석 단계를 거치면서 파스 트리에 타입 관련 정보 등이 추가된다.
 
 ### 4. Intermediate Code Generation(중간 코드 생성)
 
@@ -89,9 +92,9 @@ int a = "Hello";
 
 (그림 출처: https://www.slideshare.net/RamchandraRegmi/intermediate-code-generationramchandra-regmi)
 
-한 마디로 간접화를 통해 경우의 수를 낮추고 효율을 높이기 위해 중간 코드를 생성한다.
+한 마디로 중간 단계를 하나 둬서 간접화를 통해 경우의 수를 낮추고 효율을 높이기 위해 중간 코드를 생성한다.
 
-자바의 바이트코드가 바로 이 중간 코드에 해당한다고 볼 수 있다. 위 그림에서 4개의 언어를 나타내는 네모를 각각 자바, 클로저(Clojuer), 스칼라, 코틀린이라고 하고, 녹색 네모를 바이트코드라고 생각하면 쉽게 이해할 수 있다.
+자바의 바이트코드가 바로 이 중간 코드에 해당한다고 볼 수 있다. 위 그림에서 4개의 언어를 나타내는 네모를 각각 자바, 클로저(Clojure), 스칼라, 코틀린이라고 하고, 녹색 네모를 바이트코드라고 생각하면 쉽게 이해할 수 있다.
 
 어휘 분석에서 만들어져서, 구문 분석, 의미 분석 과정을 거치며 다듬어진 심볼 테이블은 중간 코드인 바이트코드 생성 단계에서 클래스나 인터페이스별 [상수 풀(Constant Pool)](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.4)을 만드는 데 사용된다. 
 
@@ -101,7 +104,7 @@ int a = "Hello";
 
 ### 5. Code Optimization(중간 코드 최적화)
 
-말 그대로 중간 코드가 더 효율적인 기계어로 변환되도록 최적화하는 과정이 수행된다. 
+말 그대로 중간 코드가 더 효율적인 기계어로 변환되도록 최적화하는 과정이 수행된다. 다음과 같이 매우 다양한 최적화 기법이 사용된다.
 
 #### 핍홀(Peephole) 최적화
 
@@ -129,12 +132,12 @@ int a = "Hello";
 
 이 외에도 다양한 최적화 기법이 사용되는데, 쉽게 감이 오는 루프 최적화의 코드 이동만 확인해보자. 실제로 최적화되는 것은 바이트코드지만 보기 편하게 자바 코드로 표현한다.
 
-```
+```java
 for (int i = 0 ; i < 100000 ; i++) {
     c[k] = 2 * (p - q) * (n - k + 1) / (sqrt(n) + n);
 }
 
-// i와 관계 없이 값이 고정되어 있는 식을 반복문 밖으로 이동
+// i와 관계 없이 값이 고정되어 있는 식을 반복문 밖으로 옮겨서 불필요한 계산 반복을 제거
 
 factor = 2 * (p - q);
 denominator = (sqrt(n) + n);
@@ -149,7 +152,7 @@ for (int i = 0 ; i < 100000 ; i++) {
 
 자바의 컴파일 과정은 여기까지다. 자바의 컴파일 과정을 한 마디로 요약하면 **자바 코드를 자바 언어 스펙에 따라 분석/검증하고, JVM 스펙의 class 파일 구조에 맞는 바이트코드를 만들어내는 과정** 이라고 할 수 있다.
 
-바이트코드는 로딩, 링크 과정을 거쳐야 하지만 분명히 JVM에서 실행될 수 있는 코드다. 따라서 어떤 언어라도 JVM 스펙의 class 파일 구조에 맞는 바이트코드를 만들어 낼 수 있다면 JVM에서 실행될 수 있다. 클로저(Clojure)나 스칼라, 코틀린 등이 JVM에서 실행될 수 있는 이유가 바로 여기에 있다.
+바이트코드는 로딩, 링크 과정을 거쳐야 하지만 분명히 JVM에서 실행될 수 있는 코드다. 따라서 꼭 자바 언어 스펙을 따르는 자바가 아니라도, JVM 스펙의 class 파일 구조에 맞는 바이트코드를 만들어 낼 수 있다면 어떤 언어든 JVM에서 실행될 수 있다. 클로저(Clojure)나 스칼라, 코틀린 등이 JVM에서 실행될 수 있는 이유가 바로 여기에 있다.
 
 자바 코드의 변수, 상수, 제어문, 연산, 인자, 메서드 호출, 배열, switch문, 예외 처리, finally, synchronization, 애너테이션, 모듈(Java 9 이후) 등이 바이트코드로 어떻게 변환되는지는 [JVM 스펙의 3장](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-3.html)에 나오는 예시를 통해 확인할 수 있다.
 
@@ -205,11 +208,11 @@ Constant pool:
 SourceFile: "Greeting.java"
 ```
 
-Classfile, public interface ..., Constant pool, { 바이트코드 }, SourceFile 이렇게 크게 5가지 항목으로 구분되어 표시된다.
+인터페이스의 바이트코드는 Classfile, public interface ..., Constant pool, { 바이트코드 }, SourceFile 이렇게 크게 5가지 항목으로 구분되어 표시된다.
 
-컴파일과 실행 관점에서 주목해야할 항목은 상수 풀(Constant pool)과 변환된 바이트코드 내용이다. 
+컴파일과 실행 관점에서 주목해야할 항목은 상수 풀(Constant pool)과 실제 소스 코드로부터 변환된 바이트코드 내용이다. 
 
-상수풀에는 `Class`와 `Utf8`로 분류되는 값들이 표시되어 있다. 상수 풀에 포함된 정보는 `#N`의 형식으로 인덱스되어 있다. `Class`는 말그대로 클래스임을 나타내고 `Utf8`은 클래스나 메서드 등의 이름을 나타내는 식별자를 UTF-8로 인코딩 된 값으로 나타내고 있다. `Class`로 분류된 항목의 값은 `#7` 같이 다른 항목을 가리키는 일종의 참조로 되어 있고, 실제 값은 주석으로 병기(`// homo/efficio/jvm/sample/Greeting`)되어 있다.
+상수풀에는 `Class`와 `Utf8`로 분류되는 값들이 표시되어 있다. 상수 풀에 포함된 정보는 `#N`의 형식으로 인덱스되어 있다. `Class`는 말그대로 클래스임을 나타내고 `Utf8`은 클래스나 메서드 등의 이름을 나타내는 식별자를 UTF-8로 인코딩 된 값으로 나타내고 있다. `Class`로 분류된 항목의 값은 `#7` 같이 다른 항목을 가리키는 일종의 참조로 되어 있고, 참조를 통해 가리키는 항목의 값은 주석으로 병기(`// homo/efficio/jvm/sample/Greeting`)되어 있다.
 
 바이트코드에는 원래 자바 소스에는 없던 `abstract`라는 키워드가 추가되어 표시되어 있다. sayHello 메서드의 파라미터 정보(`(Ljava/lang/String;)`) 와 반환 타입 정보(`Ljava/lang/String;`)가 descriptor 항목에 표시되고, 접근 지정자(`ACC_PUBLIC`, `ACC_ABSTRACT`)가 flags 항목에 표시된다. 
 
@@ -235,7 +238,7 @@ public class KoreanGreeting implements Greeting {
 }
 ```
 
-`Greeting` 인터페이스를 구현하고 있고, `hello`라는 필드를 하나 가지고 있는 단순한 클래스다. `getHello()`는 메서드가 2개일 때는 어떻게 표시되는지 보기 위해 일부러 추가했다.
+`Greeting` 인터페이스를 구현하고 있고, `hello`라는 필드를 하나 가지고 있는 단순한 클래스다. `getHello()`는 메서드가 2개일 때는 어떻게 표시되는지, 내부 private 메서드 호출은 어떻게 표시되는지 보기 위해 일부러 추가했다.
 
 >javap -v -l -p homo/efficio/jvm/sample/KoreanGreeting.class
 
