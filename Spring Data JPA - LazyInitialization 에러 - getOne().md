@@ -23,3 +23,21 @@ LazyInitializationException: could not initialize proxy - no session
 IDE 자동 완성 기능에도 병폐가 있다는 사실을 알게 되었다..
 
 
+## 서비스 클래스의 메서드가 아닌 메서드에서 LazyCollection 호출 시
+
+상황에 따라 서비스 클래스의 메서드가 아닌 메서드에서 LazyCollection을 호출해야할 때가 있다.
+
+내 경우 Quartz Job 클래스에서 `getTaskList()` 같은 형태로 Task 목록을 불러와야 하는데, Quartz Job 클래스는 서비스 클래스가 아니며, 유일한 메서드인 `execute()`에 `@Transactional`을 붙이는 것도 부적합하다. 이런 상황에서 Collection을 읽어오기 위해 위해 `FetchType.EAGER`를 쓰면 Lazy를 써도 되는 곳에서조차 EAGER로 동작하므로 좋지 않다. 어떻게 하면 좋을까?
+
+해법은 단순하다.
+
+서비스 클래스 내에 다음과 같이 `Hibernate.initialize()`를 이용해서 EAGER 용 메서드를 만들고, Job 클래스에서 이 메서드를 호출해서 쓰면 된다.
+
+```java
+    @Transactional(readOnly = true)
+    public List<Task> getTaskListEager(Long tasksId) {
+        List<Task> taskList = this.tasksRepository.findOne(tasksId).getTaskList();
+        Hibernate.initialize(taskList);
+        return taskList;
+    }
+```
