@@ -41,3 +41,7 @@ IDE 자동 완성 기능에도 병폐가 있다는 사실을 알게 되었다..
         return taskList;
     }
 ```
+
+이 방식에도 주의할 점이 있는데, `Hibernate.initialize(taskList)`가 `taskList` 내에 중첩되어 있는 Collection 까지 가져오지는 못한다는 점이다.
+
+LazyCollection 내에 중첩된 LazyCollection 가 또 있을 때는 그 중첩된 LazyCollection 에 대해서도 `Hibernate.initialize()`를 다시 해줘야 한다.
