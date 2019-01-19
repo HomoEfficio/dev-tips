@@ -81,22 +81,21 @@ JVM 단위에 속하는 **힙과 메서드 영역은 JVM이 시작될 때 생성
 
 # 예제 코드 실행
 
-예제 자바 코드 및 바이트코드 관련 내용은 스펙이 아니라 JVM Internals라는 글([원문](https://blog.jamesdbloom.com/JVMInternals.html), [번역](https://github.com/HomoEfficio/dev-tips/blob/master/JVM%20Internals.md))에서 따왔다.
-
 ## 예제 코드
 
 흔히 보는 헬로 월드 프로그램의 소스 코드다.
 
 ```java
-package org.jvminternals;
+package homo.efficio.jvm.sample;
 
 public class SimpleClass {
 
-    public void sayHello() {
-        System.out.println("Hello");
+    public static void main(String[] args) {
+        System.out.println("Hello, JVM");
     }
-
 }
+
+
 ```
 
 ## 컴파일된 바이트코드
@@ -104,73 +103,84 @@ public class SimpleClass {
 컴파일된 바이트코드는 다음과 같다.
 
 ```java
-public class org.jvminternals.SimpleClass
-  SourceFile: "SimpleClass.java"
+Classfile /C:/gitrepo/scratchpad/plain-java-scratchpad/out/production/classes/homo/efficio/jvm/sample/SimpleClass.class
+  Last modified 2019. 1. 20.; size 583 bytes
+  MD5 checksum a5fcf145be8e22dfcf53556a410ace9f
+  Compiled from "SimpleClass.java"
+public class homo.efficio.jvm.sample.SimpleClass
   minor version: 0
-  major version: 51
-  flags: ACC_PUBLIC, ACC_SUPER
+  major version: 53
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #5                          // homo/efficio/jvm/sample/SimpleClass
+  super_class: #6                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 1
 Constant pool:
-   #1 = Methodref          #6.#17         //  java/lang/Object."<init>":()V
-   #2 = Fieldref           #18.#19        //  java/lang/System.out:Ljava/io/PrintStream;
-   #3 = String             #20            //  "Hello"
-   #4 = Methodref          #21.#22        //  java/io/PrintStream.println:(Ljava/lang/String;)V
-   #5 = Class              #23            //  org/jvminternals/SimpleClass
-   #6 = Class              #24            //  java/lang/Object
+   #1 = Methodref          #6.#20         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #21.#22        // java/lang/System.out:Ljava/io/PrintStream;
+   #3 = String             #23            // Hello, JVM
+   #4 = Methodref          #24.#25        // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #5 = Class              #26            // homo/efficio/jvm/sample/SimpleClass
+   #6 = Class              #27            // java/lang/Object
    #7 = Utf8               <init>
    #8 = Utf8               ()V
    #9 = Utf8               Code
   #10 = Utf8               LineNumberTable
   #11 = Utf8               LocalVariableTable
   #12 = Utf8               this
-  #13 = Utf8               Lorg/jvminternals/SimpleClass;
-  #14 = Utf8               sayHello
-  #15 = Utf8               SourceFile
-  #16 = Utf8               SimpleClass.java
-  #17 = NameAndType        #7:#8          //  "<init>":()V
-  #18 = Class              #25            //  java/lang/System
-  #19 = NameAndType        #26:#27        //  out:Ljava/io/PrintStream;
-  #20 = Utf8               Hello
-  #21 = Class              #28            //  java/io/PrintStream
-  #22 = NameAndType        #29:#30        //  println:(Ljava/lang/String;)V
-  #23 = Utf8               org/jvminternals/SimpleClass
-  #24 = Utf8               java/lang/Object
-  #25 = Utf8               java/lang/System
-  #26 = Utf8               out
-  #27 = Utf8               Ljava/io/PrintStream;
-  #28 = Utf8               java/io/PrintStream
-  #29 = Utf8               println
-  #30 = Utf8               (Ljava/lang/String;)V
+  #13 = Utf8               Lhomo/efficio/jvm/sample/SimpleClass;
+  #14 = Utf8               main
+  #15 = Utf8               ([Ljava/lang/String;)V
+  #16 = Utf8               args
+  #17 = Utf8               [Ljava/lang/String;
+  #18 = Utf8               SourceFile
+  #19 = Utf8               SimpleClass.java
+  #20 = NameAndType        #7:#8          // "<init>":()V
+  #21 = Class              #28            // java/lang/System
+  #22 = NameAndType        #29:#30        // out:Ljava/io/PrintStream;
+  #23 = Utf8               Hello, JVM
+  #24 = Class              #31            // java/io/PrintStream
+  #25 = NameAndType        #32:#33        // println:(Ljava/lang/String;)V
+  #26 = Utf8               homo/efficio/jvm/sample/SimpleClass
+  #27 = Utf8               java/lang/Object
+  #28 = Utf8               java/lang/System
+  #29 = Utf8               out
+  #30 = Utf8               Ljava/io/PrintStream;
+  #31 = Utf8               java/io/PrintStream
+  #32 = Utf8               println
+  #33 = Utf8               (Ljava/lang/String;)V
 {
-  public org.jvminternals.SimpleClass();
-    Signature: ()V
-    flags: ACC_PUBLIC
+  public homo.efficio.jvm.sample.SimpleClass();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
     Code:
       stack=1, locals=1, args_size=1
-        0: aload_0
-        1: invokespecial #1    // Method java/lang/Object."<init>":()V
-        4: return
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
       LineNumberTable:
-        line 3: 0
+        line 7: 0
       LocalVariableTable:
         Start  Length  Slot  Name   Signature
-          0      5      0    this   Lorg/jvminternals/SimpleClass;
+            0       5     0  this   Lhomo/efficio/jvm/sample/SimpleClass;
 
-  public void sayHello();
-    Signature: ()V
-    flags: ACC_PUBLIC
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
     Code:
       stack=2, locals=1, args_size=1
-        0: getstatic      #2    // Field java/lang/System.out:Ljava/io/PrintStream;
-        3: ldc            #3    // String "Hello"
-        5: invokevirtual  #4    // Method java/io/PrintStream.println:(Ljava/lang/String;)V
-        8: return
+         0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: ldc           #3                  // String Hello, JVM
+         5: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+         8: return
       LineNumberTable:
-        line 6: 0
-        line 7: 8
+        line 10: 0
+        line 11: 8
       LocalVariableTable:
         Start  Length  Slot  Name   Signature
-          0      9      0    this   Lorg/jvminternals/SimpleClass;
+            0       9     0  args   [Ljava/lang/String;
 }
+SourceFile: "SimpleClass.java"
+
 ```
 
 앞에서 JDK, JRE, JVM 관계로 설명했지만 위와 같은 바이트코드를 만드는 과정까지는 JDK에서 담당한다.
@@ -185,8 +195,6 @@ Constant pool:
 ## JVM 실행
 
 JVM이 실행되면 JVM 단위로 생성되는 힙과 메서드 영역이 함께 생성된다.
-
-![Imgur](https://i.imgur.com/KXJsPgs.png)
 
 ### 힙
 
@@ -204,21 +212,132 @@ SimpleClass는 이 시점에서는 아직 인스턴스화 되지 않았으므로
 
 SimpleClass는 이 시점에서는 아직 생성되지 않았으므로 메서드 영역도 비어있다.
 
+![Imgur](https://i.imgur.com/KXJsPgs.png)
+
 
 ## 시작 클래스 생성
 
-시작 클래스는 SimpleClass를 지칭하며 시작 클래스를 생성하는 것은 파일시스템에 있는 SimpleClass.class 파일을 JVM의 메서드 영역으로 읽어들이는 것을 말한다고 했다. 따라서 이 시점에서 SimpleClass의 바이트코드 내용이 메서드 영역에 저장된다.
+시작 클래스는 SimpleClass를 지칭하며 시작 클래스를 생성하는 것은 파일시스템에 있는 SimpleClass.class 파일을 JVM의 메서드 영역으로 읽어들이는 것을 말한다고 했다. 따라서 **이 시점에서 SimpleClass의 바이트코드 내용이 메서드 영역에 저장**된다.
 
 ![Imgur](https://i.imgur.com/0CTTUDC.png)
 
 
 ### 런타임 상수 풀
 
-클래스가 생성되면 런타임 상수 풀도 함께 생성된다고 했다. 런타임 상수 풀에는 컴파일 타임에 이미 알 수 있는 숫자 리터럴 값부터 런타임에 해석되는 메서드와 필드의 참조까지를 포괄하는 여러 종류의 상수가 포함된다. 런타임 상수 풀은 다른 전통적인 언어에서 말하는 심볼 테이블과 비슷한 기능을 한다고 보면 된다.
+클래스가 생성되면 런타임 상수 풀도 함께 생성된다고 했다. **런타임 상수 풀에는 컴파일 타임에 이미 알 수 있는 숫자 리터럴 값부터 런타임에 해석되는 메서드와 필드의 참조까지를 포괄하는 여러 종류의 상수가 포함**된다. 런타임 상수 풀은 다른 전통적인 언어에서 말하는 심볼 테이블과 비슷한 기능을 한다고 보면 된다.
 
 ![Imgur](https://i.imgur.com/fz81deC.png)
 
-###
 
+## 링크
+
+**링크는 클래스나 인터페이스의 바로 위 수퍼클래스나 수퍼인터페이스, 또는 배열일 경우 배열의 원소인 클래스나 인터페이스를 확인(verify)/준비(prepare)하고, 심볼릭 참조를 해석(resolve)하는 과정**을 말한다.
+
+그럼 확인, 준비, 해석은 뭘 의미하는 걸까?
+
+### 확인
+
+**확인(verification)은 클래스나 인터페이스의 바이너리 표현이 구조적으로 올바른지를 보장해주는 과정**이다. 확인 과정은 다른 클래스나 인터페이스의 로딩을 유발할 수도 있지만, 로딩된 다른 클래스나 인터페이스의 확인이나 준비를 필수적으로 유발하지는 않는다.
+
+SimpleClass.class 파일은 정상적으로 컴파일되었으므로 구조적으로 올바르다고 가정하면, 확인 과정에서 SimpleClass의 부모 클래스인 Object
+가 로딩된다.
+
+![Imgur](https://i.imgur.com/yKf0zIp.png)
+
+### 준비
+
+**준비(preperation)는 클래스나 인터페이스의 정적 필드를 생성하고 기본값으로 초기화하는 과정**이다. 준비 과정에서는 JVM 코드의 실행을 필요로 하지 않으며, **기본값이 아닌 특정값으로 정적 필드를 초기화하는 과정은 준비 과정이 아니라 초기화 과정에서 수행**된다.
+
+SimpleClass에는 정적 필드가 없으므로 이 과정에서 특별히 수행되는 것은 없다.
+
+### 해석
+
+**해석(resolution)은 런타임 상수 풀에 있는 심볼릭 참조가 구체적인 값을 가리키도록 동적으로 결정하는 과정**이다. 초기 상태의 런타임 상수 풀에 있는 심볼릭 참조는 해석되어져 있지 않다.
+
+### 링크의 조건
+
+JVM 스펙에서는 **링크가 언제 수행되어야 하는지는 규정하지 않고 유연하게 구현될 수 있는 여지**를 주고 있다. 단 다음과 같은 조건을 만족해야 한다.
+
+- 클래스나 인터페이스는 링크되기 전에 먼저 완전히 로딩되어야 한다.
+- 클래스나 인스턴스는 초기화되기 전에 먼저 완전히 확인되고 준비되어야 한다.
+- 링크 관련 에러는 해당 클래스나 인터페이스에 대한 링크를 필요로 하는 행위가 수행되는 시점에 throw 되어야 한다.
+- 동적으로 계산되는(dynamically-computed) 상수 A에 대한 심볼릭 참조는, A를 참조하는 `ldc`, `ldc_w`, `ldc2_w` 명령어가 실행되거나 A를 정적 인자로 참조하는 부트스트랩 메서드가 호출되기 전까지는 해석되지 않는다.
+- 동적으로 계산되는(dynamically-computed) call site B에 대한 심볼릭 참조는, B를 정적 인자로 참조하는 부트스트랩 메서드가 호출되기 전까지는 해석되지 않는다.
+
+일반적으로 만족되어야 하는 것은 1, 2, 3번째 조건이고 4, 5번째는 특수한 경우에 대한 조건이다.
+
+해석 시점은 JVM 구현체에 따라 다를 수 있다. **지연(lazy) 링크 전략을 사용하면 클래스나 인터페이스에 포함된 심볼릭 참조는 해당 참조가 실제 사용될 때 개별적으로 해석**된다. 반면에 **즉시(eager) 링크 전략을 사용하면 클래스나 인터페이스가 확인될 때 모든 심볼릭 참조가 한꺼번에 해석**된다. 지연 링크를 사용하면 해석 과정은 클래스나 인터페이스가 초기화 된 후에 실행될 수도 있다.
+
+링크 과정을 정리하면 다음과 같다.
+
+>링크는 **확인, 준비, 해석 단계로 구성된다.**
+>
+>**클래스나 인터페이스는 완전히 로딩된 후에 확인과 준비가 수행돼야 하고, 완전히 확인되고 준비된 뒤에 초기화되어야 한다.**
+>
+>**해석은 초기화 이후에 실행될 수도 있다.**
+
+다시 예제로 돌아와 보자. SimpleClass의 상수 풀은 다음과 같았다.
+
+```java
+Constant pool:
+   #1 = Methodref          #6.#20         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #21.#22        // java/lang/System.out:Ljava/io/PrintStream;
+   #3 = String             #23            // Hello, JVM
+   #4 = Methodref          #24.#25        // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #5 = Class              #26            // homo/efficio/jvm/sample/SimpleClass
+   #6 = Class              #27            // java/lang/Object
+   #7 = Utf8               <init>
+   #8 = Utf8               ()V
+   #9 = Utf8               Code
+  #10 = Utf8               LineNumberTable
+  #11 = Utf8               LocalVariableTable
+  #12 = Utf8               this
+  #13 = Utf8               Lhomo/efficio/jvm/sample/SimpleClass;
+  #14 = Utf8               main
+  #15 = Utf8               ([Ljava/lang/String;)V
+  #16 = Utf8               args
+  #17 = Utf8               [Ljava/lang/String;
+  #18 = Utf8               SourceFile
+  #19 = Utf8               SimpleClass.java
+  #20 = NameAndType        #7:#8          // "<init>":()V
+  #21 = Class              #28            // java/lang/System
+  #22 = NameAndType        #29:#30        // out:Ljava/io/PrintStream;
+  #23 = Utf8               Hello, JVM
+  #24 = Class              #31            // java/io/PrintStream
+  #25 = NameAndType        #32:#33        // println:(Ljava/lang/String;)V
+  #26 = Utf8               homo/efficio/jvm/sample/SimpleClass
+  #27 = Utf8               java/lang/Object
+  #28 = Utf8               java/lang/System
+  #29 = Utf8               out
+  #30 = Utf8               Ljava/io/PrintStream;
+  #31 = Utf8               java/io/PrintStream
+  #32 = Utf8               println
+  #33 = Utf8               (Ljava/lang/String;)V
+```
+
+설명의 편의를 위해 즉시 링크 방식으로 해석이 진행된다고 가정하고, 위 상수 풀에서 유도되는 런타임 상수 풀에 있는 심볼릭 참조의 해석 과정을 몇 개만 예로 살펴보자.
+
+>#1 = Methodref          #6.#20         //  java/lang/Object."<init>":()V
+
+Object 클래스가 확인 과정에서 로딩되어 있으므로 메서드 영역에 저장된 Object 클래스의 바이트코드 내용에서 생성자(`<init>`)의 위치를 알아낼 수 있고, 그 위치를 `java/lang/Object."<init>"`의 값으로 해석할 수 있다.
+
+![Imgur](https://i.imgur.com/us3J65x.png)
+
+>#2 = Fieldref           #21.#22        //  java/lang/System.out:Ljava/io/PrintStream;
+
+System 클래스는 아직 로딩되어 있지 않으므로 먼저 로딩하고, 확인 후 준비 과정을 거치면서 System 클래스의 정적 필드인 `out`의 타입인 PrintStream 클래스도 로딩되고 `out`은 기본값인 null 로 초기화 된다.
+
+![Imgur](https://i.imgur.com/VLz6GG8.png)
+
+대략 이런 식으로 로딩-링크 과정이 연쇄적으로 실행되면서 메서드 영역이 채워진다.
+
+
+
+
+
+## 초기화
+
+
+## main 메서드 호출
 
 
