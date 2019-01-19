@@ -317,13 +317,13 @@ Constant pool:
 
 설명의 편의를 위해 즉시 링크 방식으로 해석이 진행된다고 가정하고, 위 상수 풀에서 유도되는 런타임 상수 풀에 있는 심볼릭 참조의 해석 과정을 몇 개만 예로 살펴보자.
 
->#1 = Methodref          #6.#20         //  java/lang/Object."<init>":()V
+`#1 = Methodref          #6.#20         //  java/lang/Object."<init>":()V`
 
 Object 클래스가 확인 과정에서 로딩되어 있으므로 메서드 영역에 저장된 Object 클래스의 바이트코드 내용에서 생성자(`<init>`)의 위치를 알아낼 수 있고, 그 위치를 `java/lang/Object."<init>"`의 값으로 해석할 수 있다.
 
 ![Imgur](https://i.imgur.com/us3J65x.png)
 
->#2 = Fieldref           #21.#22        //  java/lang/System.out:Ljava/io/PrintStream;
+`#2 = Fieldref           #21.#22        //  java/lang/System.out:Ljava/io/PrintStream;`
 
 System 클래스는 아직 로딩되어 있지 않으므로 먼저 로딩하고, 확인 후 준비 과정을 거치면서 System 클래스의 정적 필드인 `out`의 타입인 PrintStream 클래스도 로딩되고 `out`은 기본값인 null 로 초기화 된다.
 
