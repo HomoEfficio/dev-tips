@@ -192,7 +192,7 @@ SourceFile: "SimpleClass.java"
 
 >**JVM이 실행**되고, JVM이 클래스로더를 이용해서 **시작 클래스를 생성**하고, **링크**하고, **초기화**하고, **main 메서드를 호출**한다.
 
-이제 `java org.jvminternals.SimpleClass` 명령을 실행하면 어떻게 진행되는지 차근차근 살펴보자.
+이제 `java homo.efficio.jvm.sample.SimpleClass` 명령을 실행하면 어떻게 진행되는지 차근차근 살펴보자.
 
 
 ## JVM 실행
