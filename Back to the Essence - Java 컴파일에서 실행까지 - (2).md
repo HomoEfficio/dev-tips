@@ -39,14 +39,18 @@ Java 소스 코드가 어떻게 컴파일되고 실행되는지 살짝 깊게 �
 
 ### 용어 정리
 
-몇 가지 용어를 일부러 스펙에 나온 원어 그대로 썼는데 의미는 다음과 같다.
+몇 가지 용어를 일부러 스펙에 나온 원어 그대로 썼는데 스펙상의 의미는 다음과 같다.
 
 - initial class: JVM 구현에 따라 다를 수 있지만 일반적으로 main 메서드를 포함하는 클래스로서 java 명령어의 인자로 지정되는 클래스 ([JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.2) 참고)
 - create (a class or interface): 해당 클래스나 인터페이스의 바이트코드를 로딩해서 JVM이 할당한 메모리(Method Area, 메서드 영역)에 construction하는 것 ([JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.3) 참고)
-- link (a class or interface): 해당 클래스나 인터페이스의 바로 위 수퍼클래스나 수퍼인터페이스, 또는 배열일 경우 배열의 원소인 클래스나 인터페이스를 확인(verify)/준비(prepare)하고, 심볼릭 참조를 해석(resolve)하는 것 ([JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.4) 참고)
+- link (a class or interface): 해당 클래스나 인터페이스의 바로 위 수퍼클래스나 수퍼인터페이스, 또는 배열일 경우 배열의 원소인 클래스나 인터페이스를 확인(verify)/준비(prepare)하고, 심볼릭 참조를 해석(resolve)해서 JVM에서 실행될 수 있는 상태로 만드는 것 ([JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.4) 참고)
 - initialize (a class or interface): 해당 클래스나 인터페이스의 initialization method를 실행하는 것 ([JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.5) 참고)
 
-앞으로 **initial class는 시작 클래스**, **create은 생성**, **link는 링크**, **initialize는 초기화** 라고 쓴다. 한 가지 유의할 것은 여기서 말하는 **생성(create)은 JVM의 힙(heap)에 객체를 생성하는 것만을 지칭하는 것이 아니라 JVM의 메모리 어딘가에 정보를 생성하는 것을 모두 지칭** 한다.
+위 설명에는 없지만 중요한 용어인 로딩의 스펙상의 의미는 다음과 같다.
+
+- load (a class or interface): 해당 클래스나 인터페이스의 바이너리 표현을 찾아서 그 바이너리 표현으로부터 클래스나 인터페이스를 생성(create)하는 것 ([JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html))
+
+앞으로 **initial class는 시작 클래스**, **create은 생성**, **link는 링크**, **initialize는 초기화**, load는 로딩이라고 쓴다. 한 가지 유의할 것은 여기서 말하는 **생성(create)은 JVM의 힙(heap)에 객체를 생성하는 것만을 지칭하는 것이 아니라 JVM의 메모리 어딘가에 자료구조를 생성하는 것을 모두 지칭**한다.
 
 
 ## 런타임 데이터 영역
@@ -248,6 +252,17 @@ SimpleClass.class 파일은 정상적으로 컴파일되었으므로 구조적�
 
 **준비(preperation)는 클래스나 인터페이스의 정적 필드를 생성하고 기본값으로 초기화하는 과정**이다. 준비 과정에서는 JVM 코드의 실행을 필요로 하지 않으며, **기본값이 아닌 특정값으로 정적 필드를 초기화하는 과정은 준비 과정이 아니라 초기화 과정에서 수행**된다.
 
+스펙에 정의된 [기본형 타입의 기본값](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.3)과 [참조형 타입의 기본값](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.4)은 다음과 같다.
+
+타입 | 기본값
+--- | ---
+byte, short, int, long | 0
+char | null(`'\u0000'`)
+float, double | 0(positive zero)
+boolean | false
+참조형 | null
+
+
 SimpleClass에는 정적 필드가 없으므로 이 과정에서 특별히 수행되는 것은 없다.
 
 ### 해석
@@ -340,9 +355,119 @@ System 클래스는 아직 로딩되어 있지 않으므로 먼저 로딩하고,
 
 ## 초기화
 
-초기화(initialization)는 클래스나 인터페이스의 초기화 메서드(initialization method)를 실행할 때 수행되는 과정이다.
+초기화(initialization)는 클래스나 인터페이스의 초기화 메서드(initialization method)를 실행할 때 수행되는 과정이다. 좀 쉽게 말하면 여기에서 말하는 초기화는 정적 초기화(static initialization)를 말한다고 볼 수 있다.
 
 그럼 초기화 메서드는 무엇일까?
+
+### 초기화 메서드
+
+초기화 메서드(initialization method)는 두 가지가 있다.
+
+#### 인스턴스 초기화 메서드
+
+인스턴스 초기화 메서드는 자바 언어로 작성되는 생성자에 해당하며, 클래스는 0개 이상의 인스턴스 초기화 메서드를 가진다. 인스턴스 초기화 메서드는 다음의 조건을 충족한다.
+
+- (인터페이스가 아니고) 클래스 안에 정의된다.
+- (바이트코드 상에서) `<init>`라는 특수한 이름으로 표현된다.
+- 반환 타입은 void
+
+인스턴스 초기화 메서드는 생성자로서 힙에 인스턴스를 생성하는 역할을 담당하며, 여기에서 말하는 초기화와는 좀 다른 개념이다.
+
+#### 클래스 초기화 메서드
+
+앞에서 링크 과정의 준비 단계 설명에 초기화가 잠시 언급된 적이 있다.  
+**정적 필드를 기본값으로 초기화 하는 것은 링크의 준비 단계에서 수행**되고, **특정값으로 초기화 하는 것은 초기화 단계에서 수행**된다고 했는데, 바로 이 클래스 초기화 메서드가 실행되면서 특정값으로의 초기화가 이루어진다.
+
+클래스 또는 인터페이스 초기화 메서드는 다음의 조건을 충족한다.
+
+- (바이트코드 상에서) `<clinit>`라는 특수한 이름으로 표현된다.
+- 반환 타입은 void
+- class 파일 버전 51 이상에서는 `ACC_STATIC` 플래그가 붙는다.
+
+인스턴스 초기화 메서드는 생성자에 해당한다는 명확하고 직관적인 설명이 스펙에 있는데, 클래스 초기화 메서드는 아쉽게도 뭐에 해당하는지 스펙에는 구체적인 설명이 없다.
+
+**클래스 초기화 메서드는 쉽게 말해 static 블록**이라고 볼 수 있다. 이건 말보다 코드가 훨씬 쉬우니 코드로 살펴보자.
+
+```java
+package homo.efficio.jvm.sample;
+
+public class StaticInitSample {
+
+    public final static int i;
+
+    static {
+        i = 123;
+    }
+}
+```
+
+컴파일한 후 `javap` 명령으로 바이트코드를 살펴보면 다음과 같다.
+
+```java
+public class homo.efficio.jvm.sample.StaticInitSample
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#17         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#18         // homo/efficio/jvm/sample/StaticInitSample.i:I
+   #3 = Class              #19            // homo/efficio/jvm/sample/StaticInitSample
+   #4 = Class              #20            // java/lang/Object
+   #5 = Utf8               i
+   #6 = Utf8               I
+   #7 = Utf8               <init>
+   #8 = Utf8               ()V
+   #9 = Utf8               Code
+  #10 = Utf8               LineNumberTable
+  #11 = Utf8               LocalVariableTable
+  #12 = Utf8               this
+  #13 = Utf8               Lhomo/efficio/jvm/sample/StaticInitSample;
+  #14 = Utf8               <clinit>
+  #15 = Utf8               SourceFile
+  #16 = Utf8               StaticInitSample.java
+  #17 = NameAndType        #7:#8          // "<init>":()V
+  #18 = NameAndType        #5:#6          // i:I
+  #19 = Utf8               homo/efficio/jvm/sample/StaticInitSample
+  #20 = Utf8               java/lang/Object
+{
+  public static final int i;
+    descriptor: I
+    flags: ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public homo.efficio.jvm.sample.StaticInitSample();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lhomo/efficio/jvm/sample/StaticInitSample;
+
+  static {};
+    descriptor: ()V
+    flags: ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: bipush        123
+         2: putstatic     #2                  // Field i:I
+         5: return
+      LineNumberTable:
+        line 8: 0
+        line 9: 5
+}
+SourceFile: "StaticInitSample.java"
+```
+
+상수 풀의 14번째 항목에 `#14 = Utf8               <clinit>`가 있고, 아래 코드 내용에 `static {};`이 있음을 확인할 수 있다. 
+
+
+
+
 
 // https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.9.2
 
