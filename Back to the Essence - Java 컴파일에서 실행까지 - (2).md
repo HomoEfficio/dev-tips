@@ -36,7 +36,6 @@ Java 소스 코드가 어떻게 컴파일되고 실행되는지 살짝 깊게 �
 
 `java` 명령어의 인자로 지정한 설정 옵션에 맞게 JVM이 실행되고, JVM이 클래스로더를 이용해서 `initial class`를 `create`하고, `initial class`를 `link`하고, `initialize`하고, main 메서드를 호출한다.([JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.2) 참고)
 
-
 ### 용어 정리
 
 몇 가지 용어를 일부러 스펙에 나온 원어 그대로 썼는데 스펙상의 의미는 다음과 같다.
@@ -83,9 +82,9 @@ JVM 단위에 속하는 **힙과 메서드 영역은 JVM이 시작될 때 생성
 라고 진행하면 너무 뻔한 나열식이라 머리에 잘 안 남는다. 그러니 다음과 같이 간단한 예제 코드 실행 과정과 함께 살펴보자.
 
 
-# 예제 코드 실행
-
 ## 예제 코드
+
+### 자바 소스 코드
 
 흔히 보는 헬로 월드 프로그램의 소스 코드다.
 
@@ -102,7 +101,7 @@ public class SimpleClass {
 
 ```
 
-## 컴파일된 바이트코드
+### 컴파일된 바이트코드
 
 컴파일된 바이트코드는 다음과 같다.
 
@@ -463,13 +462,9 @@ Constant pool:
 SourceFile: "StaticInitSample.java"
 ```
 
-상수 풀의 14번째 항목에 `#14 = Utf8               <clinit>`가 있고, 아래 코드 내용에 `static {};`이 있음을 확인할 수 있다. 
+상수 풀의 14번째 항목에 `#14 = Utf8               <clinit>`가 있고, 아래 코드 내용 `static {};` 아래 부분에 123으로 초기화 하는 부분이 있음을 확인할 수 있다.
 
-
-
-
-
-// https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.9.2
+다시 원래의 예제 코드인 SimpleClass로 돌아와보자. SimpleClass에는 정적 필드가 없으므로 초기화 과정에서 따로 수행되는 것은 없다. 초기화 과정까지 마쳤으면 이제 드디어 JVM에 의해 main 메서드가 호출될 차례다.
 
 
 ## main 메서드 호출
