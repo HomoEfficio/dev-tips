@@ -276,7 +276,9 @@ JVM 스펙에서는 **링크가 언제 수행되어야 하는지는 규정하지
 >
 >**해석은 초기화 이후에 실행될 수도 있다.**
 
-다시 예제로 돌아와 보자. SimpleClass의 상수 풀은 다음과 같았다.
+스펙을 보면 해석은 다시 [클래스/인터페이스 해석](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.4.3.1), [필드 해석](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.4.3.2), [메서드 해석](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.4.3.3), [인터페이스 메서드 해석](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.4.3.4), [메서드 타입/핸들 해석](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.4.3.5), [동적 계산 상수/콜사이트 해석](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.4.3.6), 이렇게 6가지로 나눠서 자세한 설명이 나와 있으니 관심있다면 찾아보기로 하고 다시 예제로 돌아와 보자. 
+
+SimpleClass의 상수 풀은 다음과 같았다.
 
 ```java
 Constant pool:
@@ -329,15 +331,50 @@ System 클래스는 아직 로딩되어 있지 않으므로 먼저 로딩하고,
 
 ![Imgur](https://i.imgur.com/VLz6GG8.png)
 
-대략 이런 식으로 로딩-링크 과정이 연쇄적으로 수행되면서 메서드 영역이 채워진다.
+대략 이런 식으로 로딩-링크 과정이 연쇄적으로 수행되면서 메서드 영역이 채워지고, 메서드 영역 내에서 클래스 단위로 생성되는 런타임 상수 풀 안에 있는 심볼릭 참조가 가리키는 값들이 결정된다.
 
+하지만 이것도 위에 썼 듯이 즉시 링크 방식일 때의 얘기고, **지연 링크를 사용했다면 각 클래스의 초기화가 수행된 이후에 해석 과정이 수행**될 수도 있다.
 
-
+그럼 이제 초기화를 알아볼 차례다.
 
 
 ## 초기화
 
+초기화(initialization)는 클래스나 인터페이스의 초기화 메서드(initialization method)를 실행할 때 수행되는 과정이다.
+
+그럼 초기화 메서드는 무엇일까?
+
+// https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.9.2
+
 
 ## main 메서드 호출
+
+```java
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: ldc           #3                  // String Hello, JVM
+         5: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+         8: return
+      LineNumberTable:
+        line 10: 0
+        line 11: 8
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       9     0  args   [Ljava/lang/String;
+```
+
+- getstatic
+- ldc
+- invokevirtual
+- return
+
+
+## 종료
+
+
 
 
