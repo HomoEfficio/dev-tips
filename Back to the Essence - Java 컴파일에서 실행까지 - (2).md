@@ -354,7 +354,7 @@ System 클래스는 아직 로딩되어 있지 않으므로 먼저 로딩하고,
 
 ## 초기화
 
-초기화(initialization)는 클래스나 인터페이스의 초기화 메서드(class or interface initialization method)를 실행할 때 수행되는 과정이다. 좀 쉽게 말하면 여기에서 말하는 초기화는 정적 초기화(static initialization)를 말한다고 볼 수 있다.
+초기화(initialization)는 `클래스나 인터페이스의 초기화 메서드(class or interface initialization method)`를 실행할 때 수행되는 과정이다. 좀 쉽게 말하면 **여기에서 말하는 초기화는 정적 초기화(static initialization)를 말한다**고 볼 수 있다.
 
 그럼 초기화 메서드는 무엇일까?
 
@@ -364,26 +364,26 @@ System 클래스는 아직 로딩되어 있지 않으므로 먼저 로딩하고,
 
 #### 인스턴스 초기화 메서드
 
-인스턴스 초기화 메서드는 자바 언어로 작성되는 생성자에 해당하며, 클래스는 0개 이상의 인스턴스 초기화 메서드를 가진다. 인스턴스 초기화 메서드는 다음의 조건을 모두 충족해야 한다.
+[인스턴스 초기화 메서드](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.9.1)는 자바 언어로 작성되는 생성자에 해당하며, 클래스는 0개 이상의 인스턴스 초기화 메서드를 가진다. `인스턴스 초기화 메서드`는 다음의 조건을 모두 충족해야 한다.
 
 - (인터페이스가 아니고) 클래스 안에 정의된다.
 - (바이트코드 상에서) `<init>`라는 특수한 이름으로 표현된다.
 - 반환 타입은 void
 
-인스턴스 초기화 메서드는 생성자로서 힙에 인스턴스를 생성하는 역할을 담당하며, 이름에 초기화라는 용어가 들어가지만 여기에서 말하는 초기화와는 좀 다른 개념이고, 실제 스펙에서도 초기화는 class or interface initialization method(클래스 또는 인터페이스 초기화 메서드)를 호출한다고 명시되어 있다. ([JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.5)에 [2.9.2](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.9.2) 라고 따로 명기)
+`인스턴스 초기화 메서드`는 생성자로서 힙에 인스턴스를 생성하는 역할을 담당하며, 이름에 초기화라는 용어가 들어가지만 여기에서 말하는 초기화와는 좀 다른 개념이고, 실제 스펙에서도 초기화는 (인스턴스 초기화 메서드를 배제하고) `class or interface initialization method(클래스 또는 인터페이스 초기화 메서드)`를 호출한다고 명시되어 있다. ([JVM 스펙](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.5)에 [2.9.2](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.9.2) 라고 따로 명기)
 
 #### 클래스 초기화 메서드(클래스 또는 인터페이스 초기화 메서드)
 
 앞에서 링크 과정의 준비 단계 설명에 초기화가 잠시 언급된 적이 있다.  
 **정적 필드를 기본값으로 초기화 하는 것은 링크의 준비 단계에서 수행**되고, **특정값으로 초기화 하는 것은 초기화 단계에서 수행**된다고 했는데, 바로 이 클래스 또는 인터페이스 초기화 메서드가 실행되면서 특정값으로의 초기화가 이루어진다.
 
-클래스 또는 인터페이스 초기화 메서드는 클래스나 인터페이스에(클래스나 인터페이스의 바이트코드에) 1개만 존재할 수 있으며, 다음의 조건을 모두 충족해야 한다.
+[클래스 또는 인터페이스 초기화 메서드](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.9.2)는 클래스나 인터페이스에(클래스나 인터페이스의 바이트코드에) 1개만 존재할 수 있으며, 다음의 조건을 모두 충족해야 한다.
 
 - (바이트코드 상에서) `<clinit>`라는 특수한 이름으로 표현된다.
 - 반환 타입은 void
 - class 파일 버전 51 이상에서는 `ACC_STATIC` 플래그가 붙는다.
 
-인스턴스 초기화 메서드는 생성자에 해당한다는 명확하고 직관적인 설명이 스펙에 있는데, 클래스 또는 인터페이스 초기화 메서드는 아쉽게도 뭐에 해당하는지 스펙에는 구체적인 설명이 없다.
+인스턴스 초기화 메서드는 생성자에 해당한다는 명확하고 직관적인 설명이 스펙에 있는데, `클래스 또는 인터페이스 초기화 메서드`는 아쉽게도 뭐에 해당하는지 스펙에는 구체적인 설명이 없다.
 
 **클래스 초기화 메서드는 쉽게 말해 static 블록(들)의 내용을 하나로 합친 것**이라고 볼 수 있다. 이건 말보다 코드가 훨씬 쉬우니 코드로 살펴보자.
 
@@ -395,7 +395,13 @@ public class StaticInitSample {
     public final static int i;
 
     static {
-        i = 123;
+        i = 11;
+    }
+
+    private final static int j;
+
+    static {
+        j = 22;
     }
 }
 ```
@@ -408,26 +414,29 @@ public class homo.efficio.jvm.sample.StaticInitSample
   major version: 52
   flags: ACC_PUBLIC, ACC_SUPER
 Constant pool:
-   #1 = Methodref          #4.#17         // java/lang/Object."<init>":()V
-   #2 = Fieldref           #3.#18         // homo/efficio/jvm/sample/StaticInitSample.i:I
-   #3 = Class              #19            // homo/efficio/jvm/sample/StaticInitSample
-   #4 = Class              #20            // java/lang/Object
-   #5 = Utf8               i
-   #6 = Utf8               I
-   #7 = Utf8               <init>
-   #8 = Utf8               ()V
-   #9 = Utf8               Code
-  #10 = Utf8               LineNumberTable
-  #11 = Utf8               LocalVariableTable
-  #12 = Utf8               this
-  #13 = Utf8               Lhomo/efficio/jvm/sample/StaticInitSample;
-  #14 = Utf8               <clinit>
-  #15 = Utf8               SourceFile
-  #16 = Utf8               StaticInitSample.java
-  #17 = NameAndType        #7:#8          // "<init>":()V
-  #18 = NameAndType        #5:#6          // i:I
-  #19 = Utf8               homo/efficio/jvm/sample/StaticInitSample
-  #20 = Utf8               java/lang/Object
+   #1 = Methodref          #5.#19         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #4.#20         // homo/efficio/jvm/sample/StaticInitSample.i:I
+   #3 = Fieldref           #4.#21         // homo/efficio/jvm/sample/StaticInitSample.j:I
+   #4 = Class              #22            // homo/efficio/jvm/sample/StaticInitSample
+   #5 = Class              #23            // java/lang/Object
+   #6 = Utf8               i
+   #7 = Utf8               I
+   #8 = Utf8               j
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               LineNumberTable
+  #13 = Utf8               LocalVariableTable
+  #14 = Utf8               this
+  #15 = Utf8               Lhomo/efficio/jvm/sample/StaticInitSample;
+  #16 = Utf8               <clinit>
+  #17 = Utf8               SourceFile
+  #18 = Utf8               StaticInitSample.java
+  #19 = NameAndType        #9:#10         // "<init>":()V
+  #20 = NameAndType        #6:#7          // i:I
+  #21 = NameAndType        #8:#7          // j:I
+  #22 = Utf8               homo/efficio/jvm/sample/StaticInitSample
+  #23 = Utf8               java/lang/Object
 {
   public static final int i;
     descriptor: I
@@ -452,17 +461,28 @@ Constant pool:
     flags: ACC_STATIC
     Code:
       stack=1, locals=0, args_size=0
-         0: bipush        123
+         0: bipush        11
          2: putstatic     #2                  // Field i:I
-         5: return
+         5: bipush        22
+         7: putstatic     #3                  // Field j:I
+        10: return
       LineNumberTable:
         line 8: 0
-        line 9: 5
+        line 14: 5
+        line 15: 10
 }
 SourceFile: "StaticInitSample.java"
 ```
 
-상수 풀의 14번째 항목에 `#14 = Utf8               <clinit>`가 있고, 아래 코드 내용 `static {};` 아래 부분에 123으로 초기화 하는 부분이 있음을 확인할 수 있다. **여기에서 말하는 초기화란 결국 정적 초기화**임을 알 수 있다
+상수 풀의 14번째 항목에 `#16 = Utf8               <clinit>`가 1개 있고, 아래 코드 내용 `static {};` 아래 부분에 i를 1로, j를 2로 초기화 하는 부분이 소스코드에는 별개의 static 블록에 있었는데 바이트코드에서는 하나로 합쳐저 있음을 확인할 수 있다.
+
+### 초기화 정리
+
+링크 단계 다음에 수행되는 초기화 단계를 정리해보면 다음과 같다.
+
+>**초기화는 바이트코드에서 `<clinit>`으로 표시되는 `클래스 또는 인터페이스 초기화 메서드`(자바 소스 코드의 static 블록을 하나로 합친 것)를 실행하는 것**을 의미
+>
+>**링크 단계 이후에 수행되는 초기화란 결국 정적 초기화를 의미**한다.
 
 다시 원래의 예제 코드인 SimpleClass로 돌아와보자. SimpleClass에는 정적 필드가 없으므로 초기화 과정에서 따로 수행되는 것은 없다. 초기화 과정까지 마쳤으면 이제 드디어 JVM에 의해 main 메서드가 호출될 차례다.
 
