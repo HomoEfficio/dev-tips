@@ -40,6 +40,8 @@ Java 소스 코드가 어떻게 컴파일되고 실행되는지 살짝 깊게 �
 
 (그림 참고: https://www.sitesbay.com/cprogramming/c-compile-link-program)
 
+참고로 중요하진 않지만 자바는 전처리 과정에서 주석이 제거되지는 않는다. 바이트코드 내용 중에 자바 소스 코드의 행 번호와 바이트코드 명령어의 위치를 매핑해주는 부분이 있는데 이 때 표시되는 자바 소스 코드 행 번호는 주석이 있는 상태 기준의 행 번호가 표시된다.
+
 자바는 컴파일 결과로 나온 바이트코드가 JVM에 의해 실행되면서 네이티브 기계어 코드로 변환되므로, 프로그램 실행 전에 네이티브 기계어 코드를 만들어내는 어셈블리 단계가 없다고 볼 수 있다. 마찬가지로 링크 단계도 프로그램 실행 전에 수행되지 않고 JVM에 의해 프로그램이 실행될 때 동적으로 수행된다.
 
 따라서 자바의 컴파일 절차는 아주 단순하다. 그림조차도 그릴 필요 없고 다음과 같이 표현할 수 있다.
@@ -406,6 +408,8 @@ invokespecial | 생성자, 수퍼클래스의 메서드, 현재 클래스의 메
 invokestatic | 정적 메서드 호출
 invokevirtual | 자바 메서드 호출의 기본 방식이며, 객체 참조(`obj.`)를 붙여서 호출되는 일반적인 메서드 호출
 invokedynamic | JVM에서 실행되는 동적 타입 언어를 위해 Java 7에 추가된 명령어. 람다식도 invokedynamic을 이용해서 구현되었다. 자세한 내용은 [오라클 문서](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/multiple-language-support.html)나 [네이버 문서](https://d2.naver.com/helloworld/4911107) 또는 [DZone 문서](https://dzone.com/articles/dismantling-invokedynamic)를 참고하자.
+
+한 가지 눈여겨 볼 것은 실제 자바 소스 코드에는 없던 디폴트 생성자가 추가되어 있다는 점이다. 컴파일러가 자동으로 추가해준다는 사실을 실제로 확인한 셈이다. 디폴트 생성자는 [자바 언어 스펙](https://docs.oracle.com/javase/specs/jls/se11/html/jls-8.html#jls-8.8.9)을 참고하자.
 
 ### GreetingMain
 
