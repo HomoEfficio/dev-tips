@@ -531,6 +531,136 @@ SourceFile: "StaticInitSample.java"
 - return
 
 
+```java
+package homo.efficio.jvm.sample;
+
+public class Hello {
+
+    public String helloMessage() {
+        return "Hello, JVM";
+    }
+
+    public static void main(String[] args) {
+
+        final Hello hello = new Hello();
+        System.out.println(hello.helloMessage());
+        while (true) {}
+    }
+}
+
+
+// $  /c/Program\ Files/Java/jdk-11.0.2/bin/javap -v homo.efficio.jvm.sample.Hello
+// Classfile /C:/gitrepo/scratchpad/java-jvm-scratchpad/out/production/java-jvm-scratchpad/homo/efficio/jvm/sample/Hello.class
+//   Last modified 2019. 1. 21.; size 741 bytes
+//   MD5 checksum e73f19cb7ec44469eb30b9d698b91bb0
+//   Compiled from "Hello.java"
+// public class homo.efficio.jvm.sample.Hello
+//   minor version: 0
+//   major version: 55
+//   flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+//   this_class: #3                          // homo/efficio/jvm/sample/Hello
+//   super_class: #8                         // java/lang/Object
+//   interfaces: 0, fields: 0, methods: 3, attributes: 1
+// Constant pool:
+//    #1 = Methodref          #8.#26         // java/lang/Object."<init>":()V
+//    #2 = String             #27            // Hello, JVM
+//    #3 = Class              #28            // homo/efficio/jvm/sample/Hello
+//    #4 = Methodref          #3.#26         // homo/efficio/jvm/sample/Hello."<init>":()V
+//    #5 = Fieldref           #29.#30        // java/lang/System.out:Ljava/io/PrintStream;
+//    #6 = Methodref          #3.#31         // homo/efficio/jvm/sample/Hello.helloMessage:()Ljava/lang/String;
+//    #7 = Methodref          #32.#33        // java/io/PrintStream.println:(Ljava/lang/String;)V
+//    #8 = Class              #34            // java/lang/Object
+//    #9 = Utf8               <init>
+//   #10 = Utf8               ()V
+//   #11 = Utf8               Code
+//   #12 = Utf8               LineNumberTable
+//   #13 = Utf8               LocalVariableTable
+//   #14 = Utf8               this
+//   #15 = Utf8               Lhomo/efficio/jvm/sample/Hello;
+//   #16 = Utf8               helloMessage
+//   #17 = Utf8               ()Ljava/lang/String;
+//   #18 = Utf8               main
+//   #19 = Utf8               ([Ljava/lang/String;)V
+//   #20 = Utf8               args
+//   #21 = Utf8               [Ljava/lang/String;
+//   #22 = Utf8               hello
+//   #23 = Utf8               StackMapTable
+//   #24 = Utf8               SourceFile
+//   #25 = Utf8               Hello.java
+//   #26 = NameAndType        #9:#10         // "<init>":()V
+//   #27 = Utf8               Hello, JVM
+//   #28 = Utf8               homo/efficio/jvm/sample/Hello
+//   #29 = Class              #35            // java/lang/System
+//   #30 = NameAndType        #36:#37        // out:Ljava/io/PrintStream;
+//   #31 = NameAndType        #16:#17        // helloMessage:()Ljava/lang/String;
+//   #32 = Class              #38            // java/io/PrintStream
+//   #33 = NameAndType        #39:#40        // println:(Ljava/lang/String;)V
+//   #34 = Utf8               java/lang/Object
+//   #35 = Utf8               java/lang/System
+//   #36 = Utf8               out
+//   #37 = Utf8               Ljava/io/PrintStream;
+//   #38 = Utf8               java/io/PrintStream
+//   #39 = Utf8               println
+//   #40 = Utf8               (Ljava/lang/String;)V
+// {
+//   public homo.efficio.jvm.sample.Hello();
+//     descriptor: ()V
+//     flags: (0x0001) ACC_PUBLIC
+//     Code:
+//       stack=1, locals=1, args_size=1
+//          0: aload_0
+//          1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+//          4: return
+//       LineNumberTable:
+//         line 3: 0
+//       LocalVariableTable:
+//         Start  Length  Slot  Name   Signature
+//             0       5     0  this   Lhomo/efficio/jvm/sample/Hello;
+
+//   public java.lang.String helloMessage();
+//     descriptor: ()Ljava/lang/String;
+//     flags: (0x0001) ACC_PUBLIC
+//     Code:
+//       stack=1, locals=1, args_size=1
+//          0: ldc           #2                  // String Hello, JVM
+//          2: areturn
+//       LineNumberTable:
+//         line 6: 0
+//       LocalVariableTable:
+//         Start  Length  Slot  Name   Signature
+//             0       3     0  this   Lhomo/efficio/jvm/sample/Hello;
+
+//   public static void main(java.lang.String[]);
+//     descriptor: ([Ljava/lang/String;)V
+//     flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+//     Code:
+//       stack=2, locals=2, args_size=1
+//          0: new           #3                  // class homo/efficio/jvm/sample/Hello
+//          3: dup
+//          4: invokespecial #4                  // Method "<init>":()V
+//          7: astore_1
+//          8: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+//         11: aload_1
+//         12: invokevirtual #6                  // Method helloMessage:()Ljava/lang/String;
+//         15: invokevirtual #7                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+//         18: goto          18
+//       LineNumberTable:
+//         line 11: 0
+//         line 12: 8
+//         line 14: 18
+//       LocalVariableTable:
+//         Start  Length  Slot  Name   Signature
+//             0      21     0  args   [Ljava/lang/String;
+//             8      13     1 hello   Lhomo/efficio/jvm/sample/Hello;
+//       StackMapTable: number_of_entries = 1
+//         frame_type = 252 /* append */
+//           offset_delta = 18
+//           locals = [ class homo/efficio/jvm/sample/Hello ]
+// }
+// SourceFile: "Hello.java"
+
+```
+
 ## 종료
 
 
