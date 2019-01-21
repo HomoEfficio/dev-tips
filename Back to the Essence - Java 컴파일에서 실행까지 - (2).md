@@ -487,6 +487,24 @@ SourceFile: "StaticInitSample.java"
 다시 원래의 예제 코드인 SimpleClass로 돌아와보자. SimpleClass에는 정적 필드가 없으므로 초기화 과정에서 따로 수행되는 것은 없다. 초기화 과정까지 마쳤으면 이제 드디어 JVM에 의해 main 메서드가 호출될 차례다.
 
 
+# main 메서드 호출
+
+## main 스레드 생성
+
+## PC Register
+
+## JVM Stack
+
+### Frame
+
+#### Local Variables
+
+#### Operand Stack
+
+#### Reference to Run-Time Constant Pool
+
+## Native Method Stack
+
 ## main 메서드 호출
 
 ```java
