@@ -404,7 +404,7 @@ BootstrapMethods:
 명령어 이름 | 하는 일
 --- | ---
 invokeinterface | 인터페이스에 정의된 메서드 호출
-invokespecial | 생성자, 수퍼클래스의 메서드, 현재 클래스의 메서드 등 객체 참조(`obj.`) 없이 메서드 이름만으로 호출되는 메서드 호출
+invokespecial | 생성자, 수퍼클래스의 메서드, 현재 클래스의 메서드 등 객체 참조(`obj.`) 없이 메서드 이름만으로 호출될 수 있는 메서드 호출
 invokestatic | 정적 메서드 호출
 invokevirtual | 자바 메서드 호출의 기본 방식이며, 객체 참조(`obj.`)를 붙여서 호출되는 일반적인 메서드 호출
 invokedynamic | JVM에서 실행되는 동적 타입 언어를 위해 Java 7에 추가된 명령어. 람다식도 invokedynamic을 이용해서 구현되었다. 자세한 내용은 [오라클 문서](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/multiple-language-support.html)나 [네이버 문서](https://d2.naver.com/helloworld/4911107) 또는 [DZone 문서](https://dzone.com/articles/dismantling-invokedynamic)를 참고하자.
