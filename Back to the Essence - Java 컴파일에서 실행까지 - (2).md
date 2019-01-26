@@ -389,7 +389,7 @@ Hello 인스턴스를 만들 때 필요한 Hello 클래스 정보는 이미 메�
 
 ![Imgur](https://i.imgur.com/y0qP8vW.png)
 
-`#3`은 Hello 생성자를 가리키는 Methodref 항목인데 앞의 `#1`에서 이미 다뤘으므로 설명은 생략하고 그림만 보자.
+`#3`은 Hello 생성자를 가리키는 Methodref 항목인데, Methodref의 해석 과정은 앞의 `#1`에서 이미 다뤘으므로 설명은 생략하고 그림만 보자.
 
 ![Imgur](https://i.imgur.com/XBMPitk.png)
 
@@ -401,7 +401,7 @@ System 클래스는 아직 로딩되어 있지 않으므로 먼저 로딩하고,
 
 대략 이런 식으로 로딩-링크 과정이 연쇄적으로 수행되면서 메서드 영역이 채워지고, 메서드 영역 내에서 클래스 단위로 생성되는 런타임 상수 풀 안에 있는 심볼릭 참조가 가리키는 값들이 결정된다.
 
-하지만 이것도 위에 썼 듯이 즉시 링크 방식일 때의 얘기고, **지연 링크를 사용한다면 각 클래스의 초기화가 수행된 이후에 해석 과정이 수행**될 수도 있다.
+하지만 이것도 위에 썼듯이 즉시 링크 방식일 때의 얘기고, **지연 링크를 사용한다면 각 클래스의 초기화가 수행된 이후에 해석 과정이 수행**될 수도 있다.
 
 그럼 이제 초기화를 알아볼 차례다.
 
@@ -549,14 +549,14 @@ SourceFile: "StaticInitSample.java"
 
 **스레드가 생성되면 PC 레지스터, JVM 스택, 네이티브 메서드 스택이 함께 생성**되고, 런타임 데이터 영역은 대략 다음과 같아진다.
 
-![Imgur](https://i.imgur.com/VmltSYO.png)
+![Imgur](https://i.imgur.com/izWNxMs.png)
 
 ## PC Register
 
 PC 레지스터에는 현재 실행 중인 메서드가 
 
 - 네이티브 메서드가 아니면 현재 실행 중인 JVM 명령어의 주소가 저장되고, 
-- 네이티브 메서드이면 PC 레지스터에 저장되는 값은 정의되지 않는다.(undefined)
+- 네이티브 메서드이면 PC 레지스터에 저장되는 값은 정의되지 않는다(undefined).
 
 ## JVM Stack
 
@@ -573,7 +573,7 @@ JVM 스택에 쌓이는 정보의 단위가 프레임(Frame)이다. 프레임은
 
 프레임은 지역 변수의 배열을 하나 가지고 있다. 지역 변수 배열의 길이는 컴파일 타임에 결정되며 바이트코드의 `Code` 속성에 `locals`라는 이름으로 표시된다.
 
-boolean, byte, char, short, int, float, reference, returnAddress는 배열의 1개의 슬롯에 저장되고, long과 double은 2개의 슬롯에 걸쳐 저장된다.
+`boolean`, `byte`, `char`, `short`, `int`, `float`, `reference`, `returnAddress`는 배열의 1개의 슬롯에 저장되고, long과 double은 2개의 슬롯에 걸쳐 저장된다.
 
 메서드가 호출될 때 그 메서드의 파라미터 값은 지역 변수 배열을 통해 넘겨진다.
 
