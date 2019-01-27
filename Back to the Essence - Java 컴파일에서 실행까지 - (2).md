@@ -738,7 +738,7 @@ Object의 생성자의 바이트코드는 다음과 같다.
 
 Hello의 디폴트 생성자의 바이트코드에서 남은 것은 `return`뿐이다. 따라서 Hello의 디폴트 생성자 실행이 완료되면 Hello() 프레임도 폐기되고 다음과 같이 main() 프레임의 오퍼랜드 스택에 새로 생성 및 초기화된 Hello 인스턴스에 대한 참조만 남게 된다.
 
-![Imgur](https://i.imgur.com/CkkpKTq.png)
+[Imgur](https://i.imgur.com/LjwG5Hb.png)
 
 ### `astore_1`
 
