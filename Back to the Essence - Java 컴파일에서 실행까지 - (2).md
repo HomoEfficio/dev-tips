@@ -651,7 +651,7 @@ main 메서드가 호출되면 다음과 같이 main 메서드 프레임이 생�
 
 [`new`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.new)는 힙에 클래스의 새 인스턴스에 필요한 메모리를 할당하고, 할당된 위치를 가리키는 참조를 오퍼랜드 스택에 쌓는다. 이 때 인스턴스 변수들이 기본값으로 초기화 된다.
 
-여기에서는 Hello 클래스의 새 인스턴스에 필요한 메모리를 할당하고 그 위치에 대한 참조를 오퍼랜드 스택에 쌓는다. (파란색 동그라미)
+Hello 클래스의 새 인스턴스에 필요한 메모리를 할당하고 그 위치에 대한 참조를 오퍼랜드 스택에 쌓는다. (파란색 동그라미)
 
 ![Imgur](https://i.imgur.com/z1OaNN6.png)
 
@@ -663,9 +663,9 @@ main 메서드가 호출되면 다음과 같이 main 메서드 프레임이 생�
 
 ### `invokespecial #3  // Method "<init>":()V`
 
-`invokespecial`은 스택 맨 위에 있는 값을 꺼내서 생성자, 수퍼클래스의 메서드, 현재 클래스의 메서드 등 객체 참조(obj.) 없이 메서드 이름만으로 호출될 수 있는 메서드의 첫 번째 파라미터로 넘기면서 호출한다. 호출에 의해 새 프레임이 생성되고, 호출하는 프레임의 스택 맨 위에 있는 값이 새 프레임의 로컬 변수 배열의 첫 번째 슬롯에 저장된다.
+[`invokespecial`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.invokespecial)은 스택 맨 위에 있는 값을 꺼내서 생성자, 수퍼클래스의 메서드, 현재 클래스의 메서드 등 객체 참조(obj.) 없이 메서드 이름만으로 호출될 수 있는 메서드의 첫 번째 파라미터로 넘기면서 호출한다. 호출에 의해 새 프레임이 생성되고, 호출하는 프레임의 스택 맨 위에 있는 값이 새 프레임의 로컬 변수 배열의 0번 슬롯에 저장된다.
 
-여기에서는 스택 맨 위에 있는 Hello 인스턴스에 대한 참조(초록색 동그라미)를 꺼내서 Hello 클래스의 디폴트 생성자의 첫 번째 인자로 넘기면서 디폴트 생성자를 호출한다. Hello 클래스의 디폴트 생성자에 대한 프레임이 생성되고 로컬 변수 배열의 첫 번째 슬롯에 새 Hello 인스턴스에 대한 참조가 저장된다.
+스택 맨 위에 있는 Hello 인스턴스에 대한 참조(초록색 동그라미)를 꺼내서 Hello 클래스의 디폴트 생성자의 첫 번째 인자로 넘기면서 디폴트 생성자를 호출한다. Hello 클래스의 디폴트 생성자에 대한 프레임이 생성되고 로컬 변수 배열의 0번 슬롯에 새 Hello 인스턴스에 대한 참조가 저장된다.
 
 ![Imgur](https://i.imgur.com/etXWCkZ.png)
 
@@ -695,17 +695,21 @@ Hello 생성자의 바이트코드는 다음과 같다.
 
 #### `aload_0`
 
-`aload_n`은 로컬 변수 배열의 `n`번째 슬롯에 저장된 값, 즉 `this`를 오퍼랜드 스택에 쌓는다. (초록색 동그라미)
+[`aload_n`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.aload_n)은 로컬 변수 배열의 `n`번 슬롯에 저장된 값을 오퍼랜드 스택 맨 위에 쌓는다.
+
+로컬 변수 배열의 0번 슬롯에 저장되어 있던 새 Hello 인스턴스에 대한 참조(`this`, 초록색 동그라미)가 오퍼랜드 스택에 쌓인다.
 
 ![Imgur](https://i.imgur.com/GWSO9bc.png)
 
 #### `invokespecial #1  // Method java/lang/Object."<init>":()V`
 
-`invokespecial`은 앞에서 알아봤으므로 명령어에 대한 설명은 생략한다. 
+`invokespecial` 명령어에 대한 설명은 앞에서 알아봤으므로 생략한다. 
 
 Object의 생성자를 호출하면 힙에 Object의 새 인스턴스를 위한 메모리가 할당되고, Object의 생성자를 위한 새 프레임이 생성된다.
 
-Hello의 생성자 프레임의 오퍼랜드 스택 맨위에 있던 `this`(초록색 동그라미)가 꺼내지고 새로 생성된 프레임의 로컬 변수 배열의 첫 번째 슬롯에 저장(초록색 동그라미)된다.
+Hello의 생성자 프레임의 오퍼랜드 스택 맨위에 있던 `this`(초록색 동그라미)가 꺼내지고 새로 생성된 프레임의 로컬 변수 배열의 0번 슬롯에 저장(초록색 동그라미)된다.
+
+![Imgur](https://i.imgur.com/rrS97ON.png)
 
 Object의 생성자의 바이트코드는 다음과 같다.
 
@@ -728,24 +732,41 @@ Object의 생성자의 바이트코드는 다음과 같다.
         jdk.internal.HotSpotIntrinsicCandidate
 ```
 
-설명하는 입장에서 매우 다행스럽게도 그냥 `return` 하는 것이 전부다. [`return`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.return)은 void를 반환하며, 오퍼랜드 스택에 있던 모든 값이 전부 폐기되고 프레임도 폐기되고, 호출한 메서드의 프레임으로 제어가 넘어간다.
+설명하는 입장에서 매우 다행스럽게도 그냥 `return` 하는 것이 전부다. [`return`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.return)은 void를 반환하며, 오퍼랜드 스택에 있던 모든 값이 전부 폐기되고 프레임도 폐기되고, 호출한 메서드의 프레임인 Hello() 프레임으로 제어가 넘어간다.
 
+![Imgur](https://i.imgur.com/1QrI4Si.png)
 
-#### `return`
+Hello의 디폴트 생성자의 바이트코드에서 남은 것은 `return`뿐이다. 따라서 Hello의 디폴트 생성자 실행이 완료되면 Hello() 프레임도 폐기되고 다음과 같이 main() 프레임의 오퍼랜드 스택에 새로 생성 및 초기화된 Hello 인스턴스에 대한 참조만 남게 된다.
 
-생성자가 종료될 
+![Imgur](https://i.imgur.com/CkkpKTq.png)
 
 ### `astore_1`
 
-`astore_n`은 오퍼랜드 스택의 맨 위에 있는 값을 꺼내서 로컬 변수 배열의 `n` 위치에 저장한다. 즉, 오퍼랜드 스택 맨 위에 있던 새 Hello 인스턴스에 대한 참조를 꺼내서 로컬 변수 배열의 1번째 슬롯에 넣는다.
+[`astore_n`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.astore_n)은 오퍼랜드 스택의 맨 위에 있는 값을 꺼내서 로컬 변수 배열의 `n` 위치에 저장한다. 
 
-![Imgur](https://i.imgur.com/AfzxpRl.png)
+현재 오퍼랜드 스택 맨 위에 있는 값은 새 Hello 인스턴스에 대한 참조(`this`)를 꺼내서 로컬 변수 배열의 1번 슬롯에 넣는다.
+
+결국 로컬 변수에 뭔가 저장하는 것인데 자바 소스 코드의 `final Hello hello = new Hello();`에 해당한다.
+
+![Imgur](https://i.imgur.com/08Zinth.png)
 
 ### `getstatic #4  // Field java/lang/System.out:Ljava/io/PrintStream;`
 
-`getstatic`은 클래스의 정적(static) 필드 값을 가져와서 오퍼랜드 스택에 쌓는다.
+[`getstatic`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.getstatic)은 클래스의 정적(static) 필드 값을 가져와서 오퍼랜드 스택에 쌓는다.
 
-여기에서는 `PrintStream` 타입의 `System.out` 변수값을 오퍼랜드 스택에 쌓는다.
+여기에서는 System 클래스의 정적 변수인 out의 값을 main() 프레임의 오퍼랜드 스택에 쌓는다. (초록색 동그라미)
+
+![Imgur](https://i.imgur.com/YypFbow.png)
+
+### `aload_1`
+
+`aload_1`은 로컬 변수 배열 1번 슬롯에 있던 값을 오퍼랜드 스택에 쌓는다. (파란색 동그라미)
+
+
+
+
+
+
 
 - new
 - dup
