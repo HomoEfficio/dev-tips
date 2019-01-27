@@ -736,7 +736,7 @@ Object의 생성자의 바이트코드는 다음과 같다.
 
 ![Imgur](https://i.imgur.com/1QrI4Si.png)
 
-Hello의 디폴트 생성자의 바이트코드에서 남은 것은 `return`뿐이다. 따라서 Hello의 디폴트 생성자 실행이 완료되면 Hello() 프레임도 폐기되고 다음과 같이 main() 프레임의 오퍼랜드 스택에 새로 생성 및 초기화된 Hello 인스턴스에 대한 참조만 남게 된다.
+Hello의 디폴트 생성자의 바이트코드에서 남은 것은 `return`뿐이다. 따라서 Hello의 디폴트 생성자 실행이 완료되면 Hello() 프레임도 폐기되고 다음과 같이 main() 프레임의 오퍼랜드 스택에는 아래와 같이 새로 생성 및 초기화된 Hello 인스턴스에 대한 참조만 남게 된다.
 
 ![Imgur](https://i.imgur.com/LjwG5Hb.png)
 
@@ -756,7 +756,7 @@ Hello의 디폴트 생성자의 바이트코드에서 남은 것은 `return`뿐�
 
 여기에서는 System 클래스의 정적 변수인 out의 값을 main() 프레임의 오퍼랜드 스택에 쌓는다. (초록색 동그라미)
 
-!https://i.imgur.com/04EHixc.png
+![Imgur](https://i.imgur.com/04EHixc.png)
 
 ### `11: aload_1`
 
@@ -766,7 +766,7 @@ Hello의 디폴트 생성자의 바이트코드에서 남은 것은 `return`뿐�
 
 ### `12: invokevirtual #5  // Method helloMessage:()Ljava/lang/String;`
 
-[`invokevirtual`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.invokevirtual)은 자바 메서드 호출의 기본 방식이며, 객체 참조(obj.)를 붙여서 호출되는 일반적인 메서드를 호출한다. 해당 메서드가 속한 인스턴스를 가리키는 참조(`this`)가 첫 번째 파라미터로 넘겨진다. 호출에 의해 새 프레임이 생성되고 로컬 변수 배열의 0번 슬롯에 첫 번째 인자로 넘어온 `this`가 저장되고 그 이후의 인자도 로컬 변수 배열에 순서대로 저장된다.
+[`invokevirtual`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.invokevirtual)은 자바 메서드 호출의 기본 방식이며, 객체 참조(obj.)를 붙여서 호출되는 일반적인 메서드를 호출한다. 해당 메서드가 속한 인스턴스를 가리키는 참조가 첫 번째 파라미터로 넘겨진다. 호출에 의해 새 프레임이 생성되고 로컬 변수 배열의 0번 슬롯에 첫 번째 인자로 넘어온 값인 해당 메서드가 속한 인스턴스를 가리키는 참조가 저장되고 그 이후의 인자도 로컬 변수 배열에 순서대로 저장된다.
 
 `helloMessage()`의 바이트코드는 다음과 같다.
 
@@ -785,9 +785,9 @@ Hello의 디폴트 생성자의 바이트코드에서 남은 것은 `return`뿐�
              0       3     0  this   Lhomo/efficio/jvm/sample/Hello;
 ```
 
-`helloMessage()`가 호출되면 새 프레임이 생성된다.
+`helloMessage()`가 호출되면 새 프레임이 생성되고, main() 프레임의 오퍼랜드 스택 맨 위에 있던 값(파란 동그라미)이 꺼내져서 helloMessage() 프레임의 로컬 변수 배열 0번 슬롯에 저장된다.
 
-![Imgur](https://i.imgur.com/6CD06c4.png)
+![Imgur](https://i.imgur.com/spgONEN.png)
 
 #### `0: ldc #7  // String Hello, JVM`
 
@@ -799,7 +799,7 @@ Hello 클래스의 런타임 상수 풀의 7번 항목인 문자열 리터럴 `"
 
 따라서 스펙에서 확인한 내용은 아니지만 Java 11에서도 문자열 풀은 힙에 존재한다고 보면 다음과 같이 표현할 수 있다.
 
-![Imgur](https://i.imgur.com/MN8M6X8.png)
+![Imgur](https://i.imgur.com/nhXDA6L.png)
 
 #### `2: areturn`
 
@@ -813,9 +813,9 @@ helloMessage() 프레임의 맨 위에 있던 값은 `"Hello, JVM"`에 대한 �
 
 PrintStream 클래스의 println(String)의 바이트코드는.. 매우 길다.. 어차피 `invokevirtual`은 앞에서 살펴봤고 그 외에 오퍼랜드 스택이나 로컬 지역 변수의 변화 과정을 앞에서 계속 봐왔으므로, println(String)은 결과만 보자.
 
-![Imgur](https://i.imgur.com/UqTAYb0.png)
+오퍼랜드 스택에 있던 System.out에 대한 참조와 `"Hello, JVM"`에 대한 참조는`invokevirtual`로 System.out.println(String)을 호출하면서 모두 꺼내지고 오퍼랜드 스택은 비워진다.
 
-오퍼랜드 스택에 있던 System.out에 대한 참조와 `"Hello, JVM"`에 대한 참조는 System.out.println(String)을 `invokevirtual`로 호출하면서 모두 꺼내지고 오퍼랜드 스택은 비워진다.
+![Imgur](https://i.imgur.com/UqTAYb0.png)
 
 ### `18: goto 18`
 
