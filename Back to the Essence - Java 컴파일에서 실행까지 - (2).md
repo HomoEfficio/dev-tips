@@ -824,20 +824,28 @@ PrintStream 클래스의 println(String)의 바이트코드는.. 매우 길다..
 18행에서 18행으로 계속 이동하면 결국 무한루프다. 자바 소스 코드의 `while(true) {}`가 여기에 해당된다.
 
 
-## 힙 상태 비교
+# 마무리
 
-### Hello 인스턴스를 생성했을 때 (Hello)
-
-
-### Hello 인스턴스를 생성하지 않을 때 (HelloNoInstance)
+여기까지 바이트코드 흐름에 따라 JVM의 런타임 데이터 영역 내의 자료구조들이 어떻게 변화하는지 살펴봤다. 사실 몰라도 개발하는데 거의 지장이 없다시피한 내용이라서 그림 한땀한땀 그리고 고치고를 반복할 때마다 내가 이 짓을 왜하고 있나.. 그만둬야지 하는 생각이 한 두번이 아니었.. ㅠㅜ 그래도 인터넷 어디를 뒤져봐도 자바 프로그램의 실행 과정에 대해 이보다 친절한 설명은 없으리라..
 
 
-### 비교 그림
+## 마지막 쉬운 퀴즈
 
-visualvm 캡처 그림
+다음과 같은 코드를 실행하면 HelloNoInstance 인스턴스가 힙에 만들어질까 안 만들어질까?
 
-## 종료
+```java
+package homo.efficio.jvm.sample;
 
+public class HelloNoInstance {
 
+    public static void main(String[] args) {
+        System.out.println("Hello, JVM");
+        while (true) {}
+    }
+}
+```
 
+클래스 이름에 답이 있지만 HelloNoInstance 인스턴스는 힙에 만들어지지 않는다. 아래는 VisualVM으로 힙 덤프를 떠서 확인한 그림이다.
+
+![Imgur](https://i.imgur.com/S0cm4E8.png)
 
