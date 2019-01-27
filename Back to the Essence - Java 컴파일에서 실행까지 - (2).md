@@ -805,7 +805,7 @@ Hello 클래스의 런타임 상수 풀의 7번 항목인 문자열 리터럴 `"
 
 [`areturn`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.areturn)은 오퍼랜드 스택 맨 위에 있는 값을 꺼내서 호출한 메서드 프레임의 오퍼랜드 스택 맨 위에 저장하고, `areturn`이 속한 프레임을 폐기하고 제어를 호출한 메서드 프레임으로 넘겨준다.
 
-helloMessage() 프레임의 맨 위에 있던 값은 `"Hello, JVM"`에 대한 참조이며 이 값을 main() 프레임의 오퍼랜드 맨 위에 쌓는다. 결국 메서드가 값을 반환한다는 것은 호출된 프레임의 오퍼랜드 스택 맨 위의 값을 호출한 프레임의 오퍼랜드 스택 맨 위에 저장하는 것을 의미한다.
+helloMessage() 프레임의 오퍼랜드 스택 맨 위에 있던 값은 `"Hello, JVM"`에 대한 참조이며 이 값을 main() 프레임의 오퍼랜드 스택 맨 위에 쌓는다. 결국 메서드가 값을 반환한다는 것은 호출된 프레임의 오퍼랜드 스택 맨 위의 값을 꺼내서 호출한 프레임의 오퍼랜드 스택 맨 위에 저장하는 것을 의미한다.
 
 ![Imgur](https://i.imgur.com/QchxclE.png)
 
@@ -813,7 +813,7 @@ helloMessage() 프레임의 맨 위에 있던 값은 `"Hello, JVM"`에 대한 �
 
 PrintStream 클래스의 println(String)의 바이트코드는.. 매우 길다.. 어차피 `invokevirtual`은 앞에서 살펴봤고 그 외에 오퍼랜드 스택이나 로컬 지역 변수의 변화 과정을 앞에서 계속 봐왔으므로, println(String)은 결과만 보자.
 
-오퍼랜드 스택에 있던 System.out에 대한 참조와 `"Hello, JVM"`에 대한 참조는`invokevirtual`로 System.out.println(String)을 호출하면서 모두 꺼내지고 오퍼랜드 스택은 비워진다.
+오퍼랜드 스택에 있던 System.out에 대한 참조와 `"Hello, JVM"`에 대한 참조는`invokevirtual`로 System.out.println(String)을 호출하면서 모두 꺼내지고 main() 프레임의 오퍼랜드 스택은 비워진다. println() 프레임이 새로 생성되고 인자로 전달받은 참조를 활용해서 "Hello, JVM"을 화면에 출력하고, println() 프레임은 폐기된다.
 
 ![Imgur](https://i.imgur.com/UqTAYb0.png)
 
