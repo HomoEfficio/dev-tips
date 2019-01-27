@@ -647,7 +647,7 @@ main 메서드가 호출되면 다음과 같이 main 메서드 프레임이 생�
 
 ![Imgur](https://i.imgur.com/A6bk38o.png)
 
-### `new #2  // class homo/efficio/jvm/sample/Hello`
+### `0: new #2  // class homo/efficio/jvm/sample/Hello`
 
 [`new`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.new)는 힙에 클래스의 새 인스턴스에 필요한 메모리를 할당하고, 할당된 위치를 가리키는 참조를 오퍼랜드 스택에 쌓는다. 이 때 인스턴스 변수들이 기본값으로 초기화 된다.
 
@@ -655,15 +655,15 @@ Hello 클래스의 새 인스턴스에 필요한 메모리를 할당하고 그 �
 
 ![Imgur](https://i.imgur.com/z1OaNN6.png)
 
-### `dup`
+### `3: dup`
 
 [`dup`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.dup)은 오퍼랜드 스택 맨 위에 있는 값을 복사해서 오퍼랜드 스택 맨 위에 쌓는다.(초록색 동그라미)
 
 ![Imgur](https://i.imgur.com/yR7ozOt.png)
 
-### `invokespecial #3  // Method "<init>":()V`
+### `4: invokespecial #3  // Method "<init>":()V`
 
-[`invokespecial`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.invokespecial)은 스택 맨 위에 있는 값을 꺼내서 생성자, 수퍼클래스의 메서드, 현재 클래스의 메서드 등 객체 참조(obj.) 없이 메서드 이름만으로 호출될 수 있는 메서드의 첫 번째 파라미터로 넘기면서 호출한다. 호출에 의해 새 프레임이 생성되고, 호출하는 프레임의 스택 맨 위에 있는 값이 새 프레임의 로컬 변수 배열의 0번 슬롯에 저장된다.
+[`invokespecial`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.invokespecial)은 생성자, 수퍼클래스의 메서드, 현재 클래스의 메서드 등 객체 참조(obj.) 없이 메서드 이름만으로 호출될 수 있는 메서드를 호출한다. 해당 메서드가 속한 인스턴스를 가리키는 참조(`this`)가 첫 번째 파라미터로 넘겨진다. 호출에 의해 새 프레임이 생성되고 로컬 변수 배열의 0번 슬롯에 첫 번째 인자로 넘어온 `this`가 저장되고 그 이후의 인자도 로컬 변수 배열에 순서대로 저장된다.
 
 스택 맨 위에 있는 Hello 인스턴스에 대한 참조(초록색 동그라미)를 꺼내서 Hello 클래스의 디폴트 생성자의 첫 번째 인자로 넘기면서 디폴트 생성자를 호출한다. Hello 클래스의 디폴트 생성자에 대한 프레임이 생성되고 로컬 변수 배열의 0번 슬롯에 새 Hello 인스턴스에 대한 참조가 저장된다.
 
@@ -693,7 +693,7 @@ Hello 생성자의 바이트코드는 다음과 같다.
 
 프레임이 생성되면 먼저 `aload_0`이 실행된다.
 
-#### `aload_0`
+#### `0: aload_0`
 
 [`aload_n`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.aload_n)은 로컬 변수 배열의 `n`번 슬롯에 저장된 값을 오퍼랜드 스택 맨 위에 쌓는다.
 
@@ -701,13 +701,13 @@ Hello 생성자의 바이트코드는 다음과 같다.
 
 ![Imgur](https://i.imgur.com/GWSO9bc.png)
 
-#### `invokespecial #1  // Method java/lang/Object."<init>":()V`
+#### `1: invokespecial #1  // Method java/lang/Object."<init>":()V`
 
 `invokespecial` 명령어에 대한 설명은 앞에서 알아봤으므로 생략한다. 
 
 Object의 생성자를 호출하면 힙에 Object의 새 인스턴스를 위한 메모리가 할당되고, Object의 생성자를 위한 새 프레임이 생성된다.
 
-Hello의 생성자 프레임의 오퍼랜드 스택 맨위에 있던 `this`(초록색 동그라미)가 꺼내지고 새로 생성된 프레임의 로컬 변수 배열의 0번 슬롯에 저장(초록색 동그라미)된다.
+Hello의 생성자 프레임의 오퍼랜드 스택 맨 위에 있던 `this`(초록색 동그라미)가 꺼내지고 새로 생성된 프레임의 로컬 변수 배열의 0번 슬롯에 저장(초록색 동그라미)된다.
 
 ![Imgur](https://i.imgur.com/rrS97ON.png)
 
@@ -732,48 +732,82 @@ Object의 생성자의 바이트코드는 다음과 같다.
         jdk.internal.HotSpotIntrinsicCandidate
 ```
 
-설명하는 입장에서 매우 다행스럽게도 그냥 `return` 하는 것이 전부다. [`return`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.return)은 void를 반환하며, 오퍼랜드 스택에 있던 모든 값이 전부 폐기되고 프레임도 폐기되고, 호출한 메서드의 프레임인 Hello() 프레임으로 제어가 넘어간다.
+설명하는 입장에서 매우 다행스럽게도 그냥 `4: return` 하는 것이 전부다. [`return`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.return)은 void를 반환하며, 오퍼랜드 스택에 있던 모든 값이 전부 폐기되고 프레임도 폐기되고, 호출한 메서드의 프레임인 Hello() 프레임으로 제어가 넘어간다.
 
 ![Imgur](https://i.imgur.com/1QrI4Si.png)
 
 Hello의 디폴트 생성자의 바이트코드에서 남은 것은 `return`뿐이다. 따라서 Hello의 디폴트 생성자 실행이 완료되면 Hello() 프레임도 폐기되고 다음과 같이 main() 프레임의 오퍼랜드 스택에 새로 생성 및 초기화된 Hello 인스턴스에 대한 참조만 남게 된다.
 
-[Imgur](https://i.imgur.com/LjwG5Hb.png)
+![Imgur](https://i.imgur.com/LjwG5Hb.png)
 
-### `astore_1`
+### `7: astore_1`
 
 [`astore_n`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.astore_n)은 오퍼랜드 스택의 맨 위에 있는 값을 꺼내서 로컬 변수 배열의 `n` 위치에 저장한다. 
 
-현재 오퍼랜드 스택 맨 위에 있는 값은 새 Hello 인스턴스에 대한 참조(`this`)를 꺼내서 로컬 변수 배열의 1번 슬롯에 넣는다.
+현재 오퍼랜드 스택 맨 위에 있는 값인 새 Hello 인스턴스에 대한 참조(`this`)를 꺼내서 로컬 변수 배열의 1번 슬롯에 넣는다.
 
 결국 로컬 변수에 뭔가 저장하는 것인데 자바 소스 코드의 `final Hello hello = new Hello();`에 해당한다.
 
-![Imgur](https://i.imgur.com/08Zinth.png)
+![Imgur](https://i.imgur.com/X2wg4D9.png)
 
-### `getstatic #4  // Field java/lang/System.out:Ljava/io/PrintStream;`
+### `8: getstatic #4  // Field java/lang/System.out:Ljava/io/PrintStream;`
 
 [`getstatic`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.getstatic)은 클래스의 정적(static) 필드 값을 가져와서 오퍼랜드 스택에 쌓는다.
 
 여기에서는 System 클래스의 정적 변수인 out의 값을 main() 프레임의 오퍼랜드 스택에 쌓는다. (초록색 동그라미)
 
-![Imgur](https://i.imgur.com/YypFbow.png)
+!https://i.imgur.com/04EHixc.png
 
-### `aload_1`
+### `11: aload_1`
 
 `aload_1`은 로컬 변수 배열 1번 슬롯에 있던 값을 오퍼랜드 스택에 쌓는다. (파란색 동그라미)
 
+![Imgur](https://i.imgur.com/1Y6LRtZ.png)
+
+### `12: invokevirtual #5  // Method helloMessage:()Ljava/lang/String;`
+
+[`invokevirtual`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.invokevirtual)은 자바 메서드 호출의 기본 방식이며, 객체 참조(obj.)를 붙여서 호출되는 일반적인 메서드를 호출한다. 해당 메서드가 속한 인스턴스를 가리키는 참조(`this`)가 첫 번째 파라미터로 넘겨진다. 호출에 의해 새 프레임이 생성되고 로컬 변수 배열의 0번 슬롯에 첫 번째 인자로 넘어온 `this`가 저장되고 그 이후의 인자도 로컬 변수 배열에 순서대로 저장된다.
+
+`helloMessage()`의 바이트코드는 다음과 같다.
+
+```java
+   public java.lang.String helloMessage();
+     descriptor: ()Ljava/lang/String;
+     flags: (0x0001) ACC_PUBLIC
+     Code:
+       stack=1, locals=1, args_size=1
+          0: ldc           #7                  // String Hello, JVM
+          2: areturn
+       LineNumberTable:
+         line 12: 0
+       LocalVariableTable:
+         Start  Length  Slot  Name   Signature
+             0       3     0  this   Lhomo/efficio/jvm/sample/Hello;
+```
+
+#### `0: ldc #7  // String Hello, JVM`
+
+[`ldc`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.ldc)는 런타임 상수 풀의 항목 하나를 오퍼랜드 스택의 맨 위에 쌓는다.
 
 
 
 
+#### `2: areturn`
 
 
-- new
-- dup
-- invokespecial
-- astore_1
-- getstatic
-- aload_1
+### `15: invokevirtual #6  // Method java/io/PrintStream.println:(Ljava/lang/String;)V`
+
+PrintStream 클래스의 println(String)의 바이트코드는.. 매우 길다.. 어차피 `invokevirtual`은 앞에서 살펴봤고 그 외에 오퍼랜드 스택이나 로컬 지역 변수의 변화 과정을 앞에서 계속 봐왔으므로, println(String)은 결과만 보자.
+
+
+### `18: goto 18`
+
+[`goto`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.goto)는 오퍼랜드 스택의 변화 없이 특정 행으로 실행 흐름을 이동시킨다.
+
+18행에서 18행으로 계속 이동하면 결국 무한루프다. 자바 소스 코드의 `while(true) {}`가 여기에 해당된다.
+
+
+
 - invokevirtual
 - invokevirtual
 - goto
