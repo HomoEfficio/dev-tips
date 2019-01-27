@@ -602,7 +602,15 @@ JVM 스택에 쌓이는 정보의 단위가 프레임(Frame)이다. 프레임은
 
 ## Native Method Stack
 
+네이티브 메서드 스택은 JVM 스택이 아닌 보통 C 스택이라고 부르는 전통적인 스택이며, 자바가 아닌 다른 언어로 작성된 네이티브 메서드를 지원하기 위해 사용되는 스택이다. 네이티브 메서드 스택은 JVM 스택과 마찬가지로 스레드 단위의 자료구조다.
+
+JVM이 반드시 네이티브 메서드를 지원해야 하는 것은 아니므로 네이티브 메서드 스택 역시 필수는 아니다. 
+
 ## main 메서드 호출
+
+이제 JVM의 런타임 데이터 영역을 구성하는 요소들에 대한 정적인 설명을 모두 알아봤으므로 실제 main 메서드 호출과 함께 변화 과정을 동적으로 알아보자.
+
+main 메서드의 바이트코드는 다음과 같다.
 
 ```java
   public static void main(java.lang.String[]);
@@ -632,6 +640,67 @@ JVM 스택에 쌓이는 정보의 단위가 프레임(Frame)이다. 프레임은
           offset_delta = 18
           locals = [ class homo/efficio/jvm/sample/Hello ]
 ```
+
+main 메서드가 호출되면 다음과 같이 main 메서드 프레임이 생성된다.
+
+![]()
+
+### `new #2  // class homo/efficio/jvm/sample/Hello`
+
+[`new`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.new)는 힙에 클래스의 새 인스턴스에 필요한 메모리를 할당하고, 할당된 위치를 가리키는 참조를 오퍼랜드 스택에 쌓는다. 이 때 인스턴스 변수들이 기본값으로 초기화 된다.
+
+여기에서는 Hello 클래스의 새 인스턴스에 필요한 메모리를 할당하고 그 위치에 대한 참조를 오퍼랜드 스택에 쌓는다.
+
+!
+
+
+### `dup`
+
+[`dup`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.dup)은 오퍼랜드 스택 맨 위에 있는 값을 복사해서 오퍼랜드 스택 맨 위에 쌓는다.
+
+!
+
+### `invokespecial #3  // Method "<init>":()V`
+
+`invokespecial`은 스택 맨 위에 있는 값을 꺼내서 생성자, 수퍼클래스의 메서드, 현재 클래스의 메서드 등 객체 참조(obj.) 없이 메서드 이름만으로 호출될 수 있는 메서드의 첫 번째 파라미터로 넘기면서 호출한다. 
+
+여기에서는 스택 맨 위에 있는 Hello 인스턴스에 대한 참조를 Hello 클래스의 디폴트 생성자의 첫 번째 인자로 넘기면서 디폴트 생성자를 호출한다. Hello 디폴트 생성자에 대한 프레임이 생성되고 로컬 변수 배열의 첫 번째 슬롯에 새 Hello 인스턴스에 대한 참조가 저장된다.
+
+!
+
+#### Hello 생성자 호출
+
+Hello 생성자의 바이트코드는 다음과 같다.
+
+```java
+   public homo.efficio.jvm.sample.Hello();
+     descriptor: ()V
+     flags: (0x0001) ACC_PUBLIC
+     Code:
+       stack=1, locals=1, args_size=1
+          0: aload_0
+          1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+          4: return
+       LineNumberTable:
+         line 3: 0
+       LocalVariableTable:
+         Start  Length  Slot  Name   Signature
+             0       5     0  this   Lhomo/efficio/jvm/sample/Hello;
+```
+
+생성자가 종료될 
+
+### `astore_1`
+
+`astore_n`은 오퍼랜드 스택의 맨 위에 있는 값을 꺼내서 로컬 변수 배열의 `n` 위치에 저장한다. 즉, 오퍼랜드 스택 맨 위에 있던 새 Hello 인스턴스에 대한 참조를 꺼내서 로컬 변수 배열의 1번째 슬롯에 넣는다.
+
+![Imgur](https://i.imgur.com/AfzxpRl.png)
+
+### `getstatic #4  // Field java/lang/System.out:Ljava/io/PrintStream;`
+
+`getstatic`은 클래스의 정적(static) 필드 값을 가져와서 오퍼랜드 스택에 쌓는다.
+
+여기에서는 `PrintStream` 타입의 `System.out` 변수값을 오퍼랜드 스택에 쌓는다.
 
 - new
 - dup
