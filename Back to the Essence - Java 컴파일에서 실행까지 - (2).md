@@ -870,7 +870,7 @@ PrintStream 클래스의 println(String)의 바이트코드는.. 매우 길다..
 >
 >그림으로 보면 다음과 같다.
 >
->![](https://camo.githubusercontent.com/d86a6134ba1446d6150247c6adfe2a585ccfd5b5/68747470733a2f2f692e696d6775722e636f6d2f72725339374f4e2e706e67)
+>![](https://camo.githubusercontent.com/71452ebd2f58a766f19a635225d87c1bcc41f181/68747470733a2f2f692e696d6775722e636f6d2f4757534f3962632e706e67)
 
 
 ## 마지막 쉬운 퀴즈
