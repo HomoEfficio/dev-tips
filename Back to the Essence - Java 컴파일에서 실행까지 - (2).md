@@ -687,21 +687,28 @@ Hello 클래스의 새 인스턴스에 필요한 메모리를 할당하고 그 �
 
 ### `4: invokespecial #3  // Method "<init>":()V`
 
-[`invokespecial`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.invokespecial)은 다음과 같이 생성자, 현재 클래스, 수퍼클래스의 메서드를 호출한다..고 나와 있다. 
+[`invokespecial`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.invokespecial)은 다음과 같이 생성자, 현재 클래스, 수퍼클래스의 메서드를 호출한다고 나와 있다. 
 
 >invokespecial
 >
 >Operation  
 >  Invoke instance method; direct invocation of instance initialization methods and methods of the current class and its supertypes
 
-그래서 private 메서드를 호출할 때 `invokespecial`이 사용된다고 써있는 자료도 흔히 볼 수 있는데, 막상 이래저래 작성해서 `javac`, `javap`로 확인해보면 현실은 좀 다르다. 대부분 생성자와 수퍼클래스의 생성자를 호출할 때 `invokespecial`이 사용되고, 상속받은 클래스에서 수퍼클래스의 메서드를 호출할 때와 같은 클래스 내의 다른 private 인스턴스 메서드를 호출할 때는 `invokevirtual`이 사용된다. 
+그래서 private 메서드를 호출할 때 `invokespecial`이 사용된다고 써있는 자료도 흔히 볼 수 있는데, 막상 `javac`, `javap`로 확인해보면 현실은 좀 다르다. 대부분 생성자와 수퍼클래스의 생성자를 호출할 때 `invokespecial`이 사용되고, 상속받은 클래스에서 수퍼클래스의 메서드를 호출할 때와, 같은 클래스 내의 다른 private 인스턴스 메서드를 호출할 때는 `invokevirtual`이 사용된다. 
 
-`invokespecial`로 특정 메서드가 호출되면 프레임과 로컬 변수 배열, 오퍼랜드 스택, 런타임 상수 풀에 대한 참조가 생겨난다. 호출하는 쪽의 오퍼랜드 스택에서 호출되는 메서드의 파라미터 갯수 + 1개 만큼 호출하는 쪽의 오퍼랜드 스택에서 값을 꺼내서 호출되는 쪽에 새로 생성된 로컬 변수 배열에 뒤에서부터 차례로 채운다.
+`invokespecial`로 특정 메서드가 호출되면 프레임과 로컬 변수 배열, 오퍼랜드 스택, 런타임 상수 풀에 대한 참조가 생겨난다. 호출하는 쪽의 오퍼랜드 스택에서 호출되는 메서드의 파라미터 갯수 + 1개 만큼 호출하는 쪽의 오퍼랜드 스택에서 값을 꺼내서 호출되는 쪽에 새로 생성된 로컬 변수 배열의 0번 슬롯까지 채워지도록 뒤에서부터 차례로 채운다.
 
+글로는 복잡하니 그림으로 보자. 새로 호출하는 메서드의 파라미터가 2개라면 다음과 같이 진행된다. 먼저 호출하기 전 상태는 다음과 같다.
 
+![Imgur](https://i.imgur.com/jQIe28m.png)
 
-이 메서드의 파라미터 갯수만큼 오퍼랜드 스택에서 값을 빼고, 추가로 값을 하나 더 빼서, 메서드 호출에 의해 생성되는 프레임의 로컬 변수 배열에 
-이 때 해당 메서드가 속한 인스턴스를 가리키는 참조(`this`)가 첫 번째 파라미터로 넘겨진다. 호출에 의해 새 프레임이 생성되고 로컬 변수 배열의 0번 슬롯에 첫 번째 인자로 넘어온 `this`가 저장되고 그 이후의 인자도 로컬 변수 배열에 순서대로 저장된다.
+파라미터 2개 있는 메서드를 호출하면 다음과 같이 새로 프레임이 생성되고, 호출하는 쪽의 오퍼랜드 스택에서 2 + 1인 3개의 값이 차례로 꺼내져서, 호출되는 쪽의 로컬 변수 배열의 2, 1, 0번 슬롯에 차례로 저장된다.
+
+![Imgur](https://i.imgur.com/YJBfT4H.png)
+
+파라미터 갯수인 2개 외에 마지막에 추가로 하나 더 꺼내져서 호출되는 프레임의 로컬 변수 배열 0번 슬롯에 저장되는 값(초록색 동그라미)은 스펙에 `objectref`라고 표현되어 있으며 반드시 참조값이어야 한다.
+
+지금 설명한 호출하는 쪽의 프레임의 오퍼랜드 스택에서 값을 꺼내서 호출되는 쪽의 프레임의 로컬 변수 배열에 저장하는 방식은 `invokespecial` 뿐 아니라 [`invokevirtual`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.7.invokevirtual)에도 공히 적용되는 방식이다.
 
 스택 맨 위에 있는 Hello 인스턴스에 대한 참조(초록색 동그라미)를 꺼내서 Hello 클래스의 디폴트 생성자의 첫 번째 인자로 넘기면서 디폴트 생성자를 호출한다. Hello 클래스의 디폴트 생성자에 대한 프레임(`Hello 생성자 프레임`)이 새로 생성되고 JVM 스택의 맨 위(`main 메서드 프레임` 위)에 쌓인다. `Hello 생성자 프레임` 안에 있는 로컬 변수 배열의 0번 슬롯에 새 Hello 인스턴스에 대한 참조가 저장된다. 
 
@@ -725,17 +732,15 @@ Hello 생성자의 바이트코드는 다음과 같다.
              0       5     0  this   Lhomo/efficio/jvm/sample/Hello;
 ```
 
-맨 아래의 `LocalVariableTable`에 보면 새 Hello 인스턴스에 대한 참조의 이름이 `this`로 설정되는 것을 알 수 있다.
-
 `Code` 속성 바로 아래줄에 `stack=1, locals=1, args_size=1`라고 되어 있는데, `Hello 생성자 프레임`의 오퍼랜드 스택 최대 깊이는 1, 로컬 변수 배열의 크기는 1, 인자의 갯수는 1개로 되어 있다. 오퍼랜드 스택 최대 깊이와 로컬 변수 배열의 크기는 위 그림에 적용되어 있다.
 
-프레임이 생성되면 `aload_0`이 실행된다.
+Hello 생성자 프레임이 생성되면 가장 위에 있는 명령어인 `aload_0`이 먼저 실행된다.
 
 #### `0: aload_0`
 
-[`aload_n`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.aload_n)은 로컬 변수 배열의 `n`번 슬롯에 저장된 값을 오퍼랜드 스택 맨 위에 쌓는다.
+[`aload_n`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.aload_n)은 로컬 변수 배열의 `n`번 슬롯에 저장된 참조값(load 앞에 붙은 `a`가 참조값을 의미)을 오퍼랜드 스택 맨 위에 쌓는다.
 
-`Hello 생성자 프레임`의 로컬 변수 배열의 0번 슬롯에 저장되어 있던 새 Hello 인스턴스에 대한 참조(`this`, 초록색 동그라미)가 `Hello 생성자 프레임`의 오퍼랜드 스택에 쌓인다.
+`Hello 생성자 프레임`의 로컬 변수 배열의 0번 슬롯에 저장되어 있던 새 Hello 인스턴스에 대한 참조(초록색 동그라미)가 `Hello 생성자 프레임`의 오퍼랜드 스택에 쌓인다.
 
 ![Imgur](https://i.imgur.com/zP0BaqB.png)
 
@@ -792,7 +797,7 @@ Hello의 디폴트 생성자의 바이트코드에서 남은 것은 `return`뿐�
 
 [`getstatic`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.getstatic)은 클래스의 정적(static) 필드 값을 가져와서 오퍼랜드 스택에 쌓는다.
 
-여기에서는 System 클래스의 정적 변수인 out의 값을 `main 메서드 프레임`의 오퍼랜드 스택에 쌓는다. (초록색 동그라미)
+여기에서는 System 클래스의 정적 변수인 out의 값을 System의 런타임 상수 풀에서 읽어서 `main 메서드 프레임`의 오퍼랜드 스택에 쌓는다. (초록색 동그라미)
 
 ![Imgur](https://i.imgur.com/guTnj4t.png)
 
@@ -804,7 +809,7 @@ Hello의 디폴트 생성자의 바이트코드에서 남은 것은 `return`뿐�
 
 ### `12: invokevirtual #5  // Method helloMessage:()Ljava/lang/String;`
 
-[`invokevirtual`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.invokevirtual)은 자바 메서드 호출의 기본 방식이며, 객체 참조(obj.)를 붙여서 호출되는 일반적인 메서드를 호출한다. 해당 메서드가 속한 인스턴스를 가리키는 참조가 첫 번째 파라미터로 넘겨진다. 호출에 의해 새 프레임이 생성되고 로컬 변수 배열의 0번 슬롯에 첫 번째 인자로 넘어온 값인 해당 메서드가 속한 인스턴스를 가리키는 참조가 저장되고 그 이후의 인자도 로컬 변수 배열에 순서대로 저장된다.
+[`invokevirtual`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.invokevirtual)은 자바 메서드 호출의 기본 방식이며, 객체 참조(obj.)를 붙여서 호출되는 일반적인 메서드를 호출한다. 해당 메서드가 속한 인스턴스를 가리키는 참조가 첫 번째 파라미터로 넘겨진다. 호출에 의해 새 프레임이 생성되고 로컬 변수 배열의 0번 슬롯에 첫 번째 인자로 넘어온 값인 해당 메서드가 속한 인스턴스를 가리키는 참조가 저장되고 그 이후의 인자도 로컬 변수 배열에 순서대로 저장된다. 앞에서 `invokespecial`에 나왔던 그림 설명을 참고한다.
 
 `helloMessage()`의 바이트코드는 다음과 같다.
 
@@ -841,7 +846,7 @@ Hello 클래스의 런타임 상수 풀의 7번 항목인 문자열 리터럴 `"
 
 #### `2: areturn`
 
-[`areturn`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.areturn)은 오퍼랜드 스택 맨 위에 있는 참조값을 꺼내서 호출한 메서드 프레임의 오퍼랜드 스택 맨 위에 저장하고, `areturn`이 속한 프레임을 폐기하고 제어를 호출한 메서드 프레임으로 넘겨준다.
+[`areturn`](https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.areturn)은 오퍼랜드 스택 맨 위에 있는 참조값(return 앞에 있는 `a`가 참조값을 의미)을 꺼내서 호출한 메서드 프레임의 오퍼랜드 스택 맨 위에 저장하고, `areturn`이 속한 프레임을 폐기하고 제어를 호출한 메서드 프레임으로 넘겨준다.
 
 `helloMessage 메서드 프레임`의 오퍼랜드 스택 맨 위에 있던 값은 `"Hello, JVM"`에 대한 참조이며 이 값을 `main 메서드 프레임`의 오퍼랜드 스택 맨 위에 쌓는다. 결국 **메서드가 값을 반환한다는 것은 호출된 프레임의 오퍼랜드 스택 맨 위의 값을 꺼내서 호출한 프레임의 오퍼랜드 스택 맨 위에 저장하는 것**을 의미한다.
 
@@ -864,7 +869,7 @@ PrintStream 클래스의 println(String)의 바이트코드는.. 매우 길다..
 
 # 마무리
 
-여기까지 바이트코드 흐름에 따라 JVM의 런타임 데이터 영역 내의 자료구조들이 어떻게 변화하는지 살펴봤다. 사실 몰라도 개발하는데 거의 지장이 없다시피한 내용이라서 그림 한땀한땀 그리고 고치고를 반복할 때마다 내가 이 짓을 왜하고 있나.. 이쯤에서 그만두자.. 하는 생각이 든 게 한 두번이 아니었.. ㅠㅜ 
+여기까지 바이트코드 흐름에 따라 JVM의 런타임 데이터 영역 내의 자료구조들이 어떻게 변화하는지 살펴봤다. 사실 몰라도 일반적인 개발을 하는데 거의 지장이 없다시피한 내용이라서 그림 한땀한땀 그리고 고치고를 반복할 때마다 내가 이 짓을 왜하고 있나.. 이쯤에서 그만두자.. 하는 생각이 든 게 한 두번이 아니었.. ㅠㅜ 
 
 그래도 인터넷 어디를 뒤져봐도 자바 프로그램의 실행 과정에 대해 이보다 친절한 설명은 없으리라..
 
@@ -913,4 +918,5 @@ public class HelloNoInstance {
 
 ![Imgur](https://i.imgur.com/S0cm4E8.png)
 
-참고로 Java 11 기준으로 간단한 헬로월드 프로그램이 수행되는데 로딩되는 클래스의 수는 몇 개일까? 이건 직접 알아보기로 하자.
+참고로 Java 11 기준으로 간단한 헬로월드 프로그램이 수행되는데 로딩되는 클래스의 수는 몇 개일까? 이건 직접 알아보기로 하자. ^^
+
