@@ -27,6 +27,8 @@ IDE 자동 완성 기능에도 병폐가 있다는 사실을 알게 되었다..
 
 상황에 따라 서비스 클래스의 메서드가 아닌 메서드에서 LazyCollection을 호출해야할 때가 있다.
 
+### 1. 조회 부분을 서비스 메서드 내로 이동
+
 내 경우 Quartz Job 클래스에서 `getTaskList()` 같은 형태로 Task 목록을 불러와야 하는데, Quartz Job 클래스는 서비스 클래스가 아니며, 유일한 메서드인 `execute()`에 `@Transactional`을 붙이는 것도 부적합하다. 이런 상황에서 Collection을 읽어오기 위해 위해 `FetchType.EAGER`를 쓰면 Lazy를 써도 되는 곳에서조차 EAGER로 동작하므로 좋지 않다. 어떻게 하면 좋을까?
 
 해법은 단순하다.
@@ -45,3 +47,33 @@ IDE 자동 완성 기능에도 병폐가 있다는 사실을 알게 되었다..
 이 방식에도 주의할 점이 있는데, `Hibernate.initialize(taskList)`가 `taskList` 내에 중첩되어 있는 Collection 까지 가져오지는 못한다는 점이다.
 
 LazyCollection 내에 중첩된 LazyCollection 가 또 있을 때는 그 중첩된 LazyCollection 에 대해서도 `Hibernate.initialize()`를 다시 해줘야 한다.
+
+### 2. @Transactional 대신 TransactionManager 사용
+
+굳이 `@Transactional`을 고집할 필요가 없다.
+
+다음과 같이 Spring에서 제공하는 `PlatformTransactionManager`를 사용해서 직접 session 을 만들어주면 된다.
+
+```java
+    
+    ...
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+    ...
+    
+    public List<Task> getTaskListEager(Long tasksId) {
+        TransactionStatus transactionStatus = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
+        List<Task> taskList = null;
+        try {
+            taskList = this.tasksRepository.findOne(tasksId).getTaskList();
+            this.transactionManager.commit(transactionStatus);
+        } catch (Exception e) {
+            this.transactionManager.rollback(transactionStatus);
+        }
+                
+        return taskList;
+    }
+    
+```
+
+
