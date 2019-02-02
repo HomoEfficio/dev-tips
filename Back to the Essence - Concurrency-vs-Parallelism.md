@@ -1,4 +1,4 @@
-# Concurrency vs Parallelism
+# Back to the Essence - Concurrency vs Parallelism
 
 >동시성이 뭐냐?  
 >복수의 태스크를 동시에 실행하는 거 아니냐?
