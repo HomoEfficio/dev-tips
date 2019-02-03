@@ -26,5 +26,19 @@ I/O가 뭔지 어떻게 동작하는지 아주 옛날에 잠시 찾아봤을 뿐
 
 I/O가 `서로 다른 주체 사이`의 `통신`이라고 했는데, `서로 다른 주체 사이`에는 처리할 수 있는 양이나 속도에 차이가 있다. 그래서 I/O가 효율적으로 원활히 처리되려면 둘 사이의 차이를 완화해 줄 수 있는 버퍼가 필수다. `통신`을 정보의 이동이라고 본다면 결국 버퍼에 정보를 넣고 빼는 것이 I/O 처리의 시작이라고 볼 수 있다.
 
+----
+
+이건 따로 정리하려면 일이 너무 커질 것 같아서 잘 정리된 문서 링크 모아두는 걸로 쫑내자..
+
+https://cs.nyu.edu/~gottlieb/courses/2000s/2002-03-fall/os/lectures/lecture-13.html
+
+https://howtodoinjava.com/java/io/how-java-io-works-internally-at-lower-level/
+
+https://howtodoinjava.com/java7/nio/java-nio-2-0-working-with-buffers/
+
+https://howtodoinjava.com/java-io-tutorial/
+
+https://slideplayer.com/slide/10013778/
+
 
 
