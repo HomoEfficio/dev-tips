@@ -38,6 +38,8 @@ https://howtodoinjava.com/java7/nio/java-nio-2-0-working-with-buffers/
 
 https://howtodoinjava.com/java-io-tutorial/
 
+https://www.javacodegeeks.com/2012/08/io-demystified.html
+
 https://slideplayer.com/slide/10013778/
 
 
