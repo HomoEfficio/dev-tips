@@ -26,21 +26,18 @@
 - 모듈 시스템: https://crates.io/
 - Dev Kit 버전 관리: nvm 같은.. https://rustup.rs/
 - 제네릭: https://doc.rust-lang.org/book/ch10-00-generics.html
-- 람다식 지원: https://doc.rust-lang.org/book/ch13-01-closures.html
+- 람다식: https://doc.rust-lang.org/book/ch13-01-closures.html
     - lambda expression 대신 `closure`라는 이름으로 지원. 근데 생김새가 좀 이질적.. `|param| expression` 이렇게 생겼다..
 - 강려크한 패턴 매칭: https://doc.rust-lang.org/book/ch18-00-patterns.html
 - 코루틴(제너레이터): https://doc.rust-lang.org/std/ops/trait.Generator.html 아직 베타라고 한다.
-- 문서화 지원: https://doc.rust-lang.org/rustdoc/
+- 문서화: https://doc.rust-lang.org/rustdoc/
 - 웹 플레이그라운드: https://play.rust-lang.org/
 
 ## 눈물 없이는 볼 수 없는 감동적인 컴파일 에러 메시지
 
-- 난...ㄱ ㅏ끔...  
-눈물을 흘린ㄷ ㅏ....  
-ㄱ ㅏ끔은 눈물을 참을 수 없는 ㄴ ㅐ가 별루ㄷ ㅏ...  
+- 난...ㄱ ㅏ끔... 눈물을 흘린ㄷ ㅏ....  
 ![](http://img.etnews.com/news/article/2017/09/03/cms_temp_article_03185806264686.jpg)
 - 아래 예제 코드에서 느낄 수 있다.
-
 
 
 # GC 없는 메모리 관리
