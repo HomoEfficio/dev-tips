@@ -48,22 +48,22 @@
 ## 변수에 대한 Ownership/Move 개념 도입
 
 - Ownership은 변수의 값을 변경하고 lifetime을 결정할 수 있는 권한
-- 힙에 생성되는 변수를 다른 변수에 할당하면 Ownership은 복사되지 않고(Not Copy) 이동(Move)된다. 즉, Owner는 언제나 1개다.
-    - Ownership을 잃어버린 변수를 사용하면 컴파일 에러
-- 힙에 생성되지 않는 변수를 다른 변수에 할당하면 Ownership은 복사된다(Copy).
+- 힙에 생성되는 변수를 다른 변수에 할당하면 Ownership은 복사되지 않고(Not Copy) 이동(Move)된다. 즉, **Owner는 언제나 1개다.**
+    - Ownership을 잃어버린 변수는 uninitialized 상태가 되며, 이 변수를 다시 초기화하지 않고 사용하면 컴파일 에러
+- 힙에 생성되지 않는 변수를 다른 변수에 할당하면 값 자체가 통째로 복사된다.
     - int, float, char, bool
     - int, float, char, bool를 원소로 가지는 Tuple이나 고정 크기 배열 변수
 
-- 이건 힙에 생성되는 것이 없으므로 Ownership이 복사되어도 안전하고 그래서 정상 실행되지만,
+- 이건 힙에 생성되는 것이 없으므로 값이 통째로 복사되고 Ownership도 별도인 새 변수가 생긴다. 따라서 안전하고 그래서 정상 실행되지만,
     ```rust
     fn main() {
         let a: i32 = 32;
-        let b = a;
+        let b = a;  // 스택 안에서 값이 통째로 복사
         println!("a is {}", a);
         println!("b is {}", b);
         
         let t1 = (23, "Jordan");
-        let t2 = t1;
+        let t2 = t1;  // 스택 안에서 값이 통째로 복사
         let t1_1_len = t1.1.len();  // t1 튜플의 두 번째(첫 번째는 0) 원소의 길이
     }
     ```
@@ -73,7 +73,7 @@ Rust의 컴파일 에러 메시지는 상당히 구체적이고 친절하다.
     ```rust
     fn main() {
         let a: i32 = 32;
-        let b = a;
+        let b = a;  // 스택 안에서 값이 통째로 복사
         println!("a is {}", a);
         println!("b is {}", b);
         
