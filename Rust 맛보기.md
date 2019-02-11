@@ -107,7 +107,7 @@ Rust의 컴파일 에러 메시지는 볼 수록 매력적이다.
       = note: move occurs because `name1` has type `std::string::String`, which does not implement the `Copy` trait
     ```
 
-그런데 이렇게 할당할 때, 함수에 넘겨주거나, 함수로부터 반환받을 때마다 Ownership이 이동되기만 한다면 프로그래밍이 사실 상 불가능할 것 같다. 그래서 Rust에서는 Ownership/Move 뿐아니라 Reference/Borrow 도 존재한다.
+그런데 이렇게 할당할 때마다, 함수에 넘겨주거나, 함수로부터 반환받을 때마다 Ownership이 이동되기만 한다면 프로그래밍이 사실 상 불가능할 것 같다. 그래서 Rust에서는 Ownership/Move 뿐아니라 Reference/Borrow 도 존재한다.
 
 ## Reference/Borrow
 
