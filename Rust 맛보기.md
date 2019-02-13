@@ -138,37 +138,84 @@ Rust의 컴파일 에러 메시지는 볼 수록 매력적이다.
 
 ## Reference/Borrow
 
-Rust에도 참조(Reference)가 있는데, 결국은 주소값이라는 점에서는 다른 언어의 참조와 같지만, Ownership 관점에서는 다른 언어와 다르다.
+Rust에도 참조(Reference)가 있는데, 결국은 주소값이고 그래서 읽어오는 데는 제약이 없다는 점에서는 다른 언어의 참조와 같다. 하지만 값을 변경하는 데는 확연하게 다른 차이를 보여주는 제약 사항이 있는데, 바로 이 제약 사항이 Rust의 Thread-Safety를 보장해주는 핵심 장치다.
 
-예를 들어 자바는 다음과 같이 참조 변수를 새로운 변수에 할당하면, 주소값이 복제되면서 새로운 변수와 기존 변수 모두 Rust에서 말하는 Ownership을 갖게 된다.
+이에 대한 설명이 [Rust 공식 책](https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html)에 있지만, 읽고나서 여러모로 테스트 해 본 결과 아쉽게도 책에서 설명하지 않은 부분이 하나 있는데, 바로 **참조의 사용 여부**다. 아마도 사용되지 않는 참조가 코드에 존재하는 것 자체가 리팩터링 대상이고 결국에는 코드에서 제거되는 것이 바람직하므로, 사용 여부를 굳이 설명하지 않은 걸로 추측해본다. 하지만, **컴파일러는 참조의 실제 사용 여부를 감안해서 제약 사항의 준수 여부를 컴파일 타임에 검사**한다.
 
-```java
-public static void main(String[] args) {
-    final List<String> strings = new ArrayList<>();
-    strings.add("a");
-    strings.add("b");
-    strings.add("c");
-    System.out.println("strings.size(): " + strings.size());  // 3
+Rust의 참조의 제약 사항은 다음과 같다.
 
-    if (1 == 1) {
-        final List<String> otherRef = strings;  // 할당되면 Ownership이 이동되는 게 아니라
-        otherRef.add("d");  // otherRef과 strings 모두 ArrayList에 대한 Ownership을 가지고 수정 가능
-        System.out.println("strings.size(): " + strings.size());  // 4
-        final List<String> otherOtherRef = strings;
-        otherOtherRef.add("e");
-        System.out.println("strings.size(): " + strings.size());  // 5
-        System.out.println("otherRef.size(): " + otherRef.size());  // 5
-        System.out.println("otherOtherRef.size(): " + otherOtherRef.size());  // 5
-    }
-    // strings는 여전히 ArrayList를 가리키고 있음
-    System.out.println("strings.size(): " + strings.size());  // 5
+>하나의 동일한 스코프 내에서,
+>
+>1. 어떤 변수에 대해 실제 사용되는 읽기 전용 참조는 여러 개 존재할 수 있다.
+>2. 어떤 변수에 대해 실제 사용되는 변경 가능 참조는 단 한 개만 존재할 수 있다.
+>3. 어떤 변수에 대해 실제 사용되는 변경 가능 참조와, 실제 사용되는 읽기 전용 참조는 동시에 존재할 수 없다.
+
+1, 2는 굳이 부연 설명 없어도 대충 수긍할 수 있는데, 3은 살짝 애매하다. 왜 동시에 존재하면 안 될까?
+
+왜냐하면 **변경에 의해 참조 위치가 바뀔 수 있기 때문**이다. 예를 들어 capacity가 4인 Vector에 현재 3개의 원소가 들어있는데 여기에 원소 2개를 더 추가하면 length는 5가 되고 capacity 값인 4를 초과하므로, 해당 Vector는 더 큰 capacity(예를 들면 8)를 가진 새로운 위치로 이동해야 5개 모두를 품을 수 있게 된다. 이렇게 되면 읽기 전용 참조에 들어있던 주소값은 이동된 새로운 Vector를 가리키지 않으므로 유효하지 않은 참조가 되며 이런 상황을 막기 위해 3번 제약이 필요하다.
+
+다음과 같이 실제 사용되는 변경 가능 참조와 실제 사용되는 읽기 전용 참조가 동시에 존재하면 컴파일 에러가 발생한다. 컴파일 에러 발생 위치도 눈여겨 보자.
+
+```rust
+fn main() {
+    let mut str = String::from("Rust");
+
+    let r1_str = &str;
+
+    let w1_str = &mut str;
+    
+    println!("{}", r1_str);
+    
+    println!("{}", w1_str);
 }
+
+//-----
+error[E0502]: cannot borrow `str` as mutable because it is also borrowed as immutable
+ --> src/main.rs:6:18
+  |
+4 |     let r1_str = &str;
+  |                  ---- immutable borrow occurs here
+5 | 
+6 |     let w1_str = &mut str;
+  |                  ^^^^^^^^ mutable borrow occurs here
+7 |     
+8 |     println!("{}", r1_str);
+  |                    ------ immutable borrow later used here
 ```
 
-하지만 Rust의 참조(Reference)에는 Ownership이 없다. 따라서 참조는 변수의 lifetime을 결정할 수 없고 값을 빌려올 수 있을 뿐(Borrow)이다.
+나중에 초기화한 변경 가능 참조 초기화 부분에서 컴파일 에러가 발생했다.
 
+그럼 초기화 순서를 바꾸면 어떨까?
 
+```rust
+fn main() {
+    let mut str = String::from("Rust");
 
+    let w1_str = &mut str;
+    
+    let r1_str = &str;
 
+    println!("{}", r1_str);
+    
+    println!("{}", w1_str);
+}
+
+//-----
+error[E0502]: cannot borrow `str` as immutable because it is also borrowed as mutable
+  --> src/main.rs:6:18
+   |
+4  |     let w1_str = &mut str;
+   |                  -------- mutable borrow occurs here
+5  |     
+6  |     let r1_str = &str;
+   |                  ^^^^ immutable borrow occurs here
+...
+10 |     println!("{}", w1_str);
+   |                    ------ mutable borrow later used here
+```
+
+마찬가지로 둘 중 나중에 초기화 되는 쪽에서 컴파일 에러가 발생한다. 초기화 순서 말고 참조가 실제 사용되는 순서를 바꿔봐도 둘 중 나중에 초기화 되는 쪽에서 컴파일 에러가 발생한다.
+
+실제 사용되는 코드를 제거해보면 앞에서 살펴본 것과는 다르게 동작하는 것을 확인할 수 있다. 어차피 현실에서는 있을 수 없는, 있어서는 안 되는 상황이라고 간주하고 여기에서 따로 설명하지 않겠지만, https://play.rust-lang.org/ 에서 따로 실험해보면 컴파일러가 참조의 실제 사용 여부를 감안한다는 것을 확인할 수 있을 것이다.
 
 
