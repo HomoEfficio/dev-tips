@@ -232,12 +232,7 @@ Vec 같은 컬렉션이나 문자열의 일부분에 대한 읽기 전용 참조
 
 ```rust
 fn main() {
-    let mut nums = Vec::new();
-    nums.push(1);
-    nums.push(2);
-    nums.push(3);
-    nums.push(4);
-    nums.push(5);
+    let nums = vec![1, 2, 3, 4, 5];
     
     println!("{:?}", &nums[0..3]);
 }
