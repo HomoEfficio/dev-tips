@@ -224,4 +224,41 @@ error[E0502]: cannot borrow `str` as immutable because it is also borrowed as mu
 
 실제 사용되는 코드를 제거해보면 앞에서 살펴본 것과는 다르게 동작하는 것을 확인할 수 있다. 사용되지 않는 참조가 포함되어 있는 것은 어차피 현실에서는 있을 수 없는, 있어서는 안 되는 상황이라고 간주하고 여기에서 따로 설명하지 않겠지만, https://play.rust-lang.org/ 에서 따로 실험해보면 컴파일러가 참조의 실제 사용 여부를 감안한다는 것을 확인할 수 있을 것이다.
 
+참조는 Ownership을 가지지 않으므로 참조가 스코프에서 사라진다고 해도 Owner가 여전히 살아있다면 참조가 가리키던 값 역시 살아있다.
+
+## Slice
+
+Vec 같은 컬렉션이나 문자열의 일부분에 대한 읽기 전용 참조를 Slice라고 한다.
+
+```rust
+fn main() {
+    let mut nums = Vec::new();
+    nums.push(1);
+    nums.push(2);
+    nums.push(3);
+    nums.push(4);
+    nums.push(5);
+    
+    println!("{:?}", &nums[0..3]);
+}
+//-----
+[1, 2, 3]
+```
+
+숫자를 원소로 하는 Slice의 타입은 `&[i32]`, `&[f64]` 등으로 표현한다.
+
+
+```rust
+fn main() {
+    let hello = String::from("Hello");
+    
+    println!("{}", &hello[1..4]);
+}
+//-----
+ell
+```
+
+문자열의 Slice의 타입은 `&str`이며, 문자열 리터럴은 사실은 `&str` 타입이다.
+
+
 
