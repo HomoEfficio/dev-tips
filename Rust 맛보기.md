@@ -1,4 +1,4 @@
-# Rust 맛보기
+# Rust - 맛보기
 
 ## Fast and Safe
 
@@ -228,7 +228,7 @@ error[E0502]: cannot borrow `str` as immutable because it is also borrowed as mu
 
 ## Slice
 
-Vec 같은 컬렉션이나 문자열의 일부분에 대한 읽기 전용 참조를 Slice라고 한다.
+`Vec` 같은 컬렉션이나 문자열의 일부분에 대한 읽기 전용 참조를 Slice라고 한다.
 
 ```rust
 fn main() {
@@ -256,4 +256,48 @@ ell
 문자열의 Slice의 타입은 `&str`이며, 문자열 리터럴은 사실은 `&str` 타입이다.
 
 
+# 불변성
+
+Rust에서는 모든 변수가 기본적으로 immutable이다. 그래서 값을 변경할 필요가 있는 변수에는 명시적으로 `mut`라는 키워드를 앞에 붙여줘야 한다. 반면에 Java에서는 기본이 mutable이고 불변성을 적용하려면 `final` 키워드를 붙여줘야 한다.
+
+게다가 Java에서는 참조형 변수에 대해 `final`이라는 키워드를 붙여줘도, 그 변수에 다른 참조값을 할당할 수 없을 뿐 참조가 가리키는 객체는 여전히 mutable이다.(Java9 부터 ImmutableCollections가 추가됨)
+
+```java
+public void immutable__test() {
+    final List<Integer> integers = new ArrayList<>();  // 이후 intergers에 다른 값 할당 불가
+    
+    integers.add(23);  // 참조가 가리키는 list에 23 추가는 가능
+
+    assertThat(integers.size()).isEqualTo(1);  // true
+}
+```
+
+하지만 Rust에서는 `mut`를 붙이지 않으면 참조형 변수가 가리키는 데이터구조도 불변이다.
+
+```rust
+fn main() {
+    let integers = Vec::new();
+    
+    integers.push(1);
+    
+    println!("size of integers: {}", integers.len());
+}
+
+//-----
+error[E0596]: cannot borrow `integers` as mutable, as it is not declared as mutable
+ --> src/main.rs:4:5
+  |
+2 |     let integers = Vec::new();
+  |         -------- help: consider changing this to be mutable: `mut integers`
+3 |     
+4 |     integers.push(1);
+  |     ^^^^^^^^ cannot borrow as mutable
+```
+
+`integers` 대신에 `mut integers`를 써보는 건 어떻겠냐는 천사같은 컴파일 에러 메시지가 나온다.
+
+
+# struct
+
+구조화 된 데이터
 
