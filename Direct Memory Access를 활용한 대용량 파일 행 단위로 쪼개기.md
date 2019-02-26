@@ -1,4 +1,4 @@
-# Java Direct Memory Access를 활용한 대용량 파일 행 단위로 쪼개기
+# Java NIO Direct Memory Access를 활용한 대용량 파일 행 단위로 쪼개기
 
 기가 단위의 파일을 외부에 전송할 일이 생겼다. 
 
@@ -63,7 +63,7 @@ ByteBuffer buffer = ByteBuffer.allocateDirect(100 * 1024 * 1024);
 
 ### position
 
-버퍼 내에서 값을 읽거나 쓸 수 있는 **시작 위치**를 나타낸다. 버퍼 내로 1 바이트의 데이터가 추가될 때마다 position 값도 1 증가한다.
+버퍼 내에서 값을 읽거나 쓸 수 있는 **시작 위치**를 나타낸다. 버퍼 내로 1 바이트의 데이터가 추가될 때마다 `position` 값도 1 증가한다.
 
 `buffer.position()`, `buffer.position(int)`
 
@@ -75,7 +75,7 @@ ByteBuffer buffer = ByteBuffer.allocateDirect(100 * 1024 * 1024);
 
 ### mark
 
-현재 `position` 위치에 표시를 해두고, 나중에 `reset()`을 호출하면 `position`이 표시해둔 위치로 이동한다.
+현재 `position` 위치에 **표시**를 해두고, 나중에 `reset()`을 호출하면 `position`이 표시해둔 위치로 이동한다.
 
 `buffer.mark()`
 
@@ -106,7 +106,7 @@ ByteBuffer buffer = ByteBuffer.allocateDirect(100 * 1024 * 1024);
 
 ### compact()
 
-현재 `position`부터 `limit - 1` 까지의 데이터를 버퍼의 맨 앞으로 복사한 후에, `position`을 복사한 데이터 바로 다음 위치로 이동시키고, `limit`는 `capacity`로 이동한다. 행 단위로 데이터를 다루고자 할 때 핵심 역할을 담당한다. 
+현재 `position`부터 `limit - 1` 까지의 데이터를 버퍼의 맨 앞으로 복사한 후에, `position`을 복사한 데이터 바로 다음 위치로 이동시키고, `limit`는 `capacity`로 이동한다. 행 단위로 데이터를 다룰 때 핵심 역할을 담당한다. 
 
 
 ## 읽고 쓰는 값 관련 메서드
