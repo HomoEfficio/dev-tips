@@ -6,6 +6,12 @@
 - 트리거를 통한 Job 상태 관리
     - 스케줄링 정보 유지
     - misfire 처리
+    
+# Quartz 단점
+
+- 클러스터의 로드 분산이 단순히 Round-robin 이라서 실질적인 부하 분산이 안 될 때도 있음
+- 클러스터 내 특정 노드에 과부하가 걸리면 해당 Job은 실제로 계속 실행되더라도 해당 Job의 Quartz DB에서 Trigger는 종료된 것으로 나옴
+- 특정 Job의 강제 Kill이 항상 동작하지는 않음
 
 # Spring Boot 통합
 
