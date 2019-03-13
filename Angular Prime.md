@@ -1,5 +1,7 @@
 # Angular Prime
 
+[Angular Essential](https://www.rubypaper.co.kr/82) 요약
+
 # 구동 흐름
 
 1. `angular(-cli).json` 에 설정된 대로 빌드된 결과 `index` 항목으로 설정된 `src/index.html`, `main` 항목으로 설정된 `src/main.js`가 생성됨
@@ -102,6 +104,19 @@
 1. 컴포넌트에 정의되어 있는 이벤트 핸들러가 컴포넌트의 프로퍼티 값을 변경하면,
 1. 프로퍼티 바인딩에 의해 변경된 값이 템플릿에 반영된다.
 
+## 양방향 바인딩
+
+컴포넌트 <--> 템플릿 양방향 바인딩
+
+결과적으로 양방향 바인딩처럼 동작하지만 실제로는 프로퍼티 바인딩과 양방향 바인딩의 조합으로 구현
+
+><element [(name)]="expression">...\</element>  
+><element [(ngModel)]="name">...\</element>  
+><input [value]="userName" (input)="userName = $event.target.value"/>
+><input [(ngModel)]="userName"/>
+
+`ngModel`은 폼 바인딩 편리 기능을 제공하는 특수 디렉티브
+
 ## 클래스 바인딩
 
 컴포넌트 -> 템플릿 단방향 바인딩
@@ -119,6 +134,51 @@
 
 ><element [style.style-property]="expression">...\</element>  
 ><div [style.font-size.px]="'16'">
+
+
+# 디렉티브
+
+- DOM의 모든 것(모양, 동작 등)을 관리하기 위한 명령
+- 애플리케이션 전역에서 사용할 수 있는 공통 관심사를 컴포넌트에서 분리해서 구현한 것으로 HTML 요소 또는 애트리뷰트 형태로 사용될 수 있음
+
+## Built-in Structural 디렉티브
+
+- 조건, 반복 처리 담당
+- `[]` 안에 디렉티브를 쓰지 않고 디렉티브 앞에 `*` 표시
+- 하나의 호스트 요소에 하나의 구조 디렉티브만 사용 가능
+- `ngIf`, `ngFor`, `ngSwitch`
+
+### ngIf
+
+><element \*ngIf="booleanExpression">...\</element>
+>
+>아래의 코드로 변환된다.
+>
+><ng-template [ngIf]="booleanExpression">  
+>  \<element>...\</element>  
+>\</ng-template>
+
+1. 별도의 ng-template 사용하지 않음
+
+   >\<div \*ngIf="mySkill==='HTML'; else elseBlock">HTML\</div>  
+   >\<ng-template #elseBlock>\<div>CSS\</div>\</ng-template>
+
+1. 별도의 ng-template 사용
+
+   >\<div \*ngIf="mySkill==='HTML'; then thenBlock_1 else elseBlock_1">\</div>  
+   >\<ng-template #thenBlock\_1>\<div>HTML\</div>\</ng-template>  
+   >\<ng-template #elseBlock>\_1>\<div>CSS\</div>\</ng-template>
+
+### ngFor
+
+
+### ngSwitch
+
+
+
+
+
+
 
 
 
