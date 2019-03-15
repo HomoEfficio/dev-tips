@@ -62,6 +62,54 @@
 > 이벤트 바인딩으로 `html` 템플릿의 이벤트를 `component.ts`에 전달
 
 
+# 모듈
+
+- 다른 모듈에 import되어 재사용 될 수 있는 단위
+- 컴포넌트는 모듈에 포함되고, 해당 모듈이 import 되어야만 모듈 내의 컴포넌트도 import 되어 사용될 수 있다.
+
+`***.module.ts` 파일에 다음과 같이 선언적인 내용이 담겨있다.
+
+```typescript
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, Routes } from '@angular/router';
+import { TraitTargetScheduleResultModule } from './history/trait-target-schedule-result.module';
+...
+
+const routes: Routes = [
+  {path: '', component: TraitTargetJobListComponent},
+];
+
+@NgModule({
+  imports: [
+    RouterModule.forChild(routes),
+    CommonModule,
+    MatCardModule, MatInputModule, MatButtonModule, MatIconModule,
+    DataTableModule,
+    TraitTargetScheduleResultModule
+  ],
+  exports: [TraitTargetJobListComponent],
+  declarations: [TraitTargetJobListComponent],
+  providers: [TraitTargetJobAdminService, DmpAuthInfoService, ToastrService],
+})
+export class TraitTargetJobListModule {
+
+}
+```
+
+- imports: 본 모듈에서 import 해서 사용할 외부 모듈 리스트
+- exports: 외부에 import 되어 사용될 수 잇는 본 모듈의 컴포넌트 리스트
+- declarations: 본 모델에서 정의된 컴포넌트 리스트
+- providers: 본 모듈에서 사용할 외부 서비스 리스트
+
+## 다른 컴포넌트를 상속해서 만든 컴포넌트와 모듈
+
+예를 들어 A 모듈의 B 컴포넌트를 상속해서 새로 만든 C 컴포넌트가 있다고 하자.  
+C 컴포넌트의 물리적 파일 위치는 C 컴포넌트를 사용하는 D 모듈의 폴더 안에 있더라도, C 컴포넌트는 `a.module.ts`의 `declarations`와 `exports`에 명시되어야 하고, D 모듈은 A 모듈을 import 해야 D 모듈 내에 있는 E 컴포넌트의 템플릿이 C 컴포넌트의 템플릿을 인식해서 C 컴포넌트를 사용할 수 있게 된다.
+
+정리하면 상속해서 만든 자식 컴포넌트는 자식 컴포넌트를 사용하는 모듈에 포함되는 것이 아니라, 부모 컴포넌트가 포함된 모듈에 함께 포함된다.
+
+
 # 바인딩
 
 컴포넌트와 템플릿은 바인딩을 통해 상호 작용
@@ -173,14 +221,4 @@
 
 
 ### ngSwitch
-
-
-
-
-
-
-
-
-
-
 
