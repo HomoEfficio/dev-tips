@@ -222,3 +222,84 @@ C 컴포넌트의 물리적 파일 위치는 C 컴포넌트를 사용하는 D �
 
 ### ngSwitch
 
+
+# 기타 이슈
+
+## Circular dependency detected
+
+상속받을 부모 컴포넌트(아래 예에서는 `DataTableComponent`)를 다음과 같이 축약형으로 import하면 발생한다.
+
+```typescript
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Site } from '../../../../site/shared/site';
+//import { DataTableComponent } from '../../../../shared/data-table';  // <-- 여기!!
+// 아래와 같이 명시해줘야 함
+import { DataTableComponent } from '../../../../shared/data-table/data-table.component';
+
+@Component({
+  selector: 'company-site-table',
+  templateUrl: 'company-site-table.html',
+  styleUrls: ['company-site-table.scss']
+})
+export class CompanySiteTableComponent extends DataTableComponent {
+
+  @Input()
+  public itemList: Site[];
+
+  public count = 10;
+
+  public selectRow(item: any) {
+    super.selectRow(item);
+  }
+}
+
+```
+
+## Multiple assets emit to the same filename common.js
+
+정확히는 모르지만, 다른 모듈에 존재하는 Service를 `provider`로 지정하고 가져와서 사용하면 발생
+
+아래와 같이 `SiteService`를 `providers`에 지정하고 생성자 주입을 통해 사용하면,
+
+```typescript
+@Component({
+  selector: 'company-edit-dialog',
+  templateUrl: 'company-edit.html',
+  styleUrls: ['./company-edit.scss'],
+  //providers: [SiteService]  // <-- 여기!!
+})
+export class CompanyEditComponent extends BaseComponent implements OnInit {
+
+  constructor(private companyEditService: CompanyEditService,
+              private toastrService: ToastrService,
+              private siteService: SiteService,  // <-- 여기!!
+              @Inject(Http) private http: Http) {
+    super(toastrService);
+  }
+
+```
+
+다음과 같이 `Conflict: Multiple assets emit to the same filename common.js` 에러 발생으로 컴파일 실패
+
+```
+ℹ ｢wdm｣: Compiling...
+
+Date: 2019-03-20T05:47:05.870Z - Hash: 7c4933b3a48c63da5b33 - Time: 33753ms
+38 unchanged chunks
+chunk {main} main.js, main.js.map (main) 4.17 MB [initial] [rendered]
+chunk {runtime} runtime.js, runtime.js.map (runtime) 7.98 kB [entry] [rendered]
+chunk {35} 35.js, 35.js.map () 14.7 kB  [rendered]
+chunk {15} 15.js, 15.js.map () 25.8 kB  [rendered]
+chunk {21}  (common)  [rendered]
+
+ERROR in chunk common
+common.js
+Conflict: Multiple assets emit to the same filename common.js
+ℹ ｢wdm｣: Failed to compile.
+```
+
+좋은 해결방법이 아니지만, 일단 `SiteService`에 있는 메서드 중 사용할 메서드를 `CompanyEditComponent` 안에 인라인화하고 `SiteService`를 `providers`와 생성자에서 제거하면 컴파일 성공
+
+
+
+
