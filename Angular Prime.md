@@ -269,7 +269,7 @@ export class CompanySiteTableComponent extends DataTableComponent {
 
 ## Multiple assets emit to the same filename common.js
 
-정확히는 모르지만, 다른 모듈에 존재하는 Service를 `provider`로 지정하고 가져와서 사용하면 발생
+다른 모듈에 존재하는 Service를 `provider`로 지정하고 가져와서 사용하면 발생
 
 아래와 같이 `SiteService`를 `providers`에 지정하고 생성자 주입을 통해 사용하면,
 
@@ -310,7 +310,26 @@ Conflict: Multiple assets emit to the same filename common.js
 ℹ ｢wdm｣: Failed to compile.
 ```
 
-좋은 해결방법이 아니지만, 일단 `SiteService`에 있는 메서드 중 사용할 메서드를 `CompanyEditComponent` 안에 인라인화하고 `SiteService`를 `providers`와 생성자에서 제거하면 컴파일 성공
+~좋은 해결방법이 아니지만, 일단 `SiteService`에 있는 메서드 중 사용할 메서드를 `CompanyEditComponent` 안에 인라인화하고 `SiteService`를 `providers`와 생성자에서 제거하면 컴파일 성공~
+
+`SiteService`를 가져올 때 다음과 같이 `@Inject`를 사용해서 가져와야 하며, 컴포넌트의 `providers`에 따로 지정해주지 않아도 됨
+
+```typescript
+@Component({
+  selector: 'company-edit-dialog',
+  templateUrl: 'company-edit.html',
+  styleUrls: ['./company-edit.scss'],
+})
+export class CompanyEditComponent extends BaseComponent implements OnInit {
+
+  constructor(private companyEditService: CompanyEditService,
+              private toastrService: ToastrService,
+              @Inject(SiteService) private siteService: SiteService,  // <-- 여기!!
+              @Inject(Http) private http: Http) {
+    super(toastrService);
+  }
+
+```
 
 
 
