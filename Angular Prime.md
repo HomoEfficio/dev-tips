@@ -362,6 +362,9 @@ export class CompanyEditComponent extends BaseComponent implements OnInit {
 
 ```
 
+그런데 충격적인 것은 이제 `@Inject`를 제외해도 컴파일 에러가 발생하지 않는다.. 뭥미..
+
+
 
 
 
