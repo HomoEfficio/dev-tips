@@ -312,13 +312,44 @@ Conflict: Multiple assets emit to the same filename common.js
 
 ~좋은 해결방법이 아니지만, 일단 `SiteService`에 있는 메서드 중 사용할 메서드를 `CompanyEditComponent` 안에 인라인화하고 `SiteService`를 `providers`와 생성자에서 제거하면 컴파일 성공~
 
-`SiteService`를 가져올 때 다음과 같이 `@Inject`를 사용해서 가져와야 하며, 컴포넌트의 `providers`에 따로 지정해주지 않아도 됨
+`SiteService`를 가져올 때 다음과 같이 `@Inject`를 사용해서 가져오면 컴파일 에러는 발생하지 않지만,
 
 ```typescript
 @Component({
   selector: 'company-edit-dialog',
   templateUrl: 'company-edit.html',
   styleUrls: ['./company-edit.scss'],
+})
+export class CompanyEditComponent extends BaseComponent implements OnInit {
+
+  constructor(private companyEditService: CompanyEditService,
+              private toastrService: ToastrService,
+              @Inject(SiteService) private siteService: SiteService,  // <-- 여기!!
+              @Inject(Http) private http: Http) {
+    super(toastrService);
+  }
+
+```
+
+다음과 같이 런타임에 에러 발생
+
+```
+ERROR Error: Uncaught (in promise): Error: StaticInjectorError(AppModule)[CompanyEditComponent -> SiteService]: 
+  StaticInjectorError(Platform: core)[CompanyEditComponent -> SiteService]: 
+    NullInjectorError: No provider for SiteService!
+Error: StaticInjectorError(AppModule)[CompanyEditComponent -> SiteService]: 
+  StaticInjectorError(Platform: core)[CompanyEditComponent -> SiteService]: 
+    NullInjectorError: No provider for SiteService!
+```
+
+`@Component`의 `providers`에 따로 지정해줘야 정상 동작함
+
+```typescript
+@Component({
+  selector: 'company-edit-dialog',
+  templateUrl: 'company-edit.html',
+  styleUrls: ['./company-edit.scss'],
+  providers: [SiteService]  // <-- 여기!!
 })
 export class CompanyEditComponent extends BaseComponent implements OnInit {
 
