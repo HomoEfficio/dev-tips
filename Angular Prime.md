@@ -78,6 +78,51 @@ A 컴포넌트는 C 컴포넌트를 포함하고 B 컴포넌트도 C 컴포넌�
 
 - 다른 모듈에 import되어 재사용 될 수 있는 단위
 - 컴포넌트는 모듈에 포함되고, 해당 모듈이 import 되어야만 모듈 내의 컴포넌트도 다른 모듈에 import 되어 사용될 수 있다.
+- Angular 앱의 최상위 모듈은 `src/app/app.module.ts`에 명시되어 있으며, `@NgModule`의 `imports` 항목에 명시된 모듈만 사용될 수 있다.
+- 모듈이 제대로 import 되지 않으면 브라우저 콘솔에 다음과 같은 에러가 발생한다.
+
+    ```
+    Uncaught Error: Component UserListComponent is not part of any NgModule or the module has not been imported into your module.
+    ```
+
+- 외부 모듈을 제대로 import 하지 않으면 브라우저 콘솔에 다음과 같은 에러가 발생한다.
+
+    ```
+    compiler.js:1021 Uncaught Error: Template parse errors:
+    'mat-card-title' is not a known element:
+    1. If 'mat-card-title' is an Angular component, then verify that it is part of this module.
+    2. If 'mat-card-title' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message. ("<div class="page-layout">
+      <mat-card class="page-layout-content">
+        [ERROR ->]<mat-card-title>
+          <div class="page-layout-header">
+            <div class="col-lg-8" style="font-wei"): ng:///UserListModule/UserListComponent.html@2:4
+    'mat-card-content' is not a known element:
+    1. If 'mat-card-content' is an Angular component, then verify that it is part of this module.
+    2. If 'mat-card-content' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message. ("
+          </div>
+        </mat-card-title>
+        [ERROR ->]<mat-card-content class="report-content col-md-12">
+          <div class="report-content__tab-content" st"): ng:///UserListModule/UserListComponent.html@46:4
+    'mat-card' is not a known element:
+    1. If 'mat-card' is an Angular component, then verify that it is part of this module.
+    2. If 'mat-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message. ("<div class="page-layout">
+      [ERROR ->]<mat-card class="page-layout-content">
+        <mat-card-title>
+          <div class="page-layout-header">
+    "): ng:///UserListModule/UserListComponent.html@1:2
+        at syntaxError (compiler.js:1021)
+        at TemplateParser.push../node_modules/@angular/compiler/fesm5/compiler.js.TemplateParser.parse (compiler.js:14851)
+        at JitCompiler.push../node_modules/@angular/compiler/fesm5/compiler.js.JitCompiler._parseTemplate (compiler.js:24708)
+        at JitCompiler.push../node_modules/@angular/compiler/fesm5/compiler.js.JitCompiler._compileTemplate (compiler.js:24695)
+        at compiler.js:24638
+        at Set.forEach (<anonymous>)
+        at JitCompiler.push../node_modules/@angular/compiler/fesm5/compiler.js.JitCompiler._compileComponents (compiler.js:24638)
+        at compiler.js:24548
+        at Object.then (compiler.js:1012)
+        at JitCompiler.push../node_modules/@angular/compiler/fesm5/compiler.js.JitCompiler._compileModuleAndComponents (compiler.js:24547)
+    ```
+
+## 개별 모듈 작성 사례
 
 `***.module.ts` 파일에 다음과 같이 선언적인 내용이 담겨있다.
 
@@ -112,7 +157,7 @@ export class TraitTargetJobListModule {
 - imports: 본 모듈에서 import 해서 사용할 외부 모듈 리스트
 - exports: 외부에 import 되어 사용될 수 잇는 본 모듈의 컴포넌트 리스트
 - declarations: 본 모델에서 정의된 컴포넌트 리스트
-- providers: 본 모듈에서 사용할 외부 서비스 리스트
+- providers: 본 모듈에서 사용될 외부 서비스 리스트
 
 ## 다른 컴포넌트를 상속해서 만든 컴포넌트와 모듈
 
