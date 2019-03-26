@@ -79,7 +79,7 @@ A 컴포넌트는 C 컴포넌트를 포함하고 B 컴포넌트도 C 컴포넌�
 - 다른 모듈에 import되어 재사용 될 수 있는 단위
 - 컴포넌트는 모듈에 포함되고, 해당 모듈이 import 되어야만 모듈 내의 컴포넌트도 다른 모듈에 import 되어 사용될 수 있다.
 - Angular 앱의 최상위 모듈은 `src/app/app.module.ts`에 명시되어 있으며, `@NgModule`의 `imports` 항목에 명시된 모듈만 사용될 수 있다.
-- 모듈이 제대로 import 되지 않으면 브라우저 콘솔에 다음과 같은 에러가 발생한다.
+- 직접 작성한 모듈(아래 예에서는 UserListComponent)이 제대로 import 되지 않으면 브라우저 콘솔에 다음과 같은 에러가 발생한다.
 
     ```
     Uncaught Error: Component UserListComponent is not part of any NgModule or the module has not been imported into your module.
