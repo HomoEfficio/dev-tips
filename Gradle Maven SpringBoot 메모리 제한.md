@@ -23,7 +23,7 @@
 Maven으로 애플리케이션 실행 시 다음과 같이 옵션으로 지정
 
 ```
-SPRING_PROFILES_ACTIVE=local ./mvnw -Drun.jvmArguments="-Xmx200m"
+SPRING_PROFILES_ACTIVE=local ./mvnw -Drun.jvmArguments="-Xmx80m"
 ```
 
 ## Gradle
@@ -47,7 +47,7 @@ SPRING_PROFILES_ACTIVE=local ./mvnw -Drun.jvmArguments="-Xmx200m"
 Gradle으로 애플리케이션 실행 시 다음과 같이 옵션으로 지정
 
 ```
-SPRING_PROFILES_ACTIVE=local ./gradlew clean bootRun -Dorg.gradle.jvmargs='-Xmx200m'
+SPRING_PROFILES_ACTIVE=local ./gradlew clean bootRun -Dorg.gradle.jvmargs='-Xmx100m'
 ```
 
 
