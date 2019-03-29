@@ -282,6 +282,25 @@ C 컴포넌트의 물리적 파일 위치는 C 컴포넌트를 사용하는 D �
 
 # 기타 이슈
 
+## html 에서 typescript enum 접근 하기
+
+getter를 통해 html에 참조를 제공할 수 있다. `UserAdminAction`이라는 enum이 있다고 하면 component.ts 파일에서 다음과 같이 getter를 제공하면,
+
+```typescript
+  get userAdminAction() {
+    return UserAdminAction;
+  }
+``
+
+html 에서는 다음과 같이 참조할 수 있다.
+
+```html
+  <button class="btn btn-block btn-danger"
+          type="button"
+          (click)="action({'action': userAdminAction.DELETE}, row, $event)">삭제</button>
+```
+
+
 ## Circular dependency detected
 
 상속받을 부모 컴포넌트(아래 예에서는 `DataTableComponent`)를 다음과 같이 축약형으로 import하면 발생한다.
