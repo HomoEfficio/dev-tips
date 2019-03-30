@@ -1,4 +1,4 @@
-# Rust - 맛보기
+# Rust 맛보기
 
 ## Fast and Safe
 
