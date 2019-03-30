@@ -49,68 +49,68 @@
 Rust에서는 개발자가 직접 하지도 않고, Garbage Collector도 존재하지 않는다. 대신에 **힙에 생성되는 변수를 참조하는 변수가 포함된 스코프가 종료되면 스코프에 있던 변수에 할당된 메모리도 해제되고, 그 변수가 참조하는 힙에 생성된 변수에 할당된 메모리도 함께 해제**된다.
 
 >**Ownership을 가진 변수(Owner)는 자기가 포함된 스코프가 종료되면**,  
->**자기가 참조하던 변수들과 함께 메모리에서 해제(Drop)된다.**
+>**자기가 소유하던(참조하던) 변수들과 함께 메모리에서 해제(Drop)된다.**
 
 ## 변수에 대한 Ownership/Move 개념 도입
 
 - **Ownership은 lifetime을 결정할 수 있는 권한**
 - 힙에 생성되는 변수를 다른 변수에 할당하면 Ownership은 복사되지 않고(Not Copy) 이동(Move)된다. 즉, **Owner는 언제나 1개다.**
     - Ownership을 잃어버린 변수는 uninitialized 상태가 되며, 이 변수를 다시 초기화하지 않고 사용하면 컴파일 에러
-- 힙에 생성되지 않는 변수를 다른 변수에 할당하면 값 자체가 통째로 복사된다.
+    - 아래와 같이 힙에 문자열을 생성하는 `String::from()`을 통해 만든 문자열을 원소로 갖는 튜플의 Ownership은 복사되지 않고 이동되므로 아래와 같이 컴파일 에러가 발생한다.  
+Rust의 컴파일 에러 메시지는 상당히 구체적이고 친절하다.
+        ```rust
+        fn main() {
+            let a: i32 = 32;
+            let b = a;  // 스택 안에서 값이 통째로 복사
+            println!("a is {}", a);
+            println!("b is {}", b);
+            
+            // String::from("Jordan")은 힙에 생성되므로
+            let t1 = (23, String::from("Jordan"));
+            // 아래와 같이 할당되면 t1의 Ownership은 t2로 이동되며, 
+            let t2 = t1;
+            // 이미 Ownership을 잃고 uninitialized 된 t1을 사용하려고 하면 컴파일 에러 발생
+            let t1_1_len = t1.1.len();
+
+            println!("t1_1_len() is {}", t1_1_len);
+            println!("t2.1.len() is {}", t2.1.len());
+        }
+
+        //-----
+        error[E0382]: borrow of moved value: `t1`
+          --> src/main.rs:12:24
+           |
+        10 |         let t2 = t1;
+           |                  -- value moved here
+        11 |         // 이미 Ownership을 잃고 uninitialized 된 t1을 사용하려고 하면 컴파일 에러 발생
+        12 |         let t1_1_len = t1.1.len();
+           |                        ^^^^ value borrowed here after move
+           |
+           = note: move occurs because `t1` has type `(i32, std::string::String)`, which does not implement the `Copy` trait
+        ```
+
+- 힙에 생성되지 않는 타입을 Copy Type이라고 하며, Copy 타입의 변수를 다른 변수에 할당하면 값 자체가 통째로 복사된다. Copy 타입은 다음과 같다.
     - int, float, char, bool
     - int, float, char, bool를 원소로 가지는 Tuple이나 고정 크기 배열 변수
+    - Copy 타입은 생성되지 않으므로 값이 통째로 복사되고 Ownership도 별개인 새 변수가 생긴다. 따라서 안전하고 그래서 정상 실행된다.
+        ```rust
+        fn main() {
+            let a: i32 = 32;
+            let b = a;  // 스택 안에서 값이 통째로 복사
+            println!("a is {}", a);
+            println!("b is {}", b);
+            
+            let t1 = (23, "Jordan");  // "Jordan"은 힙에 생성되지 않음
+            let t2 = t1;  // 스택 안에서 값이 통째로 복사
+            let t1_1_len = t1.1.len();  // t1 튜플의 두 번째(첫 번째는 0) 원소의 길이
 
-- 이건 힙에 생성되는 것이 없으므로 값이 통째로 복사되고 Ownership도 별도인 새 변수가 생긴다. 따라서 안전하고 그래서 정상 실행되지만,
-    ```rust
-    fn main() {
-        let a: i32 = 32;
-        let b = a;  // 스택 안에서 값이 통째로 복사
-        println!("a is {}", a);
-        println!("b is {}", b);
-        
-        let t1 = (23, "Jordan");
-        let t2 = t1;  // 스택 안에서 값이 통째로 복사
-        let t1_1_len = t1.1.len();  // t1 튜플의 두 번째(첫 번째는 0) 원소의 길이
+            println!("t1_1_len() is {}", t1_1_len);
+            println!("t2.1.len() is {}", t2.1.len());
+        }
+        ```
 
-        println!("t1_1_len() is {}", t1_1_len);
-        println!("t2.1.len() is {}", t2.1.len());
-    }
-    ```
 
-- 아래와 같이 힙에 문자열을 생성하는 `String::from()`을 통해 만든 문자열을 원소로 갖는 튜플의 Ownership은 복사되지 않고 이동되므로 아래와 같이 컴파일 에러가 발생한다.  
-Rust의 컴파일 에러 메시지는 상당히 구체적이고 친절하다.
-    ```rust
-    fn main() {
-        let a: i32 = 32;
-        let b = a;  // 스택 안에서 값이 통째로 복사
-        println!("a is {}", a);
-        println!("b is {}", b);
-        
-        // String::from("Jordan")은 힙에 생성되므로
-        let t1 = (23, String::from("Jordan"));
-        // 아래와 같이 할당되면 t1의 Ownership은 t2로 이동되며, 
-        let t2 = t1;
-        // 이미 Ownership을 잃고 uninitialized 된 t1을 사용하려고 하면 컴파일 에러 발생
-        let t1_1_len = t1.1.len();
-
-        println!("t1_1_len() is {}", t1_1_len);
-        println!("t2.1.len() is {}", t2.1.len());
-    }
-
-    //-----
-    error[E0382]: borrow of moved value: `t1`
-      --> src/main.rs:12:24
-       |
-    10 |         let t2 = t1;
-       |                  -- value moved here
-    11 |         // 이미 Ownership을 잃고 uninitialized 된 t1을 사용하려고 하면 컴파일 에러 발생
-    12 |         let t1_1_len = t1.1.len();
-       |                        ^^^^ value borrowed here after move
-       |
-       = note: move occurs because `t1` has type `(i32, std::string::String)`, which does not implement the `Copy` trait
-    ```
-
-- 참고로 다른 변수에 할당할 때뿐아니라 함수에 인자로 넘길 때도, 함수에서 값을 반환할 때도 Ownership이 넘어간다. 그래서 아래와 같이 이미 Ownership을 잃은 변수 name1을 다시 사용하는 코드는 컴파일 에러가 발생한다.  
+- 다른 변수에 할당할 때뿐아니라 함수에 인자로 넘길 때도, 함수에서 값을 반환할 때도 Ownership이 넘어간다. 그래서 아래와 같이 이미 Ownership을 잃은 변수 name1을 다시 사용하는 코드는 컴파일 에러가 발생한다.  
 Rust의 컴파일 에러 메시지는 볼 수록 매력적이다.
 
     ```rust
@@ -144,9 +144,9 @@ Rust의 컴파일 에러 메시지는 볼 수록 매력적이다.
 
 ## Reference/Borrow
 
-Rust에도 참조(Reference)가 있는데, 결국은 주소값이고 그래서 읽어오는 데는 제약이 없다는 점에서는 다른 언어의 참조와 같다. 하지만 값을 변경하는 데는 확연하게 다른 차이를 보여주는 제약 사항이 있는데, 바로 이 제약 사항이 Rust의 Thread-Safety를 보장해주는 핵심 장치다.
+Rust에도 참조(Reference)가 있는데, 결국은 주소값이고 그래서 읽어오는 데는 제약이 없다는 점에서는 다른 언어의 참조와 같다. 하지만 값의 변경에는 확연하게 다른 차이를 보여주는 제약 사항이 있는데, 바로 이 제약 사항이 Rust의 Thread-Safety를 보장해주는 핵심 장치다.
 
-이에 대한 설명이 [Rust 공식 책](https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html)에 있지만, 읽고나서 여러모로 테스트 해 본 결과 아쉽게도 책에서 설명하지 않은 부분이 하나 있는데, 바로 **참조의 사용 여부**다. 아마도 사용되지 않는 참조가 코드에 존재하는 것 자체가 리팩터링 대상이고 결국에는 코드에서 제거되는 것이 바람직하므로, 사용 여부를 굳이 설명하지 않은 걸로 추측해본다. 하지만, **컴파일러는 참조의 실제 사용 여부를 감안해서 제약 사항의 준수 여부를 컴파일 타임에 검사**한다.
+이에 대한 설명이 [Rust 공식 책](https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html)에 있지만, 읽고나서 여러모로 테스트 해 본 결과 아쉽게도 책에서 설명하지 않은 부분이 하나 있는데, 바로 **참조의 사용 여부**다. 아마도 사용되지 않는 참조가 코드에 존재하는 것 자체가 리팩터링 대상이고 결국에는 코드에서 제거되는 것이 바람직하므로, 사용 여부를 굳이 설명하지 않은 걸로 추측해본다. 하지만, **컴파일러는 참조의 실제 사용 여부를 감안해서 제약 사항의 준수 여부를 컴파일 타임에 검사**한다. 다시 말하면 사용되지 않는 참조에 대해서는 제약 사항 위배가 있더라도 컴파일 에러가 발생하지 않는다.
 
 Rust의 참조의 제약 사항은 다음과 같다.
 
@@ -155,6 +155,7 @@ Rust의 참조의 제약 사항은 다음과 같다.
 >1. 어떤 변수에 대해 실제 사용되는 읽기 전용 참조는 여러 개 존재할 수 있다.
 >2. 어떤 변수에 대해 실제 사용되는 변경 가능 참조는 단 한 개만 존재할 수 있다.
 >3. 어떤 변수에 대해 실제 사용되는 변경 가능 참조와, 실제 사용되는 읽기 전용 참조는 동시에 존재할 수 없다.
+>4. 참조가 사용되는 동안에는 Owner도 값을 변경할 수 없다.
 
 1, 2는 굳이 부연 설명 없어도 대충 수긍할 수 있는데, 3은 살짝 애매하다. 왜 동시에 존재하면 안 될까?
 
@@ -225,6 +226,66 @@ error[E0502]: cannot borrow `str` as immutable because it is also borrowed as mu
 실제 사용되는 코드를 제거해보면 앞에서 살펴본 것과는 다르게 동작하는 것을 확인할 수 있다. 사용되지 않는 참조가 포함되어 있는 것은 어차피 현실에서는 있을 수 없는, 있어서는 안 되는 상황이라고 간주하고 여기에서 따로 설명하지 않겠지만, https://play.rust-lang.org/ 에서 따로 실험해보면 컴파일러가 참조의 실제 사용 여부를 감안한다는 것을 확인할 수 있을 것이다.
 
 참조는 Ownership을 가지지 않으므로 참조가 스코프에서 사라진다고 해도 Owner가 여전히 살아있다면 참조가 가리키던 값 역시 살아있다.
+
+마지막으로 4번을 살펴보자. 일단 참조를 빌려주면 그 참조가 살아있는 한, 즉 빌려준 동안에는 Owner도 값을 바꿀 수 없다. 다음 코드를 보자.
+
+```rust
+fn main() {
+  let mut s = "homo.efficio".to_string();
+  let t = &s;
+  s.push('!');
+  println!("{}", t);
+}
+
+//-----
+error[E0502]: cannot borrow `s` as mutable because it is also borrowed as immutable
+ --> src/main.rs:4:5
+  |
+3 |     let t = &s;
+  |             -- immutable borrow occurs here
+4 |     s.push('!');
+  |     ^^^^^^^^^^^ mutable borrow occurs here
+5 |     println!("{}", t);
+  |                    - immutable borrow later used here
+```
+
+`&s`를 `t`에 할당한 후에, `s.push('!')`를 통해 `s`의 값을 변경하려고, 그 후에 `t`를 사용하면 위와 같은 컴파일 에러가 발생한다.
+
+하지만 다음과 같이 `t`를 실제로 사용하지 않는다면 컴파일 에러가 발생하지 않고, `t`가 사용되지 않는다는 경고만 뜬다.
+
+```rust
+fn main() {
+  let mut s = "homo.efficio".to_string();
+  let t = &s;
+  s.push('!');
+}
+
+//-----
+warning: unused variable: `t`
+ --> src/main.rs:3:9
+  |
+3 |     let t = &s;ㅁ
+  |         ^ help: consider using `_t` instead
+  |
+  = note: #[warn(unused_variables)] on by default
+```
+
+
+## Rc, Arc
+
+Rust에서는 **Owner는 단 하나** 원칙을 지키기 위해 Copy 타입이 아닌 변수는 할당, 인자 전달, 반환에서 복사가 아니라 이동된다. 하지만 필요하다면 `Rc<T>`, `Arc<T>`를 사용해서, 이동이 아니라 파이썬처럼 Reference count를 통해 다수의 Owner를 허용할 수도 있다. `Arc`는 Atomic Reference Count이며 Thread-safe를 보장한다.
+
+다음 코드에서 s, t, u는 힙에 생성된 동일한 `Rc<string>` 타입 인스턴스를 가리키며, 이 인스턴스의 Reference count는 3이 되고, 0이 되면 이 인스턴스는 메모리에서 사라진다.
+
+```rust
+let s = Rc<string>::new("Oh".to_string());
+let t = s.clone();
+let u = s.clone();
+```
+
+Owner가 여럿이라면 변경이 이슈가 될텐데, `Rc<T>`는 기본적으로 immutable 이라서 변경으로 인한 이슈를 예방한다. 다만 Interior Mutability 라는 방법을 통해 mutable한 `Rc<T>`도 만들 수 있다고 한다.
+
+
 
 ## Slice
 
