@@ -1,4 +1,4 @@
-# Rust 맛보기
+# Rust - 맛보기
 
 ## Fast and Safe
 
@@ -110,7 +110,7 @@ Rust의 컴파일 에러 메시지는 상당히 구체적이고 친절하다.
         ```
 
 
-- 다른 변수에 할당할 때뿐아니라 함수에 인자로 넘길 때도, 함수에서 값을 반환할 때도 Ownership이 넘어간다. 그래서 아래와 같이 이미 Ownership을 잃은 변수 name1을 다시 사용하는 코드는 컴파일 에러가 발생한다.  
+- **다른 변수에 할당할 때뿐아니라 함수에 인자로 넘길 때도, 함수에서 값을 반환할 때도 Ownership이 넘어간다.** 그래서 아래와 같이 함수에 인자로 넘기면서 이미 Ownership을 잃은 변수 name1을 다시 사용하는 코드는 컴파일 에러가 발생한다.  
 Rust의 컴파일 에러 메시지는 볼 수록 매력적이다.
 
     ```rust
@@ -155,7 +155,6 @@ Rust의 참조의 제약 사항은 다음과 같다.
 >1. 어떤 변수에 대해 실제 사용되는 읽기 전용 참조는 여러 개 존재할 수 있다.
 >2. 어떤 변수에 대해 실제 사용되는 변경 가능 참조는 단 한 개만 존재할 수 있다.
 >3. 어떤 변수에 대해 실제 사용되는 변경 가능 참조와, 실제 사용되는 읽기 전용 참조는 동시에 존재할 수 없다.
->4. 참조가 사용되는 동안에는 Owner도 값을 변경할 수 없다.
 
 1, 2는 굳이 부연 설명 없어도 대충 수긍할 수 있는데, 3은 살짝 애매하다. 왜 동시에 존재하면 안 될까?
 
@@ -227,48 +226,10 @@ error[E0502]: cannot borrow `str` as immutable because it is also borrowed as mu
 
 참조는 Ownership을 가지지 않으므로 참조가 스코프에서 사라진다고 해도 Owner가 여전히 살아있다면 참조가 가리키던 값 역시 살아있다.
 
-마지막으로 4번을 살펴보자. 일단 참조를 빌려주면 그 참조가 살아있는 한, 즉 빌려준 동안에는 Owner도 값을 바꿀 수 없다. 다음 코드를 보자.
+읽기 전용 참조는 Shared Reference라고 하며 Copy 타입이다. 따라서 할당, 인자로 넘기기 등에서 동일한 대상에 대한 참조가 여러 갈래로 복사되고 공유되어 사용된다.  
+변경 가능 참조는 Mutable Reference라고 하며 Copy 타입이 아니다. 따라서 할당, 인자로 넘기기 등에 사용되면 이 참조가 가리키는 대상은 오직 이 참조를 통해서만 접근 가능하다. 
 
-```rust
-fn main() {
-  let mut s = "homo.efficio".to_string();
-  let t = &s;
-  s.push('!');
-  println!("{}", t);
-}
-
-//-----
-error[E0502]: cannot borrow `s` as mutable because it is also borrowed as immutable
- --> src/main.rs:4:5
-  |
-3 |     let t = &s;
-  |             -- immutable borrow occurs here
-4 |     s.push('!');
-  |     ^^^^^^^^^^^ mutable borrow occurs here
-5 |     println!("{}", t);
-  |                    - immutable borrow later used here
-```
-
-`&s`를 `t`에 할당한 후에, `s.push('!')`를 통해 `s`의 값을 변경하려고, 그 후에 `t`를 사용하면 위와 같은 컴파일 에러가 발생한다.
-
-하지만 다음과 같이 `t`를 실제로 사용하지 않는다면 컴파일 에러가 발생하지 않고, `t`가 사용되지 않는다는 경고만 뜬다.
-
-```rust
-fn main() {
-  let mut s = "homo.efficio".to_string();
-  let t = &s;
-  s.push('!');
-}
-
-//-----
-warning: unused variable: `t`
- --> src/main.rs:3:9
-  |
-3 |     let t = &s;ㅁ
-  |         ^ help: consider using `_t` instead
-  |
-  = note: #[warn(unused_variables)] on by default
-```
+참조는 `.` 연산자, 참조의 참조, 참조의 비교 등 다양한 케이스에 대해 살펴볼 필요가 있는데 내용이 꽤 많으므로 별도로 다루기로 하고, 맛보기에서는 여기까지만 살펴보기로 한다.
 
 
 ## Rc, Arc
