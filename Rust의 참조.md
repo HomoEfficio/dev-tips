@@ -121,7 +121,7 @@ fn show(table: Table) {
             println!("  {}", domain);
         }
     }
-    // table의 ownership을 for in 루프에 넘겨주므로 
+    // table의 ownership이 for in 루프로 이동되므로 
     // 여기에서 table을 다시 사용하면 컴파일 에러 발생
     println!("size of table: {}", table.len());  
 }
@@ -139,7 +139,7 @@ error[E0382]: borrow of moved value: `table`
    = note: move occurs because `table` has type `std::collections::HashMap<std::string::String, std::vec::Vec<std::string::String>>`, which does not implement the `Copy` trait
 ```
 
-`show()`에 `table`을 직접 값으로 넘기면 `for (name, domains) in table`의 `in table`에서도 `table`의 ownership이 반복문으로 넘어가고, `for (name, domains)`에서도 HashMap의 한 원소의 ownership이 `name`, `domains`에  넘어간다. 따라서 그 이후에 `table.len()` 를 사용하면, 앞의 `.` 연산자에서 살펴본 것처럼 내부적으로 borrow가 작동하면서 위와 같이 컴파일 에러가 발생한다.
+`show()`에 `table`을 직접 값으로 넘기면 `for (name, domains) in table`의 `in table`에서도 `table`의 ownership이 반복문으로 이동되고, `for (name, domains)`에서도 HashMap의 한 원소의 ownership이 `name`, `domains`으로 이동된다. 따라서 그 이후에 `table.len()` 를 사용하면, 앞의 `.` 연산자에서 살펴본 것처럼 내부적으로 borrow가 작동하면서 위와 같이 컴파일 에러가 발생한다.
 
 하지만, 직접 값이 아니라 참조인 `&table`로 `show()`에 넘기면 `table`의 타입도 `&Table`이 되고, `name`, `domains`의 타입도 `&String`, `&Vec<String>`이 되며, 빌려온 참조이므로 `table`을 사용할 수 있다.
 
@@ -179,4 +179,80 @@ Domains of hanmomhanda
 size of table: 3
 ```
 
-## 
+## 참조의 참조
+
+Rust에서는 참조의 참조, 참조의 참조의 참조의.. 가 가능하다. 그리고 아래 코드처럼 참조의 참조의 참조를 출력하면 원래의 값이 출력된다. 물론 Rust에서도 타입 추론을 지원하므로 t, u, v 우측에 있는 타입은 실제로는 명시하지 않아도 된다. 
+
+```rust
+fn main() {
+    let mut s = "Homo Efficio".to_string();
+    let mut t: &mut String = &mut s;
+    let mut u: &mut &mut String = &mut t;
+    let v: &mut &mut &mut String = &mut u;
+    
+    println!("{}", v);
+}
+
+//-----
+Homo Efficio
+```
+
+### 무결성 유지
+
+위 코드를 보면 mutable reference가 여러 개 생성되므로 t, u, v 각각을 통해 값을 바꿀 수 있게 되는데, 이는 Rust가 자랑하는 코드 안정성이 무너지는 것이 아닌가 하는 생각이 들 수 있는데 맞는 얘기다. 위 코드는 v가 읽기 전용, 그러니까 shared reference로 사용되면서 u, v 모두 shared reference로 사용되기 때문에 컴파일 에러가 발생하지 않은 것이다.
+
+다음과 같이 mutable로 사용되면,
+
+```rust
+fn main() {
+    let mut s = "Homo Efficio".to_string();
+    let mut t: &mut String = &mut s;
+    let mut u: &mut &mut String = &mut t;
+    let v: &mut &mut &mut String = &mut u;
+    t.push('!');
+    println!("{}", v);
+}
+
+//-----
+error[E0499]: cannot borrow `*t` as mutable more than once at a time
+ --> src/main.rs:6:5
+  |
+4 |     let mut u: &mut &mut String = &mut t;
+  |                                   ------ first mutable borrow occurs here
+5 |     let v: &mut &mut &mut String = &mut u;
+6 |     t.push('!');
+  |     ^ second mutable borrow occurs here
+7 |     println!("{}", v);
+  |                    - first borrow later used here
+```
+
+똑똑한 컴파일러가 위와 같이 mutable로 여러 번 빌려줄 수 없다고 친절하게 알려준다.
+
+### 비교 연산
+
+비교 연산자를 통해 참조를 비교하면 참조가 최종적으로 가리키는 값을 대상으로 비교한다. 다음 코드를 보면 확인할 수 있다.
+
+```rust
+fn main() {
+    let a = 10;
+    let b = 10;
+
+    let aa = &a;
+    let bb = &b;
+
+    let aaa = &aa;
+    let bbb = &bb;
+
+    assert!(aa == bb);
+    assert!(aaa == bbb);
+
+    assert!(aa != bb);  // 여기서 panick 발생
+}
+
+//-----
+thread 'main' panicked at 'assertion failed: aa != bb', src/main.rs:14:5
+```
+
+
+
+
