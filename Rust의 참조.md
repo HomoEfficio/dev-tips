@@ -31,71 +31,71 @@ Homo Efficio!*
 
 1. immutable borrow
 
-```rust
-fn main() {
-    let mut s = "homo.efficio".to_string();
-    let t = &mut s;
-    println!("{}", s.len());
-    println!("{}", t.len());
-}
+    ```rust
+    fn main() {
+        let mut s = "homo.efficio".to_string();
+        let t = &mut s;
+        println!("{}", s.len());
+        println!("{}", t.len());
+    }
 
-//-----
-error[E0502]: cannot borrow `s` as immutable because it is also borrowed as mutable
- --> src/main.rs:4:20
-  |
-3 |     let t = &mut s;
-  |             ------ mutable borrow occurs here
-4 |     println!("{}", s.len());
-  |                    ^ immutable borrow occurs here
-5 |     println!("{}", t.len());
-  |                    - mutable borrow later used here
-```
+    //-----
+    error[E0502]: cannot borrow `s` as immutable because it is also borrowed as mutable
+     --> src/main.rs:4:20
+      |
+    3 |     let t = &mut s;
+      |             ------ mutable borrow occurs here
+    4 |     println!("{}", s.len());
+      |                    ^ immutable borrow occurs here
+    5 |     println!("{}", t.len());
+      |                    - mutable borrow later used here
+    ```
 
-`s`는 참조가 아닌데, 4행의 `s.len()`에서 immutable borrow 가 발생했다고 나온다. 결국 `s.len()`라고 작성했지만 내부적으로는 `(&s).len()`으로 동작함을 알 수 있다.
+    `s`는 참조가 아닌데, 4행의 `s.len()`에서 immutable borrow 가 발생했다고 나온다. 결국 `s.len()`라고 작성했지만 내부적으로는 `(&s).len()`으로 동작함을 알 수 있다.
 
 1. mutable borrow
 
-```rust
-fn main() {
-    let mut s = "homo.efficio".to_string();
-    let t = &s;
-    s.push('!');
-    println!("{}", t);
-}
+    ```rust
+    fn main() {
+        let mut s = "homo.efficio".to_string();
+        let t = &s;
+        s.push('!');
+        println!("{}", t);
+    }
 
-//-----
-error[E0502]: cannot borrow `s` as mutable because it is also borrowed as immutable
- --> src/main.rs:4:5
-  |
-3 |     let t = &s;
-  |             -- immutable borrow occurs here
-4 |     s.push('!');
-  |     ^^^^^^^^^^^ mutable borrow occurs here
-5 |     println!("{}", t);
-  |                    - immutable borrow later used here
-```
+    //-----
+    error[E0502]: cannot borrow `s` as mutable because it is also borrowed as immutable
+     --> src/main.rs:4:5
+      |
+    3 |     let t = &s;
+      |             -- immutable borrow occurs here
+    4 |     s.push('!');
+      |     ^^^^^^^^^^^ mutable borrow occurs here
+    5 |     println!("{}", t);
+      |                    - immutable borrow later used here
+    ```
 
-`s`는 mutable이고 참조가 아닌데, 4행의 `s.push('!')`에서 mutable borrow 가 발생했다고 나온다. 결국 `s.push('!')`라고 작성했지만 내부적으로는 `(&mut s).push('!')`으로 동작함을 알 수 있다.
+    `s`는 mutable이고 참조가 아닌데, 4행의 `s.push('!')`에서 mutable borrow 가 발생했다고 나온다. 결국 `s.push('!')`라고 작성했지만 내부적으로는 `(&mut s).push('!')`으로 동작함을 알 수 있다.
 
-참고로 위 코드에서 빌려온 참조인 `t`를 사용하지 않으면 컴파일 에러는 발생하지 않고, `t`가 사용되지 않는다는 경고만 나온다.
+    참고로 위 코드에서 빌려온 참조인 `t`를 사용하지 않으면 컴파일 에러는 발생하지 않고, `t`가 사용되지 않는다는 경고만 나온다.
 
-```rust
-fn main() {
-    let mut s = "homo.efficio".to_string();
-    let t = &s;
-    s.push('!');
-    // println!("{}", t);
-}
+    ```rust
+    fn main() {
+        let mut s = "homo.efficio".to_string();
+        let t = &s;
+        s.push('!');
+        // println!("{}", t);
+    }
 
-//-----
-warning: unused variable: `t`
- --> src/main.rs:3:9
-  |
-3 |     let t = &s;
-  |         ^ help: consider using `_t` instead
-  |
-  = note: #[warn(unused_variables)] on by default
-```
+    //-----
+    warning: unused variable: `t`
+     --> src/main.rs:3:9
+      |
+    3 |     let t = &s;
+      |         ^ help: consider using `_t` instead
+      |
+      = note: #[warn(unused_variables)] on by default
+    ```
 
 ## loop
 
@@ -178,3 +178,5 @@ Domains of hanmomhanda
   facebook.com
 size of table: 3
 ```
+
+## 
