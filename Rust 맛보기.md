@@ -1,4 +1,4 @@
-# Rust - 맛보기
+# Rust 맛보기
 
 ## Fast and Safe
 
@@ -246,6 +246,10 @@ let u = s.clone();
 
 Owner가 여럿이라면 변경이 이슈가 될텐데, `Rc<T>`는 기본적으로 immutable 이라서 변경으로 인한 이슈를 예방한다. 다만 Interior Mutability 라는 방법을 통해 mutable한 `Rc<T>`도 만들 수 있다고 한다.
 
+
+## Lifetime parameter
+
+`<'a>`와 같은 형식을 표기되는데, 제네릭으로 타입을 알려주는 것이 아니라 제네릭으로 lifetime을 알려주는 것이다. lifetime 제약을 위배하는 참조를 사용하는 코드를 작성하지 않도록 미리 막아주는 장치인데 C, C++, Java 등에 없는 개념이라 금방 와닿지가 않는다. 나중으로 미룬다..
 
 
 ## Slice
