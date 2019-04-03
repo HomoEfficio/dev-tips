@@ -314,6 +314,16 @@ public options = Object.values(UserAdminAction);
 </select>
 ```
 
+## RadioButton 사용 시 주의 사항
+
+https://www.ngxfoundation.com/components/buttons 여기보고 따라하면 되는데 잊지 말아야 할 것은 링크의 Usage에 나와있는 것처럼 `ButtonsModule.forRoot()`를 모듈의 import에 추가해야 한다는 점이다. 추가하지 않으면 다음과 같은 에러가 난다.
+
+```
+No value accessor for form control with name:
+```
+
+https://github.com/valor-software/ngx-bootstrap/issues/1648 참고
+
 
 ## Reactive 방식으로 외부 데이터 조회 후 Child에 데이터 전달
 
