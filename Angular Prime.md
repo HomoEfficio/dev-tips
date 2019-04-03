@@ -334,6 +334,35 @@ https://github.com/valor-software/ngx-bootstrap/issues/1648 참고
 </div>
 ```
 
+## Reactive Form Group의 데이터에서 모델 객체 생성
+
+Reactive Form Group에 속한 폼 컨트롤러 들의 formControllerName 과 모델 객체의 프로퍼티 이름이 같다면 다음과 같이 `Partial`과 `Object.assign()`을 활용해서 쉽게 모델 객세 생성 가능
+
+```typescript
+// 모델
+export class UserAdminDetail {
+
+  public id: string;
+  public email: string;
+  public name: string;
+  public password1: string;
+  public password2: string;
+  public company: Company;
+  public userSites: UserSite[];
+  public deptName: string;
+  public jobPosition: string;
+  public job: string;
+  public userId: string;
+
+  public constructor(init?: Partial<UserAdminDetail>) {
+    Object.assign(this, init);
+  }
+}
+
+// 컴포넌트
+const userDetail = new UserAdminDetail(this.userForm.value);  // userForm이 Form Group 타입의 Reactive Form Group 임
+```
+
 
 ## Reactive 방식으로 외부 데이터 조회 후 Child에 데이터 전달
 
