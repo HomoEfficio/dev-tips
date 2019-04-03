@@ -300,6 +300,21 @@ html 에서는 다음과 같이 참조할 수 있다.
           (click)="action({'action': userAdminAction.DELETE}, row, $event)">삭제</button>
 ```
 
+### `*ngFor` 에서 enum 사용
+
+`*ngFor`는 `let .. of ..` 구문으로 사용되는데 enum 은 `let .. of ..` 가 아니라 `let .. in ..`으로 iterate 할 수 있다. 따라서 `*ngFor`에서는 직접적으로 enum 을 사용할 수 없고 다음과 같이 array 로 변환한 값을 사용하면 된다.
+
+```typescript
+public options = Object.value(UserAdminAction);
+```
+
+```html
+<select>
+    <option *ngFor="let option of options" [value]="option">{{option}}</option>
+</select>
+```
+
+
 ## Reactive 방식으로 외부 데이터 조회 후 Child에 데이터 전달
 
 Child 컴포넌트에 데이터를 전달하려면,
