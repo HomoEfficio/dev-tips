@@ -324,6 +324,16 @@ No value accessor for form control with name:
 
 https://github.com/valor-software/ngx-bootstrap/issues/1648 참고
 
+또한 `btnRadio`에 단순 텍스트만 지정할 수 있는 것 같지만 아래와 같이 `{{ }}`로 변수를 넣어주면 변수를 사용할 수도 있다. `btnRadio`의 값은 항목마다 달라야 한다.
+
+```typescript
+<div class="btn-group" btnRadioGroup [(ngModel)]="companySite.userRoleId">
+        <label *ngFor="let userRole of userRoles; index as j" class="btn btn-success"
+               btnRadio="{{ userRole }}" tabindex="0" role="button" [(ngModel)]="companySite.userRoleId">{{ userRole }}</label>
+      </div>
+</div>
+```
+
 
 ## Reactive 방식으로 외부 데이터 조회 후 Child에 데이터 전달
 
