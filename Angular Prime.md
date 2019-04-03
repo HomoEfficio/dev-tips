@@ -280,7 +280,7 @@ C 컴포넌트의 물리적 파일 위치는 C 컴포넌트를 사용하는 D �
 ### ngSwitch
 
 
-# 기타 이슈
+# 개발 팁
 
 ## html 에서 typescript enum 접근 하기
 
@@ -299,6 +299,37 @@ html 에서는 다음과 같이 참조할 수 있다.
           type="button"
           (click)="action({'action': userAdminAction.DELETE}, row, $event)">삭제</button>
 ```
+
+## Reactive 방식으로 외부 데이터 조회 후 Child에 데이터 전달
+
+Child 컴포넌트에 데이터를 전달하려면,
+
+- Parent HTML에서 `<child [child에서 사용할 변수]="parent에 정의된 변수">`로 전달하고,
+- Child의 컴포넌트에서 `@Input('child에서 사용할 변수') public 변수명`으로 받으면 된다.
+
+그런데 Parent가 외부에서 Reactive 방식으로 받아온 데이터를 Child에 전달하면, 외부에서 데이터를 받아오는 동안에 Child가 이미 렌더링되고, 이 시점에서는 Parent에서 받아온 값이 없으므로 Child의 `@Input` 변수는 `undefined`상태가 된다.
+
+이 때는 Child 컴포넌트를 다음과 같이 `OnChanges`를 구현하게 하고, `ngOnChanges(changes: SimpleChanges): void {}` 안에서 changes를 통해 데이터를 받아서 사용하면 된다.
+
+```typescript
+export class UserSiteRoleComponent extends BaseComponent implements OnInit, OnChanges {
+
+  @Input('companySites')
+  public companySites: CompanySite[];
+
+  @Input('userSites')
+  public userSites: UserSite[];
+  
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log('in user-site-role.ngOnChanges, changes:', changes);
+    console.log('in user-site-role.ngOnChanges, companySites:', this.companySites);
+    console.log('in user-site-role.ngOnChanges, userSites:', this.userSites);
+  }
+```
+
+
+
+# 기타 이슈
 
 
 ## Circular dependency detected
