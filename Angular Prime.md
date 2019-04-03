@@ -305,7 +305,7 @@ html 에서는 다음과 같이 참조할 수 있다.
 `*ngFor`는 `let .. of ..` 구문으로 사용되는데 enum 은 `let .. of ..` 가 아니라 `let .. in ..`으로 iterate 할 수 있다. 따라서 `*ngFor`에서는 직접적으로 enum 을 사용할 수 없고 다음과 같이 array 로 변환한 값을 사용하면 된다.
 
 ```typescript
-public options = Object.value(UserAdminAction);
+public options = Object.values(UserAdminAction);
 ```
 
 ```html
