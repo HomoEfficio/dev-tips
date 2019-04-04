@@ -394,4 +394,41 @@ class TeamService {
 >이를 해결하려면 Team을 조회한 후에도 세션이 살아있게 해야하며, 스프링 데이터 JPA에서는 `@Transactional(readOnly = true)`를 이용해서 쉽게 해결할 수 있다.
 
 
+## orphanRemoval = true 인 컬렉션 삭제
+
+다음과 같이 A 엔티티가 `orphanRemoval = true`로 설정된 복수의 B 엔티티를 가지는 경우,
+
+```java
+@Entity
+public class A {
+    @OneToMany(mappedBy = "a", orphanRemoval = true)
+    private List<B> bs = new ArrayList<>();
+}
+```
+
+JPA를 통해 bs를 지우고 새로운 값으로 세팅하려면 다음과 같이 clear(), addAll()을 사용해야 한다.
+
+```java
+a.getBs().clear();
+a.getBs().addAll(newBs);
+```
+
+`addAll()`을 사용하지 않고 새로운 값으로 다음과 같이 set을 하면,
+
+```java
+a.setBs(newBs);
+```
+
+아래와 같은 JPA Exception이 발생한다.
+
+```
+A collection with cascade="all-delete-orphan" was no longer referenced by the owning entity instance: a
+```
+
+### 정리
+
+>`orphanRemoval = true` 로 설정해둔 컬렉션을 삭제하고 새 값으로 설정하려면,  
+>list.clear() 와 list.addAll(newList) 를 사용해야 한다.  
+>안 그러면 A collection with cascade="all-delete-orphan" was no longer referenced by the owning entity instance 발생
+
 
