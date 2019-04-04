@@ -394,7 +394,9 @@ class TeamService {
 >이를 해결하려면 Team을 조회한 후에도 세션이 살아있게 해야하며, 스프링 데이터 JPA에서는 `@Transactional(readOnly = true)`를 이용해서 쉽게 해결할 수 있다.
 
 
-## orphanRemoval = true 인 컬렉션 삭제
+## orphanRemoval = true 인 컬렉션 수정
+
+컬렉션을 수정할 때 하나하나 비교 후 수정하는 것보다 그냥 기존 컬렉션을 모두 지우고 새 컬렉션으로 값을 저장할 때가 있다.
 
 다음과 같이 A 엔티티가 `orphanRemoval = true`로 설정된 복수의 B 엔티티를 가지는 경우,
 
