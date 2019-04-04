@@ -344,6 +344,57 @@ Hibernate:
 >**테스트 메서드에서는 반드시 명시적으로 `flush()`를 호출해주거나, commit, JPQL 쿼리 실행으로 `flush`를 유발해야 한다.**
 
 
+## flush는 commit 까지 실행하지는 않는다.
+
+`flush()`가 영속성 컨텍스트에 저장된 변경 내용을 DB에 반영하긴 하지만 그렇다고 commit 까지 실행되는 것은 아니다. 이 내용은 아쉽게도 [Spring Data JPA의 API 문서](https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/JpaRepository.html#flush--)에도 제대로 설명되어 있지 않고, 다만 [Baeldung 블로그](https://www.baeldung.com/spring-data-jpa-save-saveandflush)에 다음과 같이 비슷한 설명이 나온다.
+
+>Normally, we use this method when our business logic needs to read the saved changes at a later point during the same transaction **but before the commit.**
+
+변경 사항을 commit 전에 DB에 반영한다는 얘기인데 그렇다고 `flush()`가 커밋을 유발하지 않는다는 얘기는 아니므로 실제 실험으로 확인해보자.
+
+```java
+@Entity
+public class A {
+    @OneToMany(mappedBy = "a", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<B> children = new ArrayList<>();
+}
+```
+
+`CascadeType.ALL`과 `orphanRemove = true`로 설정되었으므로 children를 지우고 새로운 값으로 세팅하려면 다음과 같이 clear(), addAll()을 사용해야 한다.
+
+```java
+a.getChildren().clear();
+a.getChildren().addAll(newBs);
+```
+
+그런데 이렇게만 하면 `a.getChildren().clear()`를 호출해도 DB에 delete 를 날리지 않기도 한다. 그러면 delete를 안 한 상태에서 `addAll()`에 의해 insert 가 실행되므로 Duplicate Key 관련 에러가 발생할 수 있다.
+
+이 때 확실하게 delete 를 날리게 하려면 JpaRepository의 `saveAndFlush()`를 호출해주면 된다.
+
+```java
+a.getChildren().clear();
+aRepository.saveAndFlush(a);  // <= 이거!!
+a.getChildren().addAll(newChildren);
+```
+
+이 때 flush 가 발생하면서 commit 이 실행되면, 그 후에 예외가 발생해도 delete 된 내용을 돌이킬 수 없게 되어 문제가 된다. 하지만 다행스럽게도 **flush는 commit을 유발하지 않는다.** 다음 코드를 통해 확인할 수 있다.
+
+```java
+a.getChildren().clear();
+aRepository.saveAndFlush(a);  // <= 이거!!
+if (1 == 1) {
+    throw new RuntimeException("TEST");
+}
+```
+
+이 코드를 실행하면 delete가 실행되지만 그 후에 발생한 예외에 의해 delete 된 내용이 rollback 된다. 직접 DB를 보면 children이 delete 되지 않은 것을 확인할 수 있다.
+
+### 정리
+
+>JPA의 flush는 commit을 유발하지 않는다.  
+>따라서 컬렉션의 내용을 모두 지우고 새 컬렉션으로 변경할 때 collection.clear() 과 collection.addAll(newChildren) 사이에 해당 컬렉션을 가진 엔티티 a에 대해 `aRepository.saveAndFlush(a)`를 실행해주면 collection.clear()에 의한 delete가 확실히 실행되고 필요한 경우 rollback 도 되므로 안전하게 사용해도 된다.
+
+
 ## 하나의 repository에서만 `flush()`를 호출하면 다른 repository에서의 변경 사항까지 모두 함께 `flush` 된다.
 
 TODO
@@ -427,10 +478,12 @@ a.setBs(newBs);
 A collection with cascade="all-delete-orphan" was no longer referenced by the owning entity instance: a
 ```
 
+그리고 `list.clear()`와 `list.addAll(newList)`를 한 트랜잭션에서 실행하면 `list.clear()`를 호출해도 실제 DB에서 delete 가 실행되지 않아서 Duplicate Key 관련 예외가 발생할 수 있다. 이 때는 `list.clear()` 호출 후에 `ARepository.saveAndFlush(a)`를 해주면 확실하게 delete 가 실행된다. 그리고 flush 는 변경사항을 DB에 반영하지만 그렇다고 commit 까지 실행하지는 않는다. 따라서 flush 후에 어떤 예외가 발생하면 rollback 되므로 안심하고 사용해도 된다.
+
 ### 정리
 
 >`orphanRemoval = true` 로 설정해둔 컬렉션을 삭제하고 새 값으로 설정하려면,  
->list.clear() 와 list.addAll(newList) 를 사용해야 한다.  
+>list.clear(), ARepository.saveAndFlush(a), list.addAll(newList) 를 사용해야 한다.  
 >안 그러면 A collection with cascade="all-delete-orphan" was no longer referenced by the owning entity instance 발생
 
 
