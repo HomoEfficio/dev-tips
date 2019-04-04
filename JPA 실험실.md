@@ -391,8 +391,9 @@ if (1 == 1) {
 
 ### 정리
 
->JPA의 flush는 commit을 유발하지 않는다.  
->따라서 컬렉션의 내용을 모두 지우고 새 컬렉션으로 변경할 때 collection.clear() 과 collection.addAll(newChildren) 사이에 해당 컬렉션을 가진 엔티티 a에 대해 `aRepository.saveAndFlush(a)`를 실행해주면 collection.clear()에 의한 delete가 확실히 실행되고 필요한 경우 rollback 도 되므로 안전하게 사용해도 된다.
+>JPA의 **flush는 commit을 유발하지 않는다.**
+>
+>따라서 컬렉션의 내용을 모두 지우고 새 컬렉션으로 변경할 때 collection.clear() 과 collection.addAll(newChildren) 사이에 해당 컬렉션을 가진 엔티티 a에 대해 **`aRepository.saveAndFlush(a)`를 실행해주면 collection.clear()에 의한 delete가 확실히 실행되고 필요한 경우 rollback 도 되므로 안전하게 사용할 수 있다.**
 
 
 ## 하나의 repository에서만 `flush()`를 호출하면 다른 repository에서의 변경 사항까지 모두 함께 `flush` 된다.
