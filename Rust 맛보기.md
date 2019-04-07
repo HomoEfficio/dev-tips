@@ -325,5 +325,29 @@ error[E0596]: cannot borrow `integers` as mutable, as it is not declared as muta
 
 # struct
 
-구조화 된 데이터
+TODO 구조화 된 데이터
+
+
+# module, crate, workspace
+
+- module은 프로젝트 내에서 코드를 조직화하는 단위(Java의 package)
+- crate(상자라는 뜻)는 서로 다른 프로젝트 사이에서 코드를 재사용할 수 있는 단위
+    - src와 target을 각자 따로 가지고 있음
+- workspace는 여러 개의 crate를 담을 수 있는 하나의 프로젝트에 해당
+    - crate는 기본적으로 target을 각자 따로 가지며 동일한 의존 라이브러리도 crate 마다 중복으로 컴파일되고 중복으로 존재
+    - 하나의 workspace에 하나의 target만을 두고 workspace에 담긴 여러 crate가 사용하는 동일한 의존 라이브러리 공유 가능
+    - toml 파일에 다음과 같이 명시하고,
+
+        ```toml
+        [workspace]
+        members = ["crate01", "crate02", "crate03"]
+        ```
+
+    - 각 crate 폴더 아래에 있던 cargo.lock 파일과 target 디렉터리를 지우면, workspace 루트 바로 아래에 전체 workspace를 아우르는 cargo.lock 파일과 target 디렉터리가 생성된다.
+
+
+
+
+
+
 
