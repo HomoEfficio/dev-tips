@@ -328,6 +328,33 @@ error[E0596]: cannot borrow `integers` as mutable, as it is not declared as muta
 TODO 구조화 된 데이터
 
 
+# Closure
+
+다른 언어에서는 주로 Lambda Expression이라고 부르는 것을 Rust에서는 클로저(Closure)라고 부른다.
+
+람다식이나 클로저에서는 상위 스코프에 있는 변수에 접근해서 사용할 수 있고, 이렇게 사용되는 변수를 자유 변수라고 한다. GC를 사용하는 다른 언어에서는 자유 변수를 힙에 생성해서 상위 스코프가 종료되고 스택이 사라지더라도 람다식은 힙에 있는 자유 변수를 사용할 수 있다. 이렇게 상위 스코프의 스택에 있던 자유 변수를 상위 스코프의 스택이 사라지더라도 사용할 수 있게 되는 메커니즘을 capture라고 한다.
+
+Rust에는 GC가 없으며, 자유 변수를 힙에 생성하지 않는다. 그럼 Rust는 자유 변수를 어떻게 capture해서 사용할 수 있을까?
+
+Rust에는 앞에서 살펴본 것처럼 변수의 라이프사이클에 소유권 개념이 있다. 상위 스코프에서 클로저를 사용할 때 `move` 키워드를 사용해서 자유 변수의 소유권을 클로저에 명시적으로 넘겨주면, 상위 스코프가 종료되어 스택이 사라지더라도 클로저는 소유권을 넘겨 받아서 자기 스택에 소유하고 있는 자유 변수를 사용할 수 있다. 코드는 다음과 같다.
+
+```rust
+fn start_sorting_thread(mut cities: Vec<City>, stat: Statistic)
+    -> thread::JoinHandle<Vec<City>>
+{
+    let key_fn = move |city: &City| -> i64 { -city.get_statistic(stat) };
+
+    // 클로저 앞에 move 키워드를 붙여주면 자유 변수인 cities의 소유권이 클로저로 넘어가는 방식으로 capture가 일어난다.
+    thread::spawn(move || {  
+        cities.sort_by_key(key_fn);
+        cities
+    })
+}
+```
+
+소유권이 클로저로 넘겨진 후에 `cities`는 상위 스코프에서 더 이상 사용될 수 없게 된다. 따라서 자유 변수는 공유되지 않으며 Rust가 자랑하는 안전성을 계속 유지할 수 있다.
+
+
 # module, crate, workspace
 
 - module은 프로젝트 내에서 코드를 조직화하는 단위(Java의 package)
