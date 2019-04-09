@@ -30,6 +30,11 @@
 
 **카프카는 BTree를 사용하지 않고 그냥 파일 끝에 데이터를 추가하는 단순한 자료 구조를 사용**한다. 이게 가능한 이유도 앞에서 살펴본 것처럼 디스크 사용 방식이 대부분 순차 접근이기 때문이다. 따라서 **그냥 파일 끝에 추가하므로 데이터 양이 늘어난다고 성능이 낮아질 일도 없으므로 사실 상 O(1)이라고 할 수 있고, 읽기 작업이 쓰기 작업을 블록킹 할 일도 없다.** 
 
+
+write 데이터 크기가 증가해도 초당 처리량(레코드 수)는 큰 변화 없다.  
+![https://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines](https://i.imgur.com/SUFqyUe.png)  
+그림 출처: https://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines
+
 따라서 **굳이 고성능의 디스크를 사용할 필요가 없으므로 같은 값으로 용량이 큰 디스크를 사용할 수 있고, 이를 통해 확보한 공간에 메시지를 장기간(기본은 일주일) 저장할 수 있으므로 다른 메시징 시스템과 차별화된 기능을 제공할 수 있게 된다.**
 
 ## 일괄 처리
