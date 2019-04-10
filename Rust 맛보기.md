@@ -354,6 +354,50 @@ fn start_sorting_thread(mut cities: Vec<City>, stat: Statistic)
 
 소유권이 클로저로 넘겨진 후에 non-Copy 타입인 `cities`는 상위 스코프에서 더 이상 사용될 수 없게 된다. 따라서 자유 변수는 공유되지 않으며 Rust가 자랑하는 안전성을 계속 유지할 수 있다.
 
+## 함수의 타입과 클로저의 타입
+
+Rust에서는 함수도 값으로 취급될 수 있고, 클로저도 값으로 취급될 수 있다. 타입 기반 언어인 Rust에서 값으로 취급될 수 있다는 것은 타입을 가지고 있다는 말이다.
+
+함수의 타입은 파라미터와 반환값으로 정해지며, 다음과 같은 함수의 타입은 `fn(&MyStruct) -> usize`이다.
+
+```rust
+fn show_respect(my_struct: &MyStruct) -> usize {
+  my_struct.size
+}
+```
+
+위 함수는 다음과 같은 함수의 인자로 사용될 수 있다.
+
+```rust
+fn higher_order_fn_1(my_struct: &MyStruct, test_fn: fn(&MyStruct) -> usize) -> bool {
+  test_fn(my_struct) > 100
+}
+
+let result1 = higher_order_fn_1(my_struct, show_respect);
+```
+
+클로저의 타입도 파라미터와 반환값으로 정해지지만, 함수의 타입과 다르다. 그래서 다음과 같이 사용하면 타입 에러가 발생한다.
+
+```rust
+let result2 = higher_order_fn_1(my_struct, |param| param.size);
+```
+
+클로저의 타입은 별도의 타입이라기보다 `Fn`이라는 trait으로 표현된다. 그리고 `Fn` trait은 함수도 받아들일 수 있다. 그래서 다음과 같이 파라미터의 타입을 바꾸면,
+
+```rust
+fn higher_order_fn_1<F>(my_struct: &MyStruct, test_fn: F) -> bool
+    where F: Fn(&MyStruct) -> bool {
+    test_fn(my_struct) > 100
+}
+```
+
+다음과 같이 함수와 클로저 모두 인자로 넘길 수 있다.
+
+```rust
+let result1 = higher_order_fn_1(my_struct, show_respect);
+let result2 = higher_order_fn_1(my_struct, |param| param.size);
+```
+
 
 # module, crate, workspace
 
