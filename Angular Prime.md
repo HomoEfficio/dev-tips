@@ -392,6 +392,83 @@ export class UserSiteRoleComponent extends BaseComponent implements OnInit, OnCh
 ```
 
 
+## Reactive Form Group 방식으로 외부 데이터 조회 후 배열인 변수에 데이터 설정
+
+회사(company) 목록을 ng-select selectbox 에 담아서 보여주는 화면을 생각해보자. selectbox에 바인딩 되는 데이터는 다음과 같이 배열이다.
+
+```typescript
+this.companies: Company[] = [];
+```
+
+constructor에서 아래와 같은 initForm 메서드를 호출해서 Reactive Form Group을 설정한다.
+
+```typescript
+private initForm() {
+  this.userForm = this.formBuilder.group({
+    email: ['', [Validators.required]],
+    name: ['', [Validators.required]],
+    password1: ['', [Validators.required]],
+    password2: ['', [Validators.required]],
+    companyName: [''],  // <-- 배열을 품고 있는 selectbox
+    deptName: [''],
+    jobPosition: [''],
+    job: ['']
+  });
+}
+```
+companyName의 Form은 다음과 같다.
+
+```html
+<ng-select formControlName="companyName"  id="companyList"
+          [items]="companies"
+          bindLabel="companyName"
+          bindValue="companyId"
+          (change)="selectCompany($event)">
+  <ng-template ng-option-tmp let-item="item">{{item.companyName}}</ng-template>
+</ng-select>
+```
+
+ngOnInit에서 company의 목록을 외부에서 다음과 같이 조회해서 `companies`에 push 메서드를 통해 데이터를 채우면,
+
+```typescript
+this.companyService.getCompanies()
+  .do((response) => {
+    if (response['code'] !== PocAPIStatusCode.OK) {
+      this.toastrService.error('회사 리스트 정보를 가져오는데 실패하였습니다. 다시 시도해주세요.');
+    }
+  })
+  .map((data) => data['result'])
+  .map(result => result['companies'])
+  .subscribe((companies: Company[]) => {
+    companies.forEach(company => this.companies.push(new Company(company)));    
+    console.log('this.companies:', this.companies);
+  });
+```
+
+화면의 selectbox에 회사 목록이 표시되지 않는다.
+
+push로 이미 바인딩 된 배열에 데이터를 채우지 말고, 다음과 같이 아예 새로운 배열을 할당하면 selectbox에 회사 목록이 표시된다.
+
+```typescript
+this.companyService.getCompanies()
+  .do((response) => {
+    if (response['code'] !== PocAPIStatusCode.OK) {
+      this.toastrService.error('회사 리스트 정보를 가져오는데 실패하였습니다. 다시 시도해주세요.');
+    }
+  })
+  .map((data) => data['result'])
+  .map(result => result['companies'])
+  .subscribe((companies: Company[]) => {
+    const tmpCompanies: Company[] = [];
+    companies.forEach(company => tmpCompanies.push(new Company(company)));
+    this.companies = tmpCompanies;  // <-- 새로 할당!!
+    console.log('this.companies:', this.companies);    
+  });
+```
+
+push를 통해 이미 바인딩 되어 있는 배열에 원소를 채워도 ng-select에서 변경 감지를 못하는 것으로 보인다.
+
+
 
 # 기타 이슈
 
