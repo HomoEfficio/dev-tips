@@ -382,7 +382,7 @@ let result1 = higher_order_fn_1(my_struct, show_respect);
 let result2 = higher_order_fn_1(my_struct, |param| param.size);
 ```
 
-클로저의 타입은 별도의 타입이라기보다 `Fn`이라는 trait으로 표현된다. 그리고 `Fn` trait은 함수도 받아들일 수 있다. 그래서 다음과 같이 파라미터의 타입을 바꾸면,
+클로저는 `Fn`이라는 trait을 구현한다(`FnOnce`와 `FnMut`도 있다). 그리고 `Fn`는 함수를 인자로 받을 수 있다(즉, 함수도 `Fn` trait을 구현한다고 유추할 수 있다). 그래서 다음과 같이 파라미터의 타입을 바꾸면,
 
 ```rust
 fn higher_order_fn_1<F>(my_struct: &MyStruct, test_fn: F) -> bool
@@ -397,6 +397,20 @@ fn higher_order_fn_1<F>(my_struct: &MyStruct, test_fn: F) -> bool
 let result1 = higher_order_fn_1(my_struct, show_respect);
 let result2 = higher_order_fn_1(my_struct, |param| param.size);
 ```
+
+인자의 소유권을 가져와서 사용하고 해당 인자를 다시는 사용할 수 없게 만드는 클로저는 `FnOnce` 타입이며, 2번 이상 호출될 수 없다.
+
+인자의 참조를 빌려와서 사용하는 클로저는 `Fn` 타입이며, 2번 이상 호출될 수 있다.
+
+인자의 참조를 mutable로 빌려와서 사용하는 클로저는 `FnMut` 타입이며, 값을 변경하면서 2번 이상 호출될 수 있다.
+
+
+
+## 클로저 성능
+
+다른 언어에서는 클로저가 힙에 할당되고, 동적 디스패치되고, 가비지 컬렉션되므로 성능 손실이 발생한다. 그리고 인라인화 되지 못 하므로 최적화 포인트도 적다.
+
+Rust의 클로저는 가비지 컬렉션되지 않으며, Box나 Vec 또는 다른 컨테이너에 넣지 않는한 힙에 생성되지 않고, 타입이 있으므로 인라인화 될 수 있어서 다른 언어에서의 클로저가 유발하는 성능 손실이 없다.
 
 
 # module, crate, workspace
