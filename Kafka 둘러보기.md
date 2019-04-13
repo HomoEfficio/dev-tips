@@ -2,13 +2,16 @@
 
 # 디스크에 읽고 쓰는데도 성능이 좋은 이유
 
-- 참고
+- 아래 문서 요약 및 양념
     - [아파치 카프카 문서 - 데이터 저장](https://kafka.apache.org/documentation/#persistence)
     - [아파치 카프카 문서 - 효율 극대화](https://kafka.apache.org/documentation/#maximizingefficiency)
 
 ## Linear Write/Read
 
-일반적으로 디스크 접근은 메모리에 비해 매우 느리다고 알려져 있지만, 그건 랜덤 액세스일 때 얘기고 선형 접근(또는 순차 접근?)이라면 디스크의 속도도 상당히 쓸만하다. 때로는 메모리를 랜덤 액세스하는 것보다 요즘 나온 HDD에서의 순차 접근이 더 빠르다는 결과도 있다고 한다.
+일반적으로 디스크 접근은 메모리에 비해 매우 느리다고 알려져 있지만, 그건 랜덤 액세스일 때 얘기고 선형 접근(또는 순차 접근?)이라면 디스크의 속도도 상당히 쓸만하다. [때로는 메모리를 랜덤 액세스하는 것보다 요즘 나온 HDD에서의 순차 접근이 더 빠르다는 결과](https://queue.acm.org/detail.cfm?id=1563874)도 있다고 한다.
+
+![Imgur](https://i.imgur.com/1GeBFO9.jpg)  
+그림 출처: https://queue.acm.org/detail.cfm?id=1563874
 
 또한 순차 접근은 예측성이 좋아서 운영체제에 의해 엄청나게 최적화된다. 요즘 운영체제는 대량의 블록에서 데이터를 미리 읽는 read-ahead와 작은 쓰기 작업을 모아서 한 번에 쓰는 write-behind를 지원하므로 순차 접근만 가능하다면 디스크를 사용해도 성능적으로 나쁠 것이 없다.
 
