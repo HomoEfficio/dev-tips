@@ -8,17 +8,19 @@
     
 ## Most Loved Language
 
-- 2016, 2017, 2018 이렇게 3년 연속 스택오버플로우 설문 조사에서 가장 사랑받는 언어 1위!!
+- 2016, 2017, 2018, 2019 무려 4년 연속 스택오버플로우 설문 조사에서 가장 사랑받는 언어 1위!!
     - https://insights.stackoverflow.com/survey/2016/#technology-most-loved-dreaded-and-wanted
     - https://insights.stackoverflow.com/survey/2017/#most-loved-dreaded-and-wanted
     - https://insights.stackoverflow.com/survey/2018/#most-loved-dreaded-and-wanted
-    - 이게 매년 3월에 발표되는데 2019년은 어떨지.. (아마 코틀린이 1위 할 것 같기도..)
+    - https://insights.stackoverflow.com/survey/2019#most-loved-dreaded-and-wanted
+    
     
 ## 아직 살짝 부족한 Ecosystem
 
 - IntelliJ에서는 아직 Debug 모드가 동작하지 않는다 ㅠㅜ (CLion에서는 동작한다고 한다)
-- gRPC에서도 Rust는 지원 안함(계획도 없어 보임)
+- gRPC에서도 Rust는 지원 안함(구글은 Go를 밀테니 Rust는 지원할 계획도 없어 보임)
 - ReactiveX에서도 마지막 커밋은 [2015년](https://github.com/ReactiveX/RxRust).. 
+- 그래도 http://www.arewewebyet.org/ 이렇게 웹 프레임워크가 발전하고 있다.
 
 ## Rust도 요즘 언어들 있는 거 다 있다
 
@@ -224,7 +226,7 @@ error[E0502]: cannot borrow `str` as immutable because it is also borrowed as mu
 
 실제 사용되는 코드를 제거해보면 앞에서 살펴본 것과는 다르게 동작하는 것을 확인할 수 있다. 사용되지 않는 참조가 포함되어 있는 것은 어차피 현실에서는 있을 수 없는, 있어서는 안 되는 상황이라고 간주하고 여기에서 따로 설명하지 않겠지만, https://play.rust-lang.org/ 에서 따로 실험해보면 컴파일러가 참조의 실제 사용 여부를 감안한다는 것을 확인할 수 있을 것이다.
 
-참조는 Ownership을 가지지 않으므로 참조가 스코프에서 사라진다고 해도 Owner가 여전히 살아있다면 참조가 가리키던 값 역시 살아있다.
+참조는 Ownership을 가지지 않으므로 참조가 스코프에서 사라진다고 해도 Owner가 여전히 살아있다면 참조가 가리키던 값(이게 결국 Owner) 역시 살아있다.
 
 읽기 전용 참조는 Shared Reference라고 하며 Copy 타입이다. 따라서 할당, 인자로 넘기기 등에서 동일한 대상에 대한 참조가 여러 갈래로 복사되고 공유되어 사용된다.  
 변경 가능 참조는 Mutable Reference라고 하며 Copy 타입이 아니다. 따라서 할당, 인자로 넘기기 등에 사용되면 이 참조가 가리키는 대상은 오직 이 참조를 통해서만 접근 가능하다. 
@@ -236,7 +238,7 @@ error[E0502]: cannot borrow `str` as immutable because it is also borrowed as mu
 
 Rust에서는 **Owner는 단 하나** 원칙을 지키기 위해 Copy 타입이 아닌 변수는 할당, 인자 전달, 반환에서 복사가 아니라 이동된다. 하지만 필요하다면 `Rc<T>`, `Arc<T>`를 사용해서, 이동이 아니라 파이썬처럼 Reference count를 통해 다수의 Owner를 허용할 수도 있다. `Arc`는 Atomic Reference Count이며 Thread-safe를 보장한다.
 
-다음 코드에서 s, t, u는 힙에 생성된 동일한 `Rc<string>` 타입 인스턴스를 가리키며, 이 인스턴스의 Reference count는 3이 되고, 0이 되면 이 인스턴스는 메모리에서 사라진다.
+다음 코드에서 t, u는 `clone()`을 통해 생성되지만 인스턴스 자체가 복제되는 게 아니라 `Rc<string>`에 대한 참조만 복제된다. 따라서 s, t, u는 모두 힙에 생성된 동일한 `Rc<string>` 타입 인스턴스를 가리키며, 이 인스턴스의 Reference count는 3이 되고, 0이 되면 이 인스턴스는 메모리에서 사라진다.
 
 ```rust
 let s = Rc<string>::new("Oh".to_string());
@@ -244,27 +246,49 @@ let t = s.clone();
 let u = s.clone();
 ```
 
-Owner가 여럿이라면 변경이 이슈가 될텐데, `Rc<T>`는 기본적으로 immutable 이라서 변경으로 인한 이슈를 예방한다. 다만 Interior Mutability 라는 방법을 통해 mutable한 `Rc<T>`도 만들 수 있다고 한다.
+**Owner가 여럿이라면 변경이 이슈가 될텐데, `Rc<T>`는 기본적으로 immutable 이라서 변경으로 인한 이슈를 예방**한다. 다만 Interior Mutability 라는 방법을 통해 mutable한 `Rc<T>`도 만들 수 있다고 한다.
 
 
 ## Lifetime parameter
 
-`<'a>`와 같은 형식을 표기되는데, 제네릭으로 타입을 알려주는 것이 아니라 제네릭으로 lifetime을 알려주는 것이다. 기본적으로 참조는 원본 데이터가 매모리에서 해제되면 그 참조도 사용할 수 없다. 따라서 참조를 사용하는 함수, 메서드, trait 등에서는 사용되는 참조의 lifetime을 컴파일러에 알려줘야 컴파일러가 dangling reference를 판단하고 컴파일 타임에 오류를 발견할 수 있다. 결국 잘못된 참조를 사용하는 코드를 작성하지 않도록 미리 막아주는 장치인데 C, C++, Java 등에 없는 개념이라 금방 와닿지가 않는다.
+lifetime은 어떤 참조가 안전하게 사용될 수 있는 구간 또는 범위를 의미한다. lexical 블록, 하나의 문(statement), 하나의 식(expression), 변수의 스코프 등이 바로 그 구간 또는 범위가 될 수 있다. lifetime은 컴파일 타임에만 사용되는 개념이며 런타임에는 존재하지 않는다. 출처: Programming Rust 5장
 
-먼저 함수에 명시하는 lifetime parameter를 통해 감을 잡아보자.
+결국 lifetime은 안전하지 않은 참조를 사용하는 코드를 작성하지 않도록 미리 막아주는 장치인데, 여기서 안전하지 않은 참조라는 것은 크게 두 가지 관점에서 살펴볼 수 있다.
+
+```rust
+fn main() {
+    let out_live_ref;
+    {
+        let short_lived_int = 3;
+        out_live_ref = &short_lived_int;  // 1. `&short_lived_int`는 자신이 할당된 out_live_ref 보다 일찍 소멸한다.
+    }
+    println!("{}", *out_live_ref);  // 2. `out_live_ref`는 Owner인 a가 소멸한 후에 사용되고 있다.
+}
+```
+
+위 코드에서 `short_live_int`는 Owner이고, `&short_lived_int`와 `out_live_ref`는 참조다.
+참조가 안전하게 사용되려면,  
+- 주석 1에 나타난 것처럼, 참조는 참조 자신이 할당된 변수(`out_live_ref`)의 생존 기간만큼 살아남아야 한다. (최소 한도)
+- 주석 2에 나타난 것처럼, 참조는 참조 자신이 빌려온 Owner(`short_lived_int`)의 생존 기간보다 오래 살아남으면 안 된다. (최대 한도)
+
+위 코드는 위 2가지 사항을 모두 만족하지 못하므로 안전하지 못한 참조를 사용하고 있으며 따라서 컴파일 에러가 발생한다. 두 가지 관점에서 살펴봤지만 결론은 사실 한 가지다. `out_live_ref`가 dangling reference가 된다는 것이다. 결국 lifetime은 dangling reference가 발생하지 않게 해주는 장치라고 할 수 있다. 그리고 참조를 사용하는 함수, 메서드, struct, trait 등의 lifetime을 컴파일러에 알려줘야 컴파일러가 컴파일 타임에 dangling reference 발생 여부를 판단할 수 있게 된다. lifetime을 컴파일러에 명시적으로 알려주는 것이 바로 lifetime parameter다.
+
+lifetime parameter도 제네릭 타입 파라미터처럼 `<'a>`와 같은 형식으로 표기되는데, 제네릭으로 타입을 알려주는 것이 아니라 제네릭으로 lifetime을 알려주는 것이다.
+
+lifetime parameter는 C, C++, Java 등 다른 언어에 없는 개념이라 금방 와닿지가 않는다. 먼저 함수에 명시하는 lifetime parameter를 통해 감을 잡아보자.
 
 ### 함수에 명시하는 lifetime parameter
 
-
-
-
-
-### 함수에 붙이는 Lifetime parameter
+다음과 같은 함수 정의에서 
+- `'a`(tick A라고 읽는다)는 함수 my_fun의 lifetime parameter라고 한다.
+- `r`은 임의의 liftime `a`를 갖는 i32형 참조를 나타낸다.
 
 ```rust
-fn 
+fn my_fun<'a>(r: &'a i32) {
+}
 ```
 
+TODO
 
 
 ## Slice
