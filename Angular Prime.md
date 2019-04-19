@@ -600,6 +600,42 @@ export class CompanyEditComponent extends BaseComponent implements OnInit {
 
 그런데 충격적인 것은 이제 `@Inject`를 제외해도 컴파일 에러가 발생하지 않는다.. 뭥미..
 
+## ngx-datatable 3.1.3 사용 시 overflow: hidden 해제하기
+
+테이블 만들 때 [ngx-datatable](https://github.com/swimlane/ngx-datatable) 을 사용하면 아주 편리하다. 그런데 한 가지 골치 아픈 문제가 있는데 아래와 같이 모든 cell에 `overflow-x: hidden`이 먹어서 드랍다운 박스 같은 걸 쓸 수가 없다는 점이다.
+
+![Imgur](https://i.imgur.com/XZvlE34.png)
+
+[공식 문서](https://github.com/swimlane/ngx-datatable/blob/master/demo/basic/css.component.ts)를 참고해서 시도해봤지만, 최종 생성되는 html 파일에서 ngx-datatable이 만들어내는 css 파일이 항상 최하단에 위치하기 때문에 내가 지정한 custom css는 ngx-datatable의 css에 의해 덮어써져서 효과가 없다.
+
+이 문제는 https://github.com/swimlane/ngx-datatable/issues/937 에도 이슈로 올라가 있는데 아직 해결되진 않은 것 같아서 일단 임시스러운 해결책을 올렸다.
+
+https://github.com/swimlane/ngx-datatable/issues/937#issuecomment-484879030
+
+아래와 같이 `ngAfterInit()` 훅을 이용해서 DOM을 직접 수정해서 해결은 했지만 좋은 방법은 아닌 것 같다.
+
+```html
+<ngx-datatable-column name="good" cellClass="overflow-visible">
+...
+</ngx-datatable-column>
+```
+```typescript
+  public ngAfterViewInit() {
+    this.cellOverflowVisible();
+  }
+
+  private cellOverflowVisible() {
+    const cells = document.getElementsByClassName('datatable-body-cell overflow-visible');
+    for (let i = 0, len = cells.length; i < len; i++) {
+      cells[i].setAttribute('style', 'overflow: visible !important');
+    }
+  }
+```
+
+어쨌든 DOM 직접 수정해서 다음과 같이 제대로 나오게 했다.
+
+![Imgur](https://i.imgur.com/jgnJfp3.png)
+
 
 
 
