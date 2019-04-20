@@ -266,14 +266,16 @@ fn main() {
 }
 ```
 
-위 코드에서 `short_live_int`는 Owner이고, `&short_lived_int`와 `out_live_ref`는 참조다.
-참조가 안전하게 사용되려면,  
-- 주석 1에 나타난 것처럼, 참조는 참조 자신이 할당된 변수(`out_live_ref`)의 생존 기간만큼 살아남아야 한다. (최소 한도)
-- 주석 2에 나타난 것처럼, 참조는 참조 자신이 빌려온 Owner(`short_lived_int`)의 생존 기간보다 오래 살아남으면 안 된다. (최대 한도)
+위 코드에서 `short_lived_int`는 Owner이고, `&short_lived_int`와 `out_live_ref`는 참조다.
+참조가 안전하게 사용된다는 것은 아래의 2가지 제약사항을 모두 준수한다는 것을 의미한다.  
+- 주석 1에 나타난 것처럼, **참조는 적어도 참조 자신이 할당된 변수(`out_live_ref`)의 생존 기간만큼 살아남아야 한다. (최소 한도)**
+- 주석 2에 나타난 것처럼, **참조는 길어도 참조 자신이 빌려온 Owner(`short_lived_int`)의 생존 기간보다 오래 살아남으면 안 된다. (최대 한도)**
 
-위 코드는 위 2가지 사항을 모두 만족하지 못하므로 안전하지 못한 참조를 사용하고 있으며 따라서 컴파일 에러가 발생한다. 두 가지 관점에서 살펴봤지만 결론은 사실 한 가지다. `out_live_ref`가 dangling reference가 된다는 것이다. 결국 lifetime은 dangling reference가 발생하지 않게 해주는 장치라고 할 수 있다. 그리고 참조를 사용하는 함수, 메서드, struct, trait 등의 lifetime을 컴파일러에 알려줘야 컴파일러가 컴파일 타임에 dangling reference 발생 여부를 판단할 수 있게 된다. lifetime을 컴파일러에 명시적으로 알려주는 것이 바로 lifetime parameter다.
+위 코드는 위 2가지 사항을 모두 만족하지 못하므로 안전하지 못한 참조를 사용하고 있으며 따라서 컴파일 에러가 발생한다. 두 가지 관점에서 살펴봤지만 결론은 사실 한 가지다. `out_live_ref`가 dangling reference가 된다는 것이다. 결국 **lifetime은 dangling reference가 발생하지 않게 해주는 장치**라고 할 수 있다. 그리고 **참조를 사용하는 함수, 메서드, struct, trait 등의 lifetime을 컴파일러에 알려줘야 컴파일러가 컴파일 타임에 dangling reference 발생 여부를 판단할 수 있게 된다. lifetime을 컴파일러에 명시적으로 알려주는 것이 바로 lifetime parameter다.**
 
-lifetime parameter도 제네릭 타입 파라미터처럼 `<'a>`와 같은 형식으로 표기되는데, 제네릭으로 타입을 알려주는 것이 아니라 제네릭으로 lifetime을 알려주는 것이다.
+따라서 **함수(또는 메서드, struct, trait 등)의 정의에 lifetime 파라미터가 붙어있고 컴파일이 성공되었다면, 그 함수(또는 메서드, struct, trait 등)에서는 dangling reference가 발생하지 않음을 컴파일러가 보장해준다는 것이 lifetime 파라미터의 효용**이라고 볼 수 있다.
+
+lifetime parameter도 **제네릭 타입 파라미터처럼 `<'a>`와 같은 형식으로 표기**되는데, 제네릭으로 타입을 알려주는 것이 아니라 **제네릭으로 lifetime을 알려주는 것이다.**
 
 lifetime parameter는 C, C++, Java 등 다른 언어에 없는 개념이라 금방 와닿지가 않는다. 먼저 함수에 명시하는 lifetime parameter를 통해 감을 잡아보자.
 
