@@ -287,11 +287,35 @@ lifetime parameter는 C, C++, Java 등 다른 언어에 없는 개념이라 금�
 
 ```rust
 fn my_fun<'a>(r: &'a i32) {
+    ...
 }
 ```
 
-TODO
+다음과 같은 코드는 컴파일에 실패한다.
 
+```rust
+static mut GLOBAL: &i32 = &111;
+
+fn my_fun<'a>(r: &'a i32) {
+    GLOBAL = r;
+}
+
+//-----
+error[E0312]: lifetime of reference outlives lifetime of borrowed content...
+ --> src/lib.rs:4:14
+  |
+4 |     GLOBAL = r;
+  |              ^
+  |
+  = note: ...the reference is valid for the static lifetime...
+note: ...but the borrowed content is only valid for the lifetime 'a as defined on the function body at 3:11
+ --> src/lib.rs:3:11
+  |
+3 | fn my_fun<'a>(r: &'a i32) {
+  |           ^^
+```
+
+`&r`는 static 참조(전역 참조)인 `GLOBAL`에 할당되므로, `GLOBAL`의 생존 기간만큼 살아남아야 하고, 그러려면 `&r`의 lifetime도 static이어야 하는데 static이 아닌 임의의 lifetime인 `'a`다. 따라서 `&r`은 static 만큼 살아남을 수 없고 `'a'만큼만 살아남을 수 있으므로 안전하지 않은 참조 사용이며 그래서 위와 같이 컴파일 에러가 발생한다.
 
 ## Slice
 
