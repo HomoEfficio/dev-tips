@@ -16,6 +16,7 @@ Action:
 
 Consider defining a bean of type '어쩌구.XXXRepository' in your configuration.
 ```
+## ComponentScan or scanBasePackages
 
 이 때는 고민하지 말고 다음과 같이 Component Scan 위치를 명시해주자.
 
@@ -25,3 +26,7 @@ public class XXXApplication {
 ```
 
 저렇게 패키지 위치를 지정해주지 않아도 Autowiring이 잘 되는 클래스도 있어서 당황스럽지만, 이런 거에 시간 빼앗기지 말고 그냥 명시해주자.
+
+## 그래도 안 되면?
+
+이건 상당히 허무한 지경인데, `yyyService`에 `@Service` 애너테이션이 붙어있는지 확인한다. `@Service` 대신 `@Component`가 붙어 있으면 Autowiring이 안 될 수 있다.
