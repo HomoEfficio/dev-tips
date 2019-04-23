@@ -351,7 +351,9 @@ error[E0597]: `input` does not live long enough
    |                            ------ borrow later used here
 ```
 
-위에서 살펴본 것처럼 `'a` 가 암시적으로 `'static` 일 수는 있지만, 명시적으로 `'static` 일 수는 없다. 다음과 같이 lifetime이 `'static` 인 static 참조를 인자를 넘기더라도, 파라미터의 lifetime은 `'a`이므로 '`a`인 참조를 명시적으로 static mut 참조에 할당하면 컴파일 에러가 발생한다. 
+위에서 살펴본 것처럼 **`'a`는 암시적으로 `'static` 일 수도 있다.**
+
+하지만 명시적으로 `'static` 일 수는 없다. 다음과 같이 lifetime이 `'static` 인 static 참조를 인자를 넘기더라도, 파라미터의 lifetime은 `'a`이므로 **'`a`인 참조를 명시적으로 static mut 참조에 할당하면 컴파일 에러가 발생**한다. 
 
 ```rust
 static mut GLOBAL: &i32 = &111;
