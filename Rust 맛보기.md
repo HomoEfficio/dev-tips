@@ -284,38 +284,100 @@ lifetime parameter는 C, C++, Java 등 다른 언어에 없는 개념이라 금�
 다음과 같은 함수 정의에서 
 - `'a`(tick A라고 읽는다)는 함수 my_fun의 lifetime parameter라고 한다.
 - `r`은 임의의 liftime `a`를 갖는 i32형 참조를 나타낸다.
+- 반환되는 참조의 lifetime도 input 파라미터의 lifetime과 동일하다.
 
 ```rust
-fn my_fun<'a>(r: &'a i32) {
+fn my_fun<'a>(r: &'a i32) -> &'a i32 {
     ...
 }
 ```
 
-다음과 같은 코드는 컴파일에 실패한다.
+다음과 같은 코드는 컴파일에 성공한다.
+
+```rust
+static STATIC: &i32 = &222;
+
+fn my_fun<'a>(r: &'a i32) -> &'a i32 {
+    if *r > 5 {
+        r
+    } else {
+        &5
+    }
+}
+
+fn main() {
+    let result;
+    {
+        result = my_fun(STATIC);
+    }
+    println!("result: {}", result);
+}
+```
+
+함수 my_fun의 인자로 static 참조인 `STATIC` 참조를 넘기면 `'a`가 실질적으로는 `'static`이므로 `result`에는 static 참조가 할당되고 따라서 my_fun()이 호출되는 블록이 종료된 후에도 `result`는 dangling reference가 아니며 안전한 값을 가지고 있다.
+
+하지만 다음과 같이 lifetime이 `'static`이 아닌 참조를 인자로 넘기면, 반환값의 lifetime도 `'static`이 아니므로, my_fun()이 호출되는 블록이 종료되면 `result`는 dangling reference가 되며 컴파일에 실패한다.
+
+```rust
+fn my_fun<'a>(r: &'a i32) -> &'a i32 {
+    if *r > 5 {
+        r
+    } else {
+        &5
+    }
+}
+
+fn main() {
+    let result;
+    {
+        let input = 1;
+        result = my_fun(&input);        
+    }
+    println!("result: {}", result);
+}
+
+//-----
+error[E0597]: `input` does not live long enough
+  --> src/main.rs:13:25
+   |
+13 |         result = my_fun(&input);
+   |                         ^^^^^^ borrowed value does not live long enough
+...
+18 |     }
+   |     - `input` dropped here while still borrowed
+19 |     println!("result: {}", result);
+   |                            ------ borrow later used here
+```
+
+위에서 살펴본 것처럼 `'a` 가 암시적으로 `'static` 일 수는 있지만, 명시적으로 `'static` 일 수는 없다. 다음과 같이 lifetime이 `'static` 인 static 참조를 인자를 넘기더라도, 파라미터의 lifetime은 `'a`이므로 '`a`인 참조를 명시적으로 static mut 참조에 할당하면 컴파일 에러가 발생한다. 
 
 ```rust
 static mut GLOBAL: &i32 = &111;
+static STATIC: &i32 = &222;
 
 fn my_fun<'a>(r: &'a i32) {
     GLOBAL = r;
 }
 
+fn main() {
+    my_fun(STATIC);
+}
+
 //-----
 error[E0312]: lifetime of reference outlives lifetime of borrowed content...
- --> src/lib.rs:4:14
+ --> src/main.rs:5:14
   |
-4 |     GLOBAL = r;
+5 |     GLOBAL = r;
   |              ^
   |
   = note: ...the reference is valid for the static lifetime...
-note: ...but the borrowed content is only valid for the lifetime 'a as defined on the function body at 3:11
- --> src/lib.rs:3:11
+note: ...but the borrowed content is only valid for the lifetime 'a as defined on the function body at 4:11
+ --> src/main.rs:4:11
   |
-3 | fn my_fun<'a>(r: &'a i32) {
+4 | fn my_fun<'a>(r: &'a i32) {
   |           ^^
 ```
 
-`&r`는 static 참조(전역 참조)인 `GLOBAL`에 할당되므로, `GLOBAL`의 생존 기간만큼 살아남아야 하고, 그러려면 `&r`의 lifetime도 static이어야 하는데 static이 아닌 임의의 lifetime인 `'a`다. 따라서 `&r`은 static 만큼 살아남을 수 없고 `'a'만큼만 살아남을 수 있으므로 안전하지 않은 참조 사용이며 그래서 위와 같이 컴파일 에러가 발생한다.
 
 ## Slice
 
