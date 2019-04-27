@@ -2,7 +2,7 @@
 
 대충 어설프게 알고 쓰고 있는 JPA. 실험해보며 알아보자.
 
-## 단방향 `@OneToMany`은 특별한 경우가 아니라면 쓰지 않는 것이 좋다.
+## 조인테이블 방식의 단방향 `@OneToMany`은 특별한 경우가 아니라면 쓰지 않는 것이 좋다.
 
 아래 코드를 보면 알겠지만 객체 관계 관점에서만 바라보면 아주 직관적이고 깔끔 단순한 모델이다. 
 
@@ -21,7 +21,7 @@ public class Order {
     
     ...
     
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
     
     ...
@@ -76,7 +76,7 @@ public class OrderItem {
 
 ### 정리
 
-> **결국 단방향 `@OneToMany`을 통해 얻고자 했던 단순함도 얻지 못하고 불필요한 오버헤드만 발생하므로 단방향 `@OneToMany`은 별로 좋은 점이 없다.**
+> **결국 단방향 `@OneToMany`을 통해 얻고자 했던 단순함도 얻지 못하고 불필요한 오버헤드만 발생하므로 조인테이블 방식의 단방향 `@OneToMany`은 별로 좋은 점이 없다.**
 
 
 ## 테스트 메서드에서는 `XXXRepository.save()`만으로는 `flush`가 유발되지 않는다.
