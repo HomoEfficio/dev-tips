@@ -84,3 +84,9 @@ scss 관련 변수는 `tranquilpeak/source/_css/util/_variable.css`에 있음
 - source 브랜치 상에서 .deploy_git 폴더에 있는 내용을 모두 삭제하고, 
 - 새로 generate(빌드)한 내용으로 .deploy_git 폴더의 내용을 채우고, 
 - 새로 generate(빌드)한 내용이 origin/master 브랜치의 root 폴더 아래의 컨텐츠를 덮어쓴다.
+
+# Brave Verification 파일 처리
+
+- 포스트 작성 후 `hexo generate` 실행
+- `.nojekyll` 파일과 `.well-known/brave-rewards-verification.txt` 파일을 `.delply_git` 폴더에 저장
+- `hexo deploy`로 배포
