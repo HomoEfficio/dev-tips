@@ -53,7 +53,7 @@ public class Child {
 
 ```
 
-위와 같이 작성하면 조인테이블인 `parent_children`라는 테이블이 새로 생긴다. 뭐 테이블 하나 생기면 어때.. 사실 테이블 하나 생긴다고 큰일 나는 건 아니고, 실제로 큰일 나지도 않는다. **단, `children`이 많지 않을 때만 큰 일이 안 나고, 많으면 제법 큰 일이 난다.**
+위와 같이 작성하면 조인테이블인 `parent_children`라는 테이블이 새로 생긴다. 뭐 테이블 하나 생기면 어때.. 큰일 나겠어 라고 생각할 수도 있지만, **`children`이 많지 않을 때만 큰 일이 안 나고, 많으면 제법 큰 일이 난다.**
 
 
 # 시나리오
@@ -102,8 +102,7 @@ public class OneToManyRunner implements CommandLineRunner {
 
 `parent_children` 테이블에서 delete 2개, `orphanRemoval = true`로 설정되어 있으므로 `child` 테이블에서 delete 2개가 실행될 것으로 예상했지만 실제로는,
 
-- **`parent.children` 10개 모두 delete 된 후에,**
-- **id가 1, 2인 것을 제외한 8개의 `children`에 대해 모두 8회의 insert가 실행**되고, 
+- **`parent.children` 10개 모두 delete 되면서 `parent_children` 테이블에서 `children_id`가 1, 2인 것을 제외한 8개의 레코드에 대해 모두 8회의 insert가 실행**되고, 
 - 마지막에 `child` 테이블에서 2회의 delete가 실행된다.
 
 ```
@@ -212,9 +211,10 @@ parent_id | children_id
 1 | 9
 1 | 10
 
+
 나: 뭐야, `1 | 1`인 행이랑 `1 | 2`인 행 2개만 지울 수 있잖아. 왜 `parent_id`가 1인 걸 몽땅 지워?
 
-Hibernate: 허허.. 그게 말이야.. 허허.. 테이블로 보기엔 저런데.. 허허.. 일대다 단방향이 잖아.. 허허.. 그래서.. 허허.. `parent_id`가 1이라는 것을 개별 행에 대한 조건으로 줄 수가 없어.. 허허..
+Hibernate: 허허.. 그게 말이야.. 허허.. 테이블로 보기엔 저런데.. 허허.. **일대다 단방향이 잖아.. 허허.. 그래서.. 허허.. `parent_id`가 1이라는 것을 개별 행에 대한 조건으로 줄 수가 없어..** 허허..
 
 나: 뭐래냐..
 
@@ -227,14 +227,14 @@ children.removeIf(child -> child.getId() % 2 == 0);  // <-- 여기!!
 
 위에 `여기`로 표시한 부분에서 `parent_id`에 대한 조건을 줄 수가 없다. 왜냐고? 위에 Hibernate가 얘기해 준대로 **일대일 단방향이라서 `child`는 `parent`를 모른다. 따라서 개별 행에 대한 조건으로 `parent_id`를 줄 수가 없다.**
 
-대신에 `dbParent.getChildren()`의 `dbParent`에는 `parent_id`가 1이라는 정보가 있다. 그래서 **개별 행에 대한 조건으로 줄 수는 없지만 `parent_children` 테이블에서는 `parent_id`가 1인 것을 모두 지울 수 있다.** 그래서 `parent_id`가 1인 row를 모두 delete 한 후에 다시 insert를 반복하는 노가다를 한 것이다.
+대신에 `dbParent.getChildren()`의 `dbParent`에는 `parent_id`가 1이라는 정보가 있다. 그래서 **개별 행에 대한 조건으로 줄 수는 없지만 `parent_children` 테이블에서는 `parent_id`가 1인 것을 모두 지울 수 있다.** 그래서 `parent_id`가 1인 레코드를 모두 delete 한 후에 다시 insert를 반복하는 노가다를 한 것이다.
 
 결국 Hibernate는 주어진 환경에서 최선을 다한 셈이고 아무 죄가 없다. 모두 delete 후 다시 모두 insert 반복으로만 해결할 수 있게 코드를 짠 사람이 잘못이다.
 
 
 # 해결
 
-이제 문제를 바로잡아보자. 조인테이블 방식의 일대다 단방향 매핑때문에 `children` 쪽에서 행 단위로 `parent_id`를 알 수 없다는 게 원인이었으므로, 어떻게든 `children` 쪽에서 행 단위로 `parent_id`를 알 수 있게 해주면 된다. 즉 테이블 상에서 `children` 쪽에 `parent_id` 컬럼이 추가되도록 매핑하면 된다.
+이제 문제를 바로잡아보자. 조인테이블 방식의 일대다 단방향 매핑때문에 `children` 쪽에서 행 단위로 `parent_id`를 알 수 없다는 게 원인이었으므로, **어떻게든 `children` 쪽에서 행 단위로 `parent_id`를 알 수 있게 해주면 된다. 즉 테이블 상에서 `children` 쪽에 `parent_id` 컬럼이 추가되도록 매핑하면 된다.**
 
 방법은 두 가지가 있다. 조인테이블이 아닌 조인컬럼 방식의 일대다 단방향 매핑과 일대다 양방향 매핑이다.
 
@@ -329,13 +329,15 @@ binding parameter [1] as [BIGINT] - [2]
 
 이유는 이번에도 단방향이기 때문이다. **조인컬럼 방식으로 변환하면서 `child` 테이블에 `parent_id` 컬럼이 추가되기는 했지만, 단방향이라서 `child`는 `parent`의 존재를 모르므로 `parent_id`의 값을 알 수는 없다.** 뭐랄까 결혼 반지를 사놨는데 누구한테 줘야할 지 모르는.. 쥬륵..
 
-그래서 `parent_id` 컬럼에 값이 없는 채로 insert 되고, 그 후에 update 를 통해 `parent_id` 값이 설정된다. 하지만 그건 최초에 데이터가 세팅될 때 1회만 그런거고, 몽창 지우는 게 아니라 행 단위로 지울 수 있으므로 어쨌든 조인테이블 방식의 문제는 해결한 거라고 할 수도 있겠지만, 삭제되는 행이 2개가 아니라 수 천, 수 만이라면? 역시나 **레코드 2개 삭제하는 데 수 천, 수 만의 update가 발생한다.**
+그래서 `parent_id` 컬럼에 값이 없는 채로 insert 되고, 그 후에 update 를 통해 `parent_id` 값이 설정된다. 하지만 그건 최초에 데이터가 세팅될 때 1회만 그런거고, 몽창 지우는 게 아니라 행 단위로 지울 수 있으므로 어쨌든 조인테이블 방식의 문제는 해결한 거라고 할 수도 있겠다.
+
+하지만, 삭제되는 행이 2개가 아니라 수천, 수만이라면? **수천, 수만 회의 delete만 실행되어야 하는데, 수천, 수만의 불필요한 update가 추가로 발생한다.**
 
 **조인테이블 방식에서는 조금만 삭제해도 수 많은 insert 실행이 불필요하게 동반된다는 문제였던 것이, 조인컬럼 방식에서는 많이 삭제하면 수 많은 update가 불필요하게 동반되는 문제로 조금 바뀌었을 뿐 불필요한 오버헤드가 발생한다는 점은 마찬가지다.**
 
-참고로 `*****` 위에 update로 값을 자동 세팅해주는 것도 예제 코드라서, `spring.jpa.properties.hibernate.hbm2ddl.auto` 옵션을 `create` 등 마음대로 줄 수 있기 때문에 가능한 것이고, 실 운영 환경에서는 저렇게 수행할 수 없다. 
+참고로 앞에서 단 한 줄로 적용가능 한 것은 예제 코드라서 가능하다고 했는데, 구체적으로 말하면 `*****` 위에 update로 값을 자동 세팅해주는 것도 예제 코드라서, `spring.jpa.properties.hibernate.hbm2ddl.auto` 옵션을 `create` 등 마음대로 줄 수 있기 때문에 가능한 것이고, 실 운영 환경에서는 저렇게 수행할 수 없다. 
 
-다음과 같이 update 쿼리를 만들어서 **기존에 `parent_children` 테이블에 있던 값을 기준으로 `child` 테이블의 `parent_id` 컬럼에 수동으로 입력해줘야 한다.**
+운영 환경에서는 `child` 테이블에 `parent_id` 컬럼도 직접 추가해줘야 하고 다음과 같이 update 쿼리를 만들어서 **기존에 `parent_children` 테이블에 있던 값을 기준으로 `child` 테이블의 `parent_id` 컬럼에 수동으로 입력해줘야 한다.**
 
 ```sql
 update child a
@@ -488,5 +490,6 @@ binding parameter [1] as [BIGINT] - [2]
 >따라서 1:N에서 N이 큰 상황에서는 일대다 단방향 매핑은 사용하지 않는 것이 좋다.
 >
 >**1:N에서는 웬만하면 일대다 양방향 매핑을 사용하자.**
+
 
 
