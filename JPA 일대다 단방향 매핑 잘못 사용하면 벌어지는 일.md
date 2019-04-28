@@ -1,6 +1,6 @@
 # JPA 일대다 단방향 매핑 잘못 사용하면 벌어지는 일
 
-Parent : Child = 1 : N 의 관계가 있으면 일대다 단방향으로 매핑하는 것보다 일대다 양방향으로 매핑하는 것이 좋다.
+`Parent : Child = 1 : N` 의 관계가 있으면 일대다 단방향으로 매핑하는 것보다 일대다 양방향으로 매핑하는 것이 좋다.
 
 
 # 조인테이블 방식의 일대다 단방향 매핑
@@ -105,7 +105,7 @@ public class OneToManyRunner implements CommandLineRunner {
 - **`parent.children` 10개 모두 delete 되면서 `parent_children` 테이블에서 `children_id`가 1, 2인 것을 제외한 8개의 레코드에 대해 모두 8회의 insert가 실행**되고, 
 - 마지막에 `child` 테이블에서 2회의 delete가 실행된다.
 
-```
+```text
 insert into parent (name) values (?)
 binding parameter [1] as [VARCHAR] - [parent 1]
 insert into child (name) values (?)
@@ -257,7 +257,7 @@ private List<Child> children = new ArrayList<>();
 
 실행해보면 다음과 같다.
 
-```
+```text
 insert into parent (name) values (?)
 binding parameter [1] as [VARCHAR] - [parent 1]
 insert into child (name) values (?)
@@ -327,7 +327,7 @@ binding parameter [1] as [BIGINT] - [2]
 
 그런데, 뭔 update가 이리 많냐.. 왜 일까?
 
-이유는 이번에도 단방향이기 때문이다. **조인컬럼 방식으로 변환하면서 `child` 테이블에 `parent_id` 컬럼이 추가되기는 했지만, 단방향이라서 `child`는 `parent`의 존재를 모르므로 `parent_id`의 값을 알 수는 없다.** 뭐랄까 결혼 반지를 사놨는데 누구한테 줘야할 지 모르는.. 쥬륵..
+이유는 이번에도 단방향이기 때문이다. **조인컬럼 방식으로 변환하면서 `child` 테이블에 `parent_id` 컬럼이 추가되기는 했지만, 단방향이라서 `child`는 `parent`의 존재를 모르므로 `parent_id`의 값을 알 수는 없다.** 뭐랄까 결혼 반지를 사놨는데 누구한테 줘야할지 모르는.. 쥬륵..
 
 그래서 `parent_id` 컬럼에 값이 없는 채로 insert 되고, 그 후에 update 를 통해 `parent_id` 값이 설정된다. 하지만 그건 최초에 데이터가 세팅될 때 1회만 그런거고, 몽창 지우는 게 아니라 행 단위로 지울 수 있으므로 어쨌든 조인테이블 방식의 문제는 해결한 거라고 할 수도 있겠다.
 
@@ -439,7 +439,7 @@ public class OneToManyRunner implements CommandLineRunner {
 
 실행 결과는 다음과 같다.
 
-```
+```text
 insert into parent (name) values (?)
 binding parameter [1] as [VARCHAR] - [parent 1]
 insert into child (name, parent_id) values (?, ?)
