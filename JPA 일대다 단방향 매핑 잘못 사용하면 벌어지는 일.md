@@ -53,7 +53,7 @@ public class Child {
 
 ```
 
-위와 같이 작성하면 조인테이블인 `parent_children`라는 테이블이 새로 생긴다. 뭐 테이블 하나 생기면 어때.. 큰일 나겠어 라고 생각할 수도 있지만, **`children`이 많지 않을 때만 큰 일이 안 나고, 많으면 제법 큰 일이 난다.**
+위와 같이 작성하면 조인테이블인 `parent_children`라는 테이블이 새로 생긴다. 뭐 테이블 하나 생기면 어때.. 큰일 나겠어? 라고 생각할 수도 있지만, **`children`이 많지 않을 때만 큰 일이 안 나고, 많으면 제법 큰 일이 난다.**
 
 
 # 시나리오
@@ -61,7 +61,7 @@ public class Child {
 위와 같이 매핑된 상태에서 다음과 같은 간단한 시나리오를 생각해보자.
 
 1. `parent`가 10개의 Child를 포함하는 `children`을 가진다.
-2. `parent.children`에서 Child의 id가 1, 2인 것만 2개만 삭제한다.
+2. `parent.children`에서 Child의 id가 1, 2인 것 2개만 삭제한다.
 
 1번은 뭐 처음 생성이니 `parent` 1개에 대해 `parent` 테이블에 insert 1회, `children` 10개에 대해 `child` 테이블에 insert 10회 실행된다. 그리고 조인테이블 방식으로 동작하므로 `parent_children` 테이블에도 insert 10회 실행된다.
 
@@ -92,7 +92,8 @@ public class OneToManyRunner implements CommandLineRunner {
         System.out.println("*****************************");
         
         List<Child> children = dbParent.getChildren();
-        children.removeIf(child -> child.getId() % 2 == 0);
+        children.removeIf(child -> 
+                child.getId() == 1L && child.getId() == 2L);
     }
 
 }
@@ -100,7 +101,7 @@ public class OneToManyRunner implements CommandLineRunner {
 
 # 실행 결과
 
-`parent_children` 테이블에서 delete 2개, `orphanRemoval = true`로 설정되어 있으므로 `child` 테이블에서 delete 2개가 실행될 것으로 예상했지만 실제로는,
+`parent_children` 테이블에서 delete 2회, `orphanRemoval = true`로 설정되어 있으므로 `child` 테이블에서 delete 2회 실행될 것으로 예상했지만 실제로는,
 
 - **`parent.children` 10개 모두 delete 되면서 `parent_children` 테이블에서 `children_id`가 1, 2인 것을 제외한 8개의 레코드에 대해 모두 8회의 insert가 실행**되고, 
 - 마지막에 `child` 테이블에서 2회의 delete가 실행된다.
@@ -214,20 +215,21 @@ parent_id | children_id
 
 나: 뭐야, `1 | 1`인 행이랑 `1 | 2`인 행 2개만 지울 수 있었을 것 같은데, 왜 `parent_id`가 1인 걸 몽땅 지워?
 
-Hibernate: 허허.. 그게 말이야.. 허허.. 테이블로 보기엔 저런데.. 허허.. **일대다 단방향이 잖아.. 허허.. 그래서.. 허허.. `parent_id`가 1이라는 것을 개별 행에 대한 조건으로 줄 수가 없어..** 허허..
+Hibernate: 허허.. 그게 말이야.. 허허.. 테이블로 보기엔 저런데.. 허허.. **일대다 단방향이잖아.. 허허.. 그래서.. 허허.. `parent_id`가 1이라는 것을 개별 행에 대한 조건으로 줄 수가 없어..** 허허.. 그래서 `parent_id`가 1인 걸 몽땅 지우고 다시 채웠어.. 허허..
 
 나: 뭐래냐..
 
-이것도 말보다 코드가 더 쉽고 명확한 케이스다. id가 1, 2인 child를 삭제하는 코드는 다음과 같다.
+이것도 말보다 코드가 더 쉽고 명확한 케이스다. id가 1, 2인 `child`를 삭제하는 코드는 다음과 같다.
 
 ```java
 List<Child> children = dbParent.getChildren();
-children.removeIf(child -> child.getId() % 2 == 0);  // <-- 여기!!
+children.removeIf(child -> 
+        child.getId() == 1L && child.getId() == 2L);  // <-- 여기!!
 ```
 
-위에 `여기`로 표시한 부분에서 `parent_id`에 대한 조건을 줄 수가 없다. 왜냐고? 위에 Hibernate가 얘기해 준대로 **일대일 단방향이라서 `child`는 `parent`를 모른다. 따라서 개별 행에 대한 조건으로 `parent_id`를 줄 수가 없다.**
+위에 `여기`로 표시한 부분에서 `parent_id`에 대한 조건을 줄 수가 없다. 왜냐고? 위에 Hibernate가 얘기해 준대로 **일대일 단방향이라서 `child`는 `parent`를 모른다. 따라서 `parent_id`를 `children`의 개별 행에 대한 삭제 조건으로 지정할 수가 없다.**
 
-대신에 `dbParent.getChildren()`의 `dbParent`에는 `parent_id`가 1이라는 정보가 있다. 그래서 **개별 행에 대한 조건으로 줄 수는 없지만 `parent_children` 테이블에서는 `parent_id`가 1인 것을 모두 지울 수 있다.** 그래서 `parent_id`가 1인 레코드를 모두 delete 한 후에 다시 insert를 반복하는 노가다를 한 것이다.
+대신에 `dbParent.getChildren()`의 `dbParent`에는 `parent_id`가 1이라는 정보가 있다. 그래서 **`children`를 개별 행 단위로 삭제할 수는 없지만 `parent_children` 테이블에서는 `parent_id`가 1인 행을 모두 삭제할 수는 있다.** 그래서 `parent_id`가 1인 레코드를 모두 delete 한 후에 다시 insert를 반복하는 노가다를 한 것이다.
 
 결국 Hibernate는 주어진 환경에서 최선을 다한 셈이고 아무 죄가 없다. 모두 delete 후 다시 모두 insert 반복으로만 해결할 수 있게 코드를 짠 사람이 잘못이다.
 
@@ -323,19 +325,19 @@ delete from child where id=?
 binding parameter [1] as [BIGINT] - [2]
 ```
 
-오 역시나 `*****` 아래에 수많은 insert 가 모두 사라지고 맨 아래 delete 2회만 실행된 것을 확인할 수 있다.
+오 역시나 `*****` 아래에 10번의 불필요한 insert 가 모두 사라지고 맨 아래 delete 2회만 실행된 것을 확인할 수 있다.
 
-그런데, 뭔 update가 이리 많냐.. 왜 일까?
+그런데 `*****` 바로 위에 10번의 update는 또 왜 실행된거지?
 
-이유는 이번에도 단방향이기 때문이다. **조인컬럼 방식으로 변환하면서 `child` 테이블에 `parent_id` 컬럼이 추가되기는 했지만, 단방향이라서 `child`는 `parent`의 존재를 모르므로 `parent_id`의 값을 알 수는 없다.** 뭐랄까 결혼 반지를 사놨는데 누구한테 줘야할지 모르는.. 쥬륵..
+이유는 이번에도 단방향이기 때문이다. **조인컬럼 방식으로 변환하면서 `child` 테이블에 `parent_id` 컬럼이 추가되기는 했지만, 단방향이라서 `child`는 `parent`의 존재를 모르므로 `parent_id`의 값을 알 수는 없다.** 뭐랄까 냉장고는 사놨는데 뭘로 채워야할지 모르는..
 
-그래서 `parent_id` 컬럼에 값이 없는 채로 insert 되고, 그 후에 update 를 통해 `parent_id` 값이 설정된다. 하지만 그건 최초에 데이터가 세팅될 때 1회만 그런거고, 몽창 지우는 게 아니라 행 단위로 지울 수 있으므로 어쨌든 조인테이블 방식의 문제는 해결한 거라고 할 수도 있겠다.
+그래서 **개별 행 단위로는 `parent_id` 컬럼에 값이 없는 채로 insert 되고, insert 된 10개의 행의 `parent_id` 컬럼에는 `dbParent.getChildren()`에서 알아낼 수 있는 `parent_id` 값을 update 를 통해 설정**한다. 하지만 그건 최초에 데이터가 세팅될 때 1회만 그런거고, 그 후에 원하는 레코드만 지울 때는 몽창 지우는 게 아니라 행 단위로 지울 수 있으므로 어쨌든 조인테이블 방식의 문제는 해결한 거라고 할 수도 있겠다.
 
 하지만, 삭제되는 행이 2개가 아니라 수천, 수만이라면? **수천, 수만 회의 delete만 실행되어야 하는데, 수천, 수만의 불필요한 update가 추가로 발생한다.**
 
-**조인테이블 방식에서는 조금만 삭제해도 수 많은 insert 실행이 불필요하게 동반된다는 문제였던 것이, 조인컬럼 방식에서는 많이 삭제하면 수 많은 update가 불필요하게 동반되는 문제로 조금 바뀌었을 뿐 불필요한 오버헤드가 발생한다는 점은 마찬가지다.**
+**조인테이블 방식에서는 조금만 삭제해도 수 많은 insert 실행이 불필요하게 동반된다는 게 문제였다면, 조인컬럼 방식에서는 많이 삭제하면 수 많은 update가 불필요하게 동반되는 문제로 조금 바뀌었을 뿐 불필요한 오버헤드가 발생한다는 점은 마찬가지다.**
 
-참고로 앞에서 단 한 줄로 적용가능 한 것은 예제 코드라서 가능하다고 했는데, 구체적으로 말하면 `*****` 위에 update로 값을 자동 세팅해주는 것도 예제 코드라서, `spring.jpa.properties.hibernate.hbm2ddl.auto` 옵션을 `create` 등 마음대로 줄 수 있기 때문에 가능한 것이고, 실 운영 환경에서는 저렇게 수행할 수 없다. 
+참고로 앞에서 단 한 줄로 적용가능 한 것은 예제 코드라서 가능하다고 했는데, 구체적으로 말하면 `*****` 위에서 update로 값을 자동 세팅해주는 것도 예제 코드라서, `spring.jpa.properties.hibernate.hbm2ddl.auto` 옵션을 `create` 등 마음대로 줄 수 있기 때문에 가능한 것이고, 실 운영 환경에서는 저렇게 수행할 수 없다. 
 
 운영 환경에서는 `child` 테이블에 `parent_id` 컬럼도 직접 추가해줘야 하고 다음과 같이 update 쿼리를 만들어서 **기존에 `parent_children` 테이블에 있던 값을 기준으로 `child` 테이블의 `parent_id` 컬럼에 수동으로 입력해줘야 한다.**
 
@@ -431,7 +433,8 @@ public class OneToManyRunner implements CommandLineRunner {
         System.out.println("*****************************");
 
         List<Child> children = dbParent.getChildren();
-        children.removeIf(child -> child.getId() == 1L || child.getId() == 2L);
+        children.removeIf(child -> 
+                child.getId() == 1L || child.getId() == 2L);
     }
 
 }
@@ -492,7 +495,7 @@ binding parameter [1] as [BIGINT] - [2]
 >**1:N에서는 웬만하면 일대다 양방향 매핑을 사용하자.**
 
 
-# 응용 부록
+# 부록 - 응용편
 
 다음과 같이 하나의 Parent에서 2개의 Child에 대해 1:1, 1:N 연관관계 매핑이 필요하면 어떻게 할까?
 
@@ -547,7 +550,7 @@ public class Parent {
 
 `id | name | parent_id`
 
-이렇게 한 테이블에 저장되면 혼동이 될 수도 있을 것 같아 걱정이 된다.
+그런데 이렇게 한 테이블에 저장되면 혼동이 될 수도 있을 것 같아 걱정이 된다.
 
 하지만, **일대일 단방향에 의해 저장된 레코드에만 `parent_id` 값이 `NULL`인 상태가 되고,**  
 **일대다 양방향에 의해 저장된 레코드에는 `parent_id`에 정상적인 값이 들어가므로 구분 가능**하며 혼동 없이 사용할 수 있다.
