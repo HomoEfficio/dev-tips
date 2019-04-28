@@ -105,7 +105,7 @@ public class OneToManyRunner implements CommandLineRunner {
 - **`parent.children` 10개 모두 delete 되면서 `parent_children` 테이블에서 `children_id`가 1, 2인 것을 제외한 8개의 레코드에 대해 모두 8회의 insert가 실행**되고, 
 - 마지막에 `child` 테이블에서 2회의 delete가 실행된다.
 
-```text
+```sql
 insert into parent (name) values (?)
 binding parameter [1] as [VARCHAR] - [parent 1]
 insert into child (name) values (?)
@@ -212,7 +212,7 @@ parent_id | children_id
 1 | 10
 
 
-나: 뭐야, `1 | 1`인 행이랑 `1 | 2`인 행 2개만 지울 수 있잖아. 왜 `parent_id`가 1인 걸 몽땅 지워?
+나: 뭐야, `1 | 1`인 행이랑 `1 | 2`인 행 2개만 지울 수 있었을 것 같은데, 왜 `parent_id`가 1인 걸 몽땅 지워?
 
 Hibernate: 허허.. 그게 말이야.. 허허.. 테이블로 보기엔 저런데.. 허허.. **일대다 단방향이 잖아.. 허허.. 그래서.. 허허.. `parent_id`가 1이라는 것을 개별 행에 대한 조건으로 줄 수가 없어..** 허허..
 
@@ -257,7 +257,7 @@ private List<Child> children = new ArrayList<>();
 
 실행해보면 다음과 같다.
 
-```text
+```sql
 insert into parent (name) values (?)
 binding parameter [1] as [VARCHAR] - [parent 1]
 insert into child (name) values (?)
@@ -439,7 +439,7 @@ public class OneToManyRunner implements CommandLineRunner {
 
 실행 결과는 다음과 같다.
 
-```text
+```sql
 insert into parent (name) values (?)
 binding parameter [1] as [VARCHAR] - [parent 1]
 insert into child (name, parent_id) values (?, ?)
@@ -491,5 +491,65 @@ binding parameter [1] as [BIGINT] - [2]
 >
 >**1:N에서는 웬만하면 일대다 양방향 매핑을 사용하자.**
 
+
+# 응용 부록
+
+다음과 같이 하나의 Parent에서 2개의 Child에 대해 1:1, 1:N 연관관계 매핑이 필요하면 어떻게 할까?
+
+```java
+@Entity
+@Getter
+public class Parent {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+
+    // 이게 추가된다면?
+    private Child singleChild;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Child> children = new ArrayList<>();
+
+    protected Parent() {}
+
+    public Parent(String name, Child singleChild) {
+        this.name = name;
+        this.singleChild = singleChild;
+    }
+
+    public Parent(String name, Child singleChild, List<Child> children) {
+        this.name = name;
+        this.singleChild = singleChild;
+        this.children.addAll(children);
+    }
+}
+
+```
+이 경우에는 일대일 단방향 매핑을 위해 다음과 같이 Parent 에 `@JoinColumn`을 지정해서 Child를 위한 FK 컬럼을 추가하면, 일대일 단방향 + 일대다 양방향을 함께 쓸 수 있다.
+
+```java
+    // 이게 추가된다면?
+    //// 일대일 단방향을 쓰되 Child를 가리키는 FK 컬럼을 Parent에 둔다
+    @OneToOne
+    @JoinColumn(name = "single_child_id")
+    private Child singleChild;
+```
+
+그럼 `parent` 테이블은 다음과 같이 되고,
+
+`id | name | single_child_id`
+
+
+`child` 테이블은 다음과 같이 되고, `single_child`와 `children`에 해당하는 데이터가 모두 `child` 테이블에 저장된다.
+
+`id | name | parent_id`
+
+이렇게 한 테이블에 저장되면 혼동이 될 수도 있을 것 같아 걱정이 된다.
+
+하지만, **일대일 단방향에 의해 저장된 레코드에만 `parent_id` 값이 `NULL`인 상태가 되고,**  
+**일대다 양방향에 의해 저장된 레코드에는 `parent_id`에 정상적인 값이 들어가므로 구분 가능**하며 혼동 없이 사용할 수 있다.
 
 
