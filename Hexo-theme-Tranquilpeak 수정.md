@@ -85,8 +85,12 @@ scss 관련 변수는 `tranquilpeak/source/_css/util/_variable.css`에 있음
 - 새로 generate(빌드)한 내용으로 .deploy_git 폴더의 내용을 채우고, 
 - 새로 generate(빌드)한 내용이 origin/master 브랜치의 root 폴더 아래의 컨텐츠를 덮어쓴다.
 
+- hexo generate 만 하면 파일을 generate만 하고(어디 저장하는지는 몰겠다), .deploy_git 폴더의 내용은 건드리지 않는다.
+
 # Brave Verification 파일 처리
 
-- 포스트 작성 후 `hexo generate` 실행
+- 포스트 작성 후 `hexo generate` 실행(필수는 아닌 것 같음)
 - `.nojekyll` 파일과 `.well-known/brave-rewards-verification.txt` 파일을 `.delply_git` 폴더에 저장
 - `hexo deploy`로 배포
+- 한 번만 해주면 다음부터는 deploy 해도 verification 파일이 `.deploy_git` 폴더에 남고 master에서도 지워지지 않고 계속 남아있는다.
+
