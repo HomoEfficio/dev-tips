@@ -5,3 +5,5 @@
 - https://medium.com/sean3z/building-a-restful-crud-api-with-rust-1867308352d8
 
 - https://busy.org/@drsensor/mix-rust-code-webassembly-with-vue-component-basic
+
+- https://www.forrestthewoods.com/blog/how-to-debug-rust-with-visual-studio-code
