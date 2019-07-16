@@ -294,7 +294,7 @@ getter를 통해 html에 참조를 제공할 수 있다. `UserAdminAction`이라
 
 html 에서는 다음과 같이 참조할 수 있다.
 
-```html
+```
   <button class="btn btn-block btn-danger"
           type="button"
           (click)="action({'action': userAdminAction.DELETE}, row, $event)">삭제</button>
@@ -636,7 +636,64 @@ https://github.com/swimlane/ngx-datatable/issues/937#issuecomment-484879030
 
 ![Imgur](https://i.imgur.com/jgnJfp3.png)
 
+## ModalComponent 관련
 
+### Modal 창 띄우기
 
+TODO
 
+### ModalComponent에서 ModalComponent를 호출한 Component의 메서드 호출하기
 
+편의상 ModalComponent를 호출한 Component를 parent라고 하고 ModalComponent를 modal이라고 하자.  
+예를 들어 다음과 같이 사용자 목록 화면이 있고, '신규 등록'이나 '수정'을 클릭하면 회원 정보를 편집할 수 있는 Modal창을 띄우는 상황을 생각해보자. 
+
+![Imgur](https://i.imgur.com/drsztKo.png)
+
+이런 UI에서 '신규 등록'이나 '수정' 화면을 별도의 페이지로 가져가지 않고 팝업으로 처리해서 얻는 장점은, 별도의 페이지로 만들면 회원 정보 변경 후에 parent의 검색 결과, 페이지 이동 결과가 유지되지 않지만(유지되게 하려면 여러가지 처리가 필요), 팝업으로 처리하면 그대로 유지할 수 있다는 점이다.
+
+하지만 '신규 등록' 후에는 새로 등록한 회원의 정보를 서버에서 받아서 목록에 표시해야하므로, 서버에서 회원 정보를 받아오는 역할을 담당하는 parent의 메서드를 호출해야 한다.  
+그런데 parent와 modal은 그냥 BsModalService로 호출될 수 있을 뿐, modal의 컴포넌트를 parent의 html에서 표시하지 않으므로 이벤트로 전달할 수도 없다. 어떻게 하면 modal에서 parent의 메서드를 호출할 수 있을까?
+
+다음과 같이 parent에서 modal을 호출할 때 config에 parent의 메서드를 화살표 함수를 통해 modal에 전달하면,
+
+```typescript
+// parent 쪽 코드
+
+  public openUserEditModal(userId: number) {
+    const initialState = {
+      userId: +userId,
+      closeModal: () => {  // 이렇게 arrow 함수로 전달
+        this.closeUserEditModal();
+      },
+      refreshUserList: () => {  // 이렇게 arrow 함수로 전달
+        this.initUsers();
+      }
+    };
+    this.bsModalRef = this.modalService.show(
+      UserEditModalComponent,
+      { initialState, class: 'modal-lg' });
+  }
+
+  public closeUserEditModal() {
+    this.bsModalRef.hide();
+  }
+```
+
+modal에서는 다음과 같이 parent의 메서드를 호출할 수 있다.
+
+```typescript
+// modal 쪽 코드
+
+  // parent로부터 전달받은 변수
+  public userId: string;
+  public closeModal;  // parent에서 전달한 화살표 함수
+  public refreshUserList;  // parent에서 전달한 화살표 함수
+
+  ...
+
+  this.closeModal();
+
+  ...
+
+  this.refreshUserList();
+```
