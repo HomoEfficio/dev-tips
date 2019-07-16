@@ -649,7 +649,7 @@ TODO
 
 ![Imgur](https://i.imgur.com/drsztKo.png)
 
-이런 UI에서 '신규 등록'이나 '수정' 화면을 별도의 페이지로 가져가지 않고 팝업으로 처리해서 얻는 장점은, 별도의 페이지로 만들면 회원 정보 변경 후에 parent의 검색 결과, 페이지 이동 결과가 유지되지 않지만(유지되게 하려면 여러가지 처리가 필요), 팝업으로 처리하면 그대로 유지할 수 있다는 점이다.
+이런 UI에서 '신규 등록'이나 '수정' 화면을 별도의 페이지로 가져가지 않고 팝업으로 처리해서 얻는 장점은, 별도의 페이지로 만들면 회원 정보 변경 후에 parent의 검색 결과, 페이지 이동 결과가 유지되지 않지만(유지되게 하려면 여러가지 처리가 필요), 팝업으로 처리하면 간단하게 그대로 유지할 수 있다는 점이다.
 
 하지만 '신규 등록' 후에는 새로 등록한 회원의 정보를 서버에서 받아서 목록에 표시해야하므로, 서버에서 회원 정보를 받아오는 역할을 담당하는 parent의 메서드를 호출해야 한다.  
 그런데 parent와 modal은 그냥 BsModalService로 호출될 수 있을 뿐, modal의 컴포넌트를 parent의 html에서 표시하지 않으므로 이벤트로 전달할 수도 없다. 어떻게 하면 modal에서 parent의 메서드를 호출할 수 있을까?
@@ -662,10 +662,10 @@ TODO
   public openUserEditModal(userId: number) {
     const initialState = {
       userId: +userId,
-      closeModal: () => {  // 이렇게 arrow 함수로 전달
+      closeModal: () => {  // 이렇게 화살표 함수로 전달
         this.closeUserEditModal();
       },
-      refreshUserList: () => {  // 이렇게 arrow 함수로 전달
+      refreshUserList: () => {  // 이렇게 화살표 함수로 전달
         this.initUsers();
       }
     };
