@@ -29,7 +29,7 @@
 
 ## Project Structure에서 클래스패스 추가
 
-다음과 같이 'Project Structure' 화면에서 'main' 모듈?에 jar를 직접 추가해주면 된다.
+다음과 같이 'Project Structure' 화면에서 'main' 모듈?에 jar를 직접 추가해주면 된다. 주의해야 할 것은 **상위 모듈이 아니라 반드시 'main' 모듈에 추가해야 한다**는 점이다.
 
 ![Imgur](https://i.imgur.com/cHDaEyD.png)
 
