@@ -1,6 +1,6 @@
 # Java/Spring Asynchronous Programming
 
->Blocking/Nonblocking 과 Sync/Async 는 http://homoefficio.github.io/2017/02/19/Blocking-NonBlocking-Synchronous-Asynchronous/ 를 참고한다.
+>Blocking/Nonblocking 과 Sync/Async 는 https://homoefficio.github.io/2017/02/19/Blocking-NonBlocking-Synchronous-Asynchronous/ 를 참고한다.
 
 ## Java 스레드 풀 관리 및 사용
 
