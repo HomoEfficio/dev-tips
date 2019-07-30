@@ -35,6 +35,8 @@ countdownLatch.await();
 
 ## 그냥 join() 사용
 
+검색해보면 대략 아래와 같은 방식을 소개하는 경우도 있는데, 이 방법은 쓰지 않는 게 좋다.
+
 ```java
 List<Thread> threads = new ArrayList<>();
 
