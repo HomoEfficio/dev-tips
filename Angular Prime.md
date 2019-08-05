@@ -697,3 +697,19 @@ modal에서는 다음과 같이 parent의 메서드를 호출할 수 있다.
 
   this.refreshUserList();
 ```
+
+## module '***.module.ts' is not a module
+
+대략 다음과 같은 에러가 날 때가 있다.
+
+```
+ERROR in Source file not found: '/Users/XXX/gitRepo/my-app/src/app/member/user-agree/user-agree.component.ts'.
+ℹ ｢wdm｣: Failed to compile.
+ERROR in src/app/app.module.ts(72,33): error TS2306: File '/Users/XXX/gitRepo/my-app/src/app/member/user-agree/user-agree.module.ts' is not a module.
+src/app/dashboard/dashboard.module.ts(9,33): error TS2306: File '/Users/XXX/gitRepo/my-app/src/app/member/user-agree/user-agree.module.ts' is not a module.
+```
+
+아버지를 아버지라 부를 수 없고 모듈이 모듈이 아니라는 소린데..  
+
+실제 물리적 위치가 잘못돼 있다면 정정하면 되고, 물리적 위치가 맞다면, 실행 중이던 `npm watch`를 종료하고 재실행하면 에러가 사라진다.
+
