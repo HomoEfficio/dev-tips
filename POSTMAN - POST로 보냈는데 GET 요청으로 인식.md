@@ -31,7 +31,7 @@ https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections#Permanent_redirec
 참고로 [HTTP 308 스펙은 여기](https://tools.ietf.org/html/rfc7538)에 있으니 나중에 보고 싶으면 보는 걸로 ㅋ  
 최종판이 2015년에 나왔으니 비교적 최근에 추가된 코드라고 할 수 있겠다.
 
-참고로 301, 308 과 302, 307은 [이 블로그](https://perfectacle.github.io/2017/10/16/http-status-code-307-vs-308/)에 잘 정리돼있다. nginx는 1.13.0부터 308을 지원한다고 한다.
+참고로 301, 308 과 302, 307은 [이 블로그](https://perfectacle.github.io/2017/10/16/http-status-code-307-vs-308/)에 잘 정리돼있다. nginx는 1.13.0부터 308을 지원한다.
 
 ## 해결
 
