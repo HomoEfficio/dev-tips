@@ -12,7 +12,7 @@ WAS 앞단에 있는 Web 서버 로그를 보니 이유를 알 것 같다.
 
 ![Imgur](https://i.imgur.com/xK2AE0g.png)
 
-Web 서버는 301 Moved Permanently 를 반환했고, POSTMAN이 301에 따라 리다이렉트 하면서 GET으로 요청을 다시 보내기 때문이다.
+Web 서버는 301 Moved Permanently 를 반환했고, POSTMAN이 301에 따라 리다이렉트 하면서 GET으로 바꿔서 요청을 다시 보내기 때문이다.
 
 왜 POST로 보내지 않고 GET으로 보내나 찾아보니 https://support.getpostman.com/hc/en-us/articles/211913929-I-sent-a-POST-request-but-Postman-seems-to-be-sending-a-GET-request- 이런 자료가 나왔다.
 
