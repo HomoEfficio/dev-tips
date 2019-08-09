@@ -4,13 +4,13 @@
 
 POSTMAN을 이용해서 분명히 POST로 보낸 요청인데 API 서버에서 GET 메서드로 인식되는 문제가 있었다.
 
-![Imgur](https://i.imgur.com/Nzi1Y5D.png)
+![Imgur](https://i.imgur.com/Wc9W7pm.png)
 
 ## 원인
 
 WAS 앞단에 있는 Web 서버 로그를 보니 이유를 알 것 같다.
 
-![Imgur](https://i.imgur.com/hfzWBR7.png)
+![Imgur](https://i.imgur.com/xK2AE0g.png)
 
 Web 서버는 301 Moved Permanently 를 반환했고, POSTMAN이 301에 따라 리다이렉트 하면서 GET으로 요청을 다시 보내기 때문이다.
 
