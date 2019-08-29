@@ -491,7 +491,7 @@ A collection with cascade="all-delete-orphan" was no longer referenced by the ow
 ## XXXRepository.findLast5ByYYY(param) vs XXXRepository.findFirst5ByYYYOrderByIDDesc(param)
 
 둘다 사용된 단어로만 봐서는 **YYY 필드값이 param인 놈 중 ID 기준 최근(내림차순) 5건의 XXX를 가져오라**는 의도의 메서드 같다.  
-그리고 두 메서드 모두, 각자 실행하면 에러가 발생하지 않는다.
+실행해보면 두 메서드 모두 에러가 발생하지 않고 잘 실행된다.
 
 그런데 결과는 다르다.
 
@@ -500,7 +500,5 @@ A collection with cascade="all-delete-orphan" was no longer referenced by the ow
 
 다시 말하지만 `findLast~~`는 에러 없이 `특정 필드값에 해당하는 전부를 가져온다.` **상황에 따라 OOM을 유발할 수도 있으니 조심해야 한다.**
 
-ID 기준 최근 몇 건을 가져오려면 반드시 `findFirstN~~OrderByIDDesc`나 `findTopN~~OrderByIDDesc`를 사용하자.
-
-
-
+ID 기준 최근 몇 건을 가져오려면 반드시 `findFirstN~~OrderByIDDesc`나 `findTopN~~OrderByIDDesc`를 사용하자.  
+Spring Data Repository 메서드가 매우 편리하긴 하지만 레퍼런스에 없는 방식으로 잘못 사용하면 단순한 에러보다 더 큰 재난을 만날 수 있다.
