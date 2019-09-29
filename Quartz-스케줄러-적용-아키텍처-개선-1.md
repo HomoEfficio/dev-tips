@@ -231,7 +231,7 @@ public class InitRunner implements CommandLineRunner {
 
 그런데 실무에서 사용하는 작업 클래스들이 `RemoteSimpleJob`처럼 단순할리는 없다. DB 작업도 있을 것이고 하둡 인프라와 관련한 작업도 있을 것이다. 이런 것들이 가능하려면 스케줄러 쪽에 있는 컴포넌트를 `@Autowire`로 주입 받아야 하는데, 지금처럼 런타임에 로딩되는 방식에서도 가능할까?
 
-첫번째 고개만으로도 양이 제법되니 일단 여기서 1탄을 마무리하고 `@Autowire`는 2탄에서 다룬다.
+첫번째 고개만으로도 양이 제법되니 일단 여기서 1탄을 마무리하고 `@Autowire`는 [2탄](https://homoefficio.github.io/2019/09/29/Quartz-스케줄러-적용-아키텍처-개선-2/)에서 다룬다.
 
 # 정리
 
