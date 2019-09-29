@@ -240,7 +240,9 @@ Caused by: java.lang.ClassNotFoundException: io.homo_efficio.quartz.job.RemoteSi
 
 긴 내용이지만 요약하면 `@Transactional` 기능을 추가하기 위해서 `RemoteSimpleJob`의 프록시 객체를 CGLib 라이브러리를 이용해서 생성해야 하는데, 이때 `RemoteSimpleJob` 클래스를 찾을 수 없다는 얘기다.
 
-`@Transactional`이 없을 때는 프록시 객체를 만들 필요가 없으므로 `RemoteSimpleJob`은 우리가 만든 커스텀 클래스로더를 통해 정상적으로 로딩되어 실행된다. 하지만 **`@Transactional`이 붙어서 CGLib을 통해 프록시 객체를 생성할 때는 우리가 만든 커스텀 클래스로더가 사용되지 못하므로 `RemoteSimpleJob`을 찾지 못하고 위와 같은 에러가 발생하게 된다.**
+`@Transactional`이 없을 때는 프록시 객체를 만들 필요가 없으므로 `RemoteSimpleJob`은 우리가 만든 커스텀 클래스로더를 통해 정상적으로 로딩되어 실행된다. 하지만 **`@Transactional`이 붙어서 CGLib을 통해 프록시 객체를 생성할 때는 우리가 만든 커스텀 클래스로더가 사용되지 못하므로 `RemoteSimpleJob`을 찾지 못하고 위와 같은 에러가 발생하게 된다.** 그림으로 보면 대략 다음과 같다.
+
+![Imgur](https://i.imgur.com/KDuf1qu.png)
 
 그럼 CGLib이 사용하는 클래스로더가 `RemoteSimpleJob`을 로딩할 수 있게 만들면 이 문제도 해결될 것 같다. CGLib는 애플리케이션 구동 환경에서 정해진 클래스로더를 사용하는데 대략 다음과 같다.
 
@@ -320,3 +322,31 @@ public class RemoteSimpleJob implements Job {
 >- 이유는 `@Transactional` 기능을 추가하기 위해서 `RemoteSimpleJob`의 프록시 객체를 CGLib 라이브러리를 이용해서 생성해야 하는데, 이때 `RemoteSimpleJob` 클래스를 찾을 수 없기 때문이다.
 >
 >- 작업 클래스 모듈에서 `@Transactional`은 사용할 수 없지만 `PlatformTransactionManager`를 이용하면 트랜잭션 처리를 할 수 있다.
+
+# 시리즈 마무리
+
+총 3편에 걸쳐 Quartz 적용 아키텍처를 개선하는 과정을 살펴봤다.
+
+## 1편 모듈 분리
+
+[1편](https://homoefficio.github.io/2019/09/28/Quartz-스케줄러-적용-아키텍처-개선-1/)에서는 먼저 변경 주기가 다른 스케줄러와 작업 클래스를 별도의 모듈로 분리하는 방법을 알아봤다.
+
+![Imgur](https://i.imgur.com/5RHsMzy.png)
+
+키워드는 `URLClassLoader`
+
+## 2편 의존 관계 주입
+
+[2편](ttps://homoefficio.github.io/2019/09/29/Quartz-스케줄러-적용-아키텍처-개선-2/)에서는 분리된 작업 클래스에 필요한 의존 관계를 주입하는 방법을 알아봤다. 
+
+![Imgur](https://i.imgur.com/mT6CfNb.png)
+
+키워드는 `SpringBeanJobFactory`
+
+## 3편 트랜잭션 처리
+
+3편에서는 분리된 작업 클래스에서 트랜잭션을 처리하는 방법을 알아봤다.
+
+![Imgur](https://i.imgur.com/xLirM9k.png)
+
+키워드는 `PlatformTransactionManager`
