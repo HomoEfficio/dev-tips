@@ -242,7 +242,7 @@ Caused by: java.lang.ClassNotFoundException: io.homo_efficio.quartz.job.RemoteSi
 
 `@Transactional`이 없을 때는 프록시 객체를 만들 필요가 없으므로 `RemoteSimpleJob`은 우리가 만든 커스텀 클래스로더를 통해 정상적으로 로딩되어 실행된다. 하지만 **`@Transactional`이 붙어서 CGLib을 통해 프록시 객체를 생성할 때는 우리가 만든 커스텀 클래스로더가 사용되지 못하므로 `RemoteSimpleJob`을 찾지 못하고 위와 같은 에러가 발생하게 된다.** 그림으로 보면 대략 다음과 같다.
 
-![Imgur](https://i.imgur.com/KDuf1qu.png)
+![Imgur](https://i.imgur.com/e7GF1s6.png)
 
 그럼 CGLib이 사용하는 클래스로더가 `RemoteSimpleJob`을 로딩할 수 있게 만들면 이 문제도 해결될 것 같다. CGLib는 애플리케이션 구동 환경에서 정해진 클래스로더를 사용하는데 대략 다음과 같다.
 
@@ -327,26 +327,26 @@ public class RemoteSimpleJob implements Job {
 
 총 3편에 걸쳐 Quartz 적용 아키텍처를 개선하는 과정을 살펴봤다.
 
+이를 통해 **변경 주기가 다른 스케줄러와 작업 클래스를 별도의 모듈로 분리하고, 분리된 모듈에 의존 관계를 주입해서 트랜잭션까지 처리할 수 있는 클린 Quartz 아키텍처를 적용할 수 있게 됐다.**
+
 ## 1편 모듈 분리
 
-[1편](https://homoefficio.github.io/2019/09/28/Quartz-스케줄러-적용-아키텍처-개선-1/)에서는 먼저 변경 주기가 다른 스케줄러와 작업 클래스를 별도의 모듈로 분리하는 방법을 알아봤다.
+[1편](https://homoefficio.github.io/2019/09/28/Quartz-스케줄러-적용-아키텍처-개선-1/)의 키워드는 **모듈 분리와  `URLClassLoader`**
 
 ![Imgur](https://i.imgur.com/5RHsMzy.png)
 
-키워드는 `URLClassLoader`
 
 ## 2편 의존 관계 주입
 
-[2편](ttps://homoefficio.github.io/2019/09/29/Quartz-스케줄러-적용-아키텍처-개선-2/)에서는 분리된 작업 클래스에 필요한 의존 관계를 주입하는 방법을 알아봤다. 
+[2편](https://homoefficio.github.io/2019/09/29/Quartz-스케줄러-적용-아키텍처-개선-2/)의 키워드는 **의존 관계 주입과 `SpringBeanJobFactory`**
 
 ![Imgur](https://i.imgur.com/mT6CfNb.png)
 
-키워드는 `SpringBeanJobFactory`
 
 ## 3편 트랜잭션 처리
 
-3편에서는 분리된 작업 클래스에서 트랜잭션을 처리하는 방법을 알아봤다.
+[3편](https://homoefficio.github.io/2019/09/29/Quartz-스케줄러-적용-아키텍처-개선-3/)의 키워드는 **트랜잭션 처리와 `PlatformTransactionManager`**
 
-![Imgur](https://i.imgur.com/xLirM9k.png)
+![Imgur](https://i.imgur.com/dbHHXDv.png)
 
-키워드는 `PlatformTransactionManager`
+
