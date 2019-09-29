@@ -225,7 +225,7 @@ public class InitRunner implements CommandLineRunner {
 
 ![Imgur](https://i.imgur.com/gF10uft.png)
 
-스케줄러쪽에서 `io.homo_efficio.quartz.job.RemoteSimpleJob`와 같이 외부 jar에 있는 작업 클래스 위치를 문자열로 직접 참조하고 있어서 마치 스케줄러 모듈(quartz-scheduler)이 작업 모듈(quartz-job)에 의존하는 것처럼 보이지만, 실무에서는 작업 클래스 위치나 실행 주기 정보를 DB에서 읽어오므로 실제 환경에서는 스케줄러 모듈은 작업 클래스 모듈을 모른다. 따라서 이제부터는 `RemoteJob2`, `RemoteJob3` 등을 추가하더라도 `quartz-job.jar`만 빌드/배포하면 되며, 스케줄러는 재배포할 필요가 없는 구조가 만들어졌다.
+스케줄러쪽에서 `io.homo_efficio.quartz.job.RemoteSimpleJob`와 같이 외부 jar에 있는 작업 클래스 위치를 문자열로 직접 참조하고 있어서 마치 스케줄러 모듈(quartz-scheduler)이 작업 모듈(quartz-job)에 의존하는 것처럼 보이지만, 실무에서는 작업 클래스 위치나 실행 주기 정보를 DB에서 읽어오므로 실제 환경에서는 **스케줄러 모듈은 작업 클래스 모듈을 모른다. 따라서 이제부터는 `RemoteJob2`, `RemoteJob3` 등을 추가하더라도 `quartz-job.jar`만 빌드/배포하면 되며, 스케줄러는 재배포할 필요가 없는 구조가 만들어졌다.**
 
 이렇게 해서 스케줄러와 작업 클래스를 분리하는데 성공했다. 어렵지 않다. 
 
