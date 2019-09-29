@@ -15,7 +15,7 @@
 
 결론부터 말하면 **스프링부트가 제공하는 `SpringBeanJobFactory`를 통해 애플리케이션 구동 완료 후에 동적으로 추가하는 bean에도 의존 관계를 쉽게 주입할 수 있다.**
 
-예제에서는 편의상 스케줄링 직후 작업이 수행되도록 작성했지만, 스케줄러는 일반적으로 작업을 스케줄하는 시점과 작업을 실행하는 시점이 다르다. Quartz 스케줄러도 마찬가지며 스케줄하는 시점에도 작업 클래스를 로딩하지만 작업을 실행하는 시점에도 클래스를 로딩한다. 그리고 작업을 실행하려면 작업 클래스를 인스턴스화 해야 하는데, 이 때 [`JobFactory`](https://www.quartz-scheduler.org/api/2.3.1-SNAPSHOT/index.html)가 사용된다. 문서에도 나와있는 것처럼 **`JobFactory`를 의존 관계 주입 통로로 사용할 수 있다.**
+예제에서는 편의상 스케줄링 직후 작업이 수행되도록 작성했지만, 스케줄러는 일반적으로 작업을 스케줄하는 시점과 작업을 실행하는 시점이 다르다. Quartz 스케줄러도 마찬가지며 스케줄하는 시점에도 작업 클래스를 로딩하지만 작업을 실행하는 시점에도 클래스를 로딩한다. 그리고 작업을 실행하려면 작업 클래스를 인스턴스화 해야 하는데, 이 때 `JobFactory`가 사용된다. [문서](https://www.quartz-scheduler.org/api/2.3.1-SNAPSHOT/index.html)에도 나와있는 것처럼 **`JobFactory`를 의존 관계 주입 통로로 사용할 수 있다.**
 
 스프링은 꽤 오래 전부터 Quartz를 지원해오고 있으며, 스프링부트에도 quartz starter가 있고 그 안에 `JobFactory`를 구현한 [`SpringBeanJobFactory`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/quartz/SpringBeanJobFactory.html)가 있다. 애플리케이션 실행 로그를 살펴보면 `SpringBeanJobFactory`가 사용되고 있음을 알 수 있다.
 
