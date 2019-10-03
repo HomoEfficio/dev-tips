@@ -4,15 +4,15 @@ Brian Goetz는 [스택오버플로우](https://stackoverflow.com/questions/26327
 
 >... it was not to be a general purpose Maybe type, as much as many people would have liked us to do so. Our intention was to provide a limited mechanism for library method return types where there needed to be a clear way to represent "no result" ...
 >
->`Optional`은 많은 사람들이 우리(자바 언어 설계자)에게 기대했던 범용적인 `Maybe` 타입과는 다르다. 라이브러리 메서드의 반환값이 '없음'을 명백하게 표현할 필요가 있는 곳에서만 제한적으로 사용할 수 있는 메커니즘을 제공하는 것이 우리가 `Optional`에 담은 의도였다.
+>`Optional`은 많은 사람들이 우리(자바 언어 설계자)에게 기대했던 범용적인 `Maybe` 타입과는 다르다. **라이브러리 메서드의 반환값이 '없음'을 명백하게 표현할 필요가 있는 곳에서만 제한적으로 사용할 수 있는 메커니즘을 제공하는 것이 `Optional`을 만든 의도**였다.
 
-뭔 소린지 아리까리하지만 요는 **(이유야 있겠지만) 사람들이 기대하는 것과는 다르게 만들었다는..**  
-그럼에도 불구하고 사람들은 기대했던 새로 사용해버려서 [주의사항이 26가지](https://dzone.com/articles/using-optional-correctly-is-not-optional)나 되었..
+뭔 소린지 아리까리하지만 요는 **반환값이 '없음'을 나타내는 것이 주목적**이며 (이유야 있겠지만) **사람들이 기대하는 것과는 다르게 만들었다는..**  
+그럼에도 불구하고 사람들은 기대했던 새로 사용해버려서 [주의사항이 26가지](https://dzone.com/articles/using-optional-correctly-is-not-optional)나 되었.. (의도와 다른 방식으로 사용되는 것마저 가능하게 만든 이유는 또 뭘까..)
 
-어쨌든 우리는 만드는 시스템에 해가 없어야 하므로 **`Optional` 사용 시 주의 사항을 자바8 기준으로 갈무리**해봤다.
+어쨌든 원래 의도에 맞게 쓰는 것이 가급적 해가 없을 것이고, 우리는 우리가 만드는 시스템에 해를 끼치지 말아야 한다. 그래서 **`Optional` 사용 시 무심결에 잘못 사용하는 안티패턴과 올바른 사용법을 자바8 기준으로 갈무리**해봤다.
 
 
-## isPresent()-get() 대신 orElse()/orElseGet()/orElseThrow()
+## 1. isPresent()-get() 대신 orElse()/orElseGet()/orElseThrow()
 
 >**`Optional`은 비싸다. `if (optMember.isPresent()) { ... }`로 하려면 `Optional` 쓰지 말고 `if (member != null) { ... }`를 쓰자.**
 
@@ -45,7 +45,7 @@ return member.orElseThrow(() -> new NoSuchElementException());
 ```
 
 
-## orElse(new ...) 대신 orElseGet(() -> new ...)
+## 2. orElse(new ...) 대신 orElseGet(() -> new ...)
 
 >**`Optional` 값이 없을 때 새로운 객체를 생성하거나 새로운 연산을 유발한다면 `orElse()`가 아니라 `orElseGet()`을 쓰자.**
 
@@ -71,7 +71,7 @@ return member.orElse(EMPTY_MEMBER);  // 이미 생성됐거나 계산된 값은 
 ```
 
 
-## 단지 값을 얻을 목적이라면 `Optional` 대신 `null` 비교
+## 3. 단지 값을 얻을 목적이라면 `Optional` 대신 `null` 비교
 
 >**`Optional`은 비싸다. 따라서 단순히 값 또는 `null`을 얻을 목적이라면 `Optional` 대신 `null` 비교를 쓰자.**
 
@@ -112,7 +112,7 @@ public interface MemberRepository<Member, Long> extends JpaRepository {
 }
 ```
 
-## `Optional`을 필드로 사용 금지
+## 4. `Optional`을 필드로 사용 금지
 
 >**`Optional`은 필드에 사용할 목적으로 만들어지지 않았으며, `Serializable`을 구현하지 않았다. 따라서 `Optional`은 필드로 사용하지 말자.**
 
@@ -134,17 +134,86 @@ public class Member {
 }
 ```
 
-## `Optional`을 생성자나 메서드 인자로 사용 금지
+## 5. `Optional`을 생성자나 메서드 인자로 사용 금지
 
->**`Optional`을 생성자나 메서드 인자로 사용하면 이를 호출하는 쪽에서 항상 `Optional`을 만들어서 전달해줘야 하는데, 이는 별다른 효용이 없다. 별다른 효용이 없는 곳에 비싼 `Optional`을 사용하지 말자.**
+>**`Optional`을 생성자나 메서드 인자로 사용하면, 호출할 때마다 `Optional`을 생성해서 인자로 전달해줘야 한다. 하지만 호출되는 쪽, 즉 api나 라이브러리 메서드에서는 인자가 `Optional`이든 아니든 `null` 체크를 하는 것이 언제나 안전하다. 따라서 굳이 비싼 `Optional`을 인자로 사용하지 말고 호출되는 쪽에 `null` 체크 책임을 남겨두는 것이 좋다.**
+
+```java
+// 안 좋음
+public class HRManager {
+    
+    public void increaseSalary(Optional<Member> member) {
+        member.ifPresent(member -> member.increaseSalary(10));
+    }
+}
+hrManager.increaseSalary(Optional.ofNullable(member));
+
+// 좋음
+public class HRManager {
+    
+    public void increaseSalary(Member member) {
+        if (member != null) {
+            member.increaseSalary(10);
+        }
+    }
+}
+hrManager.increaseSalary(member);
+```
 
 
-## `Optional`을 컬렉션의 원소로 사용 금지
+## 6. `Optional`을 컬렉션의 원소로 사용 금지
 
->**`Optional`은 한다.**
+>**컬렉션에는 많은 원소가 들어갈 수 있다. 따라서 비싼 `Optional`을 원소로 사용하지 말고 원소를 꺼낼 때나 사용할 때 `null` 체크하는 것이 좋다. 특히 Map은 `getOrDefault()`, `putIfAbsent()`, `computeIfAbsent()`, `computeIfPresent()` 처럼 `null` 체크가 포함된 메서드를 제공하므로, Map의 원소로 `Optional`을 사용하지 말고 Map이 제공하는 메서드를 활용하는 것이 좋다.**
 
-of(), ofNullable() 혼동
-OptionalInt, OptionalLong, OptionalDouble
-equality에 get() 불필요
-map(), flatMap()
+```java
+// 안 좋음
+Map<String, Optional<String>> sports = new HashMap<>();
+sports.put("100", Optional.of("BasketBall"));
+sports.put("101", Optional.ofNullable(someOtherSports));
+String basketBall = sports.get("100").orElse("BasketBall");
+String unknown = sports.get("101").orElse("");
 
+// 좋음
+Map<String, String> sports = new HashMap<>();
+sports.put("100", "BasketBall");
+sports.put("101", null);
+String basketBall = sports.getOrDefault("100", "BasketBall");
+String unknown = sports.computeIfAbsent("101", k -> "");
+```
+
+
+## 7. of(), ofNullable() 혼동 주의
+
+>**`of(X)`은 `X`가 `null`이 아님이 확실할 때만 사용해야 하며, `X`가 `null`이면 NullPointerException 이 발생한다.**  
+>**`ofNullable(X)`은 `X`가 `null`일 수도 있을 때만 사용해야 하며, `X`가 `null`이 아님이 확실하면 `of(X)`를 사용해야 한다.**
+
+```java
+// 안 좋음
+return Optional.of(member.getEmail());  // member의 email이 null이면 NPE 발생
+
+// 좋음
+return Optional.ofNullable(member.getEmail());
+
+
+
+// 안 좋음
+return Optional.ofNullable("READY");
+
+// 좋음
+return Optional.of("READY");
+```
+
+
+## 8. Optional<T> 대신 OptionalInt, OptionalLong, OptionalDouble 사용
+
+>**`Optional`에 담길 값이 `int`, `long`, `double`이라면 Boxing/Unboxing이 발생하는 `Optional<Integer>`, `Optional<Long>`, `Optional<Double>`을 사용하지 말고, `OptionalInt`, `OptionalLong`, `OptionalDouble`을 사용하자.**
+
+```java
+// 안 좋음
+Optional<Integer> count = Optional.of(38);  // boxing
+for (int i = 0 ; i < count.get() ; i++) { ... }  // unboxing 발생
+
+// 좋음
+OptionalInt count = OptionalInt.of(38);  // boxing 발생 안 함
+for (int i = 0 ; i < count.getAsInt() ; i++) { ... }  // unboxing 발생 안 함
+```
