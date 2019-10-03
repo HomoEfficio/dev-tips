@@ -4,10 +4,17 @@ Brian Goetz는 [스택오버플로우](https://stackoverflow.com/questions/26327
 
 >... it was not to be a general purpose Maybe type, as much as many people would have liked us to do so. Our intention was to provide a limited mechanism for library method return types where there needed to be a clear way to represent "no result" ...
 >
->`Optional`은 많은 사람들이 우리(자바 언어 설계자)에게 기대했던 범용적인 `Maybe` 타입과는 다르다. **라이브러리 메서드의 반환값이 '없음'을 명백하게 표현할 필요가 있는 곳에서 제한적으로 사용할 수 있는 메커니즘을 제공하는 것이 `Optional`을 만든 의도**였다.
+>`Optional`은 많은 사람들이 우리(자바 언어 설계자)에게 기대했던 범용적인 `Maybe` 타입과는 다르다. **라이브러리 메서드가 반환할 결과값이 '없음'을 명백하게 표현할 필요가 있는 곳에서 제한적으로 사용할 수 있는 메커니즘을 제공하는 것이 `Optional`을 만든 의도**였다.
 
 뭔 소린지 아리까리하지만 요는 **반환값이 '없음'을 나타내는 것이 주목적**이며, (이유야 있겠지만) **사람들이 기대하는 것과는 다르게 만들었다는..**  
 그럼에도 불구하고 사람들은 기대했던 대로 사용해버려서 [주의사항이 26가지](https://dzone.com/articles/using-optional-correctly-is-not-optional)나 되었.. (의도와 다른 방식으로 사용되는 것을 허용한 이유는 또 뭘까..)
+
+참고로 Java9에는 Brian Goetz가 설명한 의도가 다음과 같이 `API Note`라는 형식으로 [공식 API 문서](https://docs.oracle.com/javase/9/docs/api/java/util/Optional.html)에도 포함되었다. (알려주신 김인태님 감사드립니다!)
+
+>API Note:  
+>Optional is primarily intended for use as a method return type where there is a clear need to represent "no result," and where using null is likely to cause errors. A variable whose type is Optional should never itself be null; it should always point to an Optional instance.
+>
+>**메서드가 반환할 결과값이 '없음'을 명백하게 표현할 필요가 있고, `null`을 반환하면 에러를 유발할 가능성이 높은 상황에서 메서드의 반환 타입으로 `Optional`을 사용하자는 것이 `Optional`을 만든 주된 목적이다.** `Optional` 타입의 변수의 값은 절대 `null`이어서는 안 되며, 항상 `Optional` 인스턴스를 가리켜야 한다.
 
 어쨌든 원래 의도에 맞게 쓰는 것이 가급적 해가 없을 것이고, 우리는 우리가 만드는 시스템에 해를 끼치지 말아야 한다. 그래서 **`Optional` 사용 시 무심결에 잘못 사용하는 안티패턴과 올바른 사용법을 자바8 기준으로 갈무리**해봤다.
 
