@@ -1,3 +1,22 @@
+title: Java Optional 바르게 쓰기
+date: 2019-10-03 23:02:59
+categories:
+  - Technique
+tags:
+  - Java
+  - Java8
+  - Optional
+  - isPresent
+  - ifPresent
+  - orElse
+  - orElseGet
+  - orElseThrow
+  - OptionalInt
+  - OptionalLong
+  - OptionalDouble
+thumbnailImage: https://i.imgur.com/7s3mK5V.png
+coverImage: cover-java-optional.jpg
+---
 # Java Optional 바르게 쓰기
 
 Brian Goetz는 [스택오버플로우](https://stackoverflow.com/questions/26327957/should-java-8-getters-return-optional-type/26328555#26328555)에서 `Optional`을 만든 의도에 대해 다음과 같이 말했다.
@@ -206,7 +225,7 @@ return Optional.of("READY");
 ```
 
 
-## 9. `Optional<T>` 대신 `OptionalInt`, `OptionalLong`, `OptionalDouble` 사용
+## 9. `Optional<T>` 대신 `OptionalInt`, `OptionalLong`, `OptionalDouble`
 
 >**`Optional`에 담길 값이 `int`, `long`, `double`이라면 Boxing/Unboxing이 발생하는 `Optional<Integer>`, `Optional<Long>`, `Optional<Double>`을 사용하지 말고, `OptionalInt`, `OptionalLong`, `OptionalDouble`을 사용하자.**
 
@@ -219,3 +238,23 @@ for (int i = 0 ; i < count.get() ; i++) { ... }  // unboxing 발생
 OptionalInt count = OptionalInt.of(38);  // boxing 발생 안 함
 for (int i = 0 ; i < count.getAsInt() ; i++) { ... }  // unboxing 발생 안 함
 ```
+
+# 정리
+
+>1. `isPresent()-get()` 대신 `orElse()/orElseGet()/orElseThrow()`
+>
+>2. `orElse(new ...)` 대신 `orElseGet(() -> new ...)`
+>
+>3. 단지 값을 얻을 목적이라면 `Optional` 대신 `null` 비교
+>
+>4. `Optional` 대신 비어있는 컬렉션 반환
+>
+>5. `Optional`을 필드로 사용 금지
+>
+>6. `Optional`을 생성자나 메서드 인자로 사용 금지
+>
+>7. `Optional`을 컬렉션의 원소로 사용 금지
+>
+>8. `of()`, `ofNullable()` 혼동 주의
+>
+>9. `Optional<T>` 대신 `OptionalInt`, `OptionalLong`, `OptionalDouble`
