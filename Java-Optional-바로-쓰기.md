@@ -12,7 +12,7 @@ Brian Goetz는 [스택오버플로우](https://stackoverflow.com/questions/26327
 어쨌든 원래 의도에 맞게 쓰는 것이 가급적 해가 없을 것이고, 우리는 우리가 만드는 시스템에 해를 끼치지 말아야 한다. 그래서 **`Optional` 사용 시 무심결에 잘못 사용하는 안티패턴과 올바른 사용법을 자바8 기준으로 갈무리**해봤다.
 
 
-## 1. isPresent()-get() 대신 orElse()/orElseGet()/orElseThrow()
+## 1. `isPresent()-get()` 대신 `orElse()/orElseGet()/orElseThrow()`
 
 >**이왕에 비싼 `Optional` 쓰기로 한 거 코드라도 줄이자. 설명보다 그냥 코드를 보는 게 훨씬 낫다.**
 
@@ -45,7 +45,7 @@ return member.orElseThrow(() -> new NoSuchElementException());
 ```
 
 
-## 2. orElse(new ...) 대신 orElseGet(() -> new ...)
+## 2. `orElse(new ...)` 대신 `orElseGet(() -> new ...)`
 
 >**`Optional`에 값이 없을 때만 새로운 객체를 생성하거나 새로운 연산이 수행되도록 `orElse()` 대신 `orElseGet()`을 쓰자.**
 
@@ -184,7 +184,7 @@ String unknown = sports.computeIfAbsent("101", k -> "");
 ```
 
 
-## 8. of(), ofNullable() 혼동 주의
+## 8. `of()`, `ofNullable()` 혼동 주의
 
 >**`of(X)`은 `X`가 `null`이 아님이 확실할 때만 사용해야 하며, `X`가 `null`이면 NullPointerException 이 발생한다.**  
 >**`ofNullable(X)`은 `X`가 `null`일 수도 있을 때만 사용해야 하며, `X`가 `null`이 아님이 확실하면 `of(X)`를 사용해야 한다.**
@@ -206,7 +206,7 @@ return Optional.of("READY");
 ```
 
 
-## 9. Optional<T> 대신 OptionalInt, OptionalLong, OptionalDouble 사용
+## 9. `Optional<T>` 대신 `OptionalInt`, `OptionalLong`, `OptionalDouble` 사용
 
 >**`Optional`에 담길 값이 `int`, `long`, `double`이라면 Boxing/Unboxing이 발생하는 `Optional<Integer>`, `Optional<Long>`, `Optional<Double>`을 사용하지 말고, `OptionalInt`, `OptionalLong`, `OptionalDouble`을 사용하자.**
 
