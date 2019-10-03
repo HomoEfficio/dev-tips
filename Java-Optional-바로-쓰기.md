@@ -4,7 +4,7 @@ Brian Goetz는 [스택오버플로우](https://stackoverflow.com/questions/26327
 
 >... it was not to be a general purpose Maybe type, as much as many people would have liked us to do so. Our intention was to provide a limited mechanism for library method return types where there needed to be a clear way to represent "no result" ...
 >
->`Optional`은 많은 사람들이 우리(자바 언어 설계자)에게 기대했던 범용적인 `Maybe` 타입과는 다르다. **라이브러리 메서드의 반환값이 '없음'을 명백하게 표현할 필요가 있는 곳에서만 제한적으로 사용할 수 있는 메커니즘을 제공하는 것이 `Optional`을 만든 의도**였다.
+>`Optional`은 많은 사람들이 우리(자바 언어 설계자)에게 기대했던 범용적인 `Maybe` 타입과는 다르다. **라이브러리 메서드의 반환값이 '없음'을 명백하게 표현할 필요가 있는 곳에서 제한적으로 사용할 수 있는 메커니즘을 제공하는 것이 `Optional`을 만든 의도**였다.
 
 뭔 소린지 아리까리하지만 요는 **반환값이 '없음'을 나타내는 것이 주목적**이며, (이유야 있겠지만) **사람들이 기대하는 것과는 다르게 만들었다는..**  
 그럼에도 불구하고 사람들은 기대했던 대로 사용해버려서 [주의사항이 26가지](https://dzone.com/articles/using-optional-correctly-is-not-optional)나 되었.. (의도와 다른 방식으로 사용되는 것을 허용한 이유는 또 뭘까..)
