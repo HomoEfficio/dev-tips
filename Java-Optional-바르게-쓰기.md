@@ -1,4 +1,4 @@
-# Java Optional 바로 쓰기
+# Java Optional 바르게 쓰기
 
 Brian Goetz는 [스택오버플로우](https://stackoverflow.com/questions/26327957/should-java-8-getters-return-optional-type/26328555#26328555)에서 `Optional`을 만든 의도에 대해 다음과 같이 말했다.
 
