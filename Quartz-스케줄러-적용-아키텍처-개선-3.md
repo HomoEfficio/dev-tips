@@ -349,4 +349,68 @@ public class RemoteSimpleJob implements Job {
 
 ![Imgur](https://i.imgur.com/dbHHXDv.png)
 
+---
+## 기타 - 개발 환경 런타임 별 오류 메시지
 
+```text
+currentThreadCladdLoader: null
+contextClassLoader: jdk.internal.loader.ClassLoaders$AppClassLoader@4f8e5cde
+currentThreadCladdLoader: jdk.internal.loader.ClassLoaders$AppClassLoader@4f8e5cde
+contextClassLoader: org.springframework.boot.devtools.restart.classloader.RestartClassLoader@7a1337b
+
+restartClassLoader.getPlatformClassLoader(): jdk.internal.loader.ClassLoaders$PlatformClassLoader@200a570f
+restartClassLoader.getSystemClassLoader(): jdk.internal.loader.ClassLoaders$AppClassLoader@4f8e5cde
+restartClassLoader.getParent(): jdk.internal.loader.ClassLoaders$AppClassLoader@4f8e5cde
+
+
+
+JarLauncher
+
+- Class-Path 로 remote.jar 추가 시
+  - java.lang.ClassNotFoundException: org.quartz.Job
+    at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:582) ~[na:na]
+    at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:185) ~[na:na]
+    at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:496) ~[na:na]
+    at java.base/java.lang.ClassLoader.defineClass1(Native Method) ~[na:na]
+    at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1007) ~[na:na]
+    at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:174) ~[na:na]
+    at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:801) ~[na:na]
+    at java.base/jdk.internal.loader.BuiltinClassLoader.findClassOnClassPathOrNull(BuiltinClassLoader.java:699) ~[na:na]
+    at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:622) ~[na:na]
+    at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:580) ~[na:na]
+    at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:185) ~[na:na]
+    at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:550) ~[na:na]
+    at org.springframework.boot.loader.LaunchedURLClassLoader.loadClass(LaunchedURLClassLoader.java:92) ~[quartz-scheduler-0.0.1-SNAPSHOT.jar:na]
+    at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:550) ~[na:na]
+    at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:496) ~[na:na]
+    at io.homo_efficio.quartz.scheduler.config.QuartzRemoteClassLoadHelper.loadClass(QuartzRemoteClassLoadHelper.java:31) ~[classes!/:na]
+    at io.homo_efficio.quartz.scheduler.config.QuartzRemoteClassLoadHelper.loadClass(QuartzRemoteClassLoadHelper.java:39) ~[classes!/:na]
+
+- Class-Path 로 remote.jar + quartz 추가 시
+  - java.lang.ClassNotFoundException: org.quartz.Job
+    at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:582) ~[na:na]
+    at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:185) ~[na:na]
+    at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:496) ~[na:na]
+    at java.base/java.lang.ClassLoader.defineClass1(Native Method) ~[na:na]
+    at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1007) ~[na:na]
+    at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:174) ~[na:na]
+    at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:801) ~[na:na]
+    at java.base/jdk.internal.loader.BuiltinClassLoader.findClassOnClassPathOrNull(BuiltinClassLoader.java:699) ~[na:na]
+    at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:622) ~[na:na]
+    at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:580) ~[na:na]
+    at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:185) ~[na:na]
+    at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:550) ~[na:na]
+    at org.springframework.boot.loader.LaunchedURLClassLoader.loadClass(LaunchedURLClassLoader.java:92) ~[quartz-scheduler-0.0.1-SNAPSHOT.jar:na]
+    at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:550) ~[na:na]
+    at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:496) ~[na:na]
+    at io.homo_efficio.quartz.scheduler.config.QuartzRemoteClassLoadHelper.loadClass(QuartzRemoteClassLoadHelper.java:31) ~[classes!/:na]
+    at io.homo_efficio.quartz.scheduler.config.QuartzRemoteClassLoadHelper.loadClass(QuartzRemoteClassLoadHelper.java:39) ~[classes!/:na]
+    at io.homo_efficio.quartz.scheduler.api.service.QuartzService.getJobClass(QuartzService.java:55) ~[classes!/:na]
+    at io.homo_efficio.quartz.scheduler.api.service.QuartzService.scheduleJob(QuartzService.java:30) ~[classes!/:na]
+
+- Class-Path 명시 하지 않으면
+  - Caused by: java.lang.ClassNotFoundException: io.homo_efficio.quartz.job.SimpleJob
+    at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:466) ~[na:na]
+    at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:563) ~[na:na]
+    at org.springframework.boot.loader.LaunchedURLClassLoader.loadClass(LaunchedURLClassLoader.java:92) ~[quartz-scheduler-0.0.1-SNAPSHOT.jar:na]
+```
