@@ -6,7 +6,7 @@ IntelliJ **Ultimate 버전**에는 DB Client 도구가 포함돼있어서 로컬
 
 스프링부트 애플리케이션에 H2를 임베디드 모드로 사용하는 케이스를 기준으로 한 번 시도해보자.
 
-자바 11, Gradle 5.6.2, 스프링부트 버전 2.2.0 RC1, H2 1.4 기준이고, 기본 `build.gradle`은 다음과 같다.
+IntelliJ 2019.2.3, 자바 11, Gradle 5.6.2, 스프링부트 버전 2.2.0 RC1, H2 1.4 기준이고, 기본 `build.gradle`은 다음과 같다.
 
 ```groovy
 ...
@@ -190,10 +190,21 @@ IntelliJ Ultimate 버전에서는 DB Client 뿐만 아니라 JPA Console도 제�
 
 ![Imgur](https://i.imgur.com/E5GlHhN.png)
 
+### JPQL 이름 인식 문제
+
+그런데 JPA Console에서 JPQL 실행 시 Java의 CamelCase 표기법을 snake_case 표기법으로 자동으로 변환하지 않아서 다음과 같이 엔티티 클래스 이름이나 필드 이름에 CamelCase 표기법이 사용된 경우 'not found' 에러가 난다.
+
+다음 그림을 보면 CamelCase를 사용하면서도 `@Table(name = "MULTIPLICATION_ATTEMPT")`나 `@Column(name="MULTIPLICATION_ATTEMPT_ID")`를 명시해준 건 에러가 나지 않지만, `resultAttempt`처럼 CamelCase이면서도 `@Column`으로 이름을 지정해주지 않은 건 에러가 발생한다.
+
+![Imgur](https://i.imgur.com/Bx022sX.png)
+
+따라서 현재로는 JPA Console을 통해 JPQL을 문제 없이 사용하려면 CamelCase를 사용하는 엔티티 클래스 이름이나 필드 이름에는 `@Table`,`@Column`을 통해 실제 테이블에 사용될 snake_case 이름을 모두 지정해줘야 하는 불편함이 있다.
+
 
 # 정리
 
 >- IntelliJ Ultimate 버전에서는 DB Client를 사용할 수 있다.  
 >- 스프링부트 애플리케이션에서는 H2 TCP 서버를 빈으로 띄우면 IntelliJ DB Client로 연결해서 사용할 수 있다.  
->- Project Structure에서 main 모듈에 JPA를 추가하고 데이터 소스를 설정해주면 JPA Console을 사용할 수 있다.
+>- Project Structure에서 main 모듈에 JPA를 추가하고 데이터 소스를 설정해주면 JPA Console을 사용할 수 있다.  
+>    - 엔티티 클래스 이름이나 필드 이름이 CamelCase로 작성된 경우 `@Table`, `@Column`으로 snake_case 이름을 모두 지정해줘야 한다.
 
