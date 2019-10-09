@@ -1,7 +1,8 @@
-# IntelliJ에서 H2 연결하기
+# IntelliJ에서 H2 연결하고 JPA Console 사용하기
 
 H2는 Web 콘솔도 지원해줘서 로컬 환경에서 웹을 통해 쉽게 데이터를 확인할 수 있다.   
-IntelliJ **Ultimate 버전**에는 DB Client 도구가 포함돼있어서 로컬에서 H2 DB를 사용할 때 편리하게 사용할 수 있다.
+IntelliJ **Ultimate 버전**에는 DB Client 도구가 포함돼있어서 로컬에서 H2 DB를 사용할 때 편리하게 사용할 수 있다.  
+또한 JPA를 사용하는 경우 JPA Console을 사용할 수 있고, Hibernate Console처럼 JPA 구현체에 따른 콘솔도 지원한다.
 
 스프링부트 애플리케이션에 H2를 임베디드 모드로 사용하는 케이스를 기준으로 한 번 시도해보자.
 
@@ -145,7 +146,54 @@ console 창에서는 다음과 같이 자동 완성 도움을 받으면서 쿼�
 ![Imgur](https://i.imgur.com/0tpkaJo.png)
 
 
+## JPA Console 설정
+
+IntelliJ Ultimate 버전에서는 DB Client 뿐만 아니라 JPA Console도 제공하며, 여기서 JPQL 쿼리를 직접 실행할 수 있다.
+
+다음과 같이 'Project Structure' 화면에서 JPA Console을 사용할 모듈의 'main'에서 우클릭하고 JPA를 클릭한다.
+
+![Imgur](https://i.imgur.com/Qo9F6Da.png)
+
+다음과 같이 'Default JPA Provider'에서 실제 사용하는 JPA 구현체를 선택한다.
+
+![Imgur](https://i.imgur.com/h6LUtjB.png)
+
+다음과 같이 'Persistence' 탭을 클릭하고 'entityManagerFactory'를 펼치면 엔티티 클래스가 표시된다.
+
+![Imgur](https://i.imgur.com/gVcR6zH.png)
+
+다음과 같이 'entityManagerFactory'를 우클릭하고 'Assign Data Sources...'를 클릭한다.
+
+![Imgur](https://i.imgur.com/7Rixe39.png)
+
+다음과 같이 'Data Source'란을 클릭하면 나오는 목록에서 앞에서 설정한 데이터 소스를 선택하고 OK를 클릭한다.
+
+![Imgur](https://i.imgur.com/PcIGAh2.png)
+
+다음과 같이 'entityManagerFactory'에서 우클릭하고 'Console'을 클릭하면,
+
+![Imgur](https://i.imgur.com/GPCA6zX.png)
+
+다음과 같이 Console 선택 메뉴가 표시된다. JPA Console을 클릭하면,
+
+![Imgur](https://i.imgur.com/wYRCu07.png)
+
+다음과 같이 JPA Console이 화면에 표시된다.
+
+![Imgur](https://i.imgur.com/6bpkFbW.png)
+
+바로 JPQL을 입력해서 실행할 수 있다. 현재 스프링부트 애플리케이션이 실행 중이지 않아서 H2 TCP 서버가 기동 중인 상태가 아니므로 다음과 같은 에러가 발생한다.
+
+![Imgur](https://i.imgur.com/OyeIBe8.png)
+
+스프링부트 애플리케이션을 실행해서 H2 TCP 서버가 기동된 후에 다음과 같이 다시 JPQL을 실행하면 결과가 표시된다.
+
+![Imgur](https://i.imgur.com/E5GlHhN.png)
+
+
 # 정리
 
 >- IntelliJ Ultimate 버전에서는 DB Client를 사용할 수 있다.  
->- 스프링부트 애플리케이션에서는 H2 TCP 서버를 빈으로 띄우면 IntelliJ DB Client로 연결해서 사용할 수 있다.
+>- 스프링부트 애플리케이션에서는 H2 TCP 서버를 빈으로 띄우면 IntelliJ DB Client로 연결해서 사용할 수 있다.  
+>- Project Structure에서 main 모듈에 JPA를 추가하고 데이터 소스를 설정해주면 JPA Console을 사용할 수 있다.
+
