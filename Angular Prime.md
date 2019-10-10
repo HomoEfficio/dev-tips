@@ -290,7 +290,7 @@ getter를 통해 html에 참조를 제공할 수 있다. `UserAdminAction`이라
   get userAdminAction() {
     return UserAdminAction;
   }
-``
+```
 
 html 에서는 다음과 같이 참조할 수 있다.
 
