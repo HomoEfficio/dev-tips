@@ -198,7 +198,19 @@ IntelliJ Ultimate 버전에서는 DB Client 뿐만 아니라 JPA Console도 제�
 
 ![Imgur](https://i.imgur.com/Bx022sX.png)
 
-따라서 현재로는 JPA Console을 통해 JPQL을 문제 없이 사용하려면 CamelCase를 사용하는 엔티티 클래스 이름이나 필드 이름에는 `@Table`,`@Column`을 통해 실제 테이블에 사용될 snake_case 이름을 모두 지정해줘야 하는 불편함이 있다.
+~~따라서 현재로는 JPA Console을 통해 JPQL을 문제 없이 사용하려면 CamelCase를 사용하는 엔티티 클래스 이름이나 필드 이름에는 `@Table`,`@Column`을 통해 실제 테이블에 사용될 snake_case 이름을 모두 지정해줘야 하는 불편함이 있다.~~
+
+#### 추가
+
+이수홍 님께서 이 문제에 대한 해결 방법을 알려주셨다.
+
+다음과 같이 'Persistence' > 'entityManagerFactory' 우클릭 > 'Assign Naming Strategies...'를 선택하고,
+
+![Imgur](https://i.imgur.com/fHAERH2.png)
+
+다음과 같이 'SpringPhysicalNamingStrategy'를 Naming Strategy로 설정해주면, JPA Console에서 CamelCase로 된 이름도 별다른 처리 없이 사용할 수 있다.
+
+![Imgur](https://i.imgur.com/1zuu8ez.png)
 
 
 # 정리
@@ -206,5 +218,6 @@ IntelliJ Ultimate 버전에서는 DB Client 뿐만 아니라 JPA Console도 제�
 >- IntelliJ Ultimate 버전에서는 DB Client를 사용할 수 있다.  
 >- 스프링부트 애플리케이션에서는 H2 TCP 서버를 빈으로 띄우면 IntelliJ DB Client로 연결해서 사용할 수 있다.  
 >- Project Structure에서 main 모듈에 JPA를 추가하고 데이터 소스를 설정해주면 JPA Console을 사용할 수 있다.  
->    - 엔티티 클래스 이름이나 필드 이름이 CamelCase로 작성된 경우 `@Table`, `@Column`으로 snake_case 이름을 모두 지정해줘야 한다.
+>- Naming Strategy를 'SpringPhysicalNamingStrategy'로 지정해주면 JPA Console에서 CamelCase로 작성된 이름도 그대로 JPQL에서 사용할 수 있다.
+
 
