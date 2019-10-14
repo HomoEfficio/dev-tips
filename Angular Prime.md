@@ -468,6 +468,17 @@ this.companyService.getCompanies()
 
 push를 통해 이미 바인딩 되어 있는 배열에 원소를 채워도 ng-select에서 변경 감지를 못하는 것으로 보인다.
 
+## JSON 객체를 클래스 인스턴스로 Mapping
+
+- https://github.com/typestack/class-transformer 참고
+- `npm install class-transformer --save`
+- `npm install reflect-metadata --save`
+- 소스에서 다음과 같이 사용
+    ```typescript
+    import { plainToClass } from 'class-transformer';
+    ...
+    const jobInfoResponse = plainToClass(JobInfoResponse, result);
+    ```
 
 
 # 기타 이슈
