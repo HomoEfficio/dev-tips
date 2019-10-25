@@ -16,7 +16,7 @@ org.h2.jdbc.JdbcSQLNonTransientConnectionException: Connection is broken: "java.
 
 위에서 연결을 시도한 `218.38.137.27`는 현재 IP 세팅과는 전혀 상관이 없는 엉뚱한 IP지만, 어디에 저장되어 있는지 몰라도 두 번째 접근 시도부터는 계속 저 IP로 접근을 시도해서 결국 DB 연결에 실패한다.
 
-이 문제를 해결할 수 있는 좋은 옵션이 있으니 바로 **`h2.bindAddress`**다. [문서](http://h2database.com/html/advanced.html?highlight=bind,address&search=bind%20address#server_bind_address)에도 나와 있듯이 `h2.bindAddress`를 지정하면 항상 고정된 IP로 H2를 바인딩 할 수 있다.
+이 문제를 해결할 수 있는 좋은 옵션이 있으니 바로 **`h2.bindAddress`** 다. [문서](http://h2database.com/html/advanced.html?highlight=bind,address&search=bind%20address#server_bind_address)에도 나와 있듯이 `h2.bindAddress`를 지정하면 항상 고정된 IP로 H2를 바인딩 할 수 있다.
 
 사용법은 다음과 같다.
 
