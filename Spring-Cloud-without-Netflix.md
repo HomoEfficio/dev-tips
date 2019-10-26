@@ -1,6 +1,6 @@
 # Spring Cloud without Netflix
 
-Spring Cloud 프로젝트의 시발점이기도 했던 Netflix 라이브러리가 [2018.12.18부터](https://spring.io/blog/2018/12/12/spring-cloud-greenwich-rc1-available-now)으로 더 이상 기능 추가는 없고 버그 픽스만 진행되는 Maintenance 모드에 돌입했다.
+Spring Cloud 프로젝트의 시발점이기도 했던 Netflix 라이브러리가 2018.12.18부터 더 이상 기능 추가는 없고 버그 픽스만 진행되는 [Maintenance 모드에 돌입](https://spring.io/blog/2018/12/12/spring-cloud-greenwich-rc1-available-now)했다.
 
 [Pivotal의 자료](https://www.slideshare.net/Pivotal/how-to-live-in-a-postspringcloudnetflix-world-olga-maciaszeksharma-jakub-pilimon-140430915)에 따르면 구체적인 목록은 다음과 같다.
 
