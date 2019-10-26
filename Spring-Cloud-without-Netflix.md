@@ -60,6 +60,10 @@ spring.cloud.gateway:
 
 ## spring-cloud-netflix-ribbon -> spring-cloud-loadbalancer
 
+현실적으로 Ribbon을 대체하기는 이르다. 이유는 Spring Cloud Gateway는 2019-10-25 현재 [Circuit Breaker 구현체로 Hystrix 만을 지원](https://spring.io/projects/spring-cloud-gateway)하는데, **Hystrix 가 내부적으로 Ribbon에 의존**하고 있기 때문이다.
+
+즉, **Spring Cloud Gateway를 사용하면서 Ribbon을 제거하면 Spring Cloud Gateway에 Circuit Breaker를 적용할 수 없게 된다.**
+
 ### build.gradle
 
 ```groovy
