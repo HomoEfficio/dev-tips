@@ -112,7 +112,7 @@ public @interface AutoConfigureTestDatabase {
 
 따라서, p6spy 드라이버를 사용하도록 설정된 내용이 무시되므로 p6spy가 만들어주는 쿼리가 콘솔에 표시되지 않는다.
 
-그래서 `@AutoconfigureTestDatabase`가 포함되는 애노테이션이 사용되는 테스트 환경에서는 다음과 같이 기본 설정값을 `Replace.NONE`로 변경해야 p6spy가 제대로 동작한다.
+그래서 **`@AutoconfigureTestDatabase`가 포함되는 애노테이션이 사용되는 테스트 환경에서는 다음과 같이 기본 설정값을 `Replace.NONE`로 변경해야 p6spy가 의도했던 대로 제대로 동작한다.**
 
 ```java
 @DataJpaTest
@@ -125,6 +125,6 @@ class MemberRepositoryTest {
 ...
 #1573291447793 | took 1ms | statement | connection 0| url jdbc:p6spy:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 insert into member (id, email, password, username) values (null, ?, ?, ?)
-insert into member (id, email, password, username) values (null, 'homo.efficio@gmail.com', 'VedicMath9(', 'Homo Efficio');
+insert into member (id, email, password, username) values (null, 'homo.efficio@gmail.com', 'Password1!', 'Homo Efficio');
 ...
 ```
