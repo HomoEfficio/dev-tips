@@ -51,6 +51,8 @@ SpringMVC + Spring Data JPA + Spring Data Repository 를 사용한 일반적인 
 ## Service
 
 - 서비스 레이어는 데이터의 CRUD를 Repository에 위임하고 트랜잭션을 관리하는 것이 주요 책임이다.
+  - JPA를 사용한다면 DTO <-> Entity 간 변환도 서비스 레이어에서 처리하는 것을 선호한다. 이유는 이 변환을 컨트롤러 레이어에서 수행한다면 Lazy 조회 시 LazyInitializationException이 발생할 위험에 노출되기 때문이다.
+  - 물론 이 경우에도 실제 DTO <-> Entity 간 변환 로직 자체는 DTO에 담고, 서비스 레이어에서는 DTO의 변환 로직을 호출할 뿐이다.
 - Repository의 동작은 위의 Repository 테스트에서 이미 확인했으므로, 서비스 레이어에서는 Repository 메서드가 제대로 호출되는지만 확인하면 되므로 실제 Repository 대신 Mock Repository를 사용하면 된다. 따라서 Mockito 필요
     - 필요하다면 `@SpringBootTest(classes = {A.class, B.class, ...})`도 사용 가능하다.
 - Mock을 사용하므로 실제 저장/조회가 발생하지 않는다.
