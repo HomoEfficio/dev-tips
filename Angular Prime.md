@@ -1,6 +1,6 @@
 # Angular Prime
 
-[Angular Essential](https://www.rubypaper.co.kr/82) 요약
+[Angular Essential](https://www.rubypaper.co.kr/82) 요약 + 개발하다 알게된 것들
 
 # 구동 흐름
 
@@ -467,6 +467,13 @@ this.companyService.getCompanies()
 ```
 
 push를 통해 이미 바인딩 되어 있는 배열에 원소를 채워도 ng-select에서 변경 감지를 못하는 것으로 보인다.
+
+## ReactiveForms에 있는 데이터를 서버에 전송하는 방법
+
+- 엄밀하게 TypeScript를 쓴다면 서비스 메서드에 전달할 때 `new XXX(this.formGroup.value)`로 생성하고, FormGroup 안에 중첩되어 있는 객체도 모두 `new YYY(this.formGroup.get('yyy').value)`와 같이 생성하고 전달해야 정확한 타입 정보가 유지되지만,
+- 서비스 메서드 이후로는 그냥 서버에 전송하는 일 밖에 없으므로 사실 상 타입 정보가 필요 없고, 서버에 전송될 때는 어차피 직렬화되어 전송되므로,
+- 서비스 메서드 호출 시 그냥 `this.formGroup.value`으로 전달해도 나쁘지 않을 것 같다.
+
 
 ## JSON 객체를 클래스 인스턴스로 Mapping
 
