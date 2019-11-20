@@ -30,14 +30,17 @@
   - 어려운 문제 X, 쉽거나 익숙한 문제로 시작
 - UI(웹, 모바일), DB 등에 의존 관계를 갖지 않는 대상으로 연습
 - Fail -> Pass -> Refactor
+
   1. 다음과 같이 실패하는 assert 부터 작성
-    ```java
-    @Test
-    public void null_or_empty() {
-        assertThat(xxx.yyy(null)).isEqualTo(0);
-        assertThat(xxx.yyy("")).isEqualTo(0);
-    }
-    ```
+    
+      ```java
+      @Test
+      public void null_or_empty() {
+          assertThat(xxx.yyy(null)).isEqualTo(0);
+          assertThat(xxx.yyy("")).isEqualTo(0);
+      }
+      ```
+
   1. 테스트 대상 실제 구현
   1. 테스트 통과
   1. 리팩터링
@@ -144,7 +147,7 @@ The ThroughtWorks Anthology by Martin Fowler
 
 ## 리더 단계
 
-- 개인 수준에서 전파해보고 경력이 쌓이면 리더
+- 개인 수준에서 실행/전파해보고 경력이 쌓이면 리더 단계에서 시도
 - 1:1 공략
   - 문제를 찾아 지적하고 해법을 알려주는 방식 지양
   - 1:1 면담으로 개선점을 함께 찾고, 해법 제시 대신 반문으로 생각 유도
