@@ -550,3 +550,9 @@ List<ScheduleHistoryDto> alreadyStartedScheduleHistoryViews = scheduleHistoryRep
     }
 ```
 
+### 주의할 점
+
+주의할 점은 `LinkedHashMap`을 인스턴스 변수로 사용함에 따라 Thread Safety 가 사라진다는 점이다. Thread Safety가 보장돼야 한다면 `ConcurrentHashMap`을 사용하는 것이 좋다.
+
+이번 케이스는 호출 빈도가 높지 않고, 캐시된 값의 변동폭도 크지 않고 기존 값을 사용해도 무리가 편이라 굳이 Thread Safety를 적용하기 보다는 그냥 작업 완료 후 해당 `LinkedHashMap`을 clear() 하는 수준으로 적용했다.
+
