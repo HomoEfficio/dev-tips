@@ -499,6 +499,49 @@ List<ScheduleHistoryDto> alreadyStartedScheduleHistoryViews = scheduleHistoryRep
         jobaverage0_.schedule_id=?
 ```
 
+## 주의할 점
+
+멀티 모듈 프로젝트에서 Repository를 포함한 Domain 모듈을 공유하는 상황에서 위와 같이 `JPAQueryFactory`를 Bean으로 등록하고 주입받아 사용하는 방식으로 만들면, Domain 모듈을 공유하는 다른 모듈에서도 모두 `@Configuration`을 통해 `JPAQueryFactory`를 Bean으로 등록해야만 한다.
+
+이런 불편을 예방하려면 `JPAQueryFactory`를 Bean으로 등록하지 않고, 다음과 같이 Impl 클래스가 `QueryDslRepositorySupport`를 상속받게 하면 된다. 이 때 `fetch()`, `fetchOne()` 등의 메서드가 `UnsupportedOperationException`이 발생하지 않게 하려면 다음에 `여기`로 표시한 것처럼 쿼리 순서를 from, join, where, select 순으로 작성해야 한다.
+
+```java
+public class ScheduleHistoryRepositoryImpl extends QueryDslRepositorySupport implements ScheduleHistoryRepositoryCustom {
+
+
+    public ScheduleHistoryRepositoryImpl() {
+        super(ScheduleHistory.class);
+    }
+
+    @Override
+    public List<ScheduleHistoryDto> findScheduleHistoryByScheduleId(Long scheduleId, LocalDateTime dateStartTime, LocalDateTime dateEndTime) {
+        QScheduleHistory scheduleHistory = QScheduleHistory.scheduleHistory;
+        JPQLQuery<ScheduleHistory> fromScheduleHistory = from(scheduleHistory);  // 여기!!
+        return fromScheduleHistory
+                .leftJoin(scheduleHistory.targetStats)  // 여기!!
+                .where(scheduleHistory.schedule.id.eq(scheduleId),  // 여기!!
+                        (scheduleHistory.endTime.after(dateStartTime).and(scheduleHistory.endTime.before(dateEndTime)))
+                                .or(scheduleHistory.startTime.after(dateStartTime).and(scheduleHistory.startTime.before(dateEndTime))))
+                .select(
+                        Projections.constructor(ScheduleHistoryDto.class,
+                                scheduleHistory.id,
+                                scheduleHistory.schedule.id,
+                                scheduleHistory.tasks.id,
+                                scheduleHistory.targetStats.totalDataSize,
+                                scheduleHistory.targetStats.uniqueAudienceCount,
+                                scheduleHistory.targetStats.gaidAudienceCount,
+                                scheduleHistory.targetStats.idfaAudienceCount,
+                                scheduleHistory.targetStats.cookieAudienceCount,
+                                scheduleHistory.startTime,
+                                scheduleHistory.endTime,
+                                scheduleHistory.status))
+                .fetch();
+    }
+}
+
+```
+
+
 ## 한 걸음 더
 
 위와 같이 쿼리를 튜닝해서도 많이 개선되었지만 정말로 수행 시간을 많이 잡아먹는 부분은 의외로 다음과 같이 불필요하게 반복 조회하는 쿼리였다. 여기에는 `?`로 표시돼있는 파라미터 값도 동일하게 반복된다.
