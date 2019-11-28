@@ -474,7 +474,6 @@ push를 통해 이미 바인딩 되어 있는 배열에 원소를 채워도 ng-s
 - 서비스 메서드 이후로는 그냥 서버에 전송하는 일 밖에 없으므로 사실 상 타입 정보가 필요 없고, 서버에 전송될 때는 어차피 직렬화되어 전송되므로,
 - 서비스 메서드 호출 시 그냥 `this.formGroup.value`으로 전달해도 나쁘지 않을 것 같다.
 
-
 ## JSON 객체를 클래스 인스턴스로 Mapping
 
 - https://github.com/typestack/class-transformer 참고
@@ -486,6 +485,12 @@ push를 통해 이미 바인딩 되어 있는 배열에 원소를 채워도 ng-s
     ...
     const jobInfoResponse = plainToClass(JobInfoResponse, result);
     ```
+
+## `mat-checkbox` 사용
+
+- 기본으로 체크되어 있도록: `<mat-checkbox [checked]=true (change)="filterChart(ExecutionType.BATCH, $event)">배치 작업</mat-checkbox>`
+- `(click)`이 아니라 `(change)` 이벤트 핸들러를 등록해야 `MatCheckboxChange` 이벤트가 인자로 넘겨지며 `.checked`로 쉽게 체크 여부를 읽을 수 있다.
+
 
 
 # 기타 이슈
