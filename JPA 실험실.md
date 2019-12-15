@@ -502,3 +502,12 @@ A collection with cascade="all-delete-orphan" was no longer referenced by the ow
 
 ID 기준 최근 몇 건을 가져오려면 반드시 `findFirstN~~OrderByIDDesc`나 `findTopN~~OrderByIDDesc`를 사용하자.  
 Spring Data Repository 메서드가 매우 편리하긴 하지만 레퍼런스에 없는 방식으로 잘못 사용하면 단순한 에러보다 더 큰 재난을 만날 수 있다.
+
+## 1:N 페치 조인과 페이징을 함께 쓰면 성능 이슈 발생 가능
+
+예를 들어 EntityA:EntityB = 1:N 페치 조인을 하면 1개의 A와 N개의 B가 필요하지만, 실제 DB 상에서는 N개의 행이 조회되며 이 때 A도 N행으로 표시된다. 이 문제 발생을 막으려면 JPQL에 `distinct`를 추가하면 된다. 이렇게하면 쿼리에도 `distinct`가 추가되고(추가되더라도 A가 아니라 A-B 조인 결과가 distinct의 기준이 된다.), DB에서 가져온 결과 중에 중복되는 데이터를 애플리케이션에서 제거해줘야 한다.
+
+낱개의 A를 기준으로 페이징 하고 싶지만, DB 조회 결과 자체가 낱개의 A를 포함하는 것이 아니라 N개의 A를 포함하므로, A 기준 페이징은 제대로 동작할 수 없다. 
+
+게다가 다음과 같이 In Memory에서 페이징 처리를 한다는 WARN 로그가 뜨는데, 예를 들어 A가 1만 건이고, A:B가 평균 1:100 인 상태에서 In Memory에서 페이징처리를 하면 실제로 A, B가 100만건 조회되고, 페이징 처리를 위해 모든 결과를 메모리에 담아야 하는 역설이 발생하고, OOM 이 발생할 수도 있다.
+
