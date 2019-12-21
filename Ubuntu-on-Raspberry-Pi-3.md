@@ -50,13 +50,21 @@
   - ![Imgur](https://i.imgur.com/uV31oML.png)
 - 탐색기에서 꺼내기 후 MicroSD 메모리 카드를 빼낸다.
 
-## Raspberry Pi 부팅
+## Raspberry Pi 부팅, 설치 완료 및 로그인
 
-- Ubuntu 이미지가 Flash 된 MicroSD 카드를 Raspberry PI 에 연결
-- 모니터와 연결된 HDMI 케이블과 키보드를 Raspberry PI 에 연결
-- Raspberry PI 전원 연결
+- Ubuntu 이미지가 Flash 된 MicroSD 카드, 모니터와 연결된 HDMI 케이블과 키보드를 Raspberry PI 에 연결하고 마지막으로 Raspberry PI 전원 연결
+  - ![Imgur](https://i.imgur.com/YwBAux3.jpg)
 - Ubuntu 로 부팅되며 몇 분간 자동 설정 후 로그인 프롬프트 나옴
+  - ![Imgur](https://i.imgur.com/5P5wgZ6.jpg)
+  - ![Imgur](https://i.imgur.com/9G6Zqos.jpg)
+  - ![Imgur](https://i.imgur.com/JkXmeLR.jpg)
+  - ![Imgur](https://i.imgur.com/LV5d4or.jpg)
+  - **놀랍게도 위 사진에 나오는 로그인 프롬프트는 페이크..** 여기서 입력해봤자 비번 틀리다는 얘기만 나오며, 그냥 기다리면 다음 사진과 같이 후속 절차가 자동으로 계속 진행된다.
+  - ![Imgur](https://i.imgur.com/dgSIjFH.jpg)
+  - ![Imgur](https://i.imgur.com/S5T3Tl2.jpg)
+- 다음과 같이 **`[  OK  ] Reached target Cloud-init target.` 이 보여야 로그인 준비가 완료**된 것이다. 하지만 자동으로 로그인 프롬프트가 뜨지는 않고 엔터를 눌러줘야 로그인 프롬프트가 뜬다.
+  - ![Imgur](https://i.imgur.com/oL5bc8f.jpg)
+- 초기 아이디/비번은 ubuntu/ubuntu 이며 로그인 후 위 그림과 같이 비번 변경하면 셸 프롬프트가 뜬다.
+  - ![Imgur](https://i.imgur.com/njltjMN.jpg)
+- 이것으로 부팅, 설치, 로그인 완료
 
-## 최초 로그인 및 비번 변경
-
-- 초기 아이디/비번은 ubuntu/ubuntu 이며 로그인 후 비번 변경 필요
