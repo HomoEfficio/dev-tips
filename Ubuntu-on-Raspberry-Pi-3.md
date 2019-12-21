@@ -61,10 +61,11 @@
   - ![Imgur](https://i.imgur.com/LV5d4or.jpg)
   - **놀랍게도 위 사진에 나오는 로그인 프롬프트는 페이크..** 여기서 입력해봤자 비번 틀리다는 얘기만 나오며, 그냥 기다리면 다음 사진과 같이 후속 절차가 자동으로 계속 진행된다.
   - ![Imgur](https://i.imgur.com/dgSIjFH.jpg)
-  - ![Imgur](https://i.imgur.com/P3swieW.jpg)
+  - ![Imgur](https://i.imgur.com/dggNhk9.jpg)
 - 다음과 같이 **`[  OK  ] Reached target Cloud-init target.` 이 보여야 로그인 준비가 완료**된 것이다. 하지만 자동으로 로그인 프롬프트가 뜨지는 않고 엔터를 눌러줘야 로그인 프롬프트가 뜬다.
   - ![Imgur](https://i.imgur.com/oL5bc8f.jpg)
 - 초기 아이디/비번은 ubuntu/ubuntu 이며 로그인 후 위 그림과 같이 비번 변경하면 셸 프롬프트가 뜬다.
   - ![Imgur](https://i.imgur.com/njltjMN.jpg)
 - 이것으로 부팅, 설치, 로그인 완료
+
 
