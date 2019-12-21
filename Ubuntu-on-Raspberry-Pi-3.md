@@ -13,7 +13,7 @@
 - https://ubuntu.com/download/raspberry-pi
   - `64-bit for Raspberry Pi 3 and 4` 다운로드
 
-다운로드 하는 동안 아래의 'Image Flash 프로그램 다운로드 및 설치', 'MicroSD 메모리 카드 준비' 수행
+약 3G 정도로 다운로드에 시간이 좀 걸리므로 그동안 아래의 'Image Flash 프로그램 다운로드 및 설치', 'MicroSD 메모리 카드 준비' 수행
 
 ## Image Flash 프로그램 다운로드 및 설치
 
