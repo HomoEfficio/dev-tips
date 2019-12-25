@@ -1,6 +1,6 @@
 # Mock 테스트의 헛점
 
-Mock 테스트에는 겪어보고 생각해보면 당연하기도 한데 사실은 실패인데도 테스트는 통과로 나오는 False Positive 위험이 있다. 아마 False Negative도 있을테고.
+Mock 테스트에는 겪어보고 생각해보면 당연하기도 한데 사실은 실패인데도 테스트는 통과로 나오는 ~~False Positive~~ False Negative 위험이 있다. 아마 ~~False Negative~~ False Positive 도 있을테고.
 
 그렇다고 자주 발생하는 것은 아니니 까먹기 전에 적어놔보자.
 
@@ -59,7 +59,7 @@ void create_new_member() {
 
 ## 변화
 
-위 Mock을 사용한 테스트 코드를 그대로 스프링 부트 2.X 에서 얹어서 실행해보면 자연스럽게 통과한다. 그런데 DataJpaTest나 통합테스트 또는 실제 운영 환경 등 Mock이 아닌 실제 Repository가 호출되는 상황에서는 IllegalArgumentException 이 발생한다. 즉, **실제로는 실패인데 Mock 테스트에서는 통과로 나오는 False Positive가 발생**한 것이다.
+위 Mock을 사용한 테스트 코드를 그대로 스프링 부트 2.X 에서 얹어서 실행해보면 자연스럽게 통과한다. 그런데 DataJpaTest나 통합테스트 또는 실제 운영 환경 등 Mock이 아닌 실제 Repository가 호출되는 상황에서는 IllegalArgumentException 이 발생한다. 즉, **실제로는 실패인데 Mock 테스트에서는 통과로 나오는 ~~False Positive~~ False Negative 가 발생**한 것이다.
 
 이유는 다음과 같다.
 
@@ -69,6 +69,22 @@ void create_new_member() {
 
 ## 정리
 
-이처럼 **Mock 객체는 실제 사용되는 코드에 걸려있는 제약 사항에 구애 받지 않을 수 있으므로, False Positive를 발생시킬 위험이 있다.**
+이처럼 **Mock 객체는 실제 사용되는 코드에 걸려있는 제약 사항에 구애 받지 않을 수 있으므로, ~~False Positive~~ False Negative를 발생시킬 위험이 있다.**
 
 일찍 드러나지 않을 수도 있는 위험이므로 Mock 객체를 통해 호출되는 메서드는 제약 사항도 함께 고려하는 습관을 들이는 것이 좋겠다.
+
+## 추가
+
+글에서 처음에 썼던 `False Positive`, `False Negative`를 그냥 자연어처럼 생각해서 완전히 거꾸로 사용했다. 그래서 Striking 처리하고 정정했다.  
+
+자세한 건 [위키](https://en.wikipedia.org/wiki/False_positives_and_false_negatives) 등 다른 자료를 참고하고,  
+짧게 요약하면 **테스트라는 컨텍스트에서 사용되는 Positive/Negative 는 긍정/부정 으로 이해하면 안 되고, 양성/음성으로 이해해야 한다.**
+
+예를 들어, 당뇨 검사에서 양성(positive)이 나오면 당뇨가 있다는 의미다.  
+**당뇨 검출 자체는 부정적(negative)인 상황이지만 테스트 관점에서는 양성(positive)** 인 것이다.
+
+의학뿐 아니라 통계학에서도 positive/negative는 위와 같은 방식으로 통용되며, 소프트웨어 테스트 분야에서도 마찬가지다.
+
+**소프트웨어 테스트가 통과(pass) 했다면 테스트 결과는 음성(negative)이다.**
+
+
