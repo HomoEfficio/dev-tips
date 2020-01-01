@@ -34,4 +34,4 @@ fi
 ' --tag-name-filter cat -- --branches --tags
 ```
 
-다만 에제에서는 더 안전을 기하기 위해 bare repository를 하나 만들어서 수행하도록 가이드하고 있다.
+다만 GitHub 예제에서는 더 안전을 기하기 위해 bare repository를 하나 만들어서 수행하도록 가이드하고 있다.
