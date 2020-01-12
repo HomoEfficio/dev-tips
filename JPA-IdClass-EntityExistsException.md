@@ -98,6 +98,8 @@ TraitTarget을 저장하는데 IdType이 저장될 필요는 없고, 실제로 �
 특히 `PlatformTransactionManager`를 사용할 때는 다음과 같이 **Tx 시작 이후에 `TraitTarget`를 새로 조회하고 그 결과를 저장해야 에러가 발생하지 않는다.**  
 이 때 **commit 이나 rollback 을 누락하면 DB 테이블 레코드에 Lock이 걸려 해제되지 않을 수 있으므로 주의**해야 한다.
 
+혹시 누락했다면 [여기](https://github.com/HomoEfficio/dev-tips/blob/master/Spring-PlatformTransactionManager-Commit-누락-시-DB-Lock-해제.md)를 참고해서 Lock을 해제한다.
+
 ```java
 @Autowired
 private PlatformTransactionManager transactionManager;
