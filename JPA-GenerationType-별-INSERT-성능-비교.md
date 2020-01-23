@@ -54,7 +54,7 @@ public class ItemInitRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         List<Item> items = new ArrayList<>();
-        int N = 10;  // 10, 100, 1000 으로 테스트
+        int N = 10;  // 10, 100, 1000, 10000 으로 테스트
         for (int i = 1; i <= N; i++) {
             items.add(new Item(null, "CODE_" + i, "NAME_" + i, "DESC_" + i));
         }
@@ -79,18 +79,20 @@ spring.jpa:
 ---
 # 테스트 결과
 
-**IDENTITY 방식이 빠르다.**
-
+>**MySQL에서는 IDENTITY 방식이 빠르다.**
+>
 >- IDENTITY 방식이 총 소요 시간 기준으로 대략 1.5 ~ 2.5배 가량 빠르다.
+>- AUTO 방식에서는 batch insert가 실행됨에도 불구하고 채번 부하가 상당히 커서, batch insert가 실행되지 못 하는 IDENTITY 방식보다 느리다.
 >- 특히 insert 하려는 데이터 row 수가 커넥션 풀에 있는 커넥션보다도 많다면, 해당 테이블의 auto_increment 키 값은 IDENTITY 방식으로 생성하는 것이 좋다.
 
 총 소요 시간(nanoseconds) 기준 
 
-N | IDENTITY | AUTO
-----|----|----
-10 | 22,146,985 | 44,889,212
-100 | 100,035,617 | 262,695,458
-1000 | 938,592,484 | 1,443,107,874
+N | IDENTITY | AUTO | AUTO / IDENTITY
+----|----|----|----
+10 | 22,146,985 | 44,889,212 | 2.03
+100 | 100,035,617 | 262,695,458 | 2.63
+1000 | 938,592,484 | 1,443,107,874 | 1.54
+10000 | 42,020,329,144 | 66,472,754,040 | 1.58
 
 
 # 분석
@@ -109,9 +111,24 @@ N | IDENTITY | AUTO
 
 ## 연결 부문
 
-Hibernate 통계 로그에 따르면 이유는 모르지만 **AUTO 방식의 경우 N + 1 개의 커넥션이 사용**된다. 연결/해제에 소요되는 시간이 N = 100 일 때는 10배, N = 1000 일 때는 100배에 이른다. 스프링 부트 2.X에서 기본으로 사용되는 [HikariCP의 기본 maximumPoolSize는 10](https://github.com/brettwooldridge/HikariCP#frequently-used)이므로 N = 100, N = 1000 인 경우는 훨씬 더 많은 시간이 소요된 걸로 보인다.
+N | IDENTITY | AUTO | AUTO / IDENTITY
+----|----|----|----
+10 | 313,501 | 993,433 | 3.17
+100 | 323,767 | 3,894,099 | 12.03
+1000 | 260,083 | 26,838,156 | 103.19
+10000 | 299,656 | 195,476,471 | 652.33
+
+Hibernate 통계 로그에 따르면 이유는 모르지만 **AUTO 방식의 경우 N + 1 개의 커넥션이 사용**된다. 연결/해제에 소요되는 시간이 N = 100 일 때는 10배, N = 1000 일 때는 100배, N = 10000 일 때는 650배에 이른다. 스프링 부트 2.X에서 기본으로 사용되는 [HikariCP의 기본 maximumPoolSize는 10](https://github.com/brettwooldridge/HikariCP#frequently-used)이므로 N = 100, N = 1000, N = 10000 인 경우는 훨씬 더 많은 시간이 소요된 걸로 보인다.
+
 
 ## JDBC statements 부문
+
+N | IDENTITY | AUTO | AUTO / IDENTITY
+----|----|----|----
+10 | 16,438,745 | 18,833,678 | 1.15
+100 | 83,937,660 | 99,443,096 | 1.18
+1000 | 893,578,934 | 966,338,009 | 1.08
+10000 | 41,908,124,798 | 62,465,642,852 | 1.49
 
 ### IDENTITY 방식
 
@@ -134,7 +151,14 @@ Hibernate 통계 로그에 따르면 이유는 모르지만 **AUTO 방식의 경
 
 ## flush 부문
 
-IDENTITY 방식과 AUTO 방식 모두 1회의 flush만 발생한다. 하지만 소요 시간은 5 ~ 10배 가량 차이가 발생한다. 이유는 **AUTO 방식일 때는 채번 과정까지 포함해야하므로 flush 될 내용이 많기 떄문인 것으로 보인다.**
+N | IDENTITY | AUTO | AUTO / IDENTITY
+----|----|----|----
+10 | 5,394,739 | 25,062,101 | 4.65
+100 | 15,774,190 | 159,358,263 | 10.10
+1000 | 44,753,467 | 449,931,709 | 10.05
+10000 | 111,904,690 | 3,811,634,717 | 34.06
+
+IDENTITY 방식과 AUTO 방식 모두 1회의 flush만 발생한다. 하지만 소요 시간은 5 ~ 34배 가량 차이가 발생한다. 이유는 **AUTO 방식일 때는 채번 과정까지 포함해야하므로 flush 될 내용이 많기 떄문인 것으로 보인다.**
 
 
 ---
@@ -184,7 +208,7 @@ performing L2C hits # | 0 | 0
 performing L2C misses # | 0 | 0
 executing partial-flushes # | 0 | 0
 
-### N = 1000
+### N = 1,000
 
 항목 | IDENTITY | AUTO
 ----|----|----
@@ -204,6 +228,28 @@ performing L2C puts # | 0 | 0
 performing L2C hits # | 0 | 0
 performing L2C misses # | 0 | 0
 executing partial-flushes # | 0 | 0
+
+### N = 10,000
+
+항목 | IDENTITY | AUTO
+----|----|----
+acquiring JDBC conn # | 1 | 10,001
+acquiring JDBC conn 소요 시간 | 299,656 | 87,713,781
+releasing JDBC conn # | 0 | 10,000
+releasing JDBC conn 소요 시간 | 0 | 107,762,690
+preparing JDBC statements # | 10,000 | 20,001
+preparing JDBC statements 소요 시간 | 2,360,763,185 | 1,291,847,077
+executing JDBC statements # | 10,000 | 20,000
+executing JDBC statements 소요 시간 | 39,547,361,613 | 60,828,259,387
+executing JDBC batches # | 0 | 2
+executing JDBC batches 소요 시간 | 0 | 345,536,388
+spent executing 1 flushes 소요 시간 | 111,904,690 | 3,811,634,717
+총 소요 시간 | 42,020,329,144 | 66,472,754,040
+performing L2C puts # | 0 | 0
+performing L2C hits # | 0 | 0
+performing L2C misses # | 0 | 0
+executing partial-flushes # | 0 | 0 
+
 
 ## MySQL Log, 편의상 N = 3
 
