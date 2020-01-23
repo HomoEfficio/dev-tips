@@ -5,6 +5,7 @@
 # 테스트 환경
 
 - Spring Boot 2.2.4
+- Hibernate 5.4.10
 - MySQL 5.7.18
 - mysql-connector-java 5.1.48
 
