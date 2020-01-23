@@ -253,6 +253,8 @@ executing partial-flushes # | 0 | 0
 
 ## MySQL Log, 편의상 N = 3
 
+MySQL 로그 보는 방법은 https://github.com/HomoEfficio/dev-tips/blob/master/MySQL-log에서-쿼리보는-방법.md 참고
+
 ### IDENTITY
 
 batch insert 실행 안 되고 N회의 insert만 실행
