@@ -2,13 +2,13 @@
 
 `GenerationType.AUTO`와 `GenerationType.IDENTITY`의 INSERT 성능은 얼마나 차이날까?
 
-## 테스트 환경
+# 테스트 환경
 
 - Spring Boot 2.2.4
 - MySQL 5.7.18
 - mysql-connector-java 5.1.48
 
-## 관련 코드
+# 관련 코드
 
 ```java
 @Entity
@@ -19,7 +19,7 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @GeneratedValue(strategy = GenerationType.AUTO)  // 번갈아가며 테스트
+//    @GeneratedValue(strategy = GenerationType.AUTO)  // IDENTITY와 번갈아가며 테스트
     Long id;
 
     private String code;
@@ -42,6 +42,8 @@ public class ItemService {
 }
 ```
 
+캐시의 영향이 없도록 실행할 때마다 애플리케이션과 MySQL을 재구동해서 테스트한다.
+
 ```java
 @Component
 @RequiredArgsConstructor
@@ -60,11 +62,12 @@ public class ItemInitRunner implements CommandLineRunner {
     }
 }
 ```
-## JPA 설정
 
-캐시 영향이 없도록 항상 테이블을 새로 생성해서 수행하도록 hbm2ddl.auto를 create로 하고,  
-콘솔 로그에서 쿼리 수행 통계를 볼 수 있도록 설정한다.  
-batch_size는 500으로 한다.
+# JPA 설정
+
+- 항상 테이블을 새로 생성해서 캐시 영향이 없도록 `hbm2ddl.auto`를 `create`로 설정
+- 콘솔 로그에서 쿼리 수행 통계를 볼 수 있도록 `generate_statistics`를 `true`로 설정
+- batch insert를 활성화하기 위해 `jdbc.batch_size`는 500으로 설정
 
 ```yml
 spring.jpa:
@@ -73,7 +76,65 @@ spring.jpa:
   properties.hibernate.jdbc.batch_size: 500
 ```
 
-## 테스트 결과
+---
+# 테스트 결과
+
+**IDENTITY 방식이 빠르다.**
+
+>- IDENTITY 방식이 총 소요 시간 기준으로 대략 1.5 ~ 2.5배 가량 빠르다.
+>- 특히 insert 하려는 데이터 row 수가 커넥션 풀에 있는 커넥션보다도 많다면, 해당 테이블의 auto_increment 키 값은 IDENTITY 방식으로 생성하는 것이 좋다.
+
+총 소요 시간(nanoseconds) 기준 
+
+N | IDENTITY | AUTO
+----|----|----
+10 | 22,146,985 | 44,889,212
+100 | 100,035,617 | 262,695,458
+1000 | 938,592,484 | 1,443,107,874
+
+
+# 분석
+
+[MySQL 5.7 레퍼런스 문서](https://dev.mysql.com/doc/refman/5.7/en/insert-optimization.html) 에 따르면 insert 시 단계별 비중은 다음과 같다.
+
+- Connecting: (3)
+- Sending query to server: (2)
+- Parsing query: (2)
+- Inserting row: (1 × size of row)
+- Inserting indexes: (1 × number of indexes)
+- Closing: (1)
+
+즉, **기본적으로는 연결과 전송의 비중이 꽤 크며, insert 하려는 행의 갯수가 많을 수록 전체적으로는 실제 데이터 입력에 소요되는 비중이 큼을 알 수 있다.**
+
+
+## 연결 부문
+
+Hibernate 통계 로그에 따르면 이유는 모르지만 **AUTO 방식의 경우 N + 1 개의 커넥션이 사용**된다. 연결/해제에 소요되는 시간이 N = 100 일 때는 10배, N = 1000 일 때는 100배에 이른다. 스프링 부트 2.X에서 기본으로 사용되는 HikariCP의 기본 maximumPoolSize는 10이므로 N = 100, N = 1000 인 경우는 훨씬 더 많은 시간이 소요된 걸로 보인다.
+
+## JDBC statements 부문
+
+### IDENTITY 방식
+
+아래 MySQL 로그에 나와있지만, IDENTITY 방식은 예상대로 `id` 외의 값만 VALUES 에 포함되며 **N회의 insert만 준비/실행된다.** 그리고 Hibernate 통계 로그에 따르면, **`jdbc.batch_size` 를 지정했음에도 불구하고 IDENTITY 방식에서는 batch insert는 실행되지 않았다.** 이유는 [Hibernate 레퍼런스 문서 12.2.1. Batch inserts](https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#batch-session-batch-insert) 바로 위에 나와있는 것처럼, 식별자 생성에 IDENTITY 방식을 사용하면 Hibernate가 JDBC 수준에서 batch insert를 비활성화하기 때문이다. 결국 **Hibernate에서 IDENTITY 방식으로 식별자를 생성하면 batch insert는 사용할 수 없다.**
+
+### AUTO 방식
+
+반면에 AUTO 방식은 채번 테이블을 통해 구한 `id` 값도 VALUES 에 포함되며, 채번 1회마다 select, update 2회의 JDBC statements가 실행되므로 **채번에만 2N개의 JDBC statements가 실행**된다. 실제 데이터는 batch insert를 통해 입력되므로 ceil(N/batch_size)회의 batch insert가 실행되는 걸로 통계에 잡힌다. 결국 **총 2N + ceil(N/batch_size) 회의 JDBC statements가 실행**된다.
+
+한 가지 특이한 점은 AUTO 방식 사용시 `batch_size`가 지정돼있으면, Hibernate 통계 로그 상으로는 항상 batch insert가 실행되는 것으로 나오지만, MySQL 로그 상으로는 최초에 `order_inserts` 설정을 명시하지 않았을 때는 `insert into item (code, description, name, id) values ()`, `insert into item (code, description, name, id) values ()`, ... 와 같이 N회의 insert 문을 실행했다. 그런데 `order_inserts`를 true로 설정하면 `insert into item (code, description, name, id) values (),(),(),(),(), ...`와 같이 하나의 insert 문으로 N개의 row를 batch insert 하고, 그 후에는 다시 `order_inserts`를 false로 설정해도 `insert into item (code, description, name, id) values (),(),(),(),(), ...`와 같이 batch insert 문을 실행한다.
+
+최초의 케이스만 특이했다고 치면 **AUTO 방식을 사용하고 `batch_size`를 명시하면 기본적으로 batch insert는 활성화 된다**고 보면 되겠다.
+
+
+## flush 부문
+
+IDENTITY 방식과 AUTO 방식 모두 1회의 flush만 발생한다. 하지만 소요 시간은 5 ~ 10배 가량 차이가 발생한다. 이유는 **AUTO 방식일 때는 채번 과정까지 포함해야하므로 flush 될 내용이 많기 떄문인 것으로 보인다.**
+
+
+---
+# 테스트 상세 결과
+
+## Hibernate 통계
 
 ### N = 10
 
@@ -121,13 +182,13 @@ executing partial-flushes # | 0 | 0
 
 항목 | IDENTITY | AUTO
 ----|----|----
-acquiring JDBC conn # | 1 | 1001
+acquiring JDBC conn # | 1 | 1,001
 acquiring JDBC conn 소요 시간 | 260,083 | 12,268,550
-releasing JDBC conn # | 0 | 1000
+releasing JDBC conn # | 0 | 1,000
 releasing JDBC conn 소요 시간 | 0 | 14,569,606
-preparing JDBC statements # | 1,000 | 2001
+preparing JDBC statements # | 1,000 | 2,001
 preparing JDBC statements 소요 시간 | 156,075,132 | 83,863,894
-executing JDBC statements # | 1,000 | 2000
+executing JDBC statements # | 1,000 | 2,000
 executing JDBC statements 소요 시간 | 737,503,802 | 708,684,620
 executing JDBC batches # | 0 | 2
 executing JDBC batches 소요 시간 | 0 | 173,789,495
@@ -138,3 +199,98 @@ performing L2C hits # | 0 | 0
 performing L2C misses # | 0 | 0
 executing partial-flushes # | 0 | 0
 
+## MySQL Log, 편의상 N = 3
+
+### IDENTITY
+
+```
+Time                 Id Command    Argument
+2020-01-22T15:48:47.893291Z  4699 Query SET autocommit=0
+2020-01-22T15:48:47.938707Z  4699 Query insert into item (code, description, name) values ('CODE_1', 'DESC_1', 'NAME_1')
+2020-01-22T15:48:47.944258Z  4699 Query insert into item (code, description, name) values ('CODE_2', 'DESC_2', 'NAME_2')
+2020-01-22T15:48:47.948299Z  4699 Query insert into item (code, description, name) values ('CODE_3', 'DESC_3', 'NAME_3')
+2020-01-22T15:48:47.959162Z  4699 Query commit
+2020-01-22T15:48:47.959825Z  4699 Query SET autocommit=1
+```
+
+### AUTO
+
+최초에 `order_inserts`를 설정하지 않았을 때
+
+```
+Time                 Id Command    Argument
+2020-01-22T15:47:44.518399Z  4676 Query SET autocommit=0
+2020-01-22T15:47:44.536334Z  4677 Query SET autocommit=0
+2020-01-22T15:47:44.546640Z  4677 Query select next_val as id_val from hibernate_sequence for update
+2020-01-22T15:47:44.547597Z  4677 Query update hibernate_sequence set next_val= 2 where next_val=1
+2020-01-22T15:47:44.548063Z  4677 Query commit
+2020-01-22T15:47:44.549387Z  4677 Query SET autocommit=1
+2020-01-22T15:47:44.558830Z  4677 Query SET autocommit=0
+2020-01-22T15:47:44.560170Z  4677 Query select next_val as id_val from hibernate_sequence for update
+2020-01-22T15:47:44.561436Z  4677 Query update hibernate_sequence set next_val= 3 where next_val=2
+2020-01-22T15:47:44.562029Z  4677 Query commit
+2020-01-22T15:47:44.562604Z  4677 Query SET autocommit=1
+2020-01-22T15:47:44.563314Z  4677 Query SET autocommit=0
+2020-01-22T15:47:44.565509Z  4677 Query select next_val as id_val from hibernate_sequence for update
+2020-01-22T15:47:44.566982Z  4677 Query update hibernate_sequence set next_val= 4 where next_val=3
+2020-01-22T15:47:44.568003Z  4677 Query commit
+2020-01-22T15:47:44.568507Z  4677 Query SET autocommit=1
+2020-01-22T15:47:44.587060Z  4676 Query select @@session.tx_read_only
+2020-01-22T15:47:44.587475Z  4676 Query insert into item (code, description, name, id) values ('CODE_1', 'DESC_1', 'NAME_1', 1)
+2020-01-22T15:47:44.588132Z  4676 Query insert into item (code, description, name, id) values ('CODE_2', 'DESC_2', 'NAME_2', 2)
+2020-01-22T15:47:44.588425Z  4676 Query insert into item (code, description, name, id) values ('CODE_3', 'DESC_3', 'NAME_3', 3)
+2020-01-22T15:47:44.590900Z  4676 Query commit
+2020-01-22T15:47:44.591423Z  4676 Query SET autocommit=1
+```
+
+`order_insert` 적용 시
+
+```
+Time                 Id Command    Argument
+2020-01-23T02:22:44.077300Z  6145 Query SET autocommit=0
+2020-01-23T02:22:44.116656Z  6146 Query SET autocommit=0
+2020-01-23T02:22:44.137712Z  6146 Query select next_val as id_val from hibernate_sequence for update
+2020-01-23T02:22:44.185856Z  6146 Query update hibernate_sequence set next_val= 2 where next_val=1
+2020-01-23T02:22:44.188451Z  6146 Query commit
+2020-01-23T02:22:44.190763Z  6146 Query SET autocommit=1
+2020-01-23T02:22:44.209690Z  6146 Query SET autocommit=0
+2020-01-23T02:22:44.211387Z  6146 Query select next_val as id_val from hibernate_sequence for update
+2020-01-23T02:22:44.213568Z  6146 Query update hibernate_sequence set next_val= 3 where next_val=2
+2020-01-23T02:22:44.215175Z  6146 Query commit
+2020-01-23T02:22:44.216865Z  6146 Query SET autocommit=1
+2020-01-23T02:22:44.218185Z  6146 Query SET autocommit=0
+2020-01-23T02:22:44.220182Z  6146 Query select next_val as id_val from hibernate_sequence for update
+2020-01-23T02:22:44.222653Z  6146 Query update hibernate_sequence set next_val= 4 where next_val=3
+2020-01-23T02:22:44.230562Z  6146 Query commit
+2020-01-23T02:22:44.233993Z  6146 Query SET autocommit=1
+2020-01-23T02:22:44.352658Z  6145 Query select @@session.tx_read_only
+2020-01-23T02:22:44.363424Z  6145 Query insert into item (code, description, name, id) values ('CODE_1', 'DESC_1', 'NAME_1', 1),('CODE_2', 'DESC_2', 'NAME_2', 2),('CODE_3', 'DESC_3', 'NAME_3', 3)
+2020-01-23T02:22:44.376553Z  6145 Query commit
+2020-01-23T02:22:44.377581Z  6145 Query SET autocommit=1
+```
+
+`order_insert` 적용 후 다시 해제 시
+
+```
+Time                 Id Command    Argument
+2020-01-23T02:30:12.317200Z  6344 Query SET autocommit=0
+2020-01-23T02:30:12.348454Z  6345 Query SET autocommit=0
+2020-01-23T02:30:12.363988Z  6345 Query select next_val as id_val from hibernate_sequence for update
+2020-01-23T02:30:12.366240Z  6345 Query update hibernate_sequence set next_val= 2 where next_val=1
+2020-01-23T02:30:12.368774Z  6345 Query commit
+2020-01-23T02:30:12.370192Z  6345 Query SET autocommit=1
+2020-01-23T02:30:12.386549Z  6345 Query SET autocommit=0
+2020-01-23T02:30:12.388022Z  6345 Query select next_val as id_val from hibernate_sequence for update
+2020-01-23T02:30:12.390362Z  6345 Query update hibernate_sequence set next_val= 3 where next_val=2
+2020-01-23T02:30:12.391718Z  6345 Query commit
+2020-01-23T02:30:12.393100Z  6345 Query SET autocommit=1
+2020-01-23T02:30:12.394377Z  6345 Query SET autocommit=0
+2020-01-23T02:30:12.395446Z  6345 Query select next_val as id_val from hibernate_sequence for update
+2020-01-23T02:30:12.397046Z  6345 Query update hibernate_sequence set next_val= 4 where next_val=3
+2020-01-23T02:30:12.398607Z  6345 Query commit
+2020-01-23T02:30:12.400178Z  6345 Query SET autocommit=1
+2020-01-23T02:30:12.431752Z  6344 Query select @@session.tx_read_only
+2020-01-23T02:30:12.434311Z  6344 Query insert into item (code, description, name, id) values ('CODE_1', 'DESC_1', 'NAME_1', 1),('CODE_2', 'DESC_2', 'NAME_2', 2),('CODE_3', 'DESC_3', 'NAME_3', 3)
+2020-01-23T02:30:12.438186Z  6344 Query commit
+2020-01-23T02:30:12.440464Z  6344 Query SET autocommit=1
+```
