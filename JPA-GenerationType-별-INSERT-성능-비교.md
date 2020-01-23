@@ -144,7 +144,7 @@ N | IDENTITY | AUTO | AUTO / IDENTITY
 
 결국 **총 2N + ceil(N/batch_size) 회의 JDBC statements가 실행**된다.
 
-한 가지 특이한 점은 AUTO 방식 사용시 `batch_size`가 지정돼있으면, Hibernate 통계 로그 상으로는 항상 batch insert가 실행되는 것으로 나오지만, MySQL 로그 상으로는 최초에 `order_inserts` 설정을 명시하지 않았을 때는 `insert into item (code, description, name, id) values ()`, `insert into item (code, description, name, id) values ()`, ... 와 같이 N회의 insert 문을 실행했다. 그런데 `order_inserts`를 true로 설정하면 `insert into item (code, description, name, id) values (),(),(),(),(), ...`와 같이 하나의 insert 문으로 N개의 row를 batch insert 하고, 그 후에는 다시 `order_inserts`를 false로 설정해도 `insert into item (code, description, name, id) values (),(),(),(),(), ...`와 같이 batch insert 문을 실행한다.
+한 가지 특이한 점은 AUTO 방식 사용시 `batch_size`가 지정돼있으면, Hibernate 통계 로그 상으로는 항상 batch insert가 실행되는 것으로 나오지만, MySQL 로그 상으로는 최초에 `order_inserts` 설정을 명시하지 않았을 때는 `insert into item (code, description, name, id) values ()`, `insert into item (code, description, name, id) values ()`, ... 와 같이 N회의 insert 문을 실행했다. 그런데 `order_inserts`를 true로 설정하면 `insert into item (code, description, name, id) values (),(),(),(),(), ...`와 같이 하나의 insert 문으로 `batch_size`개의 row를 batch insert 하고, 그 후에는 다시 `order_inserts`를 false로 설정해도 `insert into item (code, description, name, id) values (),(),(),(),(), ...`와 같이 batch insert 문을 실행한다.
 
 최초의 케이스만 특이했다고 치면 **AUTO 방식을 사용하고 `batch_size`를 명시하면 기본적으로 batch insert는 활성화 된다**고 보면 되겠다.
 
