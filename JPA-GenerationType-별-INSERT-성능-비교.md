@@ -109,17 +109,23 @@ N | IDENTITY | AUTO
 
 ## 연결 부문
 
-Hibernate 통계 로그에 따르면 이유는 모르지만 **AUTO 방식의 경우 N + 1 개의 커넥션이 사용**된다. 연결/해제에 소요되는 시간이 N = 100 일 때는 10배, N = 1000 일 때는 100배에 이른다. 스프링 부트 2.X에서 기본으로 사용되는 HikariCP의 기본 maximumPoolSize는 10이므로 N = 100, N = 1000 인 경우는 훨씬 더 많은 시간이 소요된 걸로 보인다.
+Hibernate 통계 로그에 따르면 이유는 모르지만 **AUTO 방식의 경우 N + 1 개의 커넥션이 사용**된다. 연결/해제에 소요되는 시간이 N = 100 일 때는 10배, N = 1000 일 때는 100배에 이른다. 스프링 부트 2.X에서 기본으로 사용되는 [HikariCP의 기본 maximumPoolSize는 10](https://github.com/brettwooldridge/HikariCP#frequently-used)이므로 N = 100, N = 1000 인 경우는 훨씬 더 많은 시간이 소요된 걸로 보인다.
 
 ## JDBC statements 부문
 
 ### IDENTITY 방식
 
-아래 MySQL 로그에 나와있지만, IDENTITY 방식은 예상대로 `id` 외의 값만 VALUES 에 포함되며 **N회의 insert만 준비/실행된다.** 그리고 Hibernate 통계 로그에 따르면, **`jdbc.batch_size` 를 지정했음에도 불구하고 IDENTITY 방식에서는 batch insert는 실행되지 않았다.** 이유는 [Hibernate 레퍼런스 문서 12.2.1. Batch inserts](https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#batch-session-batch-insert) 바로 위에 나와있는 것처럼, 식별자 생성에 IDENTITY 방식을 사용하면 Hibernate가 JDBC 수준에서 batch insert를 비활성화하기 때문이다. 결국 **Hibernate에서 IDENTITY 방식으로 식별자를 생성하면 batch insert는 사용할 수 없다.**
+아래 MySQL 로그에 나와있지만, IDENTITY 방식은 예상대로 `id` 외의 값만 VALUES 에 포함되며 **N회의 insert만 준비/실행된다.** 그리고 Hibernate 통계 로그에 따르면, **`jdbc.batch_size` 를 지정했음에도 불구하고 IDENTITY 방식에서는 batch insert는 실행되지 않았다.** 
+
+이유는 [Hibernate 레퍼런스 문서 12.2.1. Batch inserts](https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#batch-session-batch-insert) 바로 위에 나와있는 것처럼, **식별자 생성에 IDENTITY 방식을 사용하면 Hibernate가 JDBC 수준에서 batch insert를 비활성화하기 때문**이다. 
+
+결국 **Hibernate에서 IDENTITY 방식으로 식별자를 생성하면 batch insert는 사용할 수 없다.**
 
 ### AUTO 방식
 
-반면에 AUTO 방식은 채번 테이블을 통해 구한 `id` 값도 VALUES 에 포함되며, 채번 1회마다 select, update 2회의 JDBC statements가 실행되므로 **채번에만 2N개의 JDBC statements가 실행**된다. 실제 데이터는 batch insert를 통해 입력되므로 ceil(N/batch_size)회의 batch insert가 실행되는 걸로 통계에 잡힌다. 결국 **총 2N + ceil(N/batch_size) 회의 JDBC statements가 실행**된다.
+반면에 AUTO 방식은 채번 테이블을 통해 구한 `id` 값도 VALUES 에 포함되며, 채번 1회마다 select, update 2회의 JDBC statements가 실행되므로 **채번에만 2N개의 JDBC statements가 실행**된다. 실제 데이터는 batch insert를 통해 입력되므로 ceil(N/batch_size)회의 batch insert가 실행되는 걸로 통계에 잡힌다. 
+
+결국 **총 2N + ceil(N/batch_size) 회의 JDBC statements가 실행**된다.
 
 한 가지 특이한 점은 AUTO 방식 사용시 `batch_size`가 지정돼있으면, Hibernate 통계 로그 상으로는 항상 batch insert가 실행되는 것으로 나오지만, MySQL 로그 상으로는 최초에 `order_inserts` 설정을 명시하지 않았을 때는 `insert into item (code, description, name, id) values ()`, `insert into item (code, description, name, id) values ()`, ... 와 같이 N회의 insert 문을 실행했다. 그런데 `order_inserts`를 true로 설정하면 `insert into item (code, description, name, id) values (),(),(),(),(), ...`와 같이 하나의 insert 문으로 N개의 row를 batch insert 하고, 그 후에는 다시 `order_inserts`를 false로 설정해도 `insert into item (code, description, name, id) values (),(),(),(),(), ...`와 같이 batch insert 문을 실행한다.
 
@@ -203,6 +209,8 @@ executing partial-flushes # | 0 | 0
 
 ### IDENTITY
 
+batch insert 실행 안 되고 N회의 insert만 실행
+
 ```
 Time                 Id Command    Argument
 2020-01-22T15:48:47.893291Z  4699 Query SET autocommit=0
@@ -215,7 +223,7 @@ Time                 Id Command    Argument
 
 ### AUTO
 
-최초에 `order_inserts`를 설정하지 않았을 때
+채번 과정 당 select, update 각 1회씩 실행되며, 최초에 `order_inserts`를 설정하지 않았을 때 batch insert 실행 안 됨
 
 ```
 Time                 Id Command    Argument
@@ -243,7 +251,7 @@ Time                 Id Command    Argument
 2020-01-22T15:47:44.591423Z  4676 Query SET autocommit=1
 ```
 
-`order_insert` 적용 시
+채번 과정 당 select, update 각 1회씩 실행되며, `order_insert` 적용 시 batch insert 실행됨
 
 ```
 Time                 Id Command    Argument
@@ -269,7 +277,7 @@ Time                 Id Command    Argument
 2020-01-23T02:22:44.377581Z  6145 Query SET autocommit=1
 ```
 
-`order_insert` 적용 후 다시 해제 시
+채번 과정 당 select, update 각 1회씩 실행되며, `order_insert` 적용 후 다시 해제 시 batch insert 실행됨
 
 ```
 Time                 Id Command    Argument
