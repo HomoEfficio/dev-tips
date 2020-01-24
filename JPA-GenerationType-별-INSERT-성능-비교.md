@@ -193,7 +193,7 @@ spring.jpa:
 
 총 소요 시간은 다음과 같이 IDENTITY가 SEQUENCE보다 여전히 더 빠르다.
 
-N | IDENTITY | AUTO | AUTO / IDENTITY
+N | IDENTITY | SEQUENCE | SEQUENCE / IDENTITY
 ----|----|----|----
 10 | 16,058,238 | 46,134,253 | 2.87
 100 | 41,297,464 | 109,941,206 | 2.66
@@ -438,3 +438,7 @@ Hibernate: call next value for hibernate_sequence
     0 nanoseconds spent executing 0 partial-flushes (flushing a total of 0 entities and 0 collections)
 }
 ```
+
+
+
+
