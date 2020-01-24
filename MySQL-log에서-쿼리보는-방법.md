@@ -24,7 +24,7 @@ MySQL 5.1 이후에서는 재부팅 없이 설정 변수값 변경만으로 로�
     Query OK, 0 rows affected (0.00 sec)
     ```
 
-1. 로그 파일을 tail 로 본다. Hearbeat 성격의 `Query select 1`와 함께 실제 실행된 쿼리를 확인할 수 있다.
+1. 로그 파일을 tail 로 본다. Heartbeat 성격의 `Query select 1`와 함께 실제 실행된 쿼리를 확인할 수 있다.
 
     ```
     tail -f /var/lib/mysql/XXXXXXXX.log
