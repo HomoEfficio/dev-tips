@@ -194,7 +194,7 @@ public class ItemJdbcRepositoryImpl implements ItemJdbcRepository {
                     }
                     @Override
                     public int getBatchSize() {
-                        return batchSize;
+                        return subItems.size();
                     }
                 });
         subItems.clear();
