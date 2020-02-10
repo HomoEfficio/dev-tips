@@ -1,8 +1,8 @@
 # Java8 LocalDateTime Jackson 직렬화 문제
 
 Spring Boot 1.5.X 에서는 기본으로는 JSR-310을 지원하지 않는다.
-따라서 `LocalDateTime`을 String으로 변환해줘야 하는데 가장 쉽고 널리 사용되는 방법은 `@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")`를 붙여주는 방법이다.
-실제 코드에서는 이렇게만 해주면 내부적으로 ObjectMapper가 포맷으로 정한 String으로 변환한 후에 직렬화를 해줘서 의도대로 잘 동작한다.
+
+따라서 `LocalDateTime`을 String으로 변환해줘야 하는데 가장 쉽고 널리 사용되는 방법은 `@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")`를 붙여주는 방법이다. 실제 코드에서는 이렇게만 해주면 포맷으로 정한 String으로 ObjectMapper가 내부적으로 변환한 후에 직렬화를 해줘서 의도대로 잘 동작한다.
 
 그런데 테스트 코드에서는 위와 같이 `@JsonFormat`을 붙여줘도, 정작 `objectMapper.writeValueAsString(dto)`를 실행하면 `LocalDateTime`이 정해진 포맷대로 String으로 변환되지 않고 다음과 같이 객체인 상태로 직렬화되고,
 
