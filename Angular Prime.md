@@ -492,6 +492,11 @@ push를 통해 이미 바인딩 되어 있는 배열에 원소를 채워도 ng-s
 - `(click)`이 아니라 `(change)` 이벤트 핸들러를 등록해야 `MatCheckboxChange` 이벤트가 인자로 넘겨지며 `.checked`로 쉽게 체크 여부를 읽을 수 있다.
 
 
+## `@ViewChild`로 지정한 자식 컴포넌트의 사용 가능 시점
+
+- `@ViewChild tree: TreeComponent` 와 같이 `@ViewChild`로 지정한 변수 `tree`는 일반적으로 `ngAfterViewInit` 라이프사이클 이전에 초기화 된다.
+- 즉, 일반적인 경우에는 `ngOnChanges()`나 `ngOnInit()` 훅 메서드 내에서는 `tree`가 undefined 이지만, `ngAfterViewInit()` 훅 메서드 내에서 `tree`를 참조하면 undefined가 아닌 제대로 된 값이 들어가있다.
+
 
 # 기타 이슈
 
