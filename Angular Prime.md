@@ -741,3 +741,23 @@ src/app/dashboard/dashboard.module.ts(9,33): error TS2306: File '/Users/XXX/gitR
 
 실제 물리적 위치가 잘못돼 있다면 정정하면 되고, 물리적 위치가 맞다면, 실행 중이던 `npm watch`를 종료하고 재실행하면 에러가 사라진다.
 
+
+## ReactiveForms, formGroup, formControl 관련
+
+항상도 아니고 가끔 다음과 같은 에러가 발생한다.
+
+`Cannot find control with path: ... -> ...`
+
+![Imgur](https://i.imgur.com/Y6Rj6I9.png)
+
+이유는 정확히 모르지만, 라이프사이클과 관련이 있는 것으로 추정된다.
+
+```typescript
+this.targetForm = this.formBuilder.group({
+    ...
+});
+```
+위와 같이 form을 초기화 하는 로직을 `ngOnInit()` 훅 내에서 하면 위와 같은 에러가 간혹 발생한다.
+
+form 초기화 로직을 `ngOnInit()`에 앞서 실행되는 `constructor()` 내부에서 실행하면 위와 같은 에러가 발생하지 않는다.
+
