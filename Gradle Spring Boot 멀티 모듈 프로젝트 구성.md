@@ -28,6 +28,11 @@
 
 ![Imgur](https://i.imgur.com/RSDnyrs.png)
 
+## IntelliJ 프로젝트 생성
+
+- IntelliJ > New > Project from Existing Sources... 를 클릭하고 위에서 생성한 파일 중 build.gradle 을 선택하면, 다음과 같이 Gradle 프로젝트로 생성 된다.
+
+    ![Imgur](https://i.imgur.com/r7go5mH.png)
 
 ## 라이브러리 모듈 생성
 
