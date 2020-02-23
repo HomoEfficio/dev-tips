@@ -9,7 +9,7 @@
 1. entity 모듈 생성
 2. 모듈 간 컴파일 의존관계 구성
 3. 실제 파일 이동
-4. @EntityScan 및 @EnableJpaRepositories 지정
+4. scan 범위 지정
 
 ## 1. entity 모듈 생성
 
@@ -59,7 +59,7 @@ IntelliJ 의 Project Structure에서도 의존관계를 구성해준다.
 
 기타 자잘한 컴파일 에러는 직접 수정한다.
 
-## 4. @EntityScan 및 @EnableJpaRepositories 지정
+## scan 범위 지정
 
 3까지 수행하고 xxx-api 애플리케이션을 실행하면 다음과 같이 Repository를 찾을 수 없다며 정상 기동에 실패한다.
 
@@ -81,12 +81,10 @@ Consider defining a bean of type 'kr.co.apexsoft.gradnet2.entity.user.repository
 Process finished with exit code 0
 ```
 
-다음과 같이 xxx-api 애플리케이션 메인 클래스에 @EntityScan 및 @EnableJpaRepositories 를 지정해주면 된다. 애노테이션 내의 value 값은 entity 모듈 내에 실제 엔티티와 리포지토리 클래스들이 속해 있는 최상위 패키지를 지정해주면 된다.
+다음과 같이 xxx-api 애플리케이션 메인 클래스의 `@SpringBootApplication` 의 `scanBasePackages` 속성을 아래와 같이 지정해주면 된다.
 
 ```java
-@SpringBootApplication
-@EntityScan("kr.co.apexsoft.gradnet2.entity.*")
-@EnableJpaRepositories("kr.co.apexsoft.gradnet2.entity.*")
+@SpringBootApplication(scanBasePackages = {"kr.co.apexsoft.gradnet2"})
 public class Gradnet2ApiUserApplication {
 
     public static void main(String[] args) {
