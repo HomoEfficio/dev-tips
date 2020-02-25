@@ -30,14 +30,26 @@ include 'xxx-user-api'
 
 admin-api, user-api 의 build.gradle 에 다음과 같이 entity 모듈에 대한 컴파일 의존관계 추가
 
-```groovy
-...
+- xxx-api -> entity 의존관계 추가 전
 
-dependencies {
-    compile project(':xxx-entity')
+    ![Imgur](https://i.imgur.com/122Yqn7.png)
 
-...
-```
+- 다음과 같이 xxx-api -> entity 컴파일 의존관계 구성
+
+
+    ```groovy
+    ...
+
+    dependencies {
+        compile project(':xxx-entity')
+
+    ...
+    ```
+
+- xxx-api -> entity 의존관계 추가 후
+
+    ![Imgur](https://i.imgur.com/8RTA0LW.png)
+
 
 ### Project Structure
 
