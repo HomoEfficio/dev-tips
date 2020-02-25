@@ -76,6 +76,8 @@ admin-api, user-api 의 build.gradle 에 다음과 같이 entity 모듈에 대�
 
 entity 모듈은 단독으로는 실행되지 않으므로 메인 클래스를 지우고, executagle jar를 만들지 않고 일반 라이브러리 jar를 만들도록 entity 모듈의 build.gradle 에 다음과 같이 설정해서 라이브러리화 한다.
 
+**이 작업을 해주지 않으면, 나중에 빌드나 실행할 때 분명히 존재하는 패키지인데도 찾을 수 없다는 골치 아픈 에러를 만나게 된다.**
+
 ```groovy
 bootJar {
 	enabled = false
@@ -86,9 +88,10 @@ jar {
 }
 ```
 
+
 ## 5. Entity 및 Repository 사용 설정
 
-3까지 수행하고 xxx-api 애플리케이션을 실행하면 다음과 같이 Repository를 찾을 수 없다며 정상 기동에 실패한다.
+4까지 수행하고 xxx-api 애플리케이션을 실행하면 다음과 같이 Repository를 찾을 수 없다며 정상 기동에 실패한다.
 
 ```
 ***************************
@@ -112,8 +115,8 @@ Process finished with exit code 0
 
 ```java
 @SpringBootApplication
-@EntityScan("kr.co.apexsoft.gradnet2.entity.*")
-@EnableJpaRepositories("kr.co.apexsoft.gradnet2.entity.*")
+@EntityScan("kr.co.apexsoft.gradnet2.entity")
+@EnableJpaRepositories("kr.co.apexsoft.gradnet2.entity")
 public class Gradnet2ApiUserApplication {
 
     public static void main(String[] args) {
