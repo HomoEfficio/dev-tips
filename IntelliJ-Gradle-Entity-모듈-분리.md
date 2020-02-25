@@ -53,7 +53,7 @@ admin-api, user-api 의 build.gradle 에 다음과 같이 entity 모듈에 대�
 
 ### Project Structure
 
-IntelliJ 의 Project Structure에서도 의존관계를 구성해준다.
+혹시 위와 같이 컴파일 의존관계를 구성해줬는데도, xxx-api 에서 entity 모듈 내의 클래스를 인식하지 못하거나, 인식 잘 되다가 가끔 IntelliJ를 껐다 켜면 인식 못 하는 경우에는 깨진 의존관계를 아래와 같이 수동으로 직접 다시 맺어주면 된다.
 
 ![Imgur](https://i.imgur.com/f8vp4BS.png)
 
