@@ -92,13 +92,13 @@ compileQuerydsl {
 
 # 과정별 보기
 
-## QueryDSL 플러그인 설치
+## (1) QueryDSL 플러그인 설치
 
 설치 후 Gradle 패널에 다음과 같은 기능이 추가된다.
 
 ![Imgur](https://i.imgur.com/6i8Pvl5.png)
 
-## QueryDSL 설치
+## (2) QueryDSL 설치
 
 설치 후 다음과 같은 라이브러리가 추가된다.
 
@@ -106,7 +106,7 @@ compileQuerydsl {
 
 4.1.4와 4.2.2가 함께 추가되어 있는데, 아래 설정의 `library = 'com.querydsl:querydsl-apt'` 가 적용되면 4.1.4는 사라지고 4.2.2만 남는다.
 
-## QueryDSL 설정 및 확인
+## (3) QueryDSL 설정 및 확인
 
 다음과 같이 QueryDSL 관련 디렉터리 등 설정 후 `compileQuerldsl`을 실행해서 Q 클래스들이 생성되면 OK
 
