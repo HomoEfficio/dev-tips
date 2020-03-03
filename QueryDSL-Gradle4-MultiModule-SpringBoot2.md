@@ -68,16 +68,16 @@ jar {
 }
 
 // (3) QueryDSL 설정
-def querydslDir = 'build/generated/querydsl'
+def generatedQuerydslDir = 'build/generated/querydsl'
 
 querydsl {
     library = 'com.querydsl:querydsl-apt'  // 이거 해주면 4.1.4 사라짐
     jpa = true
-    querydslSourcesDir = querydslDir
+    querydslSourcesDir = generatedQuerydslDir
 }
 
 sourceSets {
-    main.java.srcDirs += [querydslDir]
+    main.java.srcDirs += [generatedQuerydslDir]
 }
 
 configurations {
