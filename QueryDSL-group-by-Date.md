@@ -30,7 +30,7 @@ public class DateCountProjection {
 
 ```
 
-다음과 같이 fetch 후 `Tuple`에서 꺼내서 Projection 객체 생성자에 넣어주면 된다.
+다음과 같이 먼저 `DateTemplate<T>`를 사용해서 문자열(yyyy-MM-dd)로 변환하고, fetch 후에 `Tuple`에서 꺼내서 Projection 객체 생성자에 넣어주면 된다.
 
 ```java
 public List<DateCountProjection> countByDate() {
