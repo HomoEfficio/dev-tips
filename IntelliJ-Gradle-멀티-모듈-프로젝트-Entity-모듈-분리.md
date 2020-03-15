@@ -1,4 +1,4 @@
-# IntelliJ Gradle Entity 모듈 분리
+# IntelliJ Gradle 멀티 모듈 프로젝트 Entity 모듈 분리
 
 프로젝트 상황에 따라 엔티티를 공유하고 그 외 api 서버는 개별 멀티 모듈로 구성할 때 Entity를 분리하는 방법
 
