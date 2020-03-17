@@ -35,3 +35,15 @@ fi
 ```
 
 다만 GitHub 예제에서는 더 안전을 기하기 위해 bare repository를 하나 만들어서 수행하도록 가이드하고 있다.
+
+위 파일 실행 후 다음과 같은 에러가 나면,
+
+```
+Cannot create a new backup.
+A previous backup already exists in refs/original/
+Force overwriting the backup with -f
+```
+
+다음과 같이 
+
+`git filter-branch --env-filter '` 을 `git filter-branch -f --env-filter '` 로 바꿔서 실행하면 된다.
