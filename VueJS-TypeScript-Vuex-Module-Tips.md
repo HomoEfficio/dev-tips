@@ -83,3 +83,15 @@ export default class ModuleOverview extends VuexModule {
   // 이렇게 null 로라도 초기화를 해줘야 this.context 아래에 _field1 이 생기고, 나중에 @Mutation 에서 할당한 값이 그대로 외부 컴포넌트에도 전달된다.
   private _field1?: MyType1|null = null;
 ```
+
+## Action 호출 시 파리미터는 한 개만 전달된다.
+
+파라미터가 2개 이상이면 다음과 같이 객체로 묶어서 전달해야 한다.
+
+```typescript
+await this.moduleApplList.fetchAllCategories({
+  admissionCode: this.selectedAdmission.code,
+  courseCode: this.selectedCourse.code
+});
+```
+
