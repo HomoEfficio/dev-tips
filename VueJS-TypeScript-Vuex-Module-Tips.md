@@ -2,6 +2,45 @@
 
 ## module 은 getModule() 로 가져와야..
 
+## Module 이름 통일
+
+Root Store 에 다음과 같이 `applList`로 선언했으면,
+
+```typescript
+  modules: {
+    //...
+    applList,
+    //...
+  },
+```
+
+모듈에서의 이름도 동일하게 `applList`로 선언해야 한다.
+
+```typescript
+@Module({
+  namespaced: true,
+  name: 'applList',
+})
+export default class ModuleApplList extends VuexModule {
+```
+
+`appl-list`로 잘못 선언하면,
+
+```typescript
+@Module({
+  namespaced: true,
+  name: 'appl-list',
+})
+export default class ModuleApplList extends VuexModule {
+```
+
+모듈 사용시 아래와 같은 오류 발생
+
+```
+vuex.esm.js?2f62:420 [vuex] unknown action type: appl-list/fetchAllAdmissions
+```
+
+
 
 ## getModule() 로 가져오려면 라우터에서 컴포넌트를 lazy 방식으로 가져와야..
 
