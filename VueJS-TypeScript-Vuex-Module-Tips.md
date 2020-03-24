@@ -95,3 +95,5 @@ await this.moduleApplList.fetchAllCategories({
 });
 ```
 
+2개 이상은 전달하고 action 메서드의 파리미터로 선언해뒀다고 해도 action 메서드 내에서 무조건 undefined 임
+
