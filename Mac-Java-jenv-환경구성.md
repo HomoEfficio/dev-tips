@@ -1,4 +1,4 @@
-# Mac Java 환경구성
+# Mac Java jenv 환경구성
 
 ## 원하는 자바 버전 설치
 
