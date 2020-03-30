@@ -104,7 +104,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 `X-Frame-Options`의 값이 `DENY`로 되어 있고, 왼쪽에 `heaer.jsp`, `tables.do`, `query.jsp`, `help.jsp` 등이 빨간색으로 표시되어 나온다.
 
-`X-Frame-Options`도 아래와 같이 면제 처리를 해줘야 한다.
+`X-Frame-Options`에 sameOrigin으로 인식되 해주면 더이상 에러가 발생하지 않는다.
 
 ```java
 @Configuration
@@ -122,13 +122,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf()
                     .ignoringAntMatchers("/h2-console/**")
-                .and()
-                .headers()
-                    .addHeaderWriter(
-                        new XFrameOptionsHeaderWriter(
-                            new WhiteListedAllowFromStrategy(Arrays.asList("localhost"))    // 여기!
-                        )
-                    )
+                .and().headers().frameOptions().sameOrigin()
                 .and()
                 .formLogin()
                     .loginPage("어쩌구")
@@ -143,11 +137,3 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 ```
 
 이제 다시 `localhost:8080/h2-console`에 접속해서 로그인 하면 반가운 `h2-console` 화면을 만날 수 있다. 조회 등 동작도 정상이다.
-
-하지만, 호기심 차원에서 다시 한 번 개발자도구로 콘솔 창을 보니 아래와 여전히 에러는 있다.
-
-![Imgur](http://i.imgur.com/vzBW4TM.png)
-
-뭐.. 뭔가 더 조치를 해주면 저 에러마저도 없어지겠지만, "Spring Security 환경에서 `h2-console` 사용 하기"라는 원래 목표는 달성했으므로 여기에서 멈추기로 한다.
-
-
