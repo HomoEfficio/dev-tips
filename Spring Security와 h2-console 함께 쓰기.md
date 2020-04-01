@@ -150,4 +150,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 뭐.. 뭔가 더 조치를 해주면 저 에러마저도 없어지겠지만, "Spring Security 환경에서 `h2-console` 사용 하기"라는 원래 목표는 달성했으므로 여기에서 멈추기로 한다.
 
+----
+2020-04-02 추가
 
+아래와 같이 header 의 frameOptions() 에 다음과 같이 sameOrigin() 을 붙여주면 위 에러도 사라진다.
+
+```
+                .and()
+                .headers()
+                    .addHeaderWriter(
+                        new XFrameOptionsHeaderWriter(
+                            new WhiteListedAllowFromStrategy(Arrays.asList("localhost"))    // 여기!
+                        )
+                    )
+                    .frameOptions().sameOrigin()    // 여기도 추가!!
+```
