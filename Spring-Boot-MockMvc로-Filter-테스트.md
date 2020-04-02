@@ -1,4 +1,4 @@
-# Spring MockMvc 로 Filter 테스트
+# Spring Boot MockMvc 로 Filter 테스트
 
 요새는 웹 애플리케이션 개발 시 서버 쪽 컴포넌트를 Mock으로 대체하는 레이어별 테스트보다는 ~~클라이언트를 모사하는~~(이 잘못된 예상이 비극을 불러왔..) MockMvc를 활용하는 통합 테스트 위주로 개발한다.
 
