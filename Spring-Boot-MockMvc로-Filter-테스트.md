@@ -16,7 +16,7 @@ Filter가 제대로 등록이 안 된 건가 하고, https://www.baeldung.com/sp
 
 테스트 관련 [레퍼펀스 문서](https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-testing-spring-boot-applications)를 보니 `@SpringBootTest`의 webEnvironment를 지정 안 해줘서 MOCK 모드로 동작하고 이게 Filter가 실행되지 않게 하나보다라고 대충 넘겨짚고 webEnvironment를 지정해줘도 마찬가지..
 
-한참을 헤메고 알게된 결론은, **MockMvc로 Filter를 테스트하려면 MockMvc 자체에 추가를 해줘야 한다.**
+한참을 헤메고 알게된 결론은, **MockMvc로 Filter를 테스트하려면 MockMvc 자체에 Filter를 추가해줘야 한다.**
 
 ```
 @BeforeEach
