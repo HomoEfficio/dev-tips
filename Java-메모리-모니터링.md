@@ -36,8 +36,10 @@ jmap 으로 생성한 Heap Dump 파일을 열어서 분석할 수 있는 도구
 
 # 자바 메모리 분석 관련 좋은 자료
 
-- GC 관련: https://d2.naver.com/helloworld/6043
-- OOM 및 Heap Shrinkage 관련: https://www.samsungsds.com/global/ko/support/insights/1209174_2284.html
+- GC 관련: 
+  - https://d2.naver.com/helloworld/6043
+- OOM 및 Heap Shrinkage 관련: 
+  - https://www.samsungsds.com/global/ko/support/insights/1209174_2284.html
 - 메모리 누수 관련: 
   - https://d2.naver.com/helloworld/1326256
   - https://woowabros.github.io/tools/2019/05/24/jvm_memory_leak.html
