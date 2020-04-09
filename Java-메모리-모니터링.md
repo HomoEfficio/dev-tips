@@ -17,6 +17,9 @@ jmap 으로 생성한 Heap Dump 파일을 열어서 분석할 수 있는 도구
   - ![Imgur](https://i.imgur.com/zeiXYxF.png)
   - ![Imgur](https://i.imgur.com/yEa9Xpk.png)
   - ![Imgur](https://i.imgur.com/xiTL9Lh.png)
+  - Shallow Heap vs Retained Heap: https://dzone.com/articles/eclipse-mat-shallow-heap-retained-heap
+    - shallow heap은 한 객체만이 점유한 힙의 크기
+    - retained heap은 한 객체가 제거될 때 함께 제거될 수 있는 객체들이 점유하고 있는 힙의 크기
 - VisuamVM: https://visualvm.github.io/
 
 # 메모리 사용 및 GC 모니터링
