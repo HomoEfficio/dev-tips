@@ -19,7 +19,9 @@ Netflix 라이브러리의 후속 버전 설정을 짧게 정리해본다.
 ## spring-cloud-netflix-zuul -> spring-cloud-gateway
 
 [문서](https://cloud.spring.io/spring-cloud-gateway/reference/html/)에 따르면 Spring Cloud Gateway는 GatewayFilter를 통해 Circuit Breaker 등 기능을 제공한다. ~~그런데 2019-10-25 현재 Circuit Breaker로 [Hystrix GatewayFilter](https://cloud.spring.io/spring-cloud-gateway/reference/html/#hystrix) 밖에 구현되어 있지 않아서 Resilience4J는 아직 Spring Cloud Gateway에 사용할 수 없다.~~
-update: 2020-04-29 현재 Circuit Breaker 추상화 라이브러리인 [Spring Cloud Circuit Breaker 를 통해 Resilience4j 도 사용할 수 있다](https://cloud.spring.io/spring-cloud-static/spring-cloud-gateway/2.2.0.RC2/reference/html/#spring-cloud-circuitbreaker-filter-factory). 다만 2.x 버전은 아직 M1 단계이고 [1.x 버전 샘플](https://www.baeldung.com/spring-cloud-circuit-breaker)은 Baeldung 에 있다.
+update: 2020-04-29 현재 Circuit Breaker 추상화 라이브러리인 [Spring Cloud Circuit Breaker 를 통해 Resilience4j 도 사용할 수 있다](https://cloud.spring.io/spring-cloud-static/spring-cloud-gateway/2.2.0.RC2/reference/html/#spring-cloud-circuitbreaker-filter-factory). 
+
+다만 2.x 버전은 아직 M1 단계이고 샘플은 [여기](https://piotrminkowski.com/2019/12/11/circuit-breaking-in-spring-cloud-gateway-with-resilience4j/)에, 1.x 버전 샘플은 [Baeldung 사이트](https://www.baeldung.com/spring-cloud-circuit-breaker)에 있다.
 
 
 ### build.gradle
