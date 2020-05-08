@@ -314,6 +314,14 @@ public options = Object.values(UserAdminAction);
 </select>
 ```
 
+### 값에 해당하는 enum 구하기
+
+`Enum클래스이름[값]`으로 enum 을 구할 수 있다. 값에는 string, number 모두 올 수 있다.
+
+```typescript
+this.authKeyForm.get('authKeyType').patchValue(AuthKeyType[$event.value]);
+```
+
 ## RadioButton 사용 시 주의 사항
 
 https://www.ngxfoundation.com/components/buttons 여기보고 따라하면 되는데 잊지 말아야 할 것은 링크의 Usage에 나와있는 것처럼 `ButtonsModule.forRoot()`를 모듈의 import에 추가해야 한다는 점이다. 추가하지 않으면 다음과 같은 에러가 난다.
