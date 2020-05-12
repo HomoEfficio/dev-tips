@@ -162,14 +162,6 @@ seller                        latest              bcab7a4f48e0        28 minutes
 
 ![Imgur](https://i.imgur.com/iZcYAaT.png)
 
-'{ \
-    "name": "seller01", \
-    "email": "seller01@test.com", \
-    "phone": "123-456-7890", \
-    "loginId": "Seller01", \
-    "password": "Password01" \
-}'
-
 
 ## 부하 테스트 및 시각화
 
