@@ -35,17 +35,17 @@ https://github.com/HomoEfficio/dev-tips/blob/master/Gradle%20Spring%20Boot%20멀
 
 - Spring Initlizr
 
-![Imgur](https://i.imgur.com/vl0o6Qa.png)
+  ![Imgur](https://i.imgur.com/vl0o6Qa.png)
 
 - IntelliJ Java 버전 설정
 
-![Imgur](https://i.imgur.com/r4JbSut.png)
+  ![Imgur](https://i.imgur.com/r4JbSut.png)
 
-![Imgur](https://i.imgur.com/egzvS4t.png)
+  ![Imgur](https://i.imgur.com/egzvS4t.png)
 
 - 프로젝트 정상 실행으로 구성 확인
 
-![Imgur](https://i.imgur.com/0i9Coku.png)
+  ![Imgur](https://i.imgur.com/0i9Coku.png)
 
 
 ## 도메인 작성
