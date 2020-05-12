@@ -1,4 +1,4 @@
-# Load Test + InfluxDB + Grafana
+# K6 Load Test + InfluxDB + Grafana
 
 k6 + InfluxDB + Grafana 를 활용한 부하 테스트 및 시각화
 
