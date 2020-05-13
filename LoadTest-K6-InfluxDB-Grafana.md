@@ -75,9 +75,8 @@ export default function() {
 
 ![Imgur](https://i.imgur.com/YV4Qi2L.png)
 
-### InfluxDB 종료
+종료는 그냥 `CTRL+C`
 
-CTRL+C
 
 ## Grafana
 
@@ -134,3 +133,9 @@ CTRL+C
 - 대시보드 refresh
 
   ![Imgur](https://i.imgur.com/DoWqFeG.png)
+
+### Grafana 종료
+
+>brew services stop grafana
+
+![Imgur](https://i.imgur.com/lH1kVfN.png)
