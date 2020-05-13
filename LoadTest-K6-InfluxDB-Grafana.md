@@ -49,7 +49,7 @@ export default function() {
   const res = http.post(url, body, params);
   check(res, {
     'status was 200': r => r.status === 200,
-    'tx time OK': r => r.timings.duration < 30
+    'tx time OK': r => r.timings.duration < 500  // 값을 변경하면서 테스트 해보면 재미있긔~
   });
 }
 ```
@@ -58,7 +58,7 @@ export default function() {
 
 >k6 run k6-post.js
 
-![Imgur](https://i.imgur.com/hTT14Tx.png)
+![Imgur](https://i.imgur.com/A0XIRcU.png)
 
 - application.yml 에서 `server.tomcat.max-threads` 값을 변경하면서 테스트 해보면 재미있긔~
 
