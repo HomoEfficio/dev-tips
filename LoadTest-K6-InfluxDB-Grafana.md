@@ -60,7 +60,7 @@ export default function() {
 
 ![Imgur](https://i.imgur.com/hTT14Tx.png)
 
-- application.yml 에서 `server.tomcat.max-threads` 값을 변경하면서 테스트
+- application.yml 에서 `server.tomcat.max-threads` 값을 변경하면서 테스트 해보면 재미있긔~
 
 
 ## InfluxDB
