@@ -20,6 +20,8 @@ https://github.com/powerline/fonts
 
 이것도 괜찮은 듯 : https://www.freecodecamp.org/news/how-to-configure-your-macos-terminal-with-zsh-like-a-pro-c0ab3f3c1156/
 
+이거도 괜찮 : https://wayhome25.github.io/etc/2017/03/12/zsh-alias/
+
 ## Dracula
 
 https://draculatheme.com/zsh/
