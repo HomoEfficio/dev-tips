@@ -34,4 +34,4 @@ Product product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(Product.class, id));
 ```
 
-다만, 사용하는 데 문제는 없지만 한 가지 아쉬운 것은 `EntityNotFoundException` 요 이름을 `javax.persistence.EntityNotFoundException`에서 선점했다능..
+사용하는 데 문제는 없지만 한 가지 아쉬운 것은 `EntityNotFoundException` 요 이름을 `javax.persistence.EntityNotFoundException`에서 선점했다능..
