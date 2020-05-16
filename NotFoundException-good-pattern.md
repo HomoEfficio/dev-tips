@@ -27,7 +27,7 @@ public class EntityNotFoundException extends RuntimeException {
 }
 ```
 
-사용할 떄도 깔쌈하다.
+나름 깔쌈하다.
 
 ```java
 Product product = productRepository.findById(id)
