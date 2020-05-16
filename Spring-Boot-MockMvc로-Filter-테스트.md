@@ -30,3 +30,5 @@ public void beforeEach() {
 ```
 
 이렇게 오랫동안 헤멘 근본적인 이유는 MockMvc가 클라이언트만을 모사하는 거라는 잘못된 넘겨집기 때문이었다. ㅠㅜ
+
+MockMvcTest 에서 Spring Security Filter 적용은 공식 문서 https://docs.spring.io/spring-security/site/docs/current/reference/html5/#test-mockmvc-setup 를 참고한다.
