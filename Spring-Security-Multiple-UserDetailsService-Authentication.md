@@ -121,4 +121,4 @@ public class CustomerSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 ```
 
-그렇지 않고 userDetailsService 를 먼저 등록하면 user http basic auth 로그인 창에서 admin, admin 을 입력해도 userDetailsService 가 먼저 작동해서 admin/admin 을 DB에서 찾고 admin/admin 이 없으므로 결국 인증에 실패하며 로그인 창만 계속 반복해서 뜨게 된다.
+그렇지 않고 userDetailsService 를 먼저 등록하면 user http basic auth 로그인 창에서 admin, admin 을 입력해도 userDetailsService 가 먼저 작동해서 admin/admin 을 DB에서 찾고 admin/admin 이 없으면 바로 인증 실패처리 되며 로그인 창만 계속 반복해서 뜨게 된다.
