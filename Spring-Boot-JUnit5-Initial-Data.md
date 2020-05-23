@@ -1,9 +1,9 @@
-# Spring Boot Test + JUnit5 에서 테스트 초기 데이터 로딩
+# Spring Boot + JUnit5 에서 테스트 초기 데이터 로딩
 
 테스트 클래스 당 1번만 데이터를 로딩해서 테스트 내내 사용하고 싶다면 어떻게 해야할까?  
 쉽게 말하면 테스트 용 데이터를 어떻게 만들고 읽어서 사용할 수 있을까?
 
-일단 Spring Boot Test 시 데이터를 로딩하는 방법은 [직접 코드를 작성하는 방법](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/testing.html#testcontext-executing-sql-programmatically)과 [`@Sql`을 사용하는 방법](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/testing.html#testcontext-executing-sql-declaratively) 2가지가 있다.
+일단 Spring Boot 테스트 시 데이터를 로딩하는 방법은 [직접 코드를 작성하는 방법](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/testing.html#testcontext-executing-sql-programmatically)과 [`@Sql`을 사용하는 방법](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/testing.html#testcontext-executing-sql-declaratively) 2가지가 있다.
 
 결론부터 말하면 **테스트 클래스 당 1번만 데이터를 로딩해서 계속 사용하려면 `@Sql`로는 안되고 직접 코드를 작성해야 한다.**
 
