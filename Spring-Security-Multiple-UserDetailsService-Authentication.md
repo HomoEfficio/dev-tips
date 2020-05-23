@@ -109,6 +109,8 @@ public class CustomerSecurityConfig extends WebSecurityConfigurerAdapter {
 ```
 
 ---
+## InMemoryAuthentication 과 Custom UserDetailsService 같이 사용하기
+
 참고로 inMemoryAuthentication 와 userDetailsService 를 같이 사용하는 것도 가능하다. 다만 아래와 같이 **inMemoryAuthentication 를 먼저 등록하고 그 다음에 userDetailsService 를 등록해줘야 한다.**
 
 ```java
