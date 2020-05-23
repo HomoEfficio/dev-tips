@@ -66,75 +66,32 @@ class ProductReviewControllerTest {
 위와 같이 어떤 한 인스턴스 변수를 테스트 사이에 공유하는 게 아니라 비용이 많이 드는 자원을 로딩하는 수준이라면 도를 넘지 않는 수준의 경제적인 상태 공유라고 할 수 있다고 본다.
 
 
-아래 내용은 될 것 같지만 안 된다.
+참고로 아래와 같이 `@Sql`을 사용해도 될 것 같지만 지정한 SQL 스크립트는 실행되지 않는다.
 
 ```java
 @SpringBootTest
-@Transactional  // 테스트 메서드 종료시마다 롤백
+@Transactional
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ProductReviewControllerTest {
 
-    private MockMvc mvc;
+    ...
 
-    @Autowired
-    private WebApplicationContext ctx;
-
-    private JacksonTester<ProductReviewIn> productReviewInTester;
-
-    // 모든 테스트 시작 전 한 번 실행되는 @BeforeAll 메서드에 @Sql 을 추가해서 초기 데이터 로딩
     @Sql({"/data/insert-customer-seller-product.sql"})
     @BeforeAll
-    public static void beforeAll() {
+    public void beforeAll() throws Exception {
+        System.out.println("BeforeAll");
     }
 
-    // 모든 테스트 종료 시 한 번 실행되는 @AfterAll 메서드에 @Sql 을 추가해서 초기 데이터 제거
     @Sql({"/data/truncate-customer-seller-product.sql"})
     @AfterAll
-    public static void afterAll() {
+    public void afterAll() throws Exception {
+        System.out.println("AfterAll");
     }
-
-    @BeforeEach
-    public void beforeEach() {
-        mvc = MockMvcBuilders.webAppContextSetup(ctx)
-                .addFilters(new CharacterEncodingFilter("UTF-8", true))
-                .alwaysDo(print())
-                .build();
-        JacksonTester.initFields(this, new ObjectMapper());
-    }
-
-    @ParameterizedTest(name = "상품 {0} 에 대한 고객 {1} 의 리뷰 {2} 생성")
-    @MethodSource("productReviews")
-    public void create(Long productId, Long customerId, String comment) throws Exception {
-        postNewProductReview(productId, customerId, comment)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("productId").value(productId))
-                .andExpect(jsonPath("productName").exists())
-                .andExpect(jsonPath("customerId").value(customerId))
-                .andExpect(jsonPath("customerName").exists())
-                .andExpect(jsonPath("comment").value(comment))
-        ;
-    }
-
-    private static Stream<Arguments> productReviews() {
-        return Stream.of(
-                Arguments.of(1L, 1L, "1 신박한 상품이네여~"),
-                Arguments.of(2L, 1L, "1 이거 사려고 20년을 기다렸습니다."),
-                Arguments.of(3L, 1L, "1 이 가격 말이 되나요?"),
-                Arguments.of(1L, 2L, "2 보기만 해도 가슴이 벅차오릅니다."),
-                Arguments.of(2L, 2L, "2 사진과 너무 다릅니다.")
-        );
-    }
-
-    private ResultActions postNewProductReview(Long productId, Long customerId, String comment) throws Exception {
-        return mvc.perform(post("/v1/product-reviews")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(productReviewInTester.write(new ProductReviewIn(productId, customerId, comment)).getJson()));
-    }
-}
-
 ```
 
-H2 용 truncate
+
+
+아래는 참고 - H2 용 truncate
 
 ```sql
 SET REFERENTIAL_INTEGRITY FALSE;
