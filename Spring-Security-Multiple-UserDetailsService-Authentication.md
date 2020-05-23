@@ -39,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/v1/sellers").permitAll()
+                .antMatchers(HttpMethod.POST, "/v1/sellers").permitAll()  // 필요 시 상황에 맞게 /**, /* 등 추가
                 .antMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -84,7 +84,7 @@ public class CustomerSecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .and()
                 .requestMatchers()  // 아래 명시한 path 는 CustomerSecurityConfig에서 담당
-                .antMatchers("/v1/product-reviews")
+                .antMatchers("/v1/product-reviews")  // 필요 시 상황에 맞게 /**, /* 등 추가
                 .antMatchers("/v1/customers")
                 .and()
                 .authorizeRequests()
