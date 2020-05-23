@@ -107,3 +107,16 @@ public class CustomerSecurityConfig extends WebSecurityConfigurerAdapter {
 [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: OrRequestMatcher [requestMatchers=[Ant [pattern='/v1/product-reviews'], Ant [pattern='/v1/customers']]], [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@58739e5e, org.springframework.security.web.context.SecurityContextPersistenceFilter@456aa471, org.springframework.security.web.header.HeaderWriterFilter@7bb4ed71, org.springframework.security.web.authentication.logout.LogoutFilter@69ba3f4e, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@1657b017, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4cfcac13, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4276ad40, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4e2cdc51, org.springframework.security.web.session.SessionManagementFilter@1930a804, org.springframework.security.web.access.ExceptionTranslationFilter@c732e1c, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@1d944fc0]
 [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@734a149a, org.springframework.security.web.context.SecurityContextPersistenceFilter@7fd751de, org.springframework.security.web.header.HeaderWriterFilter@2c16677c, org.springframework.security.web.authentication.logout.LogoutFilter@4a9869a8, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@75e0a54c, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@e162a35, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1124910c, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@6ce9771c, org.springframework.security.web.session.SessionManagementFilter@27d73d22, org.springframework.security.web.access.ExceptionTranslationFilter@4656fcc5, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@4ced17f3]
 ```
+
+---
+참고로 inMemoryAuthentication 와 userDetailsService 를 같이 사용하는 것도 가능하다. 다만 아래와 같이 **inMemoryAuthentication 를 먼저 등록하고 그 다음에 userDetailsService 를 등록해줘야 한다.**
+
+```java
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication().withUser("admin").password("admin").roles("ADMIN");  // DelegatingPasswordEncoder 를 사용한다면 비밀번호를 "{noop}admin" 으로 지정해줘야 한다.
+        auth.userDetailsService(new SellerUserDetailsServiceImpl(sellerRepository)).passwordEncoder(passwordEncoder());
+    }
+```
+
+그렇지 않고 userDetailsService 를 먼저 등록하면 user http basic auth 로그인 창에서 admin, admin 을 입력해도 userDetailsService 가 먼저 작동해서 admin/admin 을 DB에서 찾고 admin/admin 이 없으므로 결국 인증에 실패하며 로그인 창만 계속 반복해서 뜨게 된다.
