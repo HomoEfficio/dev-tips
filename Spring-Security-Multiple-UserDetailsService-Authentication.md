@@ -4,9 +4,9 @@
 
 물론 있다.
 
-그것도 여러가지 방법이 있지만 가장 간단한 방법인 다수의 UserDetailsService를 설정하는 방법을 알아보자.
+그것도 여러가지 방법이 있지만 가장 간단한 방법인 다수의 UserDetailsService를 설정하는 방법을 알아보자. UserDetailsService가 DB에서 사용자 정보를 찾아서 UserDetails로 변환한 후 반환하면, UserDetails 객체는 이후 내부적으로 DaoAuthenticationProvider 에 전달되고 여기에서 비밀번호가 자동으로 검증된다.
 
-기본 아이디어는 다음과 같다.
+본론으로 돌아와서 하나의 스프링 부트 애플리케이션에서 인증 과정을 여러개 사용할 수 있는 기본 아이디어는 다음과 같다.
 
 - 판매자용 UserDetailsService 구현체, 고객용 UserDetailsService 구현체를 따로 만든다.
 - 이 두 구현체를 Spring Security 에 등록해줘야 하는데 아쉽게도 하나의 Security 설정 클래스에서 다음과 같이 설정하면, 둘 중 하나만 인증 과정에 참여하고 나머지 하나는 무시된다.
