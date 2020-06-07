@@ -38,7 +38,8 @@ CSRF Token has been associated to this client
 ```
 
 그래서 찾아보니 https://github.com/spring-projects/spring-boot/issues/16088 여기에 관련 내용이 있다.  
-대략 `@WebFluxTest`에서는 Spring Security 가 기본으로 반영되지 않은 테스트 서버 인스턴스가 뜨는 게 맞고, 이를 스프링 부트 2.1 에 반영한다는 것 같은데, 내가 테스트한 환경은 스프링 부트 2.3 인데도 여전히 Spring Security 가 반영되지 않는다.
+대략 `@WebFluxTest`에서는 Spring Security 설정이 반영되지 않은 테스트 서버 인스턴스가 뜨는 게 현실이고,  
+스프링 부트 2.1 `@WebFluxTest`에서는 Spring Security 설정이 반영되게 한다는 것 같은데, 내가 테스트한 환경은 스프링 부트 2.3 인데도 여전히 Spring Security 가 반영되지 않는다.
 
 그러니 Spring Boot 2.3 에서 Spring Security가 반영된 `@WebFluxTest`를 수행하려면 다음과 같이 해줘야 한다.
 
