@@ -769,3 +769,11 @@ this.targetForm = this.formBuilder.group({
 
 form 초기화 로직을 `ngOnInit()`에 앞서 실행되는 `constructor()` 내부에서 실행하면 위와 같은 에러가 발생하지 않는다.
 
+## mat-radio Readonly 처리
+
+radio는 HTML 수준에서 readonly를 지원하지 않는다.
+`onclick="return false;"`로도 가능하지만 조건에 따라 readonly 를 주고 싶을 때는 이 방법으로도 안 된다.
+
+그럴 때는 다른 방법이 없다. 기존 선택값을 유지하고 있다가, 변경이 발생하면 강제로 기존 선택값으로 되돌리는 방법으로 readonly 같은 효과를 낼 수 밖에..
+
+https://stackoverflow.com/a/62325965/11747632
