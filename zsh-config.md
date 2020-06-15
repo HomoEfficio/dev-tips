@@ -16,6 +16,12 @@ https://ethanschoonover.com/solarized/
 
 ## sorin 테마 적용
 
+>vi ~/.zshrc
+
+```
+ZSH_THEME="sorin"
+```
+
 ### PROMPT 변경
 
 >vi ~/.oh-my-zsh/themes/sorin.zsh-theme
@@ -23,6 +29,15 @@ https://ethanschoonover.com/solarized/
 ```
 PROMPT='%{$fg[cyan]%}%c$(git_prompt_info) 🍺🦑🍺🍕🍺 %(!.%{$fg_bold[red]%}#.%{$fg_bold[green]%}❯)%{$reset_co
     lor%} '
+```
+
+
+## plugins 적용
+
+>vi ~/.zshrc
+
+```
+plugins=(git gradle jenv node npm rust)
 ```
 
 
