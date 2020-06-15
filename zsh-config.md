@@ -12,11 +12,18 @@ https://ethanschoonover.com/solarized/
 
 터미널 > 환결설정 > 프로파일 > 가져오기 > solarized > osx-terminal.app-colors-solarized 아래에 있는 Solairzed Dark 선택
 
-선택 부분 색상 살짝 밝게
+'선택 부분(드래그로 선택)' 색상 살짝 밝게 변경
 
 ## sorin 테마 적용
 
+### PROMPT 변경
 
+>vi ~/.oh-my-zsh/themes/sorin.zsh-theme
+
+```
+PROMPT='%{$fg[cyan]%}%c$(git_prompt_info) 🍺🦑🍺🍕🍺 %(!.%{$fg_bold[red]%}#.%{$fg_bold[green]%}❯)%{$reset_co
+    lor%} '
+```
 
 
 
