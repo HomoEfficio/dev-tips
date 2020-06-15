@@ -20,6 +20,8 @@ Could not resolve all dependencies for configuration ':dashboard-api:detachedCon
 
 ---
 
+2020-06-15 추가
+
 인텔리제이 2020.1, Gradle 4.5.1, Java 8 에서 gradle 프로젝트를 임포트하면 의존 라이브러리들을 다운로드 하다가 끝까지 받지 못 하고 중간에 멈추면서 결국 build error 가 나는 현상이 있다.
 
 어처구니 없지만 복불복인 것 같다.
