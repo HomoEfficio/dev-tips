@@ -62,6 +62,19 @@ export default function() {
 
 - application.yml 에서 `server.tomcat.max-threads` 값을 변경하면서 테스트 해보면 재미있긔~
 
+사설 인증서를 사용하는 개발환경에서는 다음과 같은 에러가 발생한다.
+
+```
+x509: certificate is not valid for any names, but wanted to match localhost"
+또는
+x509: cannot validate certificate for 127.0.0.1 because it doesn't contain any IP SANs"
+또는
+x509: certificate signed by unknown authority"
+```
+
+이때는 `--insecure-skip-tls-verify` 옵션을 사용해서 인증서 유효성 검증 과정을 건너뛰게 하면 된다.
+
+>k6 run --insecure-skip-tls-verify k6-post.js
 
 ## InfluxDB
 
