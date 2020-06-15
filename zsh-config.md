@@ -1,5 +1,25 @@
 # zsh config
 
+## oh my zsh
+
+https://github.com/ohmyzsh/ohmyzsh#basic-installation
+
+## solarized
+
+https://ethanschoonover.com/solarized/
+
+다운 받아서 압축 풀고,
+
+터미널 > 환결설정 > 프로파일 > 가져오기 > solarized > osx-terminal.app-colors-solarized 아래에 있는 Solairzed Dark 선택
+
+선택 부분 색상 살짝 밝게
+
+## sorin 테마 적용
+
+
+
+
+
 ## Default Terminal
 
 기본 터미널에 설정하는 방법은 이게 제일 나은 듯
