@@ -40,6 +40,7 @@ PROMPT='%{$fg[cyan]%}%c$(git_prompt_info) 🍺🦑🍺🍕🍺 %(!.%{$fg_bold[re
 plugins=(git gradle jenv node npm rust)
 ```
 
+>source ~/.zshrc
 
 
 ## Default Terminal
