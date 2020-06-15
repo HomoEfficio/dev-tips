@@ -72,3 +72,18 @@ server.ssl:
 
     ![Imgur](https://i.imgur.com/cJvlg3Q.png)
 
+# 기타
+
+사설 인증서를 사용하면 요청을 날리는 도구에 따라 다음과 같은 에러가 발생할 수 있음
+
+```
+x509: certificate is not valid for any names, but wanted to match localhost"
+또는
+x509: cannot validate certificate for 127.0.0.1 because it doesn't contain any IP SANs"
+또는
+x509: certificate signed by unknown authority"
+```
+
+이때는 도구에서 제공하는 인증서 검증 우회 옵션을 사용해야 한다. 예를 들어 k6 는 아래와 같이 `--insecure-skip-tls-verify` 옵션을 사용해서 실행하면 된다.
+
+>k6 run --insecure-skip-tls-verify <<<K6-script.js>>>
