@@ -30,6 +30,18 @@
 
 https://github.com/HomoEfficio/dev-tips/blob/master/zsh-config.md
 
+## Sublime Text
+
+### Home, End 키 변경
+
+Preferences > Key Bindings 에 아래 내용 추가
+
+```
+  { "keys": ["home"], "command": "move_to", "args": {"to": "bol"} },
+  { "keys": ["end"], "command": "move_to", "args": {"to": "eol"} },
+  { "keys": ["shift+end"], "command": "move_to", "args": {"to": "eol", "extend": true} },
+  { "keys": ["shift+home"], "command": "move_to", "args": {"to": "bol", "extend": true } }
+```
 
 ## git
 
