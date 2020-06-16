@@ -12,6 +12,8 @@ https://ethanschoonover.com/solarized/
 
 터미널 > 환결설정 > 프로파일 > 가져오기 > solarized > osx-terminal.app-colors-solarized 아래에 있는 Solairzed Dark 선택
 
+![Imgur](https://i.imgur.com/ygowVo2.png)
+
 '선택 부분(드래그로 선택)' 색상 살짝 밝게 변경
 
 ## sorin 테마 적용
@@ -41,6 +43,10 @@ plugins=(git gradle jenv node npm rust)
 ```
 
 >source ~/.zshrc
+
+여기까지만 하면 됨. 아래는 그냥 참고
+
+---
 
 
 ## Default Terminal
