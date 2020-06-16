@@ -16,6 +16,10 @@
 
 사진
 
+## 캡처 
+
+![Imgur](https://i.imgur.com/1270JW4.png)
+
 ## 터미널
 
 https://github.com/HomoEfficio/dev-tips/blob/master/zsh-config.md
