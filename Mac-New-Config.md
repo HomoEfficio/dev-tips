@@ -4,33 +4,38 @@
 
 환경설정 > 마우스
 
-사진 
+![Imgur](https://i.imgur.com/yMBUFJC.png)
 
 ## 키보드
 
 ### 한/영키 설정
 
-사진
+![Imgur](https://i.imgur.com/YV8wrwl.png)
 
 ### CTRL-Command 전환
 
-사진
+![Imgur](https://i.imgur.com/l5nEvbz.png)
 
 ## 캡처 
 
+맥 기본 캡처 비활성화 (Skitch 로 대체, Skitch로 안 되는 건 다른 맥 기본 캡처-Shift+Ctrl+4로 가능)
+
 ![Imgur](https://i.imgur.com/1270JW4.png)
+
+### Skitch
+
+![Imgur](https://i.imgur.com/dUkfmQD.png)
 
 ## 터미널
 
 https://github.com/HomoEfficio/dev-tips/blob/master/zsh-config.md
+
 
 ## git
 
 git --version
 
 명령 행 개발도구 설치? 예
-
-alias: https://github.com/HomoEfficio/dev-tips/blob/master/Git-alias.md
 
 ## brew
 
@@ -94,3 +99,36 @@ github > etc > settings 파일 다운로드 및 import
 
 jdk 경로도 같이 import 되는데 다를 수 있으므로 불필요한 건 import 안 하는 것도 방법
 
+
+## nvm
+
+>brew install nvm
+
+설치 후 나오는 메시지에 따라 추가 작업 필요
+
+```
+==> Caveats
+Please note that upstream has asked us to make explicit managing
+nvm via Homebrew is unsupported by them and you should check any
+problems against the standard nvm install method prior to reporting.
+
+You should create NVM's working directory if it doesn't exist:
+
+  mkdir ~/.nvm
+
+Add the following to ~/.zshrc or your desired shell
+configuration file:
+
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+You can set $NVM_DIR to any location, but leaving it unchanged from
+/usr/local/opt/nvm will destroy any nvm-installed Node installations
+upon upgrade/reinstall.
+
+Type `nvm help` for further information.
+
+Bash completion has been installed to:
+  /usr/local/etc/bash_completion.d
+```
