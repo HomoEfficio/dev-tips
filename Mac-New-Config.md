@@ -20,6 +20,36 @@
 
 ![Imgur](https://i.imgur.com/R3ADXdX.png)
 
+### Home, End
+
+```
+$ cd ~/Library
+$ mkdir KeyBindings
+$ cd KeyBindings
+$ vi DefaultKeyBinding.dict
+```
+
+```json
+{
+ /* Remap Home / End keys to be correct */
+  "\UF729" = "moveToBeginningOfLine:"; /* Home */
+  "\UF72B" = "moveToEndOfLine:"; /* End */ 
+  "$\UF729" = "moveToBeginningOfLineAndModifySelection:"; /* Shift + Home */ 
+  "$\UF72B" = "moveToEndOfLineAndModifySelection:"; /* Shift + End */ 
+  "^\UF729" = "moveToBeginningOfDocument:"; /* Ctrl + Home */ 
+  "^\UF72B" = "moveToEndOfDocument:"; /* Ctrl + End */ 
+  "$^\UF729" = "moveToBeginningOfDocumentAndModifySelection:"; /* Shift + Ctrl + Home */ 
+  "$^\UF72B" = "moveToEndOfDocumentAndModifySelection:"; /* Shift + Ctrl + End */ 
+}
+
+```
+
+![Imgur](https://i.imgur.com/p1kk5j5.png)
+
+출처: https://bimmermac.com/6426
+
+재부팅
+
 ## 캡처 
 
 맥 기본 캡처 비활성화 (Skitch 로 대체, Skitch로 안 되는 건 다른 맥 기본 캡처-Shift+Ctrl+4로 가능)
