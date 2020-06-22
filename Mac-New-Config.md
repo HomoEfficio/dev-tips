@@ -16,6 +16,10 @@
 
 ![Imgur](https://i.imgur.com/l5nEvbz.png)
 
+### 터치바 Function키 고정
+
+![Imgur](https://i.imgur.com/R3ADXdX.png)
+
 ## 캡처 
 
 맥 기본 캡처 비활성화 (Skitch 로 대체, Skitch로 안 되는 건 다른 맥 기본 캡처-Shift+Ctrl+4로 가능)
