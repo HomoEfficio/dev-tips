@@ -40,7 +40,7 @@ Kevin Lee 님께서 알려주신 아래 방법도 괜찮아 보인다.
 
 ```java
   private String filtered(String s) {
-      return IntStream.iterate(0, i -> i + 1)
+      return IntStream.iterate(0, i -> i + 1)  // IntStream.iterate() 와 limit() 을 사용해서 for 문 같아 보이는 함수형 식 사용
           .limit(s.length())
           .filter(i -> (i & 1) == 1)
           .mapToObj(i -> Character.toString(s.charAt(i)))
