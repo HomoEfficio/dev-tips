@@ -30,7 +30,7 @@ Stream API 에서 index 를 사용할 수 있게 해주는 언어도 있지만 �
 ```java
   private String filtered(String s) {
       return s.chars()
-              .filter((c, i) -> i % 2 == 1)  // (data, index) 를 파라미터로 하는 람다식을 쓰면 i에 인덱스 값이 알아서 들어온다.
+              .filter((c, i) -> i % 2 == 1)  // (data, index) 를 파라미터로 하는 람다식을 쓰면 data에는 데이터가 index에는 인덱스 값이 알아서 들어온다.
               .mapToObj(Character::toString)
               .collect(Collectors.joining(""));
   }
