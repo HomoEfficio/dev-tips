@@ -14,11 +14,15 @@ Stream API 에서 index 를 사용할 수 있게 해주는 언어도 있지만 �
   }
 
   private String filtered(String s) {
-      AtomicInteger index = new AtomicInteger();
+      int[] index = {0};
       return s.chars()
-              .filter(c -> index.incrementAndGet() % 2 == 0)  // 여기!!
+              .filter(c -> ++index[0] % 2 == 0)  // 여기!!
               .mapToObj(Character::toString)
               .collect(Collectors.joining(""));
   }
 ```
 
+---
+올리고 나니 여러분께서 좋은 의견을 주셨는데, 관련 예제가 https://www.baeldung.com/java-collections-zip 여기에 아주 잘 나와있으니 같이 보면 좋겠다.
+
+참고로 D3.js 에서는 `(data, index) => { 어쩌고 저쩌고 index 로 지지고 볶고 }` 같은 형식으로 아주 편리하게 index 를 사용할 수 있는 API 를 제공해준다.
