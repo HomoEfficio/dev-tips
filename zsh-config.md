@@ -29,8 +29,7 @@ ZSH_THEME="sorin"
 >vi ~/.oh-my-zsh/themes/sorin.zsh-theme
 
 ```
-PROMPT='%{$fg[cyan]%}%c$(git_prompt_info) 🍺🦑🍺🍕🍺 %(!.%{$fg_bold[red]%}#.%{$fg_bold[green]%}❯)%{$reset_co
-    lor%} '
+PROMPT='%{$fg[cyan]%}%c$(git_prompt_info) 🍺🦑🍺🍕🍺 %(!.%{$fg_bold[red]%}#.%{$fg_bold[green]%}❯)%{$reset_color%} '
 ```
 
 
