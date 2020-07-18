@@ -64,6 +64,10 @@ $ vi DefaultKeyBinding.dict
 
 https://github.com/HomoEfficio/dev-tips/blob/master/zsh-config.md
 
+## 데스크탑 순서 고정 - Mission Control
+
+![Imgur](https://i.imgur.com/4svUgZa.png)
+
 ## Sublime Text
 
 ### Home, End 키 변경
