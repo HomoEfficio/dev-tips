@@ -1,6 +1,6 @@
 # IDE 에서는 되는데 jar 에서는 안 돼요 - Java Resource
 
->한 줄 요약: 웬만하면 `getResource()` 쓰지 말고 `getResourceAsStream()` 씁시다.
+>한 줄 요약: **웬만하면 `getResource()` 쓰지 말고 `getResourceAsStream()` 쓰자**
 
 ## 기본 폴더 구조
 
@@ -76,9 +76,9 @@ IDE 에서 실행하면 다음과 같이 정상적으로 출력된다.
 00:56:15.159 [main] INFO io.homo_efficio.ResourceLoader - resource contents: Sample File 1
 ```
 
-resourceURL 값이 `file:` 로 시작한다는 것을 기억해두자.
+**resourceURL 값이 `file:` 로 시작한다는 것을 기억해두자.**
 
-읽을 파일 경로는 `/Users/1003604/gitRepo/study/maven-fat-jar-test/target/classes/static/folder1/sample1`로 표시되는데 이는 실제 존재하는 경로와 일치한다.
+읽을 파일 경로는 `/Users/1003604/gitRepo/study/maven-fat-jar-test/target/classes/static/folder1/sample1`로 표시되는데 이는 파일시스템에 실제 존재하는 경로와 일치한다.
 
 
 ### fat-jar 에서 동작 확인
@@ -105,16 +105,16 @@ Exception in thread "main" java.io.FileNotFoundException: file:/Users/1003604/gi
 
 즉 IDE에서 실행할 때는 실제 파일시스템 기준 경로를 따르므로 에러가 발생하지 않지만, jar 파일을 읽을 때는 jar 파일이 `!`와 함께 표시되기 때문에 실제 파일시스템 경로에 맞지 않아 에러가 발생한다.
 
-rsourceURL 값이 IDE 에서 실행할 때는 `file:` 로 시작했는데, 이번에는 `jar:file:`로 시작한다. 이것도 기억해두자.
+**rsourceURL 값이 IDE 에서 실행할 때는 `file:` 로 시작했는데, jar 로 실행할 때는 `jar:file:`로 시작한다.** 이것도 기억해두자.
 
 어쨌든 자바 프로그램은 실제로는 대부분 jar 로 만들어져서 실행될텐데, jar 에서 제대로 실행이 안 된다면 이를 어쩐다?
 
 
 ## getResourceAsStream()
 
-getResource() 는 기본적으로 URL 을 반환한다. URL은 위와 같이 jar 파일을 `!`와 함께 표시하기 때문에, jar 실행 시 에러가 발생한다.
+`getResource()` 는 기본적으로 URL 을 반환한다. URL은 위와 같이 jar 파일을 `!`와 함께 표시하기 때문에, jar 실행 시 에러가 발생한다.
 
-하지만 getResourceAsStream()은 InputStream 을 반환한다. 그리고 Java 9 에서 추가된 `InputStream.readAllBytes()`를 사용하면 편리하게 InputStream 을 읽어서 byte[] 에 저장할 수 있다.
+하지만 `getResourceAsStream()`은 InputStream 을 반환한다. 그리고 Java 9 에서 추가된 `InputStream.readAllBytes()`를 사용하면 편리하게 InputStream 을 읽어서 byte[] 에 저장할 수 있다.(물론 대용량 데이터를 `readAllBytes()`로 읽어들이면 망함. 대용량 파일 처리는 https://homoefficio.github.io/2019/02/27/Java-NIO-Direct-Buffer를-이용해서-대용량-파일-행-기준으로-쪼개기/ 를 참고하자)
 
 ```java
 // ResourceLoader.java
@@ -153,33 +153,35 @@ maven-fat-jar-test git:master 🍺🦑🍺🍕🍺 ❯ java -jar target/maven-fa
 00:01:31.778 [main] INFO io.homo_efficio.ResourceLoader - resource contents: Sample File 1
 ```
 
-따라서 `getResource()` 보다는 `getResourceAsStream()`을 사용하자. 끗?
-
-이렇게 끝내면 너무 싱거우니 `getResourceAsStream()`로 하면 왜 jar 에서도 정상 실행되는지 살짝만 들여다보자.
+따라서 `getResource()` 보다는 `getResourceAsStream()`을 사용하자. 끝.
 
 
 ## 속사정
+
+혹시 왜 이런 차이가 발생하는지 궁금한 사람들은 이어서 읽어보자.
 
 `getResourceAsStream()` 호출을 따라가보면 Java 14 기준 `BuiltinClassLoader` 클래스에서 아래와 같은 코드를 만나게 되는데,
 
 ![Imgur](https://i.imgur.com/m87zAsl.png)
 
-`openStream()` 을 따라가면 왜 되는지 알 수 있다. `openConnection()`은 URLConnection 을 반환하는데, 이 URLConnection 에는 여러가지 SubClass가 있어서 다형적으로 동작한다.
+`openStream()` 을 따라가면 왜 되는지 알 수 있다. **`openConnection()`은 URLConnection 을 반환하는데, 이 URLConnection 에는 여러가지 SubClass가 있어서 다형적으로 동작할 수 있다.**
 
 ![Imgur](https://i.imgur.com/oZz9Wu2.png)
 
 앞에서 IDE 에서 실행할 때는 URL 값이 `file:` 로 시작하고, jar 로 실행할 떄는 URL 값이 `jar:file:` 로 시작하는 것을 기억해두자고 한 것을 상기해보면 답이 보일 것이다.
 
-URL 이 `file:` 로 시작하는 IDE 에서는 FileURLConnection 이 사용되고, URL 이 `jar:file:` 로 시작하는 jar 실행에서는 JarURLConnection 이 사용된다. `getResourceAsStream()`은 다형적으로 동작하도록 구현돼 있어서 두 상황 모두에서 잘 동작할 수 있다.
+**URL 이 `file:` 로 시작하는 IDE 에서는 FileURLConnection 이 사용되고, URL 이 `jar:file:` 로 시작하는 jar 실행에서는 JarURLConnection 이 사용된다. `getResourceAsStream()`은 다형적으로 동작하도록 구현돼 있어서 두 상황 모두에서 잘 동작할 수 있다.**
 
 그럼 `getResource()`는?
 
-사실 문제는 `getResource()` 가 아니라 `getResource()` 이 반환하는 URL 을 어떻게 쓰느냐에 있다. 똑같이 `getResource()` 를 사용하더라도 다음과 같이 `openStream()` 을 사용하면 `getResource()` 을 사용해도 jar 에서도 잘 동작한다.
+**사실 문제는 `getResource()` 가 아니라 `getResource()` 이 반환하는 URL 을 어떻게 쓰느냐에 있다.** 똑같이 `getResource()` 를 사용하더라도 다음과 같이 `openStream()` 을 사용하면 `getResource()` 을 사용해도 jar 에서도 잘 동작한다.
 
-즉, URL 에서 File 을 생성하면 다형성이 적용되지 않아 IDE 에서는 되지만 jar 에서는 안 되는 상황이 연출되고,  
-URL 에서 InputStream 을 뽑아서 사용하면 다형성이 적용돼서 IDE, jar 모두에서 잘 동작한다.
+즉, **URL 에서 File 을 생성하면 다형성이 적용되지 않아 IDE 에서는 되지만 jar 에서는 안 되는 상황이 연출**되고,  
+**URL 에서 InputStream 을 뽑아서 사용하면 다형성이 적용돼서 IDE, jar 모두에서 잘 동작한다.**
 
 ```java
+// ResourceLoader.java
+
     public void loadResourceAsFile(String resourceLocation) throws IOException {
         log.info("*** getResource() + File 방식");
         log.info("content root: {}", rootPath);
@@ -204,3 +206,58 @@ URL 에서 InputStream 을 뽑아서 사용하면 다형성이 적용돼서 IDE,
         log.info("resource contents: {}", new String(bytes, StandardCharsets.UTF_8));
     }
 ```
+
+## Jackson
+
+자바에서 JSON 처리에 널리 사용되는 Jackson 은 어떨까?
+
+다음과 같이 URL 을 `readValue()` 메서드에 인자로 넘겨주는 방식으로 구현하면 IDE, jar 모두에서 잘 동작한다.
+
+```java
+// ResourceLoader.java
+
+    public void loadConfig(String resourceLocation) {
+        log.info("*** getResource() + Jackson 방식");
+        log.info("content root: {}", rootPath);
+        log.info("resourceLocation: {}", resourceLocation);
+
+        URL configURL = this.getClass().getResource(root + resourceLocation);
+        log.info("resourceURL: {}", configURL);
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Config config = objectMapper.readValue(configURL, Config.class);
+            log.info("title in config: {}", config.getTitle());
+            log.info("tags in config: [{}]", String.join(", ", config.getTags()));
+        } catch (IOException e) {
+            throw new RuntimeException("설정 파일 로딩에 실패했습니다.", e);
+        }
+    }
+```
+
+IDE 실행 결과
+
+```
+12:09:01.465 [main] INFO io.homo_efficio.ResourceLoader - *** getResource() + Jackson 방식
+12:09:01.465 [main] INFO io.homo_efficio.ResourceLoader - content root: /static
+12:09:01.465 [main] INFO io.homo_efficio.ResourceLoader - resourceLocation: /folder1/config.json
+12:09:01.466 [main] INFO io.homo_efficio.ResourceLoader - resourceURL: file:/Users/1003604/gitRepo/study/maven-fat-jar-test/target/classes/static/folder1/config.json
+12:09:01.617 [main] INFO io.homo_efficio.ResourceLoader - title in config: Java Resource Handling
+12:09:01.617 [main] INFO io.homo_efficio.ResourceLoader - tags in config: [Java, Resource, fat, jar]
+```
+
+jar 실행 결과
+
+```
+maven-fat-jar-test git:master 🍺🦑🍺🍕🍺 ❯ java -jar target/maven-fat-jar.jar
+12:09:25.075 [main] INFO io.homo_efficio.ResourceLoader - *** getResource() + Jackson 방식
+12:09:25.075 [main] INFO io.homo_efficio.ResourceLoader - content root: /static
+12:09:25.075 [main] INFO io.homo_efficio.ResourceLoader - resourceLocation: /folder1/config.json
+12:09:25.076 [main] INFO io.homo_efficio.ResourceLoader - resourceURL: jar:file:/Users/1003604/gitRepo/study/maven-fat-jar-test/target/maven-fat-jar.jar!/static/folder1/config.json
+12:09:25.213 [main] INFO io.homo_efficio.ResourceLoader - title in config: Java Resource Handling
+12:09:25.213 [main] INFO io.homo_efficio.ResourceLoader - tags in config: [Java, Resource, fat, jar]
+```
+
+## Properties
+
+`.properties` 파일을 읽을 때 사용하는 `Properties` 클래스에는 `load(Reader r)`, `load(InputStream i)` 두 가지 메서드가 있다. IDE, jar 모두에서 동작하려면 어느 것을 써야할지 이젠 해보지 않아도 알 수 있을 것 같다.
