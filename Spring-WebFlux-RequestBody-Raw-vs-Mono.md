@@ -105,19 +105,24 @@ reactive 방식은 처리 속도보다는 자원 사용 관점에서의 효율�
 
 ![Imgur](https://i.imgur.com/VhCeVTk.png)
 
-### 심심풀이 자투리
 
-이건 더욱 쓸모없는 비교겠지만 그래도 한 번 구경해본 김에 캡처해서 올려본다. 두 방식을 통해 컨트롤러 메서드에 도달했을 때의 Stack 깊이 비교.. 스크롤바 크기로 추정해보면 `Mono`쪽이 Stack 깊이는 더 깊다는 걸 알 수 있다.
+## 선Raw후Mono? 아니면 선Mono후Raw?
 
-![Imgur](https://i.imgur.com/RE6mUNS.png)
+Request에서 먼저 Raw 가 추출된 후에 Mono로 감싸져서 컨트롤러에 전달되는 걸까? 아니면 Request에서부터 계속 Mono(또는 Flux)인 채로 있다가 나중에 Raw가 추출되서 컨트롤러에 전달되는 걸까?
 
-사실 Stack 깊이보다는 Raw 객체 방식일 때 언제 Raw 객체로 실체화? 되는지가 궁금했는데, 아래 그림 단계까지는 netty의 `NettyDataBuffer`로 존재하다가,
+Stack을 뒤져본 결과 분기 지점은 아래와 같음을 확인했다. 하지만 여기에서 위 질문에 대한 답은 얻을 수 없었다.
+
+![Imgur](https://i.imgur.com/L6TuAEE.png)
+
+조금 더 살펴본 결과 아래 그림 단계까지는 netty의 `NettyDataBuffer`로 존재하다가,
 
 ![Imgur](https://i.imgur.com/RNY24EO.png)
 
-아래 그림 단계에서 처음으로 Raw 값이 표시된다.
+아래 그림 단계에서 처음으로 Raw 값이 확인된다.
 
 ![Imgur](https://i.imgur.com/enkERzn.png)
+
+하지만 선Raw후Mono 인지 선Mono후Raw 인지는 아직 명확하지 않다.
 
 
 ## 마무리
