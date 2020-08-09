@@ -1,4 +1,4 @@
-# FileChannel과 DirectByteBuffer
+# FileChannel 과 DirectByteBuffer
 
 Java 4에서 도입된 NIO 덕분에 FileChannel과 ByteBuffer를 이용해서 File I/O 를 수행할 수 있게 됐다.
 
@@ -256,7 +256,7 @@ fileChannel.write(buf2);
 다음과 같이 명시적으로 DirectByteBuffer를 생성하고 사용하고 회수하도록 모두 바꾸고나니,
 
 ```java
-try {}
+try {
   ByteBuffer directBuffer = ByteBuffer.allocateDirect(size);
   ...
   directBuffer.flip();
