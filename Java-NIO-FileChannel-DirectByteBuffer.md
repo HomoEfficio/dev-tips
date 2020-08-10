@@ -7,7 +7,7 @@ Java 4에서 도입된 NIO 덕분에 `FileChannel`과 `ByteBuffer`를 이용해�
 
 NIO의 장점은 https://homoefficio.github.io/2016/08/06/Java-NIO는-생각만큼-non-blocking-하지-않다/ 를 참고하고, 여기에서는 `FileChannel`과 `DirectBuffer` 얘기만 다룬다.
 
-`ByteBuffer`는 생성되는 위치를 기준으로 크게 나눠보면 JVM Heap 내에 생성되는 `HeapByteBuffer`와 JVM 밖에 있는 Native 공간에 생성되는 `DirectByteBuffer`로 나눌 수 있다. 아래 그림에는 먼저 `HeapByteBuffer`와 `MappedByteBuffer`로 구분되는 걸로 보이는데 `MappedByteBuffer`도 Native 공간에 생성되며 파일 일부를 메모리에 매핑한다는 점 외에는 일반적인 direct byte buffer 와 동작이 다르지 않다고 [API 문서](https://docs.oracle.com/javase/8/docs/api/java/nio/MappedByteBuffer.html)에 나와있다.
+`ByteBuffer`는 생성되는 위치를 기준으로 크게 나눠보면 JVM Heap 내에 생성되는 `HeapByteBuffer`와 JVM Heap 밖에 있는 Native 공간에 생성되는 `DirectByteBuffer`로 나눌 수 있다. 아래 그림에는 먼저 `HeapByteBuffer`와 `MappedByteBuffer`로 구분되는 걸로 보이는데 `MappedByteBuffer`도 Native 공간에 생성되며 파일 일부를 메모리에 매핑한다는 점 외에는 일반적인 direct byte buffer 와 동작이 다르지 않다고 [API 문서](https://docs.oracle.com/javase/8/docs/api/java/nio/MappedByteBuffer.html)에 나와있다.
 
 ![Imgur](https://i.imgur.com/AE4p00B.png)
 
