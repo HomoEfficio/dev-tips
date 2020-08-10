@@ -347,7 +347,8 @@ try {
 정리하면, 다른 스레드에서 이런 방식으로 `DirectByteBuffer`가 생성되면,  
 - 크기가 동일한 `HeapByteBuffer`를 여러개 만들어도  
 - `BufferCache` 덕분에 해당 스레드 내에서는 `DirectByteBuffer`가 하나만 만들어지고 재사용 될 수는 있지만,  
-- 그 한 개의 `DirectByteBuffer`가 제대로 회수되지 않으면 계속 누적되다가 결국 OutOfMemory 에러를 맞이하게 된다.
+- 그 한 개의 `DirectByteBuffer`가 제대로 회수되지 않으면,
+- 새로운 스레드가 실행될 때마다 계속 누적되다가 결국 OutOfMemory 에러를 맞이하게 된다.
 
 
 ## 마무리
