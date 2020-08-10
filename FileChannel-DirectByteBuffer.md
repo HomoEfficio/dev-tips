@@ -120,7 +120,7 @@ fileChannel.write(byteBuffer);
 
 오호 특이한 점이 눈에 들어온다. 인자로 받아온 `ByteBuffer`의 Type이 `DirectBuffer`이면 `writeFromNativeBuffer()`를 호출하고 반환하지만, `DirectBuffer`가 아니면 `Util.getTemporaryDirectBuffer(rem)` 이렇게 슬그머니 `DirectBuffer`를 생성한다!!
 
-![Imgur](https://i.imgur.com/72E8YHH.jpg)
+![Imgur](https://i.imgur.com/72E8YHH.jpg?1)
 
 `Util.getTemporaryDirectBuffer(rem)`은 다음과 같다.
 
@@ -181,7 +181,7 @@ fileChannel.write(byteBuffer);
 >이 객체가 JVM의 GC에 의해 회수되면 이 객체가 참조하는 Native 메모리는  
 >JVM이 아닌 다른 메커니즘에 의해 어쨌든 회수된다.
 
-요는 **`DirectByteBuffer`를 사용해도 간접적이긴 하지만 결국에는 JVM GC에 의해 회수가 시작된다**는 얘기다. 오 그럼 바로 회수되는 건 아니지만 다행스럽게도 결국 JVM GC가 챙겨주시는 거네~ 행복~
+요는 **`DirectByteBuffer`를 사용해도 간접적이긴 하지만 결국에는 JVM GC에 의해 회수가 시작된다**는 얘기다. 오 그럼 바로 회수되는 건 아니지만 다행스럽게도 결국 JVM GC가 챙겨주시는 거나 마찬가지네~
 
 그런데 위 설명과는 다르게 어느 정도 시간이 지나면 결국 늘 이 분을 영접하게 되었다.
 
@@ -189,9 +189,9 @@ fileChannel.write(byteBuffer);
 java.lang.OutOfMemoryError: Direct buffer memory
 ```
 
-처음에는 '아 왜요~~ 저 `DirectByteBuffer` 쓰지도 않는데 저한테 왜 이러세요 진짜~' 였다. 그런데 에러 로그를 따라가보니 위에서 설명한 것처럼 나 몰래 응큼하게 내부적으로 `DirectByteBuffer`가 사용된다는 것까지는 알게 되었다. 그런데 회수는? 나 몰래 만들었으면 나 몰래 해제도 해줘야 하는 거 아님? 난 쪼렙 하수지만 넌 JDK 잖아~
+처음에는 '아 왜요~~ 저 `DirectByteBuffer` 쓰지도 않는데 저한테 왜 이러세요 진짜~' 였다. 그런데 에러 로그를 따라가보니 위에서 설명한 것처럼 나 몰래 응큼하게 내부적으로 `DirectByteBuffer`가 사용된다는 것까지는 알게 되었다. 그런데 메모리 반납은? 나 몰래 만들었으면 나 몰래 반납도 해줘야 하는 거 아님? 난 쪼렙 하수지만 넌 신성한 JDK 잖아!
 
-여러 번 테스트 해봤는데 몇 시간, 심지어 며칠이 지나도 회수 안 해주더라.. JDK고 나발이고 나는 분명히 `HeapByteBuffer`를 전달해줬는데 나 몰래 `DirectByteBuffer`랑 바람 피우고, 그것도 모자라 지가 쓴 카드값까지 나한테..
+여러 번 테스트 해봤는데 몇 시간, 심지어 며칠이 지나도 반납 안 해주더라.. JDK고 나발이고 나는 분명히 `HeapByteBuffer`를 전달해줬는데 나 몰래 `DirectByteBuffer`랑 바람 피우고, 그것도 모자라 지가 쓴 카드값까지 나한테..
 
 ![Imgur](https://i.imgur.com/Nejwtsv.png)
 
@@ -200,7 +200,7 @@ java.lang.OutOfMemoryError: Direct buffer memory
 
 >일반적으로 `FileChannel`에 데이터를 write할 때는 결국 항상 `DirectByteBuffer`가 사용되는데,  
 >`OutOfMemoryError: Direct buffer memory`가 계속 발생하는 걸로 봐서는,
->`DirectByteBuffer`가 제대로 회수되지 않는(것 같)다.
+>`DirectByteBuffer`로 사용된 Native 메모리가 제대로 회수되지 않는(것 같)다.
 
 자바에 내가 명시적으로 GC를 확실하게 유발할 수 있는 수단이 있는 것도 아닌데.. 망했.. 이러면 `FileChannel`은 못 쓰는 건데.. API 문서에도 다른 자료에도 왜 시원한 해법이 없지? 설마 아무도 `FileChannel`을 안 쓰는 건가? 그럴리가.. 내가 잘못 어딘가 짠 거겠지..
 
@@ -209,7 +209,7 @@ java.lang.OutOfMemoryError: Direct buffer memory
 
 ## DirectByteBuffer 메모리 회수 방법
 
-`DirectByteBuffer`는, JVM의 Heap 밖에 있어서 JVM GC가 아닌 다른 메커니즘에 의해 회수된다는 그 **`DirectByteBuffer`는, 놀랍게도 Java 코드로 명시적으로 바로 GC 할 수 있는 방법이 있었다.** 아무리 검색해도 찾을 수가 없던 귀한 내용이지만 바로 공유한다. 위에서 살펴본 코드 중에 답이 있었다.
+`DirectByteBuffer`는, JVM의 Heap 밖에 있어서 JVM GC가 아닌 다른 메커니즘에 의해 회수된다는 그 **`DirectByteBuffer`는, 놀랍게도 Java 코드로 명시적으로 바로 GC 할 수 있는 방법이 있었다.** 아무리 검색해도 찾을 수가 없던 희귀한 내용이지만 바로 공유한다. 위에서 살펴본 코드 중에 답이 있었다.
 
 ```java
 // sun.nio.ch.Util
@@ -279,11 +279,11 @@ try {
 }
 ```
 
-놀랍게도 `((DirectBuffer)directBuffer).cleaner().clean()`가 호출된 후 `jcmd`로 확인해보면 Internal 영역이 `DirectByteBuffer` 크기만큼 바로 줄어드는 것을 확인할 수 있었다. 그리고 영 반갑지 않은 `java.lang.OutOfMemoryError: Direct buffer memory`도 다시 볼 일 없게 됐다.
+놀랍게도 **`((DirectBuffer)directBuffer).cleaner().clean()`가 호출된 후 `jcmd`로 확인해보면 Internal 영역이 명시적으로 사용한 `DirectByteBuffer` 크기만큼 바로 줄어드는 것을 확인할 수 있었다.** 그리고 영 반갑지 않은 `java.lang.OutOfMemoryError: Direct buffer memory`도 다시 볼 일 없게 됐다.
 
 이렇게 간단하고 직접적인 해결 방법이 이미 존재하는데 왜 그런 게 API 문서에 언급조차 없는지, 그리고 그 해결법도 왜 `public static`이 아니라 `private static` 메서드로 선언해둔 건지는 여전히 의문이다. 이 정도면 거의 일부러 감춰둔 정도 같기도 해서 '이거 써도 되는 거야?'라는 의문조차 들 정도..
 
-한 가지 궁금한 게 더 있다.
+그런데 한 가지 궁금한 게 더 있다.
 
 `HeapByteBuffer`를 전달해줘도 내부적으로 응큼하게 `DirectByteBuffer`를 몰래 만드는 `getTemporaryDirectBuffer()` 내부에서, `DirectByteBuffer` 메모리를 회수할 수 있는 `free()` 메서드가 호출되고 있음에도 불구하고 몰래 만들어진 `DirectByteBuffer`가 회수되지 않는 이유는 뭘까? 이건 `BufferCache`를 보면 알 수 있다.
 
@@ -363,4 +363,10 @@ try {
 >    - `((DirectBuffer)directBuffer).cleaner().clean()` 를 사용해서 명시적으로 해제하자.
 
 
+## 함께 보기
+
+- [Java NIO는 생각만큼 non-blocking 하지 않다](https://homoefficio.github.io/2016/08/06/Java-NIO는-생각만큼-non-blocking-하지-않다/)
+- [Java NIO Direct Buffer를 이용해서 대용량 파일 행 기준으로 쪼개기](https://homoefficio.github.io/2019/02/27/Java-NIO-Direct-Buffer를-이용해서-대용량-파일-행-기준으로-쪼개기/)
+- [대용량 파일을 AsynchronousFileChannel로 다뤄보기](https://homoefficio.github.io/2016/08/13/대용량-파일을-AsynchronousFileChannel로-다뤄보기/)
+- [Java Native Memory Tracking](https://homoefficio.github.io/2020/04/09/Java-Native-Memory-Tracking/)
 
