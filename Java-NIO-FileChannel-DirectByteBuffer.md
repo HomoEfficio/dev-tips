@@ -1,4 +1,4 @@
-# FileChannel 과 DirectByteBuffer
+# Java NIO FileChannel 과 DirectByteBuffer
 
 Java 4에서 도입된 NIO 덕분에 `FileChannel`과 `ByteBuffer`를 이용해서 File I/O 를 수행할 수 있게 됐다.
 
