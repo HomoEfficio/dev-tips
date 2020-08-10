@@ -40,7 +40,7 @@ System.out.println("isDirect? " + byteBuffer.isDirect());  // false
 fileChannel.write(byteBuffer);
 ```
 
-위 코드에는 `DirectByteBuffer`가 존재하지 않는다.
+위 코드에는 `DirectByteBuffer`가 전혀 나오지 않는다.
 
 그런데 막상 실행해서 [jcmd로 Native 메모리를 모니터링](https://homoefficio.github.io/2020/04/09/Java-Native-Memory-Tracking/) 해보면, Native 메모리를 나타내는 Internal 항목이 위 사용한 Buffer의 크기만큼 증가하는 것을 확인할 수 있다. 대략 다음과 같은 내용이 표시된다.
 
@@ -118,7 +118,7 @@ IOUtil.write()는 다음과 같다.
 
 ```
 
-오호 특이한 점이 눈에 들어온다. 인자로 받아온 `ByteBuffer`의 Type이 `DirectBuffer`이면 writeFromNativeBuffer()를 호출하고 바로 리턴하지만, `DirectBuffer`가 아니면 `Util.getTemporaryDirectBuffer(rem)` 이렇게 슬그머니 `DirectBuffer`를 생성한다!! 잡았다 요놈!
+오호 특이한 점이 눈에 들어온다. 인자로 받아온 `ByteBuffer`의 Type이 `DirectBuffer`이면 `writeFromNativeBuffer()`를 호출하고 반환하지만, `DirectBuffer`가 아니면 `Util.getTemporaryDirectBuffer(rem)` 이렇게 슬그머니 `DirectBuffer`를 생성한다!! 잡았다 요놈!
 
 Util.getTemporaryDirectBuffer(rem)은 다음과 같다.
 
@@ -179,7 +179,7 @@ Util.getTemporaryDirectBuffer(rem)은 다음과 같다.
 
 요는 `DirectByteBuffer`를 사용해도 간접적이긴 하지만 결국에는 JVM GC에 의해 회수가 시작된다는 얘기다. 오 그럼 다행스럽게도 결국 JVM GC가 챙겨주시는 거네~ 행복~
 
-그런데 어느 정도 시간이 지나면 결국 늘 이 분을 영접하게 되었다.
+그런데 위 설명과는 다르게 어느 정도 시간이 지나면 결국 늘 이 분을 영접하게 되었다.
 
 ```
 java.lang.OutOfMemoryError: Direct buffer memory
@@ -187,11 +187,11 @@ java.lang.OutOfMemoryError: Direct buffer memory
 
 처음에는 '아 왜요~~ 저 `DirectByteBuffer` 안 쓰는데 저한테 왜 이러세요 진짜~' 였다. 그런데 로그를 따라가보니 위에서 설명한 것처럼 나 몰래 응큼하게 내부적으로 `DirectByteBuffer`가 사용된다는 것까지는 알게 되었다. 그런데 회수는? 나 몰래 만들었으면 나 몰래 해제도 해줘야 하는 거 아님? 난 쪼렙 하수지만 넌 JDK 잖아~
 
-여러 번 테스트 해봤는데 회수 안 해주더라.. JDK고 나발이고 나는 분명히 `HeapByteBuffer`를 전달해줬는데 나 몰래 `DirectByteBuffer`랑 바람 피우고, 그것도 모자라 지가 쓴 카드값까지 나한테..
+여러 번 테스트 해봤는데 몇 시간, 심지어 며칠이 지나도 회수 안 해주더라.. JDK고 나발이고 나는 분명히 `HeapByteBuffer`를 전달해줬는데 나 몰래 `DirectByteBuffer`랑 바람 피우고, 그것도 모자라 지가 쓴 카드값까지 나한테..
 
 어쨌든 상황을 정리해보면 다음과 같다.
 
->`FileChannel`에 데이터를 write할 때는 결국 항상 `DirectByteBuffer`가 사용되는데,  
+>일반적으로 `FileChannel`에 데이터를 write할 때는 결국 항상 `DirectByteBuffer`가 사용되는데,  
 >`OutOfMemoryError: Direct buffer memory`가 계속 발생하는 걸로 봐서는,
 >`DirectByteBuffer`가 제대로 회수되지 않는(것 같)다.
 
@@ -276,7 +276,7 @@ try {
 
 한 가지 궁금한 게 더 있다.
 
-`HeapByteBuffer`를 전달해줘도 내부적으로 응큼하게 `DirectByteBuffer`를 몰래 만드는 `getTemporaryDirectBuffer()` 내부에서, `DirectByteBuffer` 메모리를 회수할 수 있는 `free()` 메서드가 호출되고 있음에도 불구하고 몰래 만들어진 `DirectByteBuffer`가 회수되지 않는 이유는 뭘까? 이건 BufferCache를 보면 알 수 있다.
+`HeapByteBuffer`를 전달해줘도 내부적으로 응큼하게 `DirectByteBuffer`를 몰래 만드는 `getTemporaryDirectBuffer()` 내부에서, `DirectByteBuffer` 메모리를 회수할 수 있는 `free()` 메서드가 호출되고 있음에도 불구하고 몰래 만들어진 `DirectByteBuffer`가 회수되지 않는 이유는 뭘까? 이건 `BufferCache`를 보면 알 수 있다.
 
 
 ## BufferCache
@@ -313,13 +313,13 @@ try {
     }
 ```
 
-BufferCache에 동일한 크기의 `DirectByteBuffer`가 있으면 그걸 재사용하고, 없으면 캐쉬에 있는 다른 크기의 `DirectByteBuffer`를 `free()`를 이용해서 하나 삭제한다. 그렇게 해서 캐쉬의 총 갯수가 늘어나지 않게 한다. 실제로도 이렇게 잘 동작한다.
+`BufferCache`에 동일한 크기의 `DirectByteBuffer`가 있으면 그걸 재사용하고, 없으면 캐시에 있는 다른 크기의 `DirectByteBuffer`를 `free()`를 이용해서 하나 삭제한다. 그렇게 해서 캐쉬의 총 갯수가 늘어나지 않게 한다. 실제로도 이렇게 잘 동작한다.
 
 예를 들어 크기가 10M로 모두 같은 `HeapByteBuffer`를 3개 생성해서 `FileChannel.write()`에 사용하면 내부적으로 `DirectByteBuffer`가 생성되므로 10M 짜리 `DirectByteBuffer` 3개, 총 30M가 사용될 것 같지만, 위에 나오는 BufferCache 덕분에 실제로는 10M 짜리 `DirectByteBuffer` 한 개만 생성되고 재사용된다.
 
 여기까지는 좋은데 문제는 맨 마지막 부분 `return ByteBuffer.allocateDirect(size)`에서 반환되는 `DirectByteBuffer`는 회수되지 않는(걸로 보인)다는 점이다.
 
-BufferCache는 아래와 같이 ThreadLocal에 담겨서 per-thread로 존재한다. 
+`BufferCache`는 아래와 같이 `ThreadLocal`에 담겨서 per-thread로 존재한다. 
 
 ```java
 // sun.nio.ch.Util
@@ -335,7 +335,7 @@ BufferCache는 아래와 같이 ThreadLocal에 담겨서 per-thread로 존재한
     };
 ```
 
-다른 스레드에서 이런 방식으로 `DirectByteBuffer`가 생성되면, 크기가 동일한 `HeapByteBuffer`를 여러개 만들어도 캐쉬 덕분에 해당 스레드 내에서는 `DirectByteBuffer`가 하나만 만들어지고 재사용 될 수는 있지만, 그 한 개의 `DirectByteBuffer`가 제대로 회수되지 않으면 계속 누적되다가 결국 OutOfMemory 에러를 맞이하게 된다.
+정리하면, 다른 스레드에서 이런 방식으로 `DirectByteBuffer`가 생성되면, 크기가 동일한 `HeapByteBuffer`를 여러개 만들어도 `BufferCache` 덕분에 해당 스레드 내에서는 `DirectByteBuffer`가 하나만 만들어지고 재사용 될 수는 있지만, 그 한 개의 `DirectByteBuffer`가 제대로 회수되지 않으면 계속 누적되다가 결국 OutOfMemory 에러를 맞이하게 된다.
 
 
 ## 마무리
