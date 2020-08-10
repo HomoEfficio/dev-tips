@@ -199,7 +199,7 @@ java.lang.OutOfMemoryError: Direct buffer memory
 어쨌든 상황을 정리해보면 다음과 같다.
 
 >일반적으로 `FileChannel`에 데이터를 write할 때는 결국 항상 `DirectByteBuffer`가 사용되는데,  
->`OutOfMemoryError: Direct buffer memory`가 계속 발생하는 걸로 봐서는,
+>`OutOfMemoryError: Direct buffer memory`가 계속 발생하는 걸로 봐서는,  
 >`DirectByteBuffer`로 사용된 Native 메모리가 제대로 회수되지 않는(것 같)다.
 
 자바에 내가 명시적으로 GC를 확실하게 유발할 수 있는 수단이 있는 것도 아닌데.. 망했.. 이러면 `FileChannel`은 못 쓰는 건데.. API 문서에도 다른 자료에도 왜 시원한 해법이 없지? 설마 아무도 `FileChannel`을 안 쓰는 건가? 그럴리가.. 내가 잘못 어딘가 짠 거겠지..
