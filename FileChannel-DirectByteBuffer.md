@@ -344,19 +344,22 @@ try {
     };
 ```
 
-정리하면, 다른 스레드에서 이런 방식으로 `DirectByteBuffer`가 생성되면, 크기가 동일한 `HeapByteBuffer`를 여러개 만들어도 `BufferCache` 덕분에 해당 스레드 내에서는 `DirectByteBuffer`가 하나만 만들어지고 재사용 될 수는 있지만, 그 한 개의 `DirectByteBuffer`가 제대로 회수되지 않으면 계속 누적되다가 결국 OutOfMemory 에러를 맞이하게 된다.
+정리하면, 다른 스레드에서 이런 방식으로 `DirectByteBuffer`가 생성되면,  
+- 크기가 동일한 `HeapByteBuffer`를 여러개 만들어도  
+- `BufferCache` 덕분에 해당 스레드 내에서는 `DirectByteBuffer`가 하나만 만들어지고 재사용 될 수는 있지만,  
+- 그 한 개의 `DirectByteBuffer`가 제대로 회수되지 않으면 계속 누적되다가 결국 OutOfMemory 에러를 맞이하게 된다.
 
 
 ## 마무리
 
 >- 특별한 `FileChannel` 구현체를 사용하지 않는다면, `FileChannel`에 write 할 때 `HeapByteBuffer`를 사용해도 내부적으로 `DirectByteBuffer`가 사용된다.
 >
->- 내부적으로 사용되는 `DirectByteBuffer`가 제대로 회수되지 않고 `java.lang.OutOfMemoryError: Direct buffer memory`가 발생할 수 있다.
+>- 내부적으로 사용되는 `DirectByteBuffer`가 제대로 회수되지 않으면 `java.lang.OutOfMemoryError: Direct buffer memory`가 발생할 수 있다.
 >
 >- 이렇게 `FileChannel`에 write 하는 코드에 의해 OOM이 발생한다면,
 >
 >    - `HeapByteBuffer` 을 사용하지 말고 명시적으로 `DirectByteBuffer`를 사용하고,  
->    - `((DirectBuffer)directBuffer).cleaner().clean();` 를 사용해서 명시적으로 해제하자.
+>    - `((DirectBuffer)directBuffer).cleaner().clean()` 를 사용해서 명시적으로 해제하자.
 
 
 
