@@ -353,7 +353,7 @@ try {
 
 # XX:MaxDirectMemorySize 옵션
 
-`DirectByteBuffer`가 사용하는 Native Memory 최대 크기를 지정할 수 있는 옵션이 있다. `XX:MaxDirectMemorySize`인데 `DirectByteBuffer` 메모리가 제대로 회수되지 않아 최대 크기를 넘는다면 어떻게 될까?
+`DirectByteBuffer`가 사용하는 Native Memory 최대 크기를 지정할 수 있는 옵션이 있다. `XX:MaxDirectMemorySize`인데 `DirectByteBuffer` 메모리가 제대로 회수되지 않고 누적되다가 최대 크기를 넘는다면 어떻게 될까?
 
 1. 오랫동안 사용되지 않고 메모리만 점유하고 있던 `DirectByteBuffer`를 알아서 회수한다.
 2. `java.lang.OutOfMemoryError: Direct buffer memory`가 발생한다.
@@ -363,14 +363,14 @@ try {
 
 # 마무리
 
->- 특별한 `FileChannel` 구현체를 사용하지 않는다면, `FileChannel`에 write 할 때 `HeapByteBuffer`를 사용해도 내부적으로 `DirectByteBuffer`가 사용된다.
+>- 특별한 `FileChannel` 구현체를 사용하지 않는다면, `FileChannel`에 read/write 할 때 `HeapByteBuffer`를 사용해도 내부적으로 `DirectByteBuffer`가 사용된다.
 >
 >- 내부적으로 사용되는 `DirectByteBuffer`가 제대로 회수되지 않으면 `java.lang.OutOfMemoryError: Direct buffer memory`가 발생할 수 있다.
 >
->- 이렇게 `FileChannel`에 write 하는 코드에 의해 OOM이 발생한다면,
+>- 이렇게 `FileChannel`에 read/write 하는 코드에 의해 OOM이 발생한다면,
 >
->    - `HeapByteBuffer` 을 사용하지 말고 명시적으로 `DirectByteBuffer`를 사용하고,  
->    - `((DirectBuffer)directBuffer).cleaner().clean()` 를 사용해서 명시적으로 해제하자.
+>    - `HeapByteBuffer`을 사용하지 말고 명시적으로 `DirectByteBuffer`를 사용하고,  
+>    - `((DirectBuffer)directBuffer).cleaner().clean()`를 사용해서 명시적으로 해제하자.
 
 
 # 함께 보기
