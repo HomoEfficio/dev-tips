@@ -122,7 +122,14 @@ fileChannel.write(byteBuffer);
 
 ![Imgur](https://i.imgur.com/72E8YHH.jpg?1)
 
-`Util.getTemporaryDirectBuffer(rem)`은 다음과 같다.
+잠시 곁다리로 빠져보자면, 몰래 대체품을 만들어 쓰기는 하지만 그래도 양심은 있는지 다음과 같이 개발자가 `HeapByteBuffer` 생성 시 지정한 크기가 아니라 실제 read/write 할 데이터 크기만큼의 `DirectByteBuffer`만 생성하는 점은 그래도 높이 쳐줄 수 있다. 그런데 이마저도 나중에 살펴볼 `BufferCache` 동작 방식을 생각해보면 좋다고만 할 수는 없다.
+
+```java
+int rem = (pos <= lim ? lim - pos : 0);  // 버퍼의 크기가 아니라 실제 read/write 해야할 데이터 크기(limit - position)
+ByteBuffer bb = Util.getTemporaryDirectBuffer(rem);  //<=== 여기!!!
+```
+
+이어서 계속 따라가보자. `Util.getTemporaryDirectBuffer(rem)`은 다음과 같다.
 
 ```java
 // sun.nio.ch.Util
@@ -344,6 +351,8 @@ try {
     };
 ```
 
+위에서 개발자가 명시적으로 생성한 `HeapByteBuffer` 대신 내부적으로 `DirectByteBuffer`를 생성할 때 실제 read/write 할 만큼의 `DirectByteBuffer`를 생성한다고 했다. 필요한 만큼만 새로 생성하므로 메모리 사용량에 있어서는 유리하지만, 그 필요한 만큼이 그때그때 다른 상황에서는 지금 살펴본 `BufferCache`의 hit율이 떨어져서 `DirectByteBuffer`의 생성 빈도가 많아질 수 있다. [ByteBuffer API](https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html) 문서에 따르면 `DirectByteBuffer`는 메모리 할당/해제 비용이 `HeapByteBuffer`보다 더 크다고 한다. 따라서 `DirectByteBuffer` 생성 빈도가 많으면 성능에 악영향을 미칠 수 있다. 
+
 정리하면, 하나의 스레드에서 이런 비명시적 방식(개발자가 `HeapByteBuffer`를 `FileChannel.write()`에 인자로 전달해줘도 `FileChannelImpl`이 내부적으로 몰래 `DirectByteBuffer`를 생성하는 방식)으로 `DirectByteBuffer`가 생성되면,  
 - 크기가 동일한 `HeapByteBuffer`를 여러개 만들어도  
 - `BufferCache` 덕분에 해당 스레드 내에서는 `DirectByteBuffer`가 하나만 만들어지고 재사용될 수는 있지만,  
@@ -359,6 +368,19 @@ try {
 2. `java.lang.OutOfMemoryError: Direct buffer memory`가 발생한다.
 
 혹시 하는 마음에 1을 기대했는데, 현실은 2다.
+
+
+# 실제 검증 - 몰래 만들어진 `DirectByteBuffer` 메모리도 회수된다!!
+
+내가 잘못 짰을 수도 있는 로직과 뒤섞인 상태로는, 몰래 만들어지는 `DirectByteBuffer`가 항상 회수되지 않는다고 확언을 할 수 없으므로 실험용 간단한 프로그램을 만들어서 검증해봤다.
+
+https://github.com/HomoEfficio/scratchpad-bytebuffer 를 참고하면 직접 요리조리 해볼 수 있다.
+
+README에 있는대로, 프로그램 실행해서 VisualVM 으로 강제 GC를 시킨 후에 `jcmd`로 확인해보면 Native Memory가 회수되는 것을 확인할 수 있었다.
+
+따라서 **몰래 만들어진 `DirectByteBuffer`도 정상적인 경우라면 해당 `DirectByteBuffer`를 참조하는 객체(A라고 하자)가 GC될 때 `DirectByteBuffer` 메모리도 함께 회수된다.** 라고 결론 지을 수 있겠다.
+
+하지만 그래도 A가 언제 GC 될 지 알 수 없고, GC 전까지 `DirectByteBuffer`는 계속 Native Memory를 점유하게 된다. 아마도 잘못 작성한 코드 때문이겠지만 알 수 없는 이유로 Native Memory 가 장시간 계속 회수되지 않는다면, 우리에겐 `((DirectBuffer)directBuffer).cleaner().clean()` 라는 무기가 있다는 사실을 알아두면 좋다.
 
 
 # 마무리
@@ -379,4 +401,6 @@ try {
 - [Java NIO Direct Buffer를 이용해서 대용량 파일 행 기준으로 쪼개기](https://homoefficio.github.io/2019/02/27/Java-NIO-Direct-Buffer를-이용해서-대용량-파일-행-기준으로-쪼개기/)
 - [대용량 파일을 AsynchronousFileChannel로 다뤄보기](https://homoefficio.github.io/2016/08/13/대용량-파일을-AsynchronousFileChannel로-다뤄보기/)
 - [Java Native Memory Tracking](https://homoefficio.github.io/2020/04/09/Java-Native-Memory-Tracking/)
+
+
 
