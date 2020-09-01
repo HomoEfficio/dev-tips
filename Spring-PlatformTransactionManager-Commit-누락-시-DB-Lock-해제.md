@@ -24,6 +24,8 @@ private PlatformTransactionManager transactionManager;
 그런데 **실수로 commit 을 잊고 누락했다면 어떻게 될까?**  
 결과는 심각하다. 일반적으로 row 기반 Lock을 사용하므로 **Tx 시작 이후에 동일 스레드에서 수행된 저장에 관련된 모든 데이터의 레코드에 Lock이 걸리고 풀리지 않게 된다.**
 
+그래서 `LockAcquisitionException`이 발생한다.
+
 이 Lock을 풀려면 두 가지 방법이 있다.
 
 - DBMS에서 해당 Lock을 찾아서 직접 해제
