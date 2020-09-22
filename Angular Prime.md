@@ -478,7 +478,7 @@ push를 통해 이미 바인딩 되어 있는 배열에 원소를 채워도 ng-s
 
 ## Binding object({"code":"ROLE_LEVEL_DEVELOPER","name":"DEVELOPER"}) with bindValue is not allowed.
 
-
+https://github.com/HomoEfficio/dev-tips/blob/master/Angular%20Prime.md#multiple-assets-emit-to-the-same-filename-commonjs 참고
 
 ## ReactiveForms에 있는 데이터를 서버에 전송하는 방법
 
