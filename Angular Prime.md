@@ -476,6 +476,10 @@ this.companyService.getCompanies()
 
 push를 통해 이미 바인딩 되어 있는 배열에 원소를 채워도 ng-select에서 변경 감지를 못하는 것으로 보인다.
 
+## Binding object({"code":"ROLE_LEVEL_DEVELOPER","name":"DEVELOPER"}) with bindValue is not allowed.
+
+
+
 ## ReactiveForms에 있는 데이터를 서버에 전송하는 방법
 
 - 엄밀하게 TypeScript를 쓴다면 서비스 메서드에 전달할 때 `new XXX(this.formGroup.value)`로 생성하고, FormGroup 안에 중첩되어 있는 객체도 모두 `new YYY(this.formGroup.get('yyy').value)`와 같이 생성하고 전달해야 정확한 타입 정보가 유지되지만,
