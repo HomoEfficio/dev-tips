@@ -1,4 +1,4 @@
-# RSA encryption/decryption
+# 로그인 정보 RSA encryption/decryption
 
 보안을 위해 서버-클라이언트 사이에 username, password 를 비대칭키(ex: RSA)로 암호화/복호화해서 사용하기도 한다. 이렇게 비대칭키를 사용해서 로그인 정보를 암/복호화하면 SSL을 사용하지 않더라도 로그인 정보에 대한 보안성을 SSL과 비슷한 수준으로 유지할 수 있다.
 
@@ -115,7 +115,7 @@ private String getDecryptedValue(PrivateKey privateKey, String encryptedValue) {
     }
 }
 
-// see https://www.tutorialspoint.com/convert-hex-string-to-byte-array-in-java
+// From https://www.tutorialspoint.com/convert-hex-string-to-byte-array-in-java
 private byte[] hexToByteArray(String hex) {
     byte[] bytes = new byte[hex.length() / 2];
     for (int i = 0; i < bytes.length; i++) {
@@ -151,7 +151,7 @@ public String getEncryptedValue(String hexPubModulus, String hexPubExponent, Str
     }
 }
 
-// see https://stackoverflow.com/a/9855338
+// From https://stackoverflow.com/a/9855338
 private String byteArrayToHex(byte[] bytes) {
     char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
     char[] hexChars = new char[bytes.length * 2];
