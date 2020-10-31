@@ -79,3 +79,24 @@
 - TCP Sampler 관련 자세한 내용은 https://jmeter.apache.org/usermanual/component_reference.html#TCP_Sampler 참고
 
 
+## 부하 테스트
+
+- 부하를 주기 위한 설정은 Thread Group 에서 지정한다.
+
+  ![Imgur](https://i.imgur.com/ukaMMti.png)
+
+- jmeter 실행 창에 보면 부하 테스트에는 GUI 모드를 사용하지 말라고 나오며, 터미널에서 사용할 명령어도 친절히 알려준다.
+
+  ![Imgur](https://i.imgur.com/nNSaEjb.png)
+
+  >./jmeter -n -t ~/JMeter-JavaTcpServerTester.jmx -l ~/jmeter-result -e -o ~/jmeter-web-result-4-thread-socket-server-05-500
+
+  - `-l` 옵션으로 지정한 결과 파일에 저장된 데이터를 기반으로 `-e -o` 옵션으로 지정한 폴더에 html 보고서를 만들어준다.
+
+    ![Imgur](https://i.imgur.com/G1Q6DNb.png)
+
+- https://jmeter.apache.org/usermanual/best-practices.html#lean_mean 를 참고해서 다음과 같이 View Results Tree 도 비활성화한다.
+
+  ![Imgur](https://i.imgur.com/34VdLEH.png)
+
+
