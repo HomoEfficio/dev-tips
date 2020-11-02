@@ -1,8 +1,26 @@
+title: Back to the Essence - Java Servers - (1)
+date: 2020-11-02 00:34:50
+categories:
+  - Network
+tags:
+  - Java
+  - I/O
+  - Java IO
+  - Echo Server
+  - ServerSocket
+  - Socket
+  - Blocking
+  - netcat
+  - accept
+thumbnailImage: https://i.imgur.com/uUynZ6S.png
+coverImage: cover-single-thread-server.png
+---
+
 # Back to the Essence - Java Servers - 1편
 
-서버 프로그래밍을 한다고는 하지만, 지난 수년 간 굴러도 스프링 위에서만 구르다보니 스프링 없이는, 아니 이제는 스프링만으로도 뭘 못할 것 같고 스프링 부트 없이는 간단한 메아리(Echo) 서버조차 못 만드는 ~경지~지경에 이르렀다. 이 아니 부끄러운가..
+서버 프로그래밍을 한다고는 하지만, 지난 수년 간 굴러도 스프링 위에서만 구르다보니 스프링 없이는, 아니 이제는 스프링만으로도 뭘 못할 것 같고 스프링 부트 없이는 간단한 메아리(Echo) 서버조차 못 만드는 ~~경지~~지경에 이르렀다. 이 아니 부끄러운가..
 
-그래서 Java가 제공해주는 classic IO, NIO, NIO2로 간단한 Echo Server를 만들어보기로 한다.  
+그래서 Java가 제공해주는 classic IO, NIO, NIO2로 간단한 Echo Server를 만들어보면서 기본기를 좀 다져보려 한다.  
 만드는 데서 그치지 않고 그동안 간접 경험으로만 알아왔던 NIO, NIO2 의 장단점을 부하테스트를 통해 확인해보고자 한다.  
 나름 원대한 계획이지만 목표한 걸 모두 얻을 수 있을지는 미지수다. 그냥 달려보자.
 
@@ -61,7 +79,7 @@ public class EchoSocketClient {
 
 # Classic IO - Single Thread ServerSocket
 
-이제 서버를 만들어 보자. 1번 타자는 가장 단순한 싱글 스레드 소켓 서버다.
+이제 서버를 만들어 보자. 1번 타자는 Classic IO(또는 BIO(Blocking IO))로 만든 울트라 심플 싱글 스레드 소켓 서버다.
 
 ```java
 package io.homo_efficio.server.socket;
