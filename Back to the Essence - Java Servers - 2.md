@@ -1,6 +1,6 @@
 # Back to the Essence - Java Servers - 2편
 
-1편에서 블로킹 방식의 싱글 스레드 소켓 서버를 만들어봤고 다음의 문제가 있음을 발견했다.
+[1편](https://homoefficio.github.io/2020/11/02/Back-to-the-Essence-Java-Servers-1/)에서 블로킹 방식의 싱글 스레드 소켓 서버를 만들어봤고 다음의 문제가 있음을 발견했다.
 
 >- 블로킹 방식의 싱글 스레드 소켓 서버는 시간 끄는 이상한 클라이언트가 하나만 들어와도 서버가 먹통이 되고, 다른 클라이언트까지 먹통될 수 있다.
 
@@ -116,13 +116,13 @@ scratchpad-server git:main 🍺🦑🍺🍕🍺 ❯ tail -f temp.log            
 [SERVER -            main] 2020-11-02T01:36:54.447015 - Echo Server 대기 중
 
 [SERVER -            main] 2020-11-02T01:37:00.181527 - ---------------------------
-[SERVER - pool-1-thread-1] 2020-11-02T01:37:00.181621 - Client 접속!!! <== 1분 후 메시지 보내는 EchoSocketClient 요청 accept
+[SERVER - pool-1-thread-1] 2020-11-02T01:37:00.181621 - Client 접속!!! <== 1분 후 메시지 보내는 EchoSocketClient 요청 처리 시작
 [SERVER -            main] 2020-11-02T01:37:00.181954 - Echo Server 대기 중
 [SERVER - pool-1-thread-1] 2020-11-02T01:37:00.181981 - Echo 시작
 [CLIENT -            main] 2020-11-02T01:37:00.197423 - Client 시작
 
 [SERVER -            main] 2020-11-02T01:37:08.412302 - ---------------------------
-[SERVER - pool-1-thread-2] 2020-11-02T01:37:08.412373 - Client 접속!!! <== 여기서부터는 터미널 nc 클라이언트 요청 accept
+[SERVER - pool-1-thread-2] 2020-11-02T01:37:08.412373 - Client 접속!!! <== 여기서부터는 터미널 nc 클라이언트 요청 처리 시작
 [SERVER - pool-1-thread-2] 2020-11-02T01:37:08.412695 - Echo 시작
 [SERVER -            main] 2020-11-02T01:37:08.412671 - Echo Server 대기 중
 [SERVER -            main] 2020-11-02T01:37:08.413172 - ---------------------------
@@ -221,7 +221,8 @@ EchoSocketServerMultiThread의 스레드 풀을 스레드 4개만 사용하도�
 
 **요청 처리엔 시간이 필요하고, 스레드도 메모리 및 Context Switching 부담이 있어서 마냥 늘릴 수만은 없으므로, 이 흑수저 서버 + 흑수저 스레드 풀 시나리오가 현실에 존재하는 시나리오에 가깝다**고 할 수 있다.
 
-1분 지연 Java Socket Client 요청 1개, 12개의 터미널 nc 요청 처리 로그는 다음과 같다. 중간중간 0.5초 정도 차이나는 부분을 유의해서 살펴보자. 자세한 내용은 `<==`로 설명을 추가했다.
+1분 지연 Java Socket Client 요청 1개, 12개의 터미널 nc 요청 처리 로그는 다음과 같다. 자세한 내용은 `<==`로 설명을 추가했다.  
+스레드 이름과 화살표 길이, 중간중간 0.5초 정도 차이나는 부분을 유의해서 살펴보면 이해하는 데 도움이 될 것이다.
 
 ```
 scratchpad-server git:main 🍺🦑🍺🍕🍺 ❯ tail -f temp.log        
@@ -237,19 +238,19 @@ scratchpad-server git:main 🍺🦑🍺🍕🍺 ❯ tail -f temp.log
 [CLIENT -            main] 2020-11-02T12:29:36.015713 - Client 시작
     
 [SERVER -            main] 2020-11-02T12:29:43.072899 - ---------------------------
-[SERVER - pool-1-thread-2] 2020-11-02T12:29:43.072977 - Client 접속!!! <== 터미널 요청 1 accept()
-[SERVER -            main] 2020-11-02T12:29:43.073253 - Echo Server 대기 중 <== main 스레드는 블록되지 않고 계속 요청을 받아 큐에 넣고 다음 요청 대기
+[SERVER - pool-1-thread-2] 2020-11-02T12:29:43.072977 - Client 접속!!! <== 터미널 요청 1 처리: 2번 스레드에서 시작
+[SERVER -            main] 2020-11-02T12:29:43.073253 - Echo Server 대기 중 <== main 스레드는 블록되지 않고 계속 요청을 받아 스레드 풀에 전달하고 다음 요청 대기
 [SERVER - pool-1-thread-2] 2020-11-02T12:29:43.073283 - Echo 시작 <== 요청 1 Echo 시작
-[SERVER - pool-1-thread-3] 2020-11-02T12:29:43.073725 - Client 접속!!! <== 터미널 요청 2 accept()
+[SERVER - pool-1-thread-3] 2020-11-02T12:29:43.073725 - Client 접속!!! <==== 터미널 요청 2 처리: 3번 스레드에서 시작
 [SERVER -            main] 2020-11-02T12:29:43.073657 - ---------------------------
-[SERVER - pool-1-thread-3] 2020-11-02T12:29:43.073938 - Echo 시작
-[SERVER -            main] 2020-11-02T12:29:43.073984 - Echo Server 대기 중 <== main 스레드는 블록되지 않고 계속 요청을 받아 큐에 넣고 다음 요청 대기
+[SERVER - pool-1-thread-3] 2020-11-02T12:29:43.073938 - Echo 시작 <==== 요청 2 Echo 시작
+[SERVER -            main] 2020-11-02T12:29:43.073984 - Echo Server 대기 중 <== main 스레드는 블록되지 않고 계속 요청을 받아 스레드 풀에 전달하고 다음 요청 대기
 [SERVER -            main] 2020-11-02T12:29:43.074461 - ---------------------------
-[SERVER - pool-1-thread-4] 2020-11-02T12:29:43.074550 - Client 접속!!! <== 터미널 요청 3 accept()
-[SERVER -            main] 2020-11-02T12:29:43.074694 - Echo Server 대기 중 <== main 스레드는 블록되지 않고 계속 요청을 받아 큐에 넣고 다음 요청 대기
-[SERVER - pool-1-thread-4] 2020-11-02T12:29:43.074716 - Echo 시작
+[SERVER - pool-1-thread-4] 2020-11-02T12:29:43.074550 - Client 접속!!! <====== 터미널 요청 3 처리: 4번 스레드에서 시작
+[SERVER -            main] 2020-11-02T12:29:43.074694 - Echo Server 대기 중 <== main 스레드는 블록되지 않고 계속 요청을 받아 스레드 풀에 전달하고 다음 요청 대기
+[SERVER - pool-1-thread-4] 2020-11-02T12:29:43.074716 - Echo 시작 <====== 요청 3 Echo 시작
 [SERVER -            main] 2020-11-02T12:29:43.075061 - ---------------------------
-[SERVER -            main] 2020-11-02T12:29:43.075294 - Echo Server 대기 중 <== main 스레드는 블록되지 않고 계속 요청을 받아 큐에 넣고 다음 요청 대기
+[SERVER -            main] 2020-11-02T12:29:43.075294 - Echo Server 대기 중 <== main 스레드는 블록되지 않고 계속 요청을 받아 스레드 풀에 전달하고 다음 요청 대기
 [SERVER -            main] 2020-11-02T12:29:43.075582 - ---------------------------
 [SERVER -            main] 2020-11-02T12:29:43.075844 - Echo Server 대기 중
 [SERVER -            main] 2020-11-02T12:29:43.076123 - ---------------------------
@@ -265,23 +266,23 @@ scratchpad-server git:main 🍺🦑🍺🍕🍺 ❯ tail -f temp.log
 [SERVER -            main] 2020-11-02T12:29:43.081733 - ---------------------------
 [SERVER -            main] 2020-11-02T12:29:43.081907 - Echo Server 대기 중
 [SERVER -            main] 2020-11-02T12:29:43.082124 - ---------------------------
-[SERVER -            main] 2020-11-02T12:29:43.082250 - Echo Server 대기 중 <== main 스레드는 블록되지 않고 계속 요청을 받아 큐에 넣고 다음 요청 대기
+[SERVER -            main] 2020-11-02T12:29:43.082250 - Echo Server 대기 중 <== main 스레드는 블록되지 않고 계속 요청을 받아 스레드 풀에 전달하고 다음 요청 대기
 [SERVER - pool-1-thread-2] 2020-11-02T12:29:43.593116 - Echo 완료 <== 요청 1 Echo 완료, 0.5초 소요
-[SERVER - pool-1-thread-4] 2020-11-02T12:29:43.593116 - Echo 완료
-[SERVER - pool-1-thread-3] 2020-11-02T12:29:43.593413 - Echo 완료
-[SERVER - pool-1-thread-2] 2020-11-02T12:29:43.593569 - Client 접속!!! <== 요청 1 처리 완료 후 큐에 있던 후속 요청 A accept()
-[SERVER - pool-1-thread-4] 2020-11-02T12:29:43.593575 - Client 접속!!! <== 요청 3 처리 완료 후 큐에 있던 후속 요청 C accept()
+[SERVER - pool-1-thread-4] 2020-11-02T12:29:43.593116 - Echo 완료 <====== 요청 3 Echo 완료, 0.5초 소요
+[SERVER - pool-1-thread-3] 2020-11-02T12:29:43.593413 - Echo 완료 <==== 요청 2 Echo 완료, 0.5초 소요
+[SERVER - pool-1-thread-2] 2020-11-02T12:29:43.593569 - Client 접속!!! <== 요청 1 처리 완료 후 큐에 있던 후속 요청 A: 2번 스레드에서 처리 시작
+[SERVER - pool-1-thread-4] 2020-11-02T12:29:43.593575 - Client 접속!!! <====== 요청 3 처리 완료 후 큐에 있던 후속 요청 C: 4번 스레드에서 처리 시작
 [SERVER - pool-1-thread-2] 2020-11-02T12:29:43.593817 - Echo 시작 <== 요청 A
-[SERVER - pool-1-thread-3] 2020-11-02T12:29:43.593683 - Client 접속!!! <== 요청 2 처리 완료 후 큐에 있던 후속 요청 B accept()
-[SERVER - pool-1-thread-4] 2020-11-02T12:29:43.593889 - Echo 시작
-[SERVER - pool-1-thread-3] 2020-11-02T12:29:43.594157 - Echo 시작
+[SERVER - pool-1-thread-3] 2020-11-02T12:29:43.593683 - Client 접속!!! <==== 요청 2 처리 완료 후 큐에 있던 후속 요청 B: 3번 스레드에서 처리 시작
+[SERVER - pool-1-thread-4] 2020-11-02T12:29:43.593889 - Echo 시작 <====== 요청 C
+[SERVER - pool-1-thread-3] 2020-11-02T12:29:43.594157 - Echo 시작 <==== 요청 B
 [SERVER - pool-1-thread-2] 2020-11-02T12:29:44.097963 - Echo 완료 <== 요청 A
-[SERVER - pool-1-thread-4] 2020-11-02T12:29:44.097963 - Echo 완료
+[SERVER - pool-1-thread-4] 2020-11-02T12:29:44.097963 - Echo 완료 <====== 요청 C
 [SERVER - pool-1-thread-2] 2020-11-02T12:29:44.098370 - Client 접속!!!
 [SERVER - pool-1-thread-4] 2020-11-02T12:29:44.098411 - Client 접속!!!
 [SERVER - pool-1-thread-4] 2020-11-02T12:29:44.098672 - Echo 시작
 [SERVER - pool-1-thread-2] 2020-11-02T12:29:44.098608 - Echo 시작
-[SERVER - pool-1-thread-3] 2020-11-02T12:29:44.097963 - Echo 완료
+[SERVER - pool-1-thread-3] 2020-11-02T12:29:44.097963 - Echo 완료 <==== 요청 B
 [SERVER - pool-1-thread-3] 2020-11-02T12:29:44.099086 - Client 접속!!!
 [SERVER - pool-1-thread-3] 2020-11-02T12:29:44.099283 - Echo 시작
 [SERVER - pool-1-thread-4] 2020-11-02T12:29:44.603912 - Echo 완료
@@ -304,6 +305,14 @@ scratchpad-server git:main 🍺🦑🍺🍕🍺 ❯ tail -f temp.log
 [CLIENT -            main] 2020-11-02T12:30:36.582077 - 서버 Echo 도착
 [CLIENT -            main] 2020-11-02T12:30:36.585161 - 서버 Echo msg: Server Echo - 안녕, echo server
 ```
+
+요는 다음과 같다.
+
+- `accept()`는 요청이 오는 족족 스레드 풀에 전달
+    - 요청을 받을 때까지는 블로킹이지만, 요청을 받은 후에는 블로킹하지 않고 바로 다음 요청을 블로킹하면서 대기
+- 스레드 풀은
+    - 사용 가능한 스레드가 있으면 요청을 바로 처리
+    - 사용 가능한 스레드가 없으면 요청을 큐에 저장 후 나중에 처리
 
 # 정리
 
