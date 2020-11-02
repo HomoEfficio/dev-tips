@@ -1,21 +1,3 @@
-title: Back to the Essence - Java Servers - (1)
-date: 2020-11-02 00:34:50
-categories:
-  - Network
-tags:
-  - Java
-  - I/O
-  - Java IO
-  - Echo Server
-  - ServerSocket
-  - Socket
-  - Blocking
-  - netcat
-  - accept
-thumbnailImage: https://i.imgur.com/uUynZ6S.png
-coverImage: cover-single-thread-server.png
----
-
 # Back to the Essence - Java Servers - 1편
 
 서버 프로그래밍을 한다고는 하지만, 지난 수년 간 굴러도 스프링 위에서만 구르다보니 스프링 없이는, 아니 이제는 스프링만으로도 뭘 못할 것 같고 스프링 부트 없이는 간단한 메아리(Echo) 서버조차 못 만드는 ~~경지~~지경에 이르렀다. 이 아니 부끄러운가..
@@ -211,4 +193,4 @@ public abstract class EchoProcessor {
 
 >- 블로킹 방식의 싱글 스레드 소켓 서버는 시간 끄는 이상한 클라이언트가 하나만 들어와도 서버가 먹통이 되고, 다른 클라이언트까지 먹통될 수 있다.
 
-이 문제는 어떻게 해결할까? 2편에서 알아보자.
+이 문제는 어떻게 해결할까? [2편](https://homoefficio.github.io/2020/11/02/Back-to-the-Essence-Java-Servers-2/)에서 알아보자.
