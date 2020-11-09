@@ -60,6 +60,14 @@ $ vi DefaultKeyBinding.dict
 
 ![Imgur](https://i.imgur.com/dUkfmQD.png)
 
+
+## git
+
+git --version
+
+명령 행 개발도구 설치? 예
+
+
 ## 터미널
 
 https://github.com/HomoEfficio/dev-tips/blob/master/zsh-config.md
@@ -80,12 +88,6 @@ Preferences > Key Bindings 에 아래 내용 추가
   { "keys": ["shift+end"], "command": "move_to", "args": {"to": "eol", "extend": true} },
   { "keys": ["shift+home"], "command": "move_to", "args": {"to": "bol", "extend": true } }
 ```
-
-## git
-
-git --version
-
-명령 행 개발도구 설치? 예
 
 ## brew
 
