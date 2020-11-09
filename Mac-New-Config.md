@@ -95,7 +95,7 @@ https://brew.sh/index_ko
 
 ## java
 
->brew cask install adoptopenjdk/openjdk/adoptopenjdk8
+>brew cask install adoptopenjdk/openjdk/adoptopenjdk8  
 >brew cask install adoptopenjdk/openjdk/adoptopenjdk14
 
 ## jenv
@@ -105,7 +105,7 @@ https://brew.sh/index_ko
 >brew install jenv
 
 >$ echo 'export PATH="$HOME/.jenv/bin:$PATH"' >> ~/.zshrc  
->$ echo 'eval "$(jenv init -)"' >> ~/.zshrc
+>$ echo 'eval "$(jenv init -)"' >> ~/.zshrc  
 >source ~/.zshrc
 
 혹시 source ~/.zshrc 실행 후 다음과 같은 오류 나면 해당 디렉토리로 가서 안내받은 명령(`compaudit | xargs chmod g-w,o-w`) 실행
@@ -132,7 +132,7 @@ drwxrwxr-x  4 1003604  admin  128  6 15 18:01 /usr/local/share/zsh/site-function
 
 ### 버전 관리 대상 추가=
 
->jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/
+>jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/  
 >jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-14.jdk/Contents/Home/
 
 ### 로컬 설정
