@@ -121,6 +121,17 @@ https://brew.sh/index_ko
 >brew cask install adoptopenjdk/openjdk/adoptopenjdk8  
 >brew cask install adoptopenjdk/openjdk/adoptopenjdk14
 
+### java 기본 버전 변경
+
+https://stackoverflow.com/a/44169445
+
+- 기본적으로 설치된 가장 높은 버전이 기본 버전으로 설정됨
+- 예를 들어 14, 15가 설치돼 있고, 기본이 15로 설정돼있을 때 14를 기본으로 하려면 다음과 같이 15의 Info.plist 파일을 다른 이름으로 바꾸면 된다.
+    >sudo mv /Library/Java/JavaVirtualMachines/adoptopenjdk-15.jdk/Contents/Info.plist /Library/Java/JavaVirtualMachines/adoptopenjdk-15.jdk/Contents/Info.plist.disabled
+
+- 이렇게 하면 시스템 기본 자바 버전 지정할 때만 무시될 뿐이고 JAVA_HOME 으로 15를 지정하면 지정한대로 잘 동작한다.
+
+
 ## jenv
 
 ### 설치
@@ -131,7 +142,7 @@ https://brew.sh/index_ko
 >$ echo 'eval "$(jenv init -)"' >> ~/.zshrc  
 >source ~/.zshrc
 
-### 버전 관리 대상 추가=
+### 버전 관리 대상 추가
 
 >jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/  
 >jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-14.jdk/Contents/Home/
