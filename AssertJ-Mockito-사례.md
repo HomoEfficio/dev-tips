@@ -7,7 +7,7 @@
 ### 특정 필드값을 가진 객체를 인자로 전달하는 메서드를 verify 할 때
 
 ```java
-Mockito.verify(XXXRepository).save(ArgumentMatchers.argThat(xxx -> xxx.getYYY().equals(zzz)));
+Mockito.verify(XXXRepository).save(ArgumentMatchers.argThat((XXX xxx) -> xxx.getYYY().equals(zzz)));
 ```
 
 ## assertThat
