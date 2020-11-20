@@ -120,11 +120,12 @@ Page<Member> members2 = memberRepository.findAll(example, new PageRequest(0, 10,
 
 사실 위 2 가지 제약 사항만으로도 사용성이 많이 떨어진다. 특히 or/and 를 마음대로 쓸 수 없으면 실제 비즈니스 로직 구현에 꽤 큰 제약이 되기 때문이다.
 
+### 많은 필드를 가진 엔티티
+
 필드가 많은 엔티티를 검색한다면 다음과 같은 단점도 있다.
 
 - 검색에서 제외할 많은 필드를 모두 `withIgnorePaths()`에 지정 필요
-- 검색에 포함하지 않을 모든 필드에 일일이 null 지정 필요
-- 
+- 검색에 포함하지 않을 모든 필드에 일일이 null 지정 필요 -> 불필요한 set 메서드나 생성자 추가 필요
 
 `withIgnorePaths()`에 대해서는 다음과 같은 이슈도 있었다.
 
@@ -139,4 +140,17 @@ Page<Member> members2 = memberRepository.findAll(example, new PageRequest(0, 10,
 - probe 를 만들 때, Integer, Boolean로 지정한 필드에 명시적으로 null 값을 지정해주고,
 - ExampleMatcher 를 만들 때 `withIgnoreNullValues()`를 호출해서 null 인 필드를 명시적으로 제외해야 한다.
 
+### 엔티티 객체를 검색 조건으로 사용
 
+엔티티 객체는 말 그대로 비즈니스 모델이라는 역할만 수행해야 하는데, 검색 조건이라는 역할까지 맡게 되어 위에서 살펴본 setter, 생성자, 타입 관련 이슈가 발생한다.
+
+
+# 정리
+
+>- 검색 기능 구현 시 Spring Data JPA의 Query By Example 기능을 활용할 수 있다.  
+>    - 검색어를 포함하는 검색 대상 객체인 probe 와 검색 조건을 표현하는 ExampleMatcher 를 만들고, Example 객체믈 만들어서,  
+>    - Repository 메서드에 Example 객체를 인자로 전닫해서 검색 기능을 구현할 수 있다.  
+>
+>- 검색 요건 변경에 유연하게 대처할 수 있을 것 같아 보이기도 하지만 사용 상의 제약도 많아서,  
+>    - QueryDSL을 사용하지 않는다면 Query By Example 검색 기능 구현을 고려해볼만하지만,  
+>    - QueryDSL을 이미 사용하고 있다면 QueryDSL로 검색을 구현하는 편이 실무적으로 더 나은 것 같다.
