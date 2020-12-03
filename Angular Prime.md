@@ -547,6 +547,10 @@ export class CompanySiteTableComponent extends DataTableComponent {
 
 다른 모듈에 존재하는 Service를 `provider`로 지정하고 가져와서 사용하면 발생
 
+또는 이름이 같은 파일이 있을 때 발생하기도 한다.
+
+일단 개발 중인 애플리케이션을 껐다 다시 켜봐서 컴파일 되면 good, 컴파일 안 되면 정말 오류가 있는 거니 아래와 같이 조치해야 한다.
+
 아래와 같이 `SiteService`를 `providers`에 지정하고 생성자 주입을 통해 사용하면,
 
 ```typescript
