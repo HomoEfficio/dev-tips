@@ -43,6 +43,22 @@ https://dataflow.spring.io/docs/feature-guides/batch/scheduling/ 참고
 > CloudFoundry나 Kubernetes 환경에서만 스케줄링을 지원하며,  
 > Local 환경에서는 스케줄링은 불가하며 즉시 실행만 가능하다.
 
+- Update on 2020-12-07  
+    -  SCDF 2.7 에서는 다음과 같은 내용이 추가됐음 (https://dataflow.spring.io/docs/feature-guides/batch/scheduling/#scheduling-a-batch-job)
+    ```
+    Spring Cloud Data Flow does not offer an out of the box solution for scheduling task launches on the local platform.
+    However, there are at least two Spring Boot native solutions that provide a scheduling option, which can be custom implemented to make it work in SCDF running locally.
+
+    Spring Boot Implementing a Quartz Scheduler
+
+    One option is to create a Spring Boot application that utilizes the Quartz scheduler to execute RESTful API calls to launch tasks on Spring Cloud Data Flow. More information can be read about it here.
+
+    Spring Boot Implementing the @Scheduled annotation
+
+    Another option is to create a Spring Boot application that utilizes the @Scheduled annotation on a method that executes RESTful API calls to launch tasks on Spring Cloud Data Flow. More information can be read about it here.
+    ```
+    - 즉, **Local 환경에서도 Quartz를 이용해서 정해진 시간에 SCDF API 를 호출하는 별도의 스프링 부트 애플케이션을 만들어서 스케줄링 사용 가능**
+
 - Spring Cloud Data Flow에서 스케줄링 기능까지 사용하려면 결국 CloudFoundry나 Kubernetes 환경이 필요
 - Docker 기반의 Kubernetes 경우 **Java 8은 세부 버전에 따라 자원 할당 관련 이슈가 있으므로 확인 필요**
   - **Java 10 이상에서는 이 문제가 해결**돼있다.
