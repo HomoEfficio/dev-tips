@@ -50,6 +50,13 @@ $ vi DefaultKeyBinding.dict
 
 재부팅
 
+### Auto Repeat
+
+터미널에서 `defaults write -g ApplePressAndHoldEnabled -bool false` 입력 후 애플리케이션 재실행
+
+참고: https://osxdaily.com/2011/08/04/enable-key-repeat-mac-os-x-lion/
+
+
 ## 캡처 
 
 맥 기본 캡처 비활성화 (Skitch 로 대체, Skitch로 안 되는 건 다른 맥 기본 캡처-Shift+Ctrl+4로 가능)
