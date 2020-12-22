@@ -8,10 +8,14 @@
 1. 1 에서 만든 Job을 Client(Web Dashboard 또는 Shell)를 통해 Data Flow Server에 등록, 실행 및 관리
 1. Data Flow Server는 
     - 등록된 Job을 Local, CloudFoundry 또는 Kubernetes 환경에 deploy
-      - Batch Job은 직접 deploy, Stream Job은 Skipper 서버에 위임
+      - Batch Job은 직접 deploy, Stream Job deploy는 Skipper 서버에 위임
     - Batch Job의 경우 Scheduling 지원
     - 실행 중인 Job 실행 상태 및 이력 관리
       - BatchJob의 경우 Spring Cloud Task가 `@EnableTask` 애너테이션을 통해 실행 시간 기록, 종료 코드 에러 메시지, 다른 app에 notify 등 기능 지원
+1. Skipper Server는
+    - Stream Job을 하나 이상의 플랫폼에 deploy
+    - 블루/그린 업데이트 전략을 기반으로 하는 State Machine을 사용해서 Stream Job 업그레이드나 원상 복구 수행
+    - 각 스트림의 manifest 파일 이력 관리
 
 # Batch Job 오케스트레이션
 
@@ -45,19 +49,21 @@ https://dataflow.spring.io/docs/feature-guides/batch/scheduling/ 참고
 
 - Update on 2020-12-07  
     -  SCDF 2.7 에서는 다음과 같은 내용이 추가됐음 (https://dataflow.spring.io/docs/feature-guides/batch/scheduling/#scheduling-a-batch-job)
-    ```
-    Spring Cloud Data Flow does not offer an out of the box solution for scheduling task launches on the local platform.
-    However, there are at least two Spring Boot native solutions that provide a scheduling option, which can be custom implemented to make it work in SCDF running locally.
+    
+        >Spring Cloud Data Flow does not offer an out of the box solution for scheduling task launches on the local platform.
+        >However, there are at least two Spring Boot native solutions that provide a scheduling option, which can be custom implemented to make it work in SCDF running locally.
+        >
+        >Spring Boot Implementing a Quartz Scheduler
+        >
+        >One option is to create a Spring Boot application that utilizes the Quartz scheduler to execute RESTful API calls to launch tasks on Spring Cloud Data Flow. More information can be read about it here.
+        >
+        >Spring Boot Implementing the @Scheduled annotation
+        >
+        >Another option is to create a Spring Boot application that utilizes the @Scheduled annotation on a method that executes RESTful API calls to launch tasks on Spring Cloud Data Flow. More information can be read about it here.
 
-    Spring Boot Implementing a Quartz Scheduler
-
-    One option is to create a Spring Boot application that utilizes the Quartz scheduler to execute RESTful API calls to launch tasks on Spring Cloud Data Flow. More information can be read about it here.
-
-    Spring Boot Implementing the @Scheduled annotation
-
-    Another option is to create a Spring Boot application that utilizes the @Scheduled annotation on a method that executes RESTful API calls to launch tasks on Spring Cloud Data Flow. More information can be read about it here.
-    ```
     - 즉, **Local 환경에서도 Quartz를 이용해서 정해진 시간에 SCDF API 를 호출하는 별도의 스프링 부트 애플케이션을 만들어서 스케줄링 사용 가능**
+    - 하지만 Local 환경에 설치한 SCDF Web UI에는 Schedule 관련 기능이 없으므로, Schedule 이력 등을 SCDF에서 관리할 수 없고, 별도의 스프링 부트 애플리케이션에서 관리해야 한다.
+        - ![Imgur](https://i.imgur.com/2S4q1wn.png)
 
 - Spring Cloud Data Flow에서 스케줄링 기능까지 사용하려면 결국 CloudFoundry나 Kubernetes 환경이 필요
 - Docker 기반의 Kubernetes 경우 **Java 8은 세부 버전에 따라 자원 할당 관련 이슈가 있으므로 확인 필요**
