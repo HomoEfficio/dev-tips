@@ -176,4 +176,4 @@ nodes:
   - 번역: https://coffeewhale.com/k8s/network/2019/05/11/k8s-network-02/
 - https://medium.com/google-cloud/understanding-kubernetes-networking-ingress-1bc341c84078
   - 번역: https://coffeewhale.com/k8s/network/2019/05/30/k8s-network-03/
-
+- https://kind.sigs.k8s.io/docs/user/configuration/#extra-port-mappings
