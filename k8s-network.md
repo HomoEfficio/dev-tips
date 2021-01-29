@@ -131,8 +131,40 @@
 
     # 클러스터 외부에서 {{노드의 IP}}:{{nodePort}}로 접근하면 서비스의 port로 연결되고,  
     # 서비스는 접근 요청을 selector.app 에서 지정한 컨테이너의 targetPort로 포워딩 한다.
-    # {{노드의 IP}}:{{nodePort}} --> {{서비스의 IP}}:{{port}} --> {{컨테이너의 IP}}:{{targetPort}}
+    # {{노드의 IP}}:{{nodePort}} --> {{서비스의 IP}}:{{port}} --> {{destination 컨테이너의 IP}}:{{targetPort}}
     ```
+
+### kind 클러스터 + NodePort
+
+- kind(Kubernetes IN Docker, https://kind.sigs.k8s.io/) 를 사용해서 로컬에 멀티노드 클러스터를 구성할 수 있다.
+- kind 클러스터에 사용되는 노드는 로컬 머신 입장에서 볼 때 하나의 도커 컨테이너이며, 로컬 머신에서 kind 클러스터 내 노드에 접근하려면 다음과 같이 extraPortMapping을 설정해줘야 한다.
+
+```yaml
+# from https://kind.sigs.k8s.io/docs/user/quick-start/#multinode-clusters
+# three node (two workers) cluster config
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  extraPortMappings:
+  # data flow server
+  - hostPort: 8081  # localhost:PORT 에서 PORT 값으로 사용할 번호
+    containerPort: 31081  # 노드 컨테이너에서 오픈한 포트, k8s service에서 nodePort로 지정한 포트 값을 사용해야 해당 서비스로 연결
+  # skipper server
+  - hostPort: 8082  # localhost:PORT 에서 PORT 값으로 사용할 번호
+    containerPort: 31082  # 노드 컨테이너에서 오픈한 포트, k8s service에서 nodePort로 지정한 포트 값을 사용해야 해당 서비스로 연결
+  # grafana
+  - hostPort: 3000  # localhost:PORT 에서 PORT 값으로 사용할 번호
+    containerPort: 31030  # 노드 컨테이너에서 오픈한 포트, k8s service에서 nodePort로 지정한 포트 값을 사용해야 해당 서비스로 연결
+  # prometheus web
+  - hostPort: 9001  # localhost:PORT 에서 PORT 값으로 사용할 번호
+    containerPort: 31091  # 노드 컨테이너에서 오픈한 포트, k8s service에서 nodePort로 지정한 포트 값을 사용해야 해당 서비스로 연결
+- role: worker
+- role: worker
+
+# {{로컬 머신 IP}}:{{extraPortMapping의 hostPort}} --> {{노드의 IP}}:{{nodePort}} --> {{서비스의 IP}}:{{port}} --> {{destination 컨테이너의 IP}}:{{targetPort}}
+```
+
 
 
 # 참고 자료
