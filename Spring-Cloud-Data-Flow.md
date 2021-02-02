@@ -44,7 +44,7 @@ https://dataflow.spring.io/docs/feature-guides/batch/scheduling/ 참고
 ### 주의 사항
 
 > Spring Cloud Data Flow 는  
-> CloudFoundry나 Kubernetes 환경에서만 스케줄링을 지원하며,  
+> CloudFoundry(PCF Scheduler)나 Kubernetes(CronJobs) 환경에서만 스케줄링을 지원하며,  
 > Local 환경에서는 스케줄링은 불가하며 즉시 실행만 가능하다.
 
 - Update on 2020-12-07  
