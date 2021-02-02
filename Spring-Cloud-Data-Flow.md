@@ -67,7 +67,10 @@ https://dataflow.spring.io/docs/feature-guides/batch/scheduling/ 참고
         - ![Imgur](https://i.imgur.com/2S4q1wn.png)
     - 별도의 스프링 부트 Quartz 애플리케이션이 다운되면 SCDF API를 호출하지 못하므로 Job도 결국 실행 불가 -> 결국 HA를 위해 Quarz 클러스터링 필요
     - 따라서 SCDF 쓴다면 현재로서 굳이 Quartz를 사용하는 건 좋은 방안은 아닌 듯
-
+- Update on 2021-02-02
+    - Local 환경에 Scheduler 추가해달라는 Issue: https://github.com/spring-cloud/spring-cloud-dataflow/issues/2454
+    
+    
 - Spring Cloud Data Flow에서 스케줄링 기능까지 사용하려면 결국 CloudFoundry나 Kubernetes 환경이 필요
 - Docker 기반의 Kubernetes 경우 **Java 8은 세부 버전에 따라 자원 할당 관련 이슈가 있으므로 확인 필요**
   - **Java 10 이상에서는 이 문제가 해결**돼있다.
