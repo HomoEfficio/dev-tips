@@ -1423,6 +1423,52 @@ persistentvolumeclaim/mysql   Bound    pvc-93581cce-a4d3-487d-8d92-e7da164d66b8 
 ```
 
 
+# dmp-batch-app을 SCDF에 등록 및 실행
+
+SCDF가 도커 레지스트리에 있는 dmp-batch-app의 이미지를 pull 해서 등록
+
+## 도커 로컬 레지스트리 구성
+
+- 로컬 테스트에만 사용하며 나중에 실제 docker repo 로 구성 필요
+
+>docker pull registry
+
+>docker container run -d -p 5555:5000 --name local_registry registry
+
+## dmp-batch-app 도커 이미지 빌드
+
+- Dockerfile 이 있는 폴더에서
+
+>docker build --tag=localhost:5555/dmp-batch-app:latest --rm=true .
+
+## dmp-batch-app 도커 이미지를 로컬 레지스트리에 등록
+
+>docker push localhost:5555/dmp-batch-app
+
+## SCDF에 dmp-batch-app 등록
+
+![Imgur](https://i.imgur.com/JKvo0Go.png)
+
+![Imgur](https://i.imgur.com/THLktWW.png)
+
+![Imgur](https://i.imgur.com/eUpfEfV.png)
+
+## SCDF에 task 등록
+
+![Imgur](https://i.imgur.com/VPQXvP1.png)
+
+![Imgur](https://i.imgur.com/XEJTcbh.png)
+
+![Imgur](https://i.imgur.com/gmePHzb.png)
+
+![Imgur](https://i.imgur.com/EWYNYkf.png)
+
+![Imgur](https://i.imgur.com/ygWlhUm.png)
+
+![Imgur](https://i.imgur.com/1TIZdqg.png)
+
+
+---
 
 # Batch Processing
 
@@ -1449,4 +1495,3 @@ https://cloud.spring.io/spring-cloud-task-app-starters/#quick-start 에 timestam
 ![Imgur](https://i.imgur.com/8smt6of.png)
 
 ### Task 실행
-
