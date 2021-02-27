@@ -50,13 +50,13 @@
 
 다음과 같이 `setUncaughtExceptionHandler()`를 이용해서 쓰레드 전용 예외 핸들러를 적용하면 된다.
 
-![Imgur](https://i.imgur.com/MNt4MGK.png)
-
-하지만 원하는 대로 모두 동작하지는 않는다. `RuntimeException` 에서 지정한 예외 메시지와 StackTrace를 찍고 싶은데 그렇게 되지는 않고, 단순히 `RuntimeException` 이 던져졌다는 사실만 알려준다.
-
-그래서 비동기 방식에서는 다음과 같이 메시지 출력과 StackTrace 출력을 명시적으로 처리해줘야 한다.
-
 ![Imgur](https://i.imgur.com/A7664PB.png)
+
+쓰레드 전용 핸들러 안에 메시지 출력과 StackTrace 출력, 필요하다면 복구 로직을 구현하면 된다.
+
+하지만 `setUncaughtExceptionHandler()` 안에서 발생한 예외는 아까와 마찬가지로 잡히지 않는다.
+
+![Imgur](https://i.imgur.com/MNt4MGK.png)
 
 여기에서는 간단하게 쓰레드 전용 예외 핸들러만 알아봤지만, 시스템 내 모든 쓰레드에 적용할 수 있는 Default 예외 핸들러를 사용할 수도 있다. 물론 쓰레드 전용 예외 핸들러가 시스템 Default 예외 핸들러보다 우선 순위가 높다.
 
