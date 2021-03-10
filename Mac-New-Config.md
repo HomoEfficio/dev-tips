@@ -65,6 +65,8 @@ $ vi DefaultKeyBinding.dict
 
 ### Skitch
 
+아래 도형 시작점에 화살표 넣기는 해제해야 꼬리부터 그려짐
+
 ![Imgur](https://i.imgur.com/dUkfmQD.png)
 
 
