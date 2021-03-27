@@ -79,7 +79,7 @@ Domain 객체 -> DTO -> View 방향의 흐름에서는 필요한 모든 Domain �
 
 DTO가 셔틀 역할을 하는 것은 맞지만 단순한 셔틀이 아니라, 서버가 여러 번의 개별 요청을 받아서 회신해야 할 정보 중에서 함께 사용되는 것들을 DTO에 함께 담아 한 번에 회신함으로써 비싼 원격 호출 횟수를 줄이는 데 주목적이 있다. 아래 그림을 보면 더 쉽게 와닿을 것이다.
 
-![Imgur](https://i.imgur.com/Vmh5OQu.gif)
+![Imgur](https://i.imgur.com/8mM8AFd.png)
 
 그림 출처: https://martinfowler.com/eaaCatalog/dataTransferObject.html
 
