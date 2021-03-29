@@ -48,5 +48,6 @@
 - 이때 서브모듈에는 있어서는 안 되는 settings.gradle 파일과 .gradle 디렉토리가 생성된다.
 - 스프링부트 모듈의 settinge.gradle 파일을 지우고, 루트 프로젝트의 settings.gradle에 `include '스프링부트 모듈 프로젝트의 이름'` 추가
   - 루트 프로젝트 아래로 이동됨 !그림
+- 루트 프로젝트의 build.gradle 은 보통 서브모듈 간의 의존 관계를 맺어주는 정보를 포함하지만, 극단적으로는 build.gradle 파일이 없어도 빌드된다.
 - 빌드가 성공하면 .gradle 디렉토리를 삭제한다.
 
