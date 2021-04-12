@@ -124,7 +124,12 @@ Spring Reactor에서는 reactor.core.scheduler.Scheduler 인터페이스에 비�
 
 취소라는 게 구독 취소일 수도 있고 발행 취소일 수도 있으니, cancel 을 Subscriber 쪽에 둘 수도 있고 Publisher 쪽에 둘 수도 있을 것이다. 원래 협력 구조처럼 클라이언트가 `Publisher.subscribe(Subscriber)`를 호출하게 했다면 cancel도 Publisher 쪽에 둬도 무방할 것 같다.
 
-하지만 앞에서 얘기한 것처럼 클라이언트가 `Publisher.subscribe(Subscriber)`가 아니라 `Subscriber.subscribe(Publisher)`를 호출하도록 설계를 바꾼다면 cancel도 Subscriber 쪽에 두는 것이 좋다. 이렇게 하면 클라이언트는 직접 생성이든, 구독이든, 취소든 Reactive Streams 등장 인물 중에서 오직 Subscriber 하고만 직접 상대하면 되고 Subscriber만 알면 되므로 노출되는 정보도 줄일 수 있고 의존 관계도 단순화 할 수 있다. 이를 반영해서 개선한 시퀀스 다이어그램은 다음과 같다.
+
+## 개선된 시퀀스 다이어그램
+
+하지만 앞에서 얘기한 것처럼 클라이언트가 `Publisher.subscribe(Subscriber)`가 아니라 `Subscriber.subscribe(Publisher)`를 호출하도록 설계를 바꾼다면 cancel도 Subscriber 쪽에 두는 것이 좋다. 이렇게 하면 클라이언트는 직접 생성이든, 구독이든, 취소든 Reactive Streams 등장 인물 중에서 오직 Subscriber 하고만 직접 상대하면 되고 Subscriber만 알면 되므로 노출되는 정보도 줄일 수 있고 의존 관계도 단순화 할 수 있다. 
+
+이를 반영해서 개선한 시퀀스 다이어그램은 다음과 같다. 딸기색 둥근 네모 부분만 달라졌다.
 
 ![Imgur](https://i.imgur.com/Z83ywLE.png)
 
