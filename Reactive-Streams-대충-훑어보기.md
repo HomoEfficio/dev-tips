@@ -101,9 +101,9 @@ Spring Reactor에서는 reactor.core.scheduler.Scheduler 인터페이스에 비�
 
 즉 실제 하는 동작은 Subscriber를 추가하는 건데 subscribe 라는 엉뚱한 이름이 사용되고 있다. 자기 자신에게 추가하는 것이니까 받아들인다 라고도 볼 수 있으므로, `Publisher.receive(Subscriber)`라고 했으면 실제 동작에 부합하므로 훨씬 직관적이었을 것 같다.
 
-만약 `receive`에 구독 같은 특별한 의미가 결여돼서 의도를 잘 드러내지 못 하는 걸로 보이므로 반드시 `subscribe`라는 이름을 쓰고 싶다면 설계도 바꾸는 게 좋다고 생각한다.  
+만약 `receive`에 구독 같은 특별한 의미가 결여돼서 의도를 잘 드러내지 못 하는 걸로 보이므로 반드시 `subscribe`라는 이름을 써야했다면 그에 맞게 설계도 다르게 했어야 한다고 생각한다.  
 `Publisher.subscribe(subscriber)`를 통해 subscriber를 추가하는(받아들이는) 이유는, 나중에 Subscription을 생성하고 이를 Subscriber에 전달해주고 Subscriber가 `subscription.request(n)`을 호출하는 과정에서 subscriber가 필요하기 때문이다.  
-따라서 `Publisher.subscribe(subscriber)` 대신에 `Subscriber.subscribe(Publihser)`를 통해 Publisher에 Subscriber를 전달해주고, Publisher가 이를 받아서 콜백과 함께 Subscription을 생성하고 이하는 동일하게 가져 갔다면 이름에도 영문법에도 잘 부합하므로 더 직관적으로 이해하기 쉬웠을 것 같다. '구독을 하지 않으면 아무 일도 발생하지 않는다'라는 말에도 훨씬 더 잘 어울린다.
+따라서 `Publisher.subscribe(subscriber)` 대신에 클라이언트가 직접 `Subscriber.subscribe(Publihser)`을 호출해서 Subscriber가 Publisher를 말 그대로 구독하게 하고, Subscriber는 Publisher.receive(Subscriber)를 호출해서, Publisher가 이를 Subscriber를 받아서 콜백과 함께 Subscription을 생성하고 이하는 동일하게 가져 갔다면 이름에도 영문법에도 잘 부합하므로 더 직관적으로 이해하기 쉬웠을 것 같다. '구독을 하지 않으면 아무 일도 발생하지 않는다'라는 말에도 훨씬 더 잘 어울린다. 이 방식은 글로는 잘 와닿지 않아서 별도로 시퀀스 다이어그램을 그려봤으니 조금 후에 보도록 하자.
 
 아니면 현재 협력 구조 그대로 가져가되 `Publisher.subscribe(Subscriber)`에서 `subscribe`만 그냥 `publishTo`로 바꿔서 `Publisher.publishTo(Subscriber)`라고 했다면, publishTo 라는 이름이 Subscriber를 Publisher에게 추가하는 실제 동작과는 맞지 않는 이름일지라도 API 사용자 입장에서는 협력 구조를 파악하기는 더 쉬웠을 것 같다. '구독을 하지 않으면 아무 일도 발생하지 않는다'가 '발행하지 않으면 아무 일도 발생하지 않는다'로 바뀔 뿐이다. 전혀 어색하지 않을 뿐더러 실질에 오히려 더 잘 부합하는 것 같다.
 
@@ -122,7 +122,11 @@ Spring Reactor에서는 reactor.core.scheduler.Scheduler 인터페이스에 비�
 
 요는 Reactive Streams만으로는 cancel 여부를 결정하는 클라이언트가 cancel 할 수 있는 방법이 없다.
 
-취소라는 게 구독 취소일 수도 있고 발행 취소일 수도 있으니, cancel 을 Publisher 쪽에 둬도 됐을 것이다. 현재 Publisher에는 내가 보기에는 영 어색한 `subscribe()` 메서드 하나만 달랑 있는데, Publisher에 `cancel()`도 넣어서 클라이언트가 발행 취소를 실행할 수 있게 해줬다면 적절했을 것 같다.
+취소라는 게 구독 취소일 수도 있고 발행 취소일 수도 있으니, cancel 을 Subscriber 쪽에 둘 수도 있고 Publisher 쪽에 둘 수도 있을 것이다. 원래 협력 구조처럼 클라이언트가 `Publisher.subscribe(Subscriber)`를 호출하게 했다면 cancel도 Publisher 쪽에 둬도 무방할 것 같다.
+
+하지만 앞에서 얘기한 것처럼 클라이언트가 `Publisher.subscribe(Subscriber)`가 아니라 `Subscriber.subscribe(Publisher)`를 호출하도록 설계를 바꾼다면 cancel도 Subscriber 쪽에 두는 것이 좋다. 이렇게 하면 클라이언트는 직접 생성이든, 구독이든, 취소든 Reactive Streams 등장 인물 중에서 오직 Subscriber 하고만 직접 상대하면 되고 Subscriber만 알면 되므로 노출되는 정보도 줄일 수 있고 의존 관계도 단순화 할 수 있다. 이를 반영해서 개선한 시퀀스 다이어그램은 다음과 같다.
+
+![Imgur](https://i.imgur.com/Z83ywLE.png)
 
 
 ## 비동기 처리 관점에서 리액티브 스트림의 가치
