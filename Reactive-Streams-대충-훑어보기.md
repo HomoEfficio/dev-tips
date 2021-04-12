@@ -2,7 +2,7 @@
 
 1 req == 1 therad인 서블릿 방식의 한계를 뛰어넘기 위해 Spring에서 WebFlux를 내놨다.  
 Spring WebFlux는 내부적으로 Spring Reactor를 사용하는데, Spring Reactor는 Reactive Streams 구현체다.  
-Reactive Streams는 다음과 같이 간단 명료하게 정의돼 있다.
+Reactive Streams는 [홈페이지](https://www.reactive-streams.org/)에 다음과 같이 간단 명료하게 정의돼 있다.
 
 >Reactive Streams is an initiative to provide a standard for asynchronous stream processing with non-blocking back pressure.
 >
@@ -26,7 +26,7 @@ Reactive Streams는 Publisher, Subscriber, Subscription, Processor 달랑 네 �
 검색해보면 몇 가지 나오기는 하는데 내가 이해할 수 있을 만큼 마음에 드는 게 없어서 새로 그렸다(개고생 ㅠㅜ).  
 
 Reactive Streams를 사용해서 비동기로 데이터를 조회하는 시나리오를 기준으로 작성했으며,  
-화살표는 위는 메서드 이름, 화살표 아래에 괄호로 표시된 건 메서드 인자, 괄호 없이 표시된 건 반환값이다.
+실선 화살표는 메서드 호출, 화살표 위는 메서드 이름, 화살표 아래에 괄호로 표시된 건 메서드 인자이며, 점선 화살표는 반환이고 화살표 아래 괄호 없이 표시된 건 반환값이다.
 
 Publisher, Subscriber, Subscription 인터페이스가 가지고 있는 모든 메서드가 표시돼 있다.
 
@@ -57,34 +57,41 @@ Publisher, Subscriber, Subscription 인터페이스가 가지고 있는 모든 �
 `subscription`은 자신이 생성될 때 주입 받은 콜백을 호출해서 `numOfData`만큼만 데이터를 가져오고 `subscriber.onNext(data)`를 반복 호출해서 `subscriber`에게 데이터를 전달한다. 이 과정에서 오류가 발생하면 `subscriber.onError(throwable)`로 오류를 `subscriber`에게 전달하고, 데이터 전달이 정상적으로 완료되면 `subscriber.onComplete()`를 호출하며 협력이 끝난다.
 
 
-사실 여기까지만 알면 리액티브 스트림의 협력 구조를 이해하는 데는 충분하다고 생각한다.  
-물론 그렇다고 리액티르 스트림을 사용하는 데 충분하다는 얘기는 아니다. 실무적으로는 map, flatMap, concatMap, zip 등등 엄\~\~청나게 많은 리액티브 연산자들 예쁘디 예쁜 마블 다이어그램 보면서 다 공부해야지\~\~ ㄷㄷㄷ
-
-암튼 원래는 이 정도만 알고 넘어가려고 했는데.. 이 정도 알아보고 나니.. 또 다른 궁금증이 파생되어..  
-
-하지만 아래에 이어지는 건 굳이 안 봐도 된다. 그냥 개인적인 주절거림일 뿐이다.
-
-
 ## 비동기는 대체 어디에?
 
-리액티브 스트림이 비동기 스트림 처리 표준을 제공하는 킹왕짱 계획이라고 했는데 비동기 처리는 어디에 있는 거임?
+리액티브 스트림이 백프레셔와 함께 비동기 스트림 처리 표준을 제공하는 킹왕짱 계획이라고 했는데, 이 협력 구조 상에서 비동기 처리는 어디에 있는 걸까?
 
-사실 리액티브 스트림이 비동기 스트림 처리 표준 제공 어쩌구라고는 하지만 4가지 인터페이스를 보면 비동기 관련 내용은 전혀 없다. 결국 리액티브 스트림은 비동기 처리 표준을 지향하긴 하지만 그렇다고 비동기를 강제하는 것도 아니다.
-
-비동기 처리는 구현에 달려있을 뿐이다.
+사실 리액티브 스트림이 비동기 스트림 처리 표준 제공 어쩌구라고는 하지만 4가지 인터페이스를 보면 비동기 관련 내용은 전혀 없다. 다시 말해 비동기 처리 없이 동기 처리만 사용하더라도 스트림을 리액티브 방식으로 처리하는 것이 가능하다. 결국 **리액티브 스트림은 비동기 처리 표준을 지향하긴 하지만 그렇다고 비동기를 강제하는 것도 아니다.** 따라서 비동기 처리는 실질적으로는 구현에 달려 있다.
 
 Spring Reactor에서는 reactor.core.scheduler.Scheduler 인터페이스에 비동기 처리 관련 규약이 담겨 있다. reactor.core.publisher 패키지에서 Scheduler가 사용되는 곳을 검색하면 대략 감이 올 것이다.
 
 [JDK 9 예제](https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Flow.html)에 보면 Subscription이 Subscriber의 onNext()를 호출할 때 Executor를 이용해서 비동기로 호출하고 있다.
 
 
-## 깊은 뜻은 모르겠다..
+## 마무리
 
-비동기는 어떤 과정을 거치더라도 결국에는 `new Thread(callback).start()`를 거쳐서 실현된다고 봐도 크게 틀리지 않는다. 다양한 비동기 처리 라이브러리는 결국 이 부분을 추상화해서 감출 뿐이다. 감추긴 감추는데 리액티브 스트림에서 이런 방식으로 감추도록 설계한 깊은 뜻까지는 애석하지만 잘 모르겠다.. 라기보다는 솔직히 마음에 들지 않는다.
+>Reactive Streams는 논블로킹, 백프레셔를 포함해서 스트림을 비동기 방식으로 처리할 수 있는 표준 API다.
+>
+>Publisher, Subscriber, Subscription 이 서로 협력하면서 스트림을 리액티브 방식으로 처리한다.  
+>자세한 협력 구조는 글보다는 [시퀀스 다이어그램](https://i.imgur.com/BzOrtx8.png)을 참고하면 더 쉽게 이해할 수 있다.
 
-### 이름 적절한가?
 
-이런 방식이라고 칭한 것 중에는 다음과 같이 좀 어색해 보이는 이름이나 호출 구조도 포함된다. 대표적인 게 `Publisher.subscribe(Subscriber)`다. 퍼블리셔라면 뭔가 데이터를 발행하고 뿜어내야 할 것 같은데 정작 가진 메서드 이름이나 파라미터는 영 다르다.
+---
+
+# 번외편
+
+사실 여기까지만 알면 리액티브 스트림의 협력 구조를 이해하는 데는 충분하다고 생각한다.  
+물론 그렇다고 리액티브 스트림을 사용하는 데 충분하다는 얘기는 아니다. 실무적으로는 `map`, `flatMap`, `concatMap`, `zip` 등등 엄\~\~청나게 많은 리액티브 연산자들 예쁘디 예쁜 마블 다이어그램 보면서 다 공부해야 된다능\~\~ ㄷㄷㄷ
+
+암튼 원래는 이 정도만 알고 넘어가려고 했는데.. 이 정도 알아보고 나니 또 다른 궁금증이 파생되어..  
+아래에 이어지는 건 굳이 안 봐도 된다. 그냥 개인적인 주절거림일 뿐이다.
+
+
+## 이런 이름 적절한가?
+
+`Publisher`를 보자. 퍼블리셔라면 뭔가 데이터를 발행하고 뿜어내야 할 것 같은데 정작 가진 메서드 이름이나 파라미터는 영 다르다. 달랑 하나 있는 메서드는 다음과 같다.
+
+`Publisher.subscribe(Subscriber)`
 
 예전에도 이 부분이 마음에 안 들어서 https://www.facebook.com/hanmomhanda/posts/10214512128821140 여기에 끄적여둔 게 있다. 영문법과 너무 이질적으로 다르다는 점이 불편함을 느낀 시작점이긴 하지만 그것 뿐만은 아니다. 두 가지 관점에서 불편하다.
 
@@ -92,36 +99,41 @@ Spring Reactor에서는 reactor.core.scheduler.Scheduler 인터페이스에 비�
 
 >Adds the given Subscriber if possible.
 
-즉 실제 하는 동작은 Subscriber를 추가하는 건데 subscribe 라는 엉뚱한 이름이 사용되고 있다. 자기 자신에게 추가하는 것이므로 받아들인다 라고도 볼 수 있으므로, `Publisher.receive(Subscriber)`라고 했으면 실제 동작에 부합하므로 훨씬 직관적이었을 것 같다.
+즉 실제 하는 동작은 Subscriber를 추가하는 건데 subscribe 라는 엉뚱한 이름이 사용되고 있다. 자기 자신에게 추가하는 것이니까 받아들인다 라고도 볼 수 있으므로, `Publisher.receive(Subscriber)`라고 했으면 실제 동작에 부합하므로 훨씬 직관적이었을 것 같다.
 
 만약 `receive`에 구독 같은 특별한 의미가 결여돼서 의도를 잘 드러내지 못 하는 걸로 보이므로 반드시 `subscribe`라는 이름을 쓰고 싶다면 설계도 바꾸는 게 좋다고 생각한다.  
-`Publisher.subscribe(subscriber)`를 통해 subscriber를 추가하는(받아들이는) 이유는, 나중에 Subscription을 생성하고 이를 Subscriber에 전달해주고 Subscriber가 `subscription.request(n)`을 호출하는 데 필요하기 때문이다.  
-따라서 `Publisher.subscribe(subscriber)` 대신에 `Subscriber.subscribe(Publihser)`를 통해 Publisher에 Subscriber를 전달해주고, Publisher가 이를 받아서 콜백과 함께 Subscription을 생성하고 이하는 동일하게 가져 갔어도 됐을 것 같다.
+`Publisher.subscribe(subscriber)`를 통해 subscriber를 추가하는(받아들이는) 이유는, 나중에 Subscription을 생성하고 이를 Subscriber에 전달해주고 Subscriber가 `subscription.request(n)`을 호출하는 과정에서 subscriber가 필요하기 때문이다.  
+따라서 `Publisher.subscribe(subscriber)` 대신에 `Subscriber.subscribe(Publihser)`를 통해 Publisher에 Subscriber를 전달해주고, Publisher가 이를 받아서 콜백과 함께 Subscription을 생성하고 이하는 동일하게 가져 갔다면 이름에도 영문법에도 잘 부합하므로 더 직관적으로 이해하기 쉬웠을 것 같다. '구독을 하지 않으면 아무 일도 발생하지 않는다'라는 말에도 훨씬 더 잘 어울린다.
 
-아니면 현재 상태에서 아싸리 `Publisher.subscribe(Subscriber)`라는 이름만 그냥 `Publisher.publishTo(Subscriber)`라고 바꿨다면 실제 동작과는 맞지 않는 이름이라 하더라도 API 사용자 입장에서는 훨씬 나았을 것 같다. '구독을 하지 않으면 아무 일도 발생하지 않는다'가 '발행자에게 발행을 요청하지 않으면 아무 일도 발생하지 않는다'로 바뀔 뿐이다. 전혀 어색하지 않을 뿐더러 실질에 오히려 더 잘 부합하는 것 같다.
+아니면 현재 협력 구조 그대로 가져가되 `Publisher.subscribe(Subscriber)`에서 `subscribe`만 그냥 `publishTo`로 바꿔서 `Publisher.publishTo(Subscriber)`라고 했다면, publishTo 라는 이름이 Subscriber를 Publisher에게 추가하는 실제 동작과는 맞지 않는 이름일지라도 API 사용자 입장에서는 협력 구조를 파악하기는 더 쉬웠을 것 같다. '구독을 하지 않으면 아무 일도 발생하지 않는다'가 '발행하지 않으면 아무 일도 발생하지 않는다'로 바뀔 뿐이다. 전혀 어색하지 않을 뿐더러 실질에 오히려 더 잘 부합하는 것 같다.
 
 불편했던 또 한 가지 이유는 onSubscribe, onNext, onError, onComplete 메서드의 컨텍스트인 Subscriber는 주어의 역할을 하는데, Subscriber와 대칭 관계라고 할 수 있는 Publisher는 subscribe 메서드의 주어도 아니고 목적어도 아닌 것 같으니 대칭성이 깨져서 직관성이 떨어지기 때문이다.
 
 그런데 위 페북 글 댓글들을 보면 나를 제외한 나머지 모두는 `Publisher.subscribe(Subscriber)` 이게 어색하지도 해석하는 데 불편하지도 않다는 반응이라서 신기하기도 했다.
 
-### cancel은?
+`Publisher.subscribe(Subscriber)`가 불편하다면, Publisher/Subscriber와 비슷하게 Producer/Consumer 관계가 사용되는 `Stream.forEach(Consumer)`도 불편해야 하는 거 아니냐는 날카로운 의견도 있었는데, 일단 Stream이 역할은 Producer 이긴 하지만 API 상 공식 이름은 어디까지나 Stream이다. Stream.forEach(Consumer)는 스트림 안에서 흐르는 각 원소에 대해 Consumer가 소비한다 외에 다른 해석을 떠올리기 어려울 정도로 직관적이므로 `Publisher.subscribe(Subscriber)`와는 많이 다르다고 생각한다.
+
+
+## cancel은?
 
 실제 구독을 중단하는 일을 수행하는 책임은 현재 Subscription에 있다. 그리고 `Subscription.cancel()`를 누가 호출하는지 구현체를 살펴보니 본 것 중에서는 모두 Subscriber가 호출하고 있다. 하지만 현재 설계 상으로는 Subscriber에 cancel 관련 공개 메서드가 없으므로, cancel 여부를 결정하는 클라이언트가 cancel을 유발할 수 있는 방법이 없다.
 
-그럼 도대체 cancel이 어떻게 실현될 수 있는 걸까? 구현체인 Reactor를 살펴보니, Reactive Streams 에서는 `Publisher.subscribe()`는 리턴 값이 없지만 리액터의 Publisher 구현체인 Flux에는 Disposable을 반환하는 `subscribe()` 메서드가 있다. 이 Disposable에 `dispose()` 메서드가 있어서 이를 통해 `Subscription.cancel()`을 호출할 수 있다. 그런데 Disposable도 마찬가지로 Reactive Streams에는 없고 구현체인 Reactor에서 만들어 사용하는 인터페이스다.
+그럼 도대체 cancel이 어떻게 실현될 수 있는 걸까? 구현체인 Reactor를 살펴보니, Reactive Streams 에서는 `Publisher.subscribe()`는 리턴 값이 없지만 리액터의 Publisher 구현체인 Flux에는 Disposable을 반환하는 `subscribe()` 메서드가 있다. 이 Disposable에 `dispose()` 메서드가 있어서 이를 통해 `Subscription.cancel()`을 호출할 수 있다. 그런데 Disposable도 Reactive Streams에는 없고 구현체인 Reactor에서 만들어 사용하는 인터페이스다.
 
-요는 Reactive Streams만으로는 cancel 여부를 결정하는 클라이언트가 실제 cancel 할 수 있는 방법이 없다.
+요는 Reactive Streams만으로는 cancel 여부를 결정하는 클라이언트가 cancel 할 수 있는 방법이 없다.
 
-취소라는 게 구독 취소일 수도 있고 발행 취소일 수도 있으니, cancel 을 Publisher 쪽에 둬도 됐을 것이다. 현재 Publisher에는 내가 보기에는 영 어색한 `subscribe()` 메서드 하나만 달랑 있는데, Publisher에 `cancel()`도 넣어서 클라이언트가 호출할 수 있게 해줬다면 적절했을 것 같다.
+취소라는 게 구독 취소일 수도 있고 발행 취소일 수도 있으니, cancel 을 Publisher 쪽에 둬도 됐을 것이다. 현재 Publisher에는 내가 보기에는 영 어색한 `subscribe()` 메서드 하나만 달랑 있는데, Publisher에 `cancel()`도 넣어서 클라이언트가 발행 취소를 실행할 수 있게 해줬다면 적절했을 것 같다.
 
 
-## 리액티브 스트림의 가치
+## 비동기 처리 관점에서 리액티브 스트림의 가치
 
 리액티브 스트림을 활용한 프로그래밍은 여러모로 진입 장벽이 높다. 그런데 그걸 꼭 넘어서 사용해야할 정도로 가치가 있을까?
 
-비동기 처리라면 C#, JavaScript, Rust 등에는 async/await, Kotlin에는 coroutine 처럼 더 진입 장벽이 낮은 API가 제공되고 있다. 그리고 자바에도 정확히 언제가 될지는 모르지만 Fiber(Project Loom)가 도입될 예정이라고 하니, 비동기 처리라는 관점에서 리액티브가 계속 존속할 수 있을지 솔직히 의문이다.
+비동기 처리라면 C#, JavaScript, Rust 등에는 async/await, Kotlin에는 coroutine 처럼 더 진입 장벽이 낮은 API가 제공되고 있다. 그리고 자바에도 정확히 언제가 될지는 모르지만 Fiber(Project Loom)가 도입될 예정이라고 한다. 그러니 비동기 처리라는 관점에서 리액티브 스트림이나 ReactiveX가 앞서 예를 둔 더 간편한 API들과 견주어 경쟁력을 유지할 수 있을지 솔직히 의문이다.
 
-그러니 깊은 뜻을 굳이 알아야만 할 것 같지는 않다. 그저 back pressure를 적용할 수 있어야 하고, OnNext, onError, onComplete 와 같이 이벤트 핸들링 방식으로 처리하는 API를 제공하려다보니 이런 설계가 나왔겠지 정도로 털고 가자(아 훈훈해..).
+그러니 비동기 처리 관점에서 리액티브 스트림을 아주 깊게 이해해야만 할 것 같지는 않다. 그저 back pressure를 적용할 수 있어야 하고, OnNext, onError, onComplete 와 같이 이벤트 핸들링 방식으로 처리하는 API를 제공하려다보니 이런 설계가 나왔겠지 정도로 털고 가자(아 훈훈해..).
+
+물론 꼭 비동기 처리를 필요로 하지 않는 Push 기반의 데이터 처리 패턴으로서의 존재 가치는 여전히 유효할 것이다.
 
 
 ## 콜백이 어디에 어떻게 감춰져 있는지 구경하기
