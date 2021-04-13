@@ -30,7 +30,7 @@ Reactive Streams를 사용해서 비동기로 데이터를 조회하는 시나�
 
 Publisher, Subscriber, Subscription 인터페이스가 가지고 있는 모든 메서드가 표시돼 있다.
 
-![Imgur](https://i.imgur.com/BzOrtx8.png)
+![Imgur](https://i.imgur.com/kbp9BGI.png)
 
 ### 데이터 핸들러 로직 정의 및 Subscriber 생성
 
@@ -91,25 +91,29 @@ Spring Reactor에서는 reactor.core.scheduler.Scheduler 인터페이스에 비�
 
 `Publisher`를 보자. 퍼블리셔라면 뭔가 데이터를 발행하고 뿜어내야 할 것 같은데 정작 가진 메서드 이름이나 파라미터는 영 다르다. 달랑 하나 있는 메서드는 다음과 같다.
 
-`Publisher.subscribe(Subscriber)`
+>`Publisher.subscribe(Subscriber)`
+>
+>발행자가 구독자를 구독한다 구독자를. 읭? 뭥미?
 
-예전에도 이 부분이 마음에 안 들어서 https://www.facebook.com/hanmomhanda/posts/10214512128821140 여기에 끄적여둔 게 있다. 영문법과 너무 이질적으로 다르다는 점이 불편함을 느낀 시작점이긴 하지만 그것 뿐만은 아니다. 두 가지 관점에서 불편하다.
+발행자/구독자라는 대칭 관계에 있는 애들이 구독한다(subscribe)라는 동사를 중심으로 주어, 목적어가 뒤바뀌어 있다는 점이다.
 
-먼저 `Publisher.subscribe(Subscriber)`가 무슨 동작을 하는지 알아보자. JDK API DOC에도 [`Publisher.subscribe(Subscriber)`에 대한 설명](https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Flow.Publisher.html#subscribe-java.util.concurrent.Flow.Subscriber-)은 다음과 같은 간단하고 명료한 문장으로 시작한다.
+영문법과 너무 이질적으로 다르다는 점이 불편함을 느낀 시작점이긴 하지만 영문법과 맞지 않는 다른 API도 많다. 유독 이 놈만 불편한 이유는 몇 가지 더 있다.
+
+먼저 이 이름은 실제 동작과도 부합하지 않는다.
+
+JDK API 문서에 나오는 [`Publisher.subscribe(Subscriber)`에 대한 설명](https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Flow.Publisher.html#subscribe-java.util.concurrent.Flow.Subscriber-)은 다음과 같은 간단하고 명료한 문장으로 시작한다.
 
 >Adds the given Subscriber if possible.
 
-즉 실제 하는 동작은 Subscriber를 추가하는 건데 subscribe 라는 엉뚱한 이름이 사용되고 있다. 자기 자신에게 추가하는 것이니까 받아들인다 라고도 볼 수 있으므로, `Publisher.receive(Subscriber)`라고 했으면 실제 동작에 부합하므로 훨씬 직관적이었을 것 같다.
+즉 **실제 하는 동작은 Subscriber를 add 하는 건데 subscribe 라는 엉뚱한 이름이 사용되고 있다.**
 
-만약 `receive`에 구독 같은 특별한 의미가 결여돼서 의도를 잘 드러내지 못 하는 걸로 보이므로 반드시 `subscribe`라는 이름을 써야했다면 그에 맞게 설계도 다르게 했어야 한다고 생각한다.  
-`Publisher.subscribe(subscriber)`를 통해 subscriber를 추가하는(받아들이는) 이유는, 나중에 Subscription을 생성하고 이를 Subscriber에 전달해주고 Subscriber가 `subscription.request(n)`을 호출하는 과정에서 subscriber가 필요하기 때문이다.  
-따라서 `Publisher.subscribe(subscriber)` 대신에 클라이언트가 직접 `Subscriber.subscribe(Publihser)`을 호출해서 Subscriber가 Publisher를 말 그대로 구독하게 하고, Subscriber는 Publisher.receive(Subscriber)를 호출해서, Publisher가 이를 Subscriber를 받아서 콜백과 함께 Subscription을 생성하고 이하는 동일하게 가져 갔다면 이름에도 영문법에도 잘 부합하므로 더 직관적으로 이해하기 쉬웠을 것 같다. '구독을 하지 않으면 아무 일도 발생하지 않는다'라는 말에도 훨씬 더 잘 어울린다. 이 방식은 글로는 잘 와닿지 않아서 별도로 시퀀스 다이어그램을 그려봤으니 조금 후에 보도록 하자.
+게다가 Reactive는 Push 기반 데이터 처리 패턴이라고 할 수 있는데, 데이터 처리 실행을 유발하는 핵심 동작을 구독자 입장의 동작인 `subscribe`라고 이름지어버리니까 Publisher가 Push하는 패턴이 아니라 Subscriber가 Pull하는 패턴처럼 느껴진다. 어쩌면 Push를 퇴색시키는 이 부분이 Reactive를 이해하고 사용하는 데 있어 가장 나쁜 점일 수도 있겠다. 이쯤되면 불편함을 넘어 해로움이라고 할 수도 있겠다.
 
-아니면 현재 협력 구조 그대로 가져가되 `Publisher.subscribe(Subscriber)`에서 `subscribe`만 그냥 `publishTo`로 바꿔서 `Publisher.publishTo(Subscriber)`라고 했다면, publishTo 라는 이름이 Subscriber를 Publisher에게 추가하는 실제 동작과는 맞지 않는 이름일지라도 API 사용자 입장에서는 협력 구조를 파악하기는 더 쉬웠을 것 같다. '구독을 하지 않으면 아무 일도 발생하지 않는다'가 '발행하지 않으면 아무 일도 발생하지 않는다'로 바뀔 뿐이다. 전혀 어색하지 않을 뿐더러 실질에 오히려 더 잘 부합하는 것 같다.
+불편했던 또 한 가지 이유는 onSubscribe, onNext, onError, onComplete 메서드의 컨텍스트인 Subscriber는 주어의 역할을 하는데, Subscriber와 대칭 관계라고 할 수 있는 Publisher는 subscribe 메서드의 주어도 아니고 목적어도 아니니 대칭성이 깨져서 직관성이 떨어지기 때문이다.
 
-불편했던 또 한 가지 이유는 onSubscribe, onNext, onError, onComplete 메서드의 컨텍스트인 Subscriber는 주어의 역할을 하는데, Subscriber와 대칭 관계라고 할 수 있는 Publisher는 subscribe 메서드의 주어도 아니고 목적어도 아닌 것 같으니 대칭성이 깨져서 직관성이 떨어지기 때문이다.
+암튼 내가 보기엔 불편함을 넘어 해로워보이기까지 하는 `subscribe(Subscriber)`가 사용된 이유는 아마도 답정너처럼 Reactive Streams 협력 구조에서 `subscribe`라는 용어를 중심으로 내세우고 싶었던 것이 아니었을까 짐작해본다.
 
-그런데 위 페북 글 댓글들을 보면 나를 제외한 나머지 모두는 `Publisher.subscribe(Subscriber)` 이게 어색하지도 해석하는 데 불편하지도 않다는 반응이라서 신기하기도 했다.
+예전에도 이 부분이 마음에 안 들어서 https://www.facebook.com/hanmomhanda/posts/10214512128821140 여기에 끄적여둔 게 있다. 댓글들을 보면 나를 제외한 나머지 모두는 `Publisher.subscribe(Subscriber)` 이게 어색하지도 해석하는 데 불편하지도 않다는 반응이라서 신기하기도 했다.
 
 `Publisher.subscribe(Subscriber)`가 불편하다면, Publisher/Subscriber와 비슷하게 Producer/Consumer 관계가 사용되는 `Stream.forEach(Consumer)`도 불편해야 하는 거 아니냐는 날카로운 의견도 있었는데, 일단 Stream이 역할은 Producer 이긴 하지만 API 상 공식 이름은 어디까지나 Stream이다. Stream.forEach(Consumer)는 스트림 안에서 흐르는 각 원소에 대해 Consumer가 소비한다 외에 다른 해석을 떠올리기 어려울 정도로 직관적이므로 `Publisher.subscribe(Subscriber)`와는 많이 다르다고 생각한다.
 
@@ -122,16 +126,31 @@ Spring Reactor에서는 reactor.core.scheduler.Scheduler 인터페이스에 비�
 
 요는 Reactive Streams만으로는 cancel 여부를 결정하는 클라이언트가 cancel 할 수 있는 방법이 없다.
 
-취소라는 게 구독 취소일 수도 있고 발행 취소일 수도 있으니, cancel 을 Subscriber 쪽에 둘 수도 있고 Publisher 쪽에 둘 수도 있을 것이다. 원래 협력 구조처럼 클라이언트가 `Publisher.subscribe(Subscriber)`를 호출하게 했다면 cancel도 Publisher 쪽에 둬도 무방할 것 같다.
-
 
 ## 개선된 시퀀스 다이어그램
 
-하지만 앞에서 얘기한 것처럼 클라이언트가 `Publisher.subscribe(Subscriber)`가 아니라 `Subscriber.subscribe(Publisher)`를 호출하도록 설계를 바꾼다면 cancel도 Subscriber 쪽에 두는 것이 좋다. 이렇게 하면 클라이언트는 직접 생성이든, 구독이든, 취소든 Reactive Streams 등장 인물 중에서 오직 Subscriber 하고만 직접 상대하면 되고 Subscriber만 알면 되므로 노출되는 정보도 줄일 수 있고 의존 관계도 단순화 할 수 있다. 
+궁시렁대기만 하면 모양빠지니까 한 번 개선도 생각해보자.
+
+`subscribe`라는 용어를 중심에 두고 싶었다면 협력 구조도 좀 바꿔서 `Subscriber.subscribe(Publisher)`로 했으면 어땠을까 생각해봤는데, 이렇게 하면 클라이언트가 `Subscriber`와만 직접 통신하게 되고, 너무 구독만 강조돼서 Push 기반이라는 Reactive의 특징이 퇴색되는 안 좋은 결과로 이어진다. 게다가 코드도 아래와 같이 못난이가 돼버린다.
+
+```java
+subscriber.subscribe(
+    Flux.just("a", "b", "c")
+        .filter(...)
+        .map(...)
+        ...
+);
+```
+
+결국 컨텍스트인 `Publisher`를 `Subscriber`로 바꾸는 건 좋은 대안이 아닌 걸로 보인다. 그렇다면 `Publisher`는 그대로 두고 `subscribe(Subscriber)` 대신 실제 동작에 맞게 `add(Subscriber)`로 하거나, add가 너무 일반적인 동사라 의도를 표현하는 데 부족하다면 `addSubscriber(Subscriber)`로 했다면 훨씬 이해하기 편했을 것 같다. 그런데 이렇게 하면 '구독하지 않으면 아무 일도 일어나지 않는다'라는 문장과 어긋나는 면이 있고, 여전히 계속 구독만 강조되는 것처럼 보인다.
+
+'추가'라는 표면적인 동작과는 맞지 않지만 결국에는 구독자에게 발행한다는 의미에 무게를 둬서 `publishTo(Subscriber)`로 하면 어떨까? 일단 이렇게 하면 '발행자가 구독자에게 발행한다'라고 아주 직관적으로 이해할 수 있게 된다. 게다가 Push 모델이라는 점도 훨씬 극명하게 드러난다. '구독하지 않으면 아무 일도 일어나지 않는다' 대신에 '발행하지 않으면 아무 일도 일어나지 않는다'로 바꿔도 전혀 어색하지 않다.
+
+이름 하나 바꿨을뿐인데 모든 게 좋아진 것 같(은 환각이 든)다. cancel도 Publisher에게 추가하는 것이 좋겠다.
 
 이를 반영해서 개선한 시퀀스 다이어그램은 다음과 같다. 딸기색 둥근 네모 부분만 달라졌다.
 
-![Imgur](https://i.imgur.com/Z83ywLE.png)
+![Imgur](https://i.imgur.com/84eEoAS.png)
 
 
 ## 비동기 처리 관점에서 리액티브 스트림의 가치
