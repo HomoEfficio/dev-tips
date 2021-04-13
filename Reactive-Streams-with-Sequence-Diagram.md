@@ -1,4 +1,4 @@
-# Reactive Streams 대충 훑어보기
+# Reactive Streams with Sequence Diagram
 
 1 req == 1 therad인 서블릿 방식의 한계를 뛰어넘기 위해 Spring에서 WebFlux를 내놨다.  
 Spring WebFlux는 내부적으로 Spring Reactor를 사용하는데, Spring Reactor는 Reactive Streams 구현체다.  
@@ -161,7 +161,7 @@ subscriber.subscribe(
 
 리액티브 스트림을 활용한 프로그래밍은 여러모로 진입 장벽이 높다. 그런데 그걸 꼭 넘어서 사용해야할 정도로 가치가 있을까?
 
-비동기 처리라면 C#, JavaScript, Rust 등에는 async/await, Kotlin에는 coroutine 처럼 더 진입 장벽이 낮은 API가 제공되고 있다. 그리고 자바에도 정확히 언제가 될지는 모르지만 Fiber(Project Loom)가 도입될 예정이다. 그러니 **비동기 처리라는 관점에서 리액티브 스트림이나 ReactiveX가 앞서 예를 둔 더 간편한 API들과 견주어 경쟁력을 유지할 수 있을지 솔직히 의문**이다.
+비동기 처리라면 C#, JavaScript, Rust 등에는 async/await, Kotlin에는 coroutine 처럼 더 진입 장벽이 낮은 API가 제공되고 있다. 그리고 자바에도 정확히 언제가 될지는 모르지만 Fiber(Project Loom)가 도입될 예정이므로 **비동기 처리라는 관점에서 리액티브 스트림이나 ReactiveX가 앞서 예를 둔 더 간편한 API들과 견주어 경쟁력을 유지할 수 있을지 솔직히 의문**이다. 한 예로 Kotlin Coroutine과 Reactive Streams 코드를 비교한 자료(https://github.com/HomoEfficio/dev-tips/blob/master/Kotlin-Coroutine-vs-Reactive-Streams(Reactor).md) 를 보면 이런 의문을 가질 법하다는 사실을 실감나게 느낄 수 있을 것이다.
 
 따라서 비동기 처리 관점에서 리액티브 스트림을 아주 깊게 이해해야만 할 것 같지는 않다. 그저 back pressure를 적용할 수 있어야 하고, `onNext`, `onError`, `onComplete` 와 같이 이벤트 핸들링 방식으로 처리하는 API를 제공하려다보니 이런 설계가 나왔겠지 정도로 털고 가자(아 훈훈해..).
 
