@@ -97,9 +97,9 @@ suspend fun welcome(usernameOrIp: String): WelcomeMessage {
 이 정도면 리액티브 스트림과는 비교할 수 없을 정도로 훠얼씬 편리해 보인다.
 
 
-## Kotlin Coroutine Reactor Code
+## Kotlin Coroutine + Reactor Code
 
-`kotlinx-coroutines-reactor`를 사용하면 코틀린 코루틴과 리액터를 함께 사용할 수 있다.
+`kotlinx-coroutines-reactor`를 사용하면 코틀린 코루틴과 스프링 리액터 및 웹플럭스(WebFlux)를 함께 사용할 수 있다.
 
 ```kotlin
 @RestController
