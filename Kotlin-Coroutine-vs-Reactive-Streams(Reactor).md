@@ -138,10 +138,15 @@ fun welcome(usernameOrIp: String): Mono<WelcomeMessage> {
 
 ### 스택 트레이스 단절
 
-ThreadLocal 같은 컨텍스트는 유지 가능
+리액터는 각 연산마다 다른 스레드에서 실행될 수도 있으므로 스택 트레이스 단절 불가피
+
+코틀린 코루틴도 경량 스레드라고는 하지만, 경량 스레드가 JVM 처럼 무겁지 않고 JVM 스레드와 1:1 관계가 아닐 뿐 여전히 JVM 스레드 상에서 실행되고, 리액터와 마찬가지로 다른 스레드에서 연산이 실행될 수 있으므로 스택 트레이스 단절 불가피
+
+하지만 ThreadLocal 같은 내용적 컨텍스트는 둘 모두유지 가능
 
 - Reactor
   - `Publisher.subscriberContext(something)`, `Publisher.subscriberContext(something)`
+  - 근데 이거 한 번 get 하면 다시 set 해주는 코드를 반드시 추가해야만 다음 연산에서도 사용 가능하므로 불편
 - Kotlin Coroutine
     ```kotlin
     val globalVariable = ThreadLocal.withInitial { "Initial" }
