@@ -25,10 +25,10 @@ Reactive Streams는 Publisher, Subscriber, Subscription, Processor 달랑 네 �
 
 검색해보면 몇 가지 나오기는 하는데 내가 이해할 수 있을 만큼 마음에 드는 게 없어서 새로 그렸다(개고생 ㅠㅜ).  
 
+Publisher, Subscriber, Subscription 인터페이스가 가지고 있는 모든 메서드가 표시돼 있다. publisher 의 `map, flatMap, zip, ...`는 Reactive Streams 명세에 있는 메서드가 아니라 구현체인 Reactor의 Flux에 있는 메서드인데 설명의 편의를 위해 추가했다.
+
 Reactive Streams를 사용해서 비동기로 데이터를 조회하는 시나리오를 기준으로 작성했으며,  
 실선 화살표는 메서드 호출, 화살표 위는 메서드 이름, 화살표 아래에 괄호로 표시된 건 메서드 인자이며, 점선 화살표는 반환이고 화살표 아래 괄호 없이 표시된 건 반환값이다.
-
-Publisher, Subscriber, Subscription 인터페이스가 가지고 있는 모든 메서드가 표시돼 있다.
 
 ![Imgur](https://i.imgur.com/kbp9BGI.png)
 
@@ -36,21 +36,25 @@ Publisher, Subscriber, Subscription 인터페이스가 가지고 있는 모든 �
 
 데이터를 요청하는 Client는 데이터를 받아서 어떻게 처리할지, 받는 과정에서 오류를 전달 받으면 어떻게 처리할지, 데이터를 모두 받은 후에 어떤 일을 할지 정해야 할 책임을 가지고 있다. 그런 책임을 각각 `nextConsumer`, `errorConsumer`, `completeRunnable`로 정의해서 이를 바탕으로 `subscriber`를 생성한다.
 
+설명의 편의를 위해 `subscribe` 생성을 가장 먼저 표시했는데 그림을 보면 알 수 있겠지만 반드시 가장 먼저 수행할 필요는 없다. `publisher.subscribe(subscriber)`를 호출하기 직전에 `subscriber`를 생성해도 된다.
+
 ### Data Provider에 데이터 요청 및 Publisher 생성
 
-그리고 DataProvider에게 데이터를 요청한다. DataProvider는 특정 클래스 이름은 아니고 클라이언트로부터 호출을 받으면 데이터 저장소와 연동해서 실제 데이터를 반환하는 책임이 있는 객체를 의미한다고 보면 된다. 예를 들면 ReactiveMongoOperations(ReactiveMongoTemplate)이나 ReactiveMongoRepository라고 생각하면 된다. 이 DataProvider는 **나중에 데이터를 제공할 수 있도록 콜백을 생성하고 이를 `publisher`를 생성하면서 주입**해준다. 이 부분 자세한 과정은 맨 아래에서 구경할 수 있다.
+클라이언트는 DataProvider에게 데이터를 요청한다. DataProvider는 특정 클래스 이름은 아니고 클라이언트로부터 호출을 받으면 데이터 저장소와 연동해서 실제 데이터를 반환하는 책임이 있는 객체를 의미한다고 보면 된다. 예를 들면 ReactiveMongoOperations(ReactiveMongoTemplate)이나 ReactiveMongoRepository라고 생각하면 된다. 이 DataProvider는 **나중에 데이터를 제공할 수 있도록 콜백을 생성하고 이를 `publisher`를 생성하면서 주입**해준다. 이 부분 자세한 과정은 맨 아래에서 구경할 수 있다. DataProvider는 생성한 `publisher`를 클라이언트에게 반환한다.
 
 ### 구독
 
-클라이언트는 DataProvider로부터 `publisher`를 반환 받은 후에 `publisher.subscribe(subscriber)`를 호출한다. 리액티브 스트림에서 절대 잊어서는 안 될 가장 중요한 특징 중 하나가 바로 **구독하기 전에는 아무 일도 일어나지 않는다**는 점이다. 즉 앞에서 아무리 `nextConsumer`, `errorConsumer`, `completeRunnable`를 모두 정의하고 DataProvider를 호출해서 데이터를 가져오는 로직을 구현해뒀다 하더라도, `publisher.subscribe(subscriber)`를 호출하지 않으면 앞서 만든 모든 것들은 전혀 호출되지 않는다. 더 정확하게 말하면 **데이터를 가져오는 로직은 아직 콜백에 담겨 있을 뿐이고, 구독하기 전에는 콜백이 실행되지 않는다.**(엄밀하게는 Hot Publisher인 경우 구독과 상관 없이 데이터를 뿜어내지만 앞서 얘기했듯이 Hot은 너무 뜨거워서 생략)
+클라이언트는 DataProvider로부터 `publisher`를 반환 받은 후에는, 나중에 `publisher`가 발행할 데이터를 받아서 비즈니스 요구에 맞게 가공하는 로직을 추가한다. `map`, `flatMap`, `zip` 등 여러 리액티브 연산자가 이 때 사용된다.
+
+클라이언트는 데이터 가공 로직 추가를 마친 후에`publisher.subscribe(subscriber)`를 호출한다. 리액티브 스트림에서 절대 잊어서는 안 될 가장 중요한 특징 중 하나가 바로 **구독하기 전에는 아무 일도 일어나지 않는다**는 점이다. 즉 앞에서 아무리 `nextConsumer`, `errorConsumer`, `completeRunnable`를 모두 정의하고, DataProvider를 호출해서 데이터를 가져오고 가공하는 로직을 구현해뒀다 하더라도, `publisher.subscribe(subscriber)`를 호출하지 않으면 앞서 만든 모든 것들은 전혀 실행되지 않는다. 더 정확하게 말하면 **데이터를 가져오는 로직은 아직 콜백에 담겨 있을 뿐이고, 구독하기 전에는 콜백이 실행되지 않는다.**(엄밀하게는 Hot Publisher인 경우 구독과 상관 없이 데이터를 뿜어내지만 앞서 얘기했듯이 Hot은 너무 뜨거워서 생략)
 
 ### Subscription 생성
 
-`publisher.subscribe(subscriber)`가 호출되면 `publisher`는 파라미터로 전달받은 `subscriber`와 자신이 생성될 때 주입받은 `dataCallback`를 바탕으로 `subscription`을 생성하고, `subscriber.onSubscribe(subscription)`를 호출해서 `subscription`을 `subscriber`에게 전달해준다.
+`publisher.subscribe(subscriber)`가 호출되면 `publisher`는 인자로 전달받은 `subscriber`와 자신이 생성될 때 주입받은 `dataCallback`를 바탕으로 `subscription`을 생성하고, `subscriber.onSubscribe(subscription)`를 호출해서 `subscription`을 `subscriber`에게 전달해준다.
 
 ### Subscription에 데이터 요청 
 
-`subscriber`는 `onSubscribe(subscription)`을 통해 `subscription`을 전달받으면 `subscription.request(numOfData)`를 호출해서 데이터를 요청한다. 자신이 소화할 수 있을 만큼의 데이터만 요청할 수 있으므로 back pressure 개념이 이 지점에서 발동한다. 그리고 실제 데이터 접근도 이 지점에서 이루어진다.
+`subscriber`는 `onSubscribe(subscription)`을 통해 `subscription`을 전달받으면 `subscription.request(numOfData)`를 호출해서 데이터를 요청한다. 자신이 소화할 수 있을 만큼의 데이터만 요청할 수 있으므로 back pressure 개념이 이 지점에서 발동한다. 그리고 실제 데이터 접근도 이 시점에서 이루어진다.
 
 ### 실제 데이터 접근 및 onNext/onError/onComplete 호출
 
@@ -63,9 +67,9 @@ Publisher, Subscriber, Subscription 인터페이스가 가지고 있는 모든 �
 
 사실 리액티브 스트림이 비동기 스트림 처리 표준 제공 어쩌구라고는 하지만 4가지 인터페이스를 보면 비동기 관련 내용은 전혀 없다. 다시 말해 비동기 처리 없이 동기 처리만 사용하더라도 스트림을 리액티브 방식으로 처리하는 것이 가능하다. 결국 **리액티브 스트림은 비동기 처리 표준을 지향하긴 하지만 그렇다고 비동기를 강제하는 것도 아니다.** 따라서 비동기 처리는 실질적으로는 구현에 달려 있다.
 
-Spring Reactor에서는 reactor.core.scheduler.Scheduler 인터페이스에 비동기 처리 관련 규약이 담겨 있다. reactor.core.publisher 패키지에서 Scheduler가 사용되는 곳을 검색하면 대략 감이 올 것이다.
+Spring Reactor의 비동기 처리 관련 규약은 `reactor.core.scheduler.Scheduler` 인터페이스에 담겨 있다. `reactor.core.publisher` 패키지에서 Scheduler가 사용되는 곳을 검색하면 어떻게 비동기 처리를 하는지 대략 감을 잡을 수 있을 것이다.
 
-[JDK 9 예제](https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Flow.html)에 보면 Subscription이 Subscriber의 onNext()를 호출할 때 Executor를 이용해서 비동기로 호출하고 있다.
+또 다른 예로 [JDK 9 예제](https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Flow.html)에 보면 `Subscription`이 `Subscriber`의 `onNext()`를 호출할 때 `Executor`를 이용해서 비동기로 호출하고 있다.
 
 
 ## 마무리
@@ -73,7 +77,7 @@ Spring Reactor에서는 reactor.core.scheduler.Scheduler 인터페이스에 비�
 >Reactive Streams는 논블로킹, 백프레셔를 포함해서 스트림을 비동기 방식으로 처리할 수 있는 표준 API다.
 >
 >Publisher, Subscriber, Subscription 이 서로 협력하면서 스트림을 리액티브 방식으로 처리한다.  
->자세한 협력 구조는 글보다는 [시퀀스 다이어그램](https://i.imgur.com/BzOrtx8.png)을 참고하면 더 쉽게 이해할 수 있다.
+>자세한 협력 구조는 글보다는 [시퀀스 다이어그램](https://i.imgur.com/kbp9BGI.png)을 참고하면 더 쉽게 이해할 수 있다.
 
 
 ---
@@ -129,9 +133,9 @@ JDK API 문서에 나오는 [`Publisher.subscribe(Subscriber)`에 대한 설명]
 
 ## 개선된 시퀀스 다이어그램
 
-궁시렁대기만 하면 모양빠지니까 한 번 개선도 생각해보자.
+궁시렁대기만 할 게 아니라 개선도 한 번 생각해보자.
 
-`subscribe`라는 용어를 중심에 두고 싶었다면 협력 구조도 좀 바꿔서 `Subscriber.subscribe(Publisher)`로 했으면 어땠을까 생각해봤는데, 이렇게 하면 클라이언트가 `Subscriber`와만 직접 통신하게 되고, 너무 구독만 강조돼서 Push 기반이라는 Reactive의 특징이 퇴색되는 안 좋은 결과로 이어진다. 게다가 코드도 아래와 같이 못난이가 돼버린다.
+`subscribe`라는 용어를 중심에 두고 싶었다면 협력 구조도 좀 바꿔서 `Subscriber.subscribe(Publisher)`로 했으면 어땠을까? 이렇게 하면 클라이언트가 `Subscriber`와만 직접 통신하게 되고, 너무 구독만 강조돼서 Push 기반이라는 Reactive의 특징이 퇴색되는 안 좋은 결과로 이어진다. 게다가 코드도 아래와 같이 못난이가 돼버린다.
 
 ```java
 subscriber.subscribe(
@@ -157,11 +161,11 @@ subscriber.subscribe(
 
 리액티브 스트림을 활용한 프로그래밍은 여러모로 진입 장벽이 높다. 그런데 그걸 꼭 넘어서 사용해야할 정도로 가치가 있을까?
 
-비동기 처리라면 C#, JavaScript, Rust 등에는 async/await, Kotlin에는 coroutine 처럼 더 진입 장벽이 낮은 API가 제공되고 있다. 그리고 자바에도 정확히 언제가 될지는 모르지만 Fiber(Project Loom)가 도입될 예정이라고 한다. 그러니 비동기 처리라는 관점에서 리액티브 스트림이나 ReactiveX가 앞서 예를 둔 더 간편한 API들과 견주어 경쟁력을 유지할 수 있을지 솔직히 의문이다.
+비동기 처리라면 C#, JavaScript, Rust 등에는 async/await, Kotlin에는 coroutine 처럼 더 진입 장벽이 낮은 API가 제공되고 있다. 그리고 자바에도 정확히 언제가 될지는 모르지만 Fiber(Project Loom)가 도입될 예정이다. 그러니 **비동기 처리라는 관점에서 리액티브 스트림이나 ReactiveX가 앞서 예를 둔 더 간편한 API들과 견주어 경쟁력을 유지할 수 있을지 솔직히 의문**이다.
 
-그러니 비동기 처리 관점에서 리액티브 스트림을 아주 깊게 이해해야만 할 것 같지는 않다. 그저 back pressure를 적용할 수 있어야 하고, OnNext, onError, onComplete 와 같이 이벤트 핸들링 방식으로 처리하는 API를 제공하려다보니 이런 설계가 나왔겠지 정도로 털고 가자(아 훈훈해..).
+따라서 비동기 처리 관점에서 리액티브 스트림을 아주 깊게 이해해야만 할 것 같지는 않다. 그저 back pressure를 적용할 수 있어야 하고, `onNext`, `onError`, `onComplete` 와 같이 이벤트 핸들링 방식으로 처리하는 API를 제공하려다보니 이런 설계가 나왔겠지 정도로 털고 가자(아 훈훈해..).
 
-물론 꼭 비동기 처리를 필요로 하지 않는 Push 기반의 데이터 처리 패턴으로서의 존재 가치는 여전히 유효할 것이다.
+물론 꼭 **비동기 처리를 필요로 하지 않는 Push 기반의 데이터 처리 패턴으로서의 존재 가치는 여전히 유효**할 것이다.
 
 
 ## 콜백이 어디에 어떻게 감춰져 있는지 구경하기
