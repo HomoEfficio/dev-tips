@@ -144,9 +144,10 @@ ThreadLocal 같은 컨텍스트는 유지 가능
   - `Publisher.subscriberContext(something)`, `Publisher.subscriberContext(something)`
 - Kotlin Coroutine
     ```kotlin
-    val globalVariable = ThreadLocal.withInitial { "Default" }
+    val globalVariable = ThreadLocal.withInitial { "Initial" }
     launch(globalVariable.asContextElement()) {
-        globalVariable.set(something)
+        globalVariable.get()
+        globalVariable.set("Other")
         globalVariable.get()
     }
     ```
