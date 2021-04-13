@@ -159,7 +159,7 @@ fun welcome(usernameOrIp: String): Mono<WelcomeMessage> {
 
 ### 동기/비동기 함수 구분
 
-- 리액터: 흐름 중에 blocking/동기 함수 호출하면 망함
+- 리액터: 비동기 흐름 중에 장시간 blocking 하는 동기 함수 호출하면 망함
 - 코틀린 코루틴: 일반 동기 함수 내에서 suspend 함수 호출 불가
 
 건희님 블로그: http://gunsdevlog.blogspot.com/2020/09/java-project-loom-reactive-streams.html
