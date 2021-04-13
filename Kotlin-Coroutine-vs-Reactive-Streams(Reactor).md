@@ -1,6 +1,6 @@
 # Kotlin Coroutine vs Reactive Streams(Reactor)
 
-둘을 코드 수준에서 간명하게 비교한 자료(https://nexocode.com/blog/posts/reactive-streams-vs-coroutines/) 가 있어 아주 짧게 요약해 본다.
+코틀린 코루틴과 리액티브 스트림의 구현체 중 하나인 리액터를 코드 수준에서 간명하게 비교한 자료(https://nexocode.com/blog/posts/reactive-streams-vs-coroutines/) 가 있어 아주 짧게 요약하고, 약간의 내용을 추가해봤다.
 
 다음과 같이 사용자가 로그인 했을 때 환영 메시지를 반환하는 메서드가 있다고 할 때,
 
@@ -112,7 +112,8 @@ class WelcomeController(
 }
 ```
 
-스프링 웹플럭스는 suspend 함수 결과를 받아서 반환하는 기능을 지원하고 있어서 웹플럭스 컨트롤러에서 suspend 함수를 사용할 수 있다.
+**스프링 웹플럭스는 suspend 함수 결과를 받아서 반환하는 기능을 지원하고 있어서 웹플럭스 컨트롤러에서 suspend 함수를 사용할 수 있다.**  
+따라서 Reactor 기반으로 작성된 코드를 코틀린 코루틴 코드로 대체할 수 있다.
 
 그리고 코틀린 코루틴도 리액터 타입인 Mono를 지원해서 다음과 같이 섞어쓸 수 있다.
 
@@ -127,6 +128,32 @@ fun welcome(usernameOrIp: String): Mono<WelcomeMessage> {
 }
 ```
 
+## Kotlin Coroutine + Flux 는 아직 미지원
+
 코틀린 코루틴이 Mono는 지원하지만 아쉽게도 2021-04-12 현재 Flux 지원은 실험 상태다.
 
 ![Imgur](https://i.imgur.com/BcFIJz8.png)
+
+## 눈에 보이는 코드 말고 다른 문제들
+
+### 스택 트레이스 단절
+
+ThreadLocal 같은 컨텍스트는 유지 가능
+
+- Reactor
+  - `Publisher.subscriberContext(something)`, `Publisher.subscriberContext(something)`
+- Kotlin Coroutine
+    ```kotlin
+    val globalVariable = ThreadLocal.withInitial { "Default" }
+    launch(globalVariable.asContextElement()) {
+        globalVariable.set(something)
+        globalVariable.get()
+    }
+    ```
+
+### 동기/비동기 함수 구분
+
+- 리액터: 흐름 중에 blocking/동기 함수 호출하면 망함
+- 코틀린 코루틴: 일반 동기 함수 내에서 suspend 함수 호출 불가
+
+건희님 블로그: http://gunsdevlog.blogspot.com/2020/09/java-project-loom-reactive-streams.html
