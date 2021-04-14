@@ -50,7 +50,7 @@ $ vi DefaultKeyBinding.dict
 
 재부팅
 
-### Auto Repeat
+### Auto Repeat - 이건 안 해도 됨 (Catalina 10.15.7)
 
 터미널에서 `defaults write -g ApplePressAndHoldEnabled -bool false` 입력 후 애플리케이션 재실행
 
