@@ -43,6 +43,34 @@ plugins=(git gradle jenv node npm rust)
 
 >source ~/.zshrc
 
+
+## alias 등 
+```
+### omwomw
+alias ll="ls -al"
+alias cdgr="cd ~/gitRepo"
+
+
+### jenv
+
+export PATH="$HOME/.jenv/bin:$PATH"
+eval "$(jenv init -)"
+
+### maven
+
+export PATH="$HOME/dev-infra/apache-maven-3.6.3/bin:$PATH"
+
+### mongo
+
+export PATH="$HOME/dev-infra/mongosh-0.9/bin:$PATH"
+
+### nvm
+
+export NVM_DIR="$HOME/.nvm"
+  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+```
+
 여기까지만 하면 됨. 아래는 그냥 참고
 
 ---
