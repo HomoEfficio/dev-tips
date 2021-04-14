@@ -97,13 +97,15 @@ Spring Reactor의 비동기 처리 관련 규약은 `reactor.core.scheduler.Sche
 
 >`Publisher.subscribe(Subscriber)`
 >
->발행자가 구독자를 구독한다 구독자를. 읭? 뭥미?
+>발행자가 구독한다 구독자를. 읭? 발행자가 구독자를 구독한다고? 뭥미?
 
-발행자/구독자라는 대칭 관계에 있는 애들이 구독한다(subscribe)라는 동사를 중심으로 주어, 목적어가 뒤바뀌어 있다는 점이다.
+일단 구독은 구독자의 행위인데 구독자가 아니라 엉뚱하게 발행자가 주어로 나와있다. 사실 이렇게 행위의 주어와 메서드가 소속된 객체가 다르게 돼 있는 API는 많다. 모든 getter 메서드는 get이라는 행위의 주어와 getXXX라는 메서드가 소속된 객체가 다르다. 그리고 멀리 갈 것 없이 위 시퀀스 다이어그램에 나오는 `subscription.request(numOfData)`도 마찬가지다. request 행위의 주어는 `subscriber`지만 `request()` 메서드는 `subscription`에 소속돼 있다. 그래도 이 코드를 읽는 데는 전혀 불편함이 없다. 결국 **행위의 주어와 메서드가 소속된 객체가 다르다는 것만으로는 불편함을 느끼지 않는다.**
 
-영문법과 너무 이질적으로 다르다는 점이 불편함을 느낀 시작점이긴 하지만 영문법과 맞지 않는 다른 API도 많다. 유독 이 놈만 불편한 이유는 몇 가지 더 있다.
+하지만 **`Publisher.subscribe(Subscriber)`는 단순히 행위의 주어와 메서드가 소속된 객체가 불일치하는 데 그치지 않고, 발행자/구독자라는 대칭 관계에 있는 애들이 구독한다(subscribe)라는 행위(동사)를 중심으로 주어, 목적어가 뒤바뀌어 있다.** 그래서 직관적으로 자연스럽게 협력 구조를 이해하는 데 큰 걸림돌이 된다.
 
-먼저 이 이름은 실제 동작과도 부합하지 않는다.
+단순히 문장 해석하듯 자연스럽게 이해되지 않는 것뿐만 아니라 불편한 이유는 몇 가지 더 있다.
+
+먼저 이 `subscribe`라는 이름은 실제 동작과도 부합하지 않는다.
 
 JDK API 문서에 나오는 [`Publisher.subscribe(Subscriber)`에 대한 설명](https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Flow.Publisher.html#subscribe-java.util.concurrent.Flow.Subscriber-)은 다음과 같은 간단하고 명료한 문장으로 시작한다.
 
@@ -161,7 +163,7 @@ subscriber.subscribe(
 
 리액티브 스트림을 활용한 프로그래밍은 여러모로 진입 장벽이 높다. 그런데 그걸 꼭 넘어서 사용해야할 정도로 가치가 있을까?
 
-비동기 처리라면 C#, JavaScript, Rust 등에는 async/await, Kotlin에는 coroutine 처럼 더 진입 장벽이 낮은 API가 제공되고 있다. 그리고 자바에도 정확히 언제가 될지는 모르지만 Fiber(Project Loom)가 도입될 예정이므로 **비동기 처리라는 관점에서 리액티브 스트림이나 ReactiveX가 앞서 예를 둔 더 간편한 API들과 견주어 경쟁력을 유지할 수 있을지 솔직히 의문**이다. 한 예로 Kotlin Coroutine과 Reactive Streams 코드를 비교한 자료(https://github.com/HomoEfficio/dev-tips/blob/master/Kotlin-Coroutine-vs-Reactive-Streams(Reactor).md) 를 보면 이런 의문을 가질 법하다는 사실을 실감나게 느낄 수 있을 것이다.
+비동기 처리라면 C#, JavaScript, Rust 등에는 async/await, Kotlin에는 coroutine 처럼 더 진입 장벽이 낮은 API가 제공되고 있다. 그리고 자바에도 정확히 언제가 될지는 모르지만 Fiber(Project Loom)가 도입될 예정이므로 **비동기 처리라는 관점에서 리액티브 스트림이나 ReactiveX가 앞서 예를 든 더 간편한 API들과 견주어 경쟁력을 유지할 수 있을지 솔직히 의문**이다. 한 예로 Kotlin Coroutine과 Reactive Streams 코드를 비교한 자료(https://github.com/HomoEfficio/dev-tips/blob/master/Kotlin-Coroutine-vs-Reactive-Streams(Reactor).md) 를 보면 이런 의문을 가질 법하다는 사실을 실감나게 느낄 수 있을 것이다.
 
 따라서 비동기 처리 관점에서 리액티브 스트림을 아주 깊게 이해해야만 할 것 같지는 않다. 그저 back pressure를 적용할 수 있어야 하고, `onNext`, `onError`, `onComplete` 와 같이 이벤트 핸들링 방식으로 처리하는 API를 제공하려다보니 이런 설계가 나왔겠지 정도로 털고 가자(아 훈훈해..).
 
