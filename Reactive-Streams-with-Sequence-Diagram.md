@@ -1,3 +1,20 @@
+title: Reactive Streams with Sequence Diagram
+date: 2021-04-14 00:28:04
+categories:
+  - Technique
+tags:
+  - Reactive Streams
+  - Reactive Streams Sequence Diagram
+  - Spring
+  - Reactor
+  - Sequence Diagram
+  - Async
+  - Publisher
+  - Subscriber
+  - Subscription
+thumbnailImage: https://i.imgur.com/ZVo09KP.png
+coverImage: cover-ReactiveStreams-SequenceDiagram.png
+---
 # Reactive Streams with Sequence Diagram
 
 1 req == 1 therad인 서블릿 방식의 한계를 뛰어넘기 위해 Spring에서 WebFlux를 내놨다.  
@@ -99,7 +116,7 @@ Spring Reactor의 비동기 처리 관련 규약은 `reactor.core.scheduler.Sche
 >
 >발행자가 구독한다 구독자를. 읭? 발행자가 구독자를 구독한다고? 뭥미?
 
-일단 구독은 구독자의 행위인데 구독자가 아니라 엉뚱하게 발행자가 주어로 나와있다. 사실 이렇게 행위의 주어와 메서드가 소속된 객체가 다르게 돼 있는 API는 많다. 모든 getter 메서드는 get이라는 행위의 주어와 getXXX라는 메서드가 소속된 객체가 다르다. 그리고 멀리 갈 것 없이 위 시퀀스 다이어그램에 나오는 `subscription.request(numOfData)`도 마찬가지다. request 행위의 주어는 `subscriber`지만 `request()` 메서드는 `subscription`에 소속돼 있다. 그래도 이 코드를 읽는 데는 전혀 불편함이 없다. 결국 **행위의 주어와 메서드가 소속된 객체가 다르다는 것만으로는 불편함을 느끼지 않는다.**
+일단 구독은 구독자의 행위인데 구독자가 아니라 엉뚱하게 발행자가 주어로 나와있다. 사실 이렇게 행위의 주어와 메서드가 소속된 객체가 다르게 돼 있는 API는 많다. 모든 getter 메서드는 get이라는 행위의 주어와 getXXX라는 메서드가 소속된 객체가 다르다. 멀리 갈 것 없이 위 시퀀스 다이어그램에 나오는 `subscription.request(numOfData)`도 마찬가지다. request 행위의 주어는 `subscriber`지만 `request()` 메서드는 `subscription`에 소속돼 있다. 그래도 이 코드를 읽는 데는 전혀 불편함이 없다. 결국 **행위의 주어와 메서드가 소속된 객체가 다르다는 것만으로는 불편함을 느끼지 않는다.**
 
 하지만 **`Publisher.subscribe(Subscriber)`는 단순히 행위의 주어와 메서드가 소속된 객체가 불일치하는 데 그치지 않고, 발행자/구독자라는 대칭 관계에 있는 애들이 구독한다(subscribe)라는 행위(동사)를 중심으로 주어, 목적어가 뒤바뀌어 있다.** 그래서 직관적으로 자연스럽게 협력 구조를 이해하는 데 큰 걸림돌이 된다.
 
