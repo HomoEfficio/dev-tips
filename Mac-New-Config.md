@@ -76,6 +76,14 @@ git --version
 
 명령 행 개발도구 설치? 예
 
+### alias
+
+https://github.com/HomoEfficio/dev-tips/blob/master/Git-alias.md
+
+### global .gitignore
+
+https://gomjellie.github.io/git/2017/06/15/global-git-ignore.html
+
 
 ## 터미널
 
