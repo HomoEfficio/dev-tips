@@ -1,20 +1,3 @@
-title: Reactive Streams with Sequence Diagram
-date: 2021-04-14 00:28:04
-categories:
-  - Technique
-tags:
-  - Reactive Streams
-  - Reactive Streams Sequence Diagram
-  - Spring
-  - Reactor
-  - Sequence Diagram
-  - Async
-  - Publisher
-  - Subscriber
-  - Subscription
-thumbnailImage: https://i.imgur.com/ZVo09KP.png
-coverImage: cover-ReactiveStreams-SequenceDiagram.png
----
 # Reactive Streams with Sequence Diagram
 
 1 req == 1 therad인 서블릿 방식의 한계를 뛰어넘기 위해 Spring에서 WebFlux를 내놨다.  
