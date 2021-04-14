@@ -127,8 +127,8 @@ https://brew.sh/index_ko
 
 ## java
 
->brew cask install adoptopenjdk/openjdk/adoptopenjdk8  
->brew cask install adoptopenjdk/openjdk/adoptopenjdk14
+>brew install adoptopenjdk/openjdk/adoptopenjdk8  
+>brew install adoptopenjdk/openjdk/adoptopenjdk14
 
 ### java 기본 버전 변경
 
