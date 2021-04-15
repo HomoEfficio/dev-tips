@@ -1,7 +1,7 @@
 # Reactive Streams with Sequence Diagram
 
 1 req == 1 therad인 서블릿 방식의 한계를 뛰어넘기 위해 Spring에서 WebFlux를 내놨다.  
-Spring WebFlux는 내부적으로 Spring Reactor를 사용하는데, Spring Reactor는 Reactive Streams 구현체다.  
+Spring WebFlux는 내부적으로 [Reactor](https://projectreactor.io/)를 사용하는데, Reactor는 Reactive Streams 구현체다.  
 Reactive Streams는 [홈페이지](https://www.reactive-streams.org/)에 다음과 같이 간단 명료하게 정의돼 있다.
 
 >Reactive Streams is an initiative to provide a standard for asynchronous stream processing with non-blocking back pressure.
@@ -10,7 +10,7 @@ Reactive Streams는 [홈페이지](https://www.reactive-streams.org/)에 다음�
 
 솔직히 뭔 소린지 모르겠다. 이거 안다고 퇴근 시간이 앞당겨질 것 같지는 않은데 몰라도 너무 모르니 한 번 알아보려 한다.
 
-이후 나오는 내용은 [JDK 9 Flow 예제](https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Flow.html)와 Spring Reactor, Reactive MongoDB에서 구현한 여러 Reactive Streams 구현 내용을 기준으로 작성했으며, Hot Publisher는 배제하고 Cold Publisher만 다룬다.
+이후 나오는 내용은 [JDK 9 Flow 예제](https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Flow.html)와 Reactor, Reactive MongoDB에서 구현한 여러 Reactive Streams 구현 내용을 기준으로 작성했으며, Hot Publisher는 배제하고 Cold Publisher만 다룬다.
 
 
 ## 등장 인물
@@ -67,7 +67,7 @@ Reactive Streams를 사용해서 비동기로 데이터를 조회하는 시나�
 
 사실 리액티브 스트림이 비동기 스트림 처리 표준 제공 어쩌구라고는 하지만 4가지 인터페이스를 보면 비동기 관련 내용은 전혀 없다. 다시 말해 비동기 처리 없이 동기 처리만 사용하더라도 스트림을 리액티브 방식으로 처리하는 것이 가능하다. 결국 **리액티브 스트림은 비동기 처리 표준을 지향하긴 하지만 그렇다고 비동기를 강제하는 것도 아니다.** 따라서 비동기 처리는 실질적으로는 구현에 달려 있다.
 
-Spring Reactor의 비동기 처리 관련 규약은 `reactor.core.scheduler.Scheduler` 인터페이스에 담겨 있다. `reactor.core.publisher` 패키지에서 Scheduler가 사용되는 곳을 검색하면 어떻게 비동기 처리를 하는지 대략 감을 잡을 수 있을 것이다.
+Reactor의 비동기 처리 관련 규약은 `reactor.core.scheduler.Scheduler` 인터페이스에 담겨 있다. `reactor.core.publisher` 패키지에서 Scheduler가 사용되는 곳을 검색하면 어떻게 비동기 처리를 하는지 대략 감을 잡을 수 있을 것이다.
 
 또 다른 예로 [JDK 9 예제](https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Flow.html)에 보면 `Subscription`이 `Subscriber`의 `onNext()`를 호출할 때 `Executor`를 이용해서 비동기로 호출하고 있다.
 
