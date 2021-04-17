@@ -1,4 +1,4 @@
-# Kotlin Coroutine Spring WebFluxTest with SpringMockk
+# Kotlin Coroutine Spring WebFluxTest
 
 https://github.com/HomoEfficio/dev-tips/blob/master/Kotlin-Coroutine-vs-Reactive-Streams(Reactor).md 에서 Spring WebFlux 환경에서 Reactor 코드 대신 Kotlin Coroutine 코드를 사용할 수 있음을 알게 됐다.
 
