@@ -80,6 +80,18 @@ Reactor의 비동기 처리 관련 규약은 `reactor.core.scheduler.Scheduler` 
 >자세한 협력 구조는 글보다는 [시퀀스 다이어그램](https://i.imgur.com/kbp9BGI.png)을 참고하면 더 쉽게 이해할 수 있다.
 
 
+## 더 읽을거리
+
+- Reactive Streams 명세: https://github.com/reactive-streams/reactive-streams-jvm
+- Reactive Streams 설명: https://engineering.linecorp.com/ko/blog/reactive-streams-with-armeria-1/
+- back pressure
+  - https://www.baeldung.com/spring-webflux-backpressure
+  - https://medium.com/@jayphelps/backpressure-explained-the-flow-of-data-through-software-2350b3e77ce7
+- Spring WebFlux Concurrency: https://www.baeldung.com/spring-webflux-concurrency
+- 예제
+  - WebFlux Streaming: https://technicalsand.com/streaming-data-spring-boot-restful-web-service/#11-22-stream-json-example-using-webflux-
+
+
 ---
 
 # 번외편
