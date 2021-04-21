@@ -85,3 +85,48 @@ doReturn(Optional.of(getUser()))
 ```
 
 심지어 이렇게 한 번 doReturn-when-method 을 써서 해결한 후 doReturn-when을 지우고 given-when-then을 쓰면 되기도 한다.
+
+## 반환 값에 또 Mock이 사용되지 않도록 유의
+
+아래와 같은 테스트 코드를 실행해서
+
+```java
+when(reviewService.toReview(any())
+    .thenReturn(Mono.just(objectMapper.readValue(reviewVmJson, ReviewVM.class)))
+```
+
+아래와 같은 에러가 나왔다.
+
+```
+Unfinished stubbing detected here:
+-> at com.nhaarman.mockitokotlin2.BDDMockitoKt.given(BDDMockito.kt:37)
+
+E.g. thenReturn() may be missing.
+Examples of correct stubbing:
+    when(mock.isOk()).thenReturn(true);
+    when(mock.isOk()).thenThrow(exception);
+    doThrow(exception).when(mock).someVoidMethod();
+Hints:
+ 1. missing thenReturn()
+ 2. you are trying to stub a final method, which is not supported
+ 3. you are stubbing the behaviour of another mock inside before 'thenReturn' instruction is completed
+
+org.mockito.exceptions.misusing.UnfinishedStubbingException: 
+Unfinished stubbing detected here:
+-> at com.nhaarman.mockitokotlin2.BDDMockitoKt.given(BDDMockito.kt:37)
+
+E.g. thenReturn() may be missing.
+Examples of correct stubbing:
+    when(mock.isOk()).thenReturn(true);
+    when(mock.isOk()).thenThrow(exception);
+    doThrow(exception).when(mock).someVoidMethod();
+Hints:
+ 1. missing thenReturn()
+ 2. you are trying to stub a final method, which is not supported
+ 3. you are stubbing the behaviour of another mock inside before 'thenReturn' instruction is completed
+```
+
+3번 메시지가 해석이 좀 어려운데, 쉽게 말해 `thenReturn()` 안에서도 또 mock이 사용되고 있다는 얘기다.
+
+위 테스트 코드에는 안 나와있지만, objectMapper가 `@MockBean private ObjectMapper objectMapper`로 선언돼 있었다능..  
+그래서 `thenReturn()` 안에서 mock 객체로 선언된 objectMapper가 사용되기 때문에 위와 같은 에러가 발생한 것이다.
