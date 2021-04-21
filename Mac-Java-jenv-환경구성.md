@@ -156,3 +156,52 @@ zgroup-server git:master 🦑🍕🍺 ❯
 
 혹시 `jenv local 11` 실행 후 `java -version`으로 확인했을 때 새로 지정한 버전이 아니라 기존 버전이 표시되면 터미널을 새로 열어서 확인하면 제대로 나온다.
 
+### .java-version 파일 ignore
+
+jenv를 사용하면 .java-version 파일이 생기는데 버전 관리에 포함할 필요가 없는 파일이다.  
+그렇다고 프로젝트별 .gitignore에 수동으로 꼬박꼬박 넣어주기는 귀찮다.  
+
+이럴 때 `~/.gitignore`에 `.java-version` 파일을 넣어두고, `git config --global core.excludesFile = PATH_TO_.gitignore` 명령을 사용하면,  
+현재 사용자 계정에서 만드는 모든 git 리포지토리에서 `.java-version` 파일은 자동으로 ignore 된다.
+
+위 설명대로 설정한 결과는 대략 다음과 같다.
+
+```
+~ 🦑🍕🍺 ❯ cat ~/.gitconfig                                                                                                                                      
+
+[core]
+	excludesFile = /Users/user/.gitignore
+[user]
+	name = Homo Efficio
+	email = homo.efficio@gmail.com
+
+~ 🦑🍕🍺 ❯ cat ~/.gitignore 
+# Folder view configuration files
+.DS_Store
+Desktop.ini
+
+
+# Thumbnail cache files
+._*
+Thumbs.db
+
+
+# Compiled files
+*.pyc
+*.out
+*.class
+
+
+# Application specific files
+venv
+node_modules
+.sass-cache
+
+
+# jenv
+.java-version
+
+
+# nodeJS
+node_modules/
+```
