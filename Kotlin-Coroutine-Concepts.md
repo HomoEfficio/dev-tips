@@ -6,9 +6,10 @@
 짧게 정리하면 다음과 같다.
 
 >- 코루틴은 스코프(CoroutineScope) 안에서만 실행될 수 있다
+>- 스코프는 코루틴이 실행될 수 있는 영억/범위다
 >- 스코프는 기본적으로 `GlobalScope`를 사용할 수 있지만, 대부분 `GlobalScope`로부터 하위의 다른 스코프를 만들어서 사용한다
->- 컨텍스트(CoroutineContext)는 스코프의 한 property다
->- 디스패처(CoroutineDispatcher)는 컨텍스트의 한 요소이며 보류된 코루틴이 실행/재개될 때 어느 스레드에서 재개될 지 결정한다
+>- 컨텍스트(CoroutineContext)는 스코프의 한 property이며, 스코프 안에 있는 코루틴(들)이 스코프 안에서 전역적으로 사용될 수 있는 문맥(정보 및 함수 저장소)이다
+>- 디스패처(CoroutineDispatcher)는 컨텍스트의 한 요소이며, 코루틴이 어느 스레드에서 실행/재개될지 지정할 수 있게 해준다
 
 이 정도만 이해해도 다른 코루틴 자료를 보는 데 적지 않은 도움이 될 것이다.
 
@@ -35,22 +36,22 @@
 
 ### Coroutine Builder
 
-- 주어진 스코프 안에서 새 코루틴을 만드는 suspend 함수
+- 주어진 스코프 안에서 새 코루틴을 만드는 함수
 - 따라서 이미 존재하는 스코프 안에서만 호출 가능
 - 모든 코루틴 빌더 함수는 CoroutineScope의 확장 함수이며
 - `scopeA.launch`는 `scopeA` 스코프 안에서 실행될 수 있는 새 코루틴을 생성
   - `scopeA`가 생략되면 `launch`가 호출되는 위치를 포함하는 최하위 스코프에서 새 코루틴을 생성
   - 아무런 스코프도 없는 곳에서 `launch`를 호출하면 `Unresolved reference: launch` 컴파일 에러 발생
 
-### runBlocking
+### fun runBlocking
 
 - GlobalScope에서 실행될 수 있는 코루틴 생성
 
-### launch
+### fun launch
 
 - `Job` 반환
 
-### async
+### fun async
 
 - `Deferred<T>` 반환
 
@@ -70,11 +71,11 @@
   - 새로운 스코프를 만들지만 새로운 코루틴을 만들지는 않는다
 - suspend 함수이므로 코루틴 내에서만 호출 가능
 
-### coroutineScope
+### suspend fun coroutineScope
 
 - 기존 스코프에 있는 컨텍스트를 상속받고, 기존 컨텍스트의 Job은 오버라이드하면서 새 스코프 생성
 
-### withContext
+### suspend fun withContext
 
 - 특정 컨텍스트를 가지는 새 스코프 생성
 
@@ -96,7 +97,7 @@
 
 ## Coroutine Dispatcher
 
-- 코루틴이 어느 스레드에서 실행/재개 될지 결정
+- 코루틴이 어느 스레드에서 실행/재개될지 지정
 
 ### Dispatchers.Default
 
@@ -113,7 +114,7 @@
 
 - 코루틴 컨텍스트를 생성하는 현재 실행 중인 스레드에서 실행
 - 재개될 때는 특정 스레드나 풀이 아니라 해당 suspend 함수가 사용하는 어떤 스레드에서도 재개될 수 있음
-- 일반적인 코드에서는 사용하지 말아야 한다
+- **일반적인 코드에서는 사용하지 말아야 한다**
   - see [here](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-dispatcher/index.html)
 - 이 디스패처를 사용해서 생성되는 중첩 코루틴은 스택 오버플우를 피하기 위해 이벤트루프를 형성
 
@@ -219,7 +220,7 @@ suspend fun doWorld() {
 }
 ```
 
-아래와 같이 `coroutineScope`를 통해 `CoroutineScope`가 만들어진 후에 `launch`를 호출할 수 있다.
+아래와 같이 `coroutineScope`를 통해 `CoroutineScope`가 만들어진 후에 `launch`를 호출할 수 있다. `coroutineScope`가 호출될 당시 존재하던 컨텍스트를 상속받되, 기존 컨텍스트의 Job은 새로 만들어 override 한다.
 
 ```kotlin
 suspend fun doWorld() = coroutineScope {
@@ -237,7 +238,4 @@ suspend fun doWorld() = coroutineScope {
 `delay`는 suspending 함수로서 일정 시간 동안 코루틴의 실행을 보류/연기/유보(suspend)한다. 보류/연기/유보되는 동안 해당 코루틴 코드가 실행되던 스레드 A는 blocking 되고 해방되어 다른 일을 수행할 수 있다.
 
 CoroutineScope는 위계 구조로 실행될 수 있으며, 하위 코루틴이 완료되기 전에는 상위 코루틴도 완료될 수 없다.
-
-
-
 
