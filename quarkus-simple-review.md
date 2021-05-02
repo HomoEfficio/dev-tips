@@ -182,6 +182,11 @@ fun new(other: Other): Uni<Response> {
 ![Imgur](https://i.imgur.com/X3JRQCn.png)
 
 
+## 기타
+
+잔말 필요 없이 여기 가이드 https://quarkus.io/guides/ 항목을 주욱~~ 살펴보자
+
+
 ## 마무리
 
 다른 자료에서 이미 강조하고 있는 Supersonic, Subatomic은 분명한 것 같으니 그러려니 한다. 하지만 [부하가 커지면 오히려 자원 사용량이 높아진다는 의견](https://medium.com/swlh/springboot-vs-quarkus-a-real-life-experiment-be70c021634e)도 있다.
