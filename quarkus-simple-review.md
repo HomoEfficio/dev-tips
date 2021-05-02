@@ -175,6 +175,13 @@ fun new(other: Other): Uni<Response> {
 }
 ```
 
+## 개발용 웹 UI
+
+아래와 같이 몇 가지 개발에 활용할 수 있는 웹 UI도 제공해준다.
+
+![Imgur](https://i.imgur.com/X3JRQCn.png)
+
+
 ## 마무리
 
 다른 자료에서 이미 강조하고 있는 Supersonic, Subatomic은 분명한 것 같으니 그러려니 한다. 하지만 [부하가 커지면 오히려 자원 사용량이 높아진다는 의견](https://medium.com/swlh/springboot-vs-quarkus-a-real-life-experiment-be70c021634e)도 있다.
