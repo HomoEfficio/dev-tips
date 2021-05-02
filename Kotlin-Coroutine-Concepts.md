@@ -187,7 +187,7 @@ fun main() = runBlocking {
 ```kotlin
 @Test
 fun `runBlocking test`() {
-    println("main start")
+
     runBlocking {
         println("runBlocking start")
 
@@ -199,7 +199,6 @@ fun `runBlocking test`() {
             
         println("runBlocking end")
     }
-    println("main end")
 }
 ```
 
@@ -220,7 +219,8 @@ suspend fun doWorld() {
 }
 ```
 
-아래와 같이 `coroutineScope`를 통해 `CoroutineScope`가 만들어진 후에 `launch`를 호출할 수 있다. `coroutineScope`가 호출될 당시 존재하던 컨텍스트를 상속받되, 기존 컨텍스트의 Job은 새로 만들어 override 한다.
+아래와 같이 `coroutineScope`를 통해 `CoroutineScope`가 만들어진 후에 `launch`를 호출할 수 있다.  
+`coroutineScope`가 호출될 당시 존재하던 컨텍스트를 상속받되, 기존 컨텍스트의 Job은 새로 만들어 override 한다.
 
 ```kotlin
 suspend fun doWorld() = coroutineScope {
@@ -234,8 +234,13 @@ suspend fun doWorld() = coroutineScope {
 }
 ```
 
+`delay`는 suspending 함수로서 일정 시간 동안 코루틴의 실행을 보류/연기/유보(suspend)한다.
+보류/연기/유보되는 동안 해당 코루틴 코드가 실행되던 스레드 A는 blocking 되고 해방되어 다른 일을 수행할 수 있다.
 
-`delay`는 suspending 함수로서 일정 시간 동안 코루틴의 실행을 보류/연기/유보(suspend)한다. 보류/연기/유보되는 동안 해당 코루틴 코드가 실행되던 스레드 A는 blocking 되고 해방되어 다른 일을 수행할 수 있다.
+`launch`는 `Job`을 반환하며, `Job`은 실행 취소(cancel)될 수 있다.
+
 
 CoroutineScope는 위계 구조로 실행될 수 있으며, 하위 코루틴이 완료되기 전에는 상위 코루틴도 완료될 수 없다.
+
+### async
 
