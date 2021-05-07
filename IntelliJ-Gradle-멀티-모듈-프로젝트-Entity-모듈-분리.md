@@ -11,6 +11,7 @@
 3. 실제 파일 이동
 4. entity 모듈 라이브러리화
 5. Entity 및 Repository 사용 설정
+6. jar 파일 이름 지정
 
 ## 1. entity 모듈 생성
 
@@ -125,3 +126,29 @@ public class Gradnet2ApiUserApplication {
 
 }
 ```
+
+## 6. jar 파일 이름 지정
+
+서브 모듈의 settings.gradle 파일을 삭제하고, 루트 프로젝트의 settings.gradle 파일에 include 로 경로를 지정하면, 서브모듈 빌드 결과 jar 파일 이름이 애초에 서브모듈 생성 시 지정한 artifactname 기준이 아니라 서브모듈 폴더 이름 기준으로 강제로 변경된다.
+
+다시 원하는 artifactname 기준으로 jar 파일이 생성되도록 하려면 다음과 같이 지정하면 된다.
+
+### 실행 애플리케이션 서브모듈
+
+```groovy
+
+bootJar {
+    archiveBaseName = "원하는이름"
+}
+```
+
+### 비실행 라이브러리 서브모듈
+
+```groovy
+jar {
+    enabled = true
+    archiveBaseName = "원하는이름"
+}
+```
+
+이렇게 하면 빌드 결과 `원하는이름-version.jar` 파일이 생성된다.
