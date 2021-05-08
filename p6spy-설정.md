@@ -1,5 +1,7 @@
 # p6spy 설정
 
+- update 2021-05-08: 스프링 부트용 서드파티 - https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
+
 JDBC 를 통해 DB로 전달되는 쿼리를 볼 수 있게 해주는 라이브러리인 p6spy를 Spring Boot + JPA 환경에서 사용하는 방법을 알아보자.
 
 ## Hibernate 쿼리도 있는데 뭐하러?
