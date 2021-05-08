@@ -39,29 +39,23 @@ logMessageFormat=me.zepeto.creator.in_app_game.creator.command.config.P6SpyZepet
 ```
 ### Formatter
 
-아래와 같은 구현체 만들어서 지정 가능
+com.p6spy.engine.spy.appender.MultiLineFormat 참고해서 아래와 같은 구현체 만들어서 지정 가능
 
-```java
-public class MultiLineFormat implements MessageFormattingStrategy {
-
-  /**
-   * Formats a log message for the logging module
-   *
-   * @param connectionId the id of the connection
-   * @param now          the current ime expressing in milliseconds
-   * @param elapsed      the time in milliseconds that the operation took to complete
-   * @param category     the category of the operation
-   * @param prepared     the SQL statement with all bind variables replaced with actual values
-   * @param sql          the sql statement executed
-   * @param url          the database url where the sql statement executed
-   * @return the formatted log message
-   */
-  @Override
-  public String formatMessage(final int connectionId, final String now, final long elapsed, final String category, final String prepared, final String sql, final String url) {
-    return "#" + now + " | took " + elapsed + "ms | " + category + " | connection " + connectionId + "| url " + url + "\n" + prepared + "\n" + sql +";";
-  }
+```kotlin
+class P6SpyZepetoLineFormat: MessageFormattingStrategy {
+    override fun formatMessage(
+        connectionId: Int,
+        now: String?,
+        elapsed: Long,
+        category: String?,
+        prepared: String?,
+        sql: String?,
+        url: String?
+    ): String {
+        return """#$now | took ${elapsed}ms | $category | connection $connectionId| url $url
+$sql;"""
+    }
 }
-
 ```
 
 
