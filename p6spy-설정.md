@@ -1,6 +1,71 @@
 # p6spy 설정
 
-- update 2021-05-08: 스프링 부트용 서드파티 - https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
+## update 2021-05-08
+
+- 스프링 부트용 서드파티 - https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
+
+
+### build.gradle.kts
+
+`p6spy-spring-boot-starter`를 implementation 으로 지정해야함, developmentOnly 로 지정하면 P6SpyDriver 못 찾아서 오류
+
+```kotlin
+dependencies {
+    implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.7.1")
+}
+```
+
+### application.yml
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:p6spy:h2:mem:creator-in-app-game;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+
+decorator.datasource.p6spy:
+  enable-logging: true
+  multiline: true
+  logging: slf4j
+  tracing.include-parameter-values: true
+```
+
+### spy.properties
+
+```
+driverlist=org.h2.Driver
+appender=com.p6spy.engine.spy.appender.Slf4JLogger
+logMessageFormat=me.zepeto.creator.in_app_game.creator.command.config.P6SpyZepetoLineFormat
+```
+### Formatter
+
+아래와 같은 구현체 만들어서 지정 가능
+
+```java
+public class MultiLineFormat implements MessageFormattingStrategy {
+
+  /**
+   * Formats a log message for the logging module
+   *
+   * @param connectionId the id of the connection
+   * @param now          the current ime expressing in milliseconds
+   * @param elapsed      the time in milliseconds that the operation took to complete
+   * @param category     the category of the operation
+   * @param prepared     the SQL statement with all bind variables replaced with actual values
+   * @param sql          the sql statement executed
+   * @param url          the database url where the sql statement executed
+   * @return the formatted log message
+   */
+  @Override
+  public String formatMessage(final int connectionId, final String now, final long elapsed, final String category, final String prepared, final String sql, final String url) {
+    return "#" + now + " | took " + elapsed + "ms | " + category + " | connection " + connectionId + "| url " + url + "\n" + prepared + "\n" + sql +";";
+  }
+}
+
+```
+
+
+---
 
 JDBC 를 통해 DB로 전달되는 쿼리를 볼 수 있게 해주는 라이브러리인 p6spy를 Spring Boot + JPA 환경에서 사용하는 방법을 알아보자.
 
