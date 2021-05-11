@@ -93,6 +93,7 @@ java.lang.NullPointerException: any() must not be null
 요는 `any()`가 null 을 반환하기 때문에 발생하는 에러다. 이건 또 어떻게 해결하나 찾아보니 https://withhamit.tistory.com/138 여기에 아주 단순한 해법이 있었다. `Mockito.any()` 대신에 다음과 같이 자체 구현한 `any()`를 사용하면 된다.
 
 ```kotlin
+    @Suppress("UNCHECKED_CAST")
     private fun <T> any(): T {
         Mockito.any<T>()
         return null as T
