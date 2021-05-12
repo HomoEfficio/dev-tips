@@ -102,6 +102,8 @@ java.lang.NullPointerException: any() must not be null
 
 게다가 테스트도 통과한다!
 
+한 걸음 더 나아가서 너무 불특정한 `any()` 대신에 `argThat()`을 응용해서 `argMatching()`을 만들 수 있다: https://github.com/HomoEfficio/dev-tips/blob/master/Kotlin-Mockito-ArgumentMatcher.md#해결
+
 
 ## mockito-kotlin
 
