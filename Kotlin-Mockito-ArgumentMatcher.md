@@ -86,7 +86,7 @@ fun findAll(pageable: Pageable): Page<WorldOut>
 그래서 해결은?
 
 
-## 해결(이라기보다는 파묻기)
+## 해결
 
 일단 파라미터를 Nullable 하게 바꾸고 테스트 코드도 그에 맞게 바꿔서 해보자.
 
