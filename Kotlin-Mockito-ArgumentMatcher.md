@@ -138,3 +138,19 @@ private fun <T> argMatching(matcher: ArgumentMatcher<T>): T {
 }
 ```
 
+## 자바의 void 메서드 stub 하기
+
+그냥 아래와 같이 Init을 반환하게 하면 되려나 했는데 역시나 안 되더라능
+
+```kotlin
+given(worldCommand.delete(id)).willReturn(Unit)
+```
+
+다음과 같이 해야한다.
+
+```kotlin
+willDoNothing().given(worldCommand).delete(id)
+```
+
+
+
