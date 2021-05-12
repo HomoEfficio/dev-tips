@@ -126,5 +126,15 @@ given(worldQuery.findAll(any()))
     .willReturn(PageImpl(contents, PageRequest.of(page, size), total))
 ```
 
-그러니 이제 `argThat()`도 이걸 응용해서.. (할 줄 모르니까 이하 생략)
+근데 이건 말 그대로 아무 값을 가진 객체가 와도 stub을 하는 거니까, `any()`보다는 `argThat()`을 사용하고 싶다.
+
+꼼수를 응용해서 아래와 같이 간단하게 만들 수 있다. 물론 private으로 하지 말고 테스트 어디에서도 쓸 수 있게 하는 것이 좋다.
+
+```kotlin
+@Suppress("UNCHECKED_CAST")
+private fun <T> argMatching(matcher: ArgumentMatcher<T>): T {
+    argThat(matcher)
+    return null as T
+}
+```
 
