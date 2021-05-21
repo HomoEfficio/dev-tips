@@ -6,8 +6,8 @@ from: https://learn.hashicorp.com/tutorials/vault/kubernetes-sidecar?in=vault/ku
   - vault, vault-agent-injector 생성
 - vault 에 setcret 값 저장, 정책 등 설정
 - vault 에 접근하는 기능을 기존 deployment에 추가해주는 annotation 설정
-- 기존 deployment 에 annotation 적용 후 재배포
   - secret 값이 저장될 파일 경로를 annotation 으로 저징
+- 기존 deployment 에 annotation 적용 후 재배포(patch)  
 - app pod 내부의 해당 경로에 secret 값 저장된 파일 생성
 - app 에서는 해당 파일 읽어서 사용
 
