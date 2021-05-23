@@ -100,7 +100,7 @@ class YamlPropertySourceFactory : PropertySourceFactory {
 
 테스트 코드에서 `@TestPropertySource` 대신에 `@PropertySource`를 사용하고 `factory`를 지정해주면, `@BootstrapWith(SpringBootTestContextBootstrapper.class)` 없이도 YAML property도 정상적으로 로딩할 수 있다.
 
-```
+```kotlin
 @ExtendWith(SpringExtension::class)
 @EnableConfigurationProperties(HelloProperties::class)
 @Import(TestConfig::class)
