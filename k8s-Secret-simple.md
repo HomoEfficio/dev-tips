@@ -12,6 +12,19 @@ Secret 에도 몇 가지 타입이 있으며 일반적인 문자열은 다음과
 >kubectl create secret generic 시크릿이름 --from-literal='key1=value1' --from-literal='key2=value2'
 
 
+## k8s Secret 등록 확인
+
+### describe
+
+>kubectl describe secret 시크릿이름
+
+### 값 확인
+
+- https://github.com/HomoEfficio/dev-tips/blob/master/k8s-command.md#시크릿-값-표시
+- base64 로 인코딩된 값으로 표시됨
+- 실제 환경변수에는 디코딩 된 원래 값이 저장됨
+
+
 ## 환경 변수 로딩
 
 yaml 문서에 다음과 같이 `env` 아래에 환경변수 이름 및 참조 지정하면, 컨테이너 실행 시 k8s Secret에서 값을 읽어서 환경변수에 값 저장
