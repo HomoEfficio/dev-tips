@@ -16,6 +16,7 @@ https://youtu.be/YmQyzNF5iKg
 - 도구를 활용해서 OpenAPI 문서에서 소스 코드 자동 생성
   - 도구를 Swagger로 할 경우, `@ApiXXX` 처럼 Swagger UI에 표시될 메타 정보를 담고 있는 애노테이션이 붙어 있는 웹 컨트롤러 인터페이스 소스 코드 자동 생성
 - 자동 생성된 인터페이스 소스 코드를 구현하는 실제 코드 작성
+- https://github.com/HomoEfficio/dev-tips/blob/master/api-first-dev-open-api.md 참고
 
 
 ## Source First 개발
