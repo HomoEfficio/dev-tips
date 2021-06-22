@@ -25,7 +25,8 @@ Swagger가 먼저 나왔고 이를 토대로 OpenAPI가 나왔다.
 - 웹 컨트롤러를 포함하는 애플리케이션 개발
 - springdoc 의존 관계 추가
 - 애플리케이션 실행하면 소스 코드 기준으로 openapi 문서 생성
-- 특정 URL 에서 openapi 문서 다운로드 가능
+- 특정 URL 에서 openapi 문서 다운로드
+- 또는 플러그인을 사용해서 openapi 문서 생성
 - (프론트) openapi 를 지원하는 Mock 기동 및 개발에 활용
 
 ## springdoc 의존 관계 추가
@@ -72,6 +73,41 @@ dependencies {
 ## openapi 파일 다운로드
 
 JSON 파일은 /v3/api-docs 에 접속, YAML 파일은 /v3/api-docs.yaml 에 접속하면 다운로드 할 수 있으며, 필요 시 이 파일로 프론트와 협업한다.
+
+## 플러그인을 사용해서 openapi 파일 생성
+
+플러그인 방식도 결국 내부적으로 애플리케이션을 실행하고 특정 URL 에서 json 또는 yaml 파일을 내려받는 일을 자동으로 해줄 뿐 내부 동작은 위 특정 URL 에서 수동으로 다운로드 하는 방식과 동일하다.
+
+### 빌드 파일
+
+```kotlin
+plugins {
+    ...
+    id("com.github.johnrengelman.processes") version "0.5.0"  // 소스 코드에서 openapi 문서 생성
+    id("org.springdoc.openapi-gradle-plugin") version "1.3.2"  // 소스 코드에서 openapi 문서 생성
+    ...
+}
+
+...
+
+openApi {
+    outputDir.set(file("$buildDir/openapi"))  // 생성된 파일 저장 위치
+
+    // json 방식 (default)
+//    apiDocsUrl.set("http://localhost:8080/v3/api-docs")  // 소스 코드에서 만들어진 json 내용
+//    outputFileName.set('openapi.json')  // json 내용으로부터 생성되는 json 파일 이름
+    // yaml 방식
+    apiDocsUrl.set("http://localhost:8080/v3/api-docs.yaml")  // 소스 코드에서 만들어진 yaml 내용
+    outputFileName.set("openapi.yml")  // yaml 내용으로부터 생성되는 yaml 파일 이름
+}
+
+```
+
+### 플러그인 실행
+
+openapi > generateOpenApiDocs 태스크를 실행하면 아래와 같이 스프링 부트 애플리케이션이 실행되고 완료되면 빌드 파일에서 지정한 위치에 openapi 파일이 생성된다.
+
+![Imgur](https://i.imgur.com/609rJDB.png)
 
 ## (프론트) openapi 지원 Mock 서버 기동
 
