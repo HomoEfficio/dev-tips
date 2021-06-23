@@ -94,6 +94,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 ## 3. X-Frame-Options 면제 처리
 
+2021-06-24 추가 시작
+
+아래 내용은 Deprecated 되었으며,
+
+```
+new XFrameOptionsHeaderWriter(
+    new WhiteListedAllowFromStrategy(Arrays.asList("localhost"))    // 여기!
+)
+```
+
+대신에 아래와 같이 하면 맨 아래에 있는 sameOrigin 이슈까지 함께 해결해서 h2-console 을 spring-security 와 함께 사용할 수 있다.
+
+```
+.and()
+.headers().addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
+.and()
+```
+
+2021-06-24 추가 끝
+
+아래 내용은 Deprecated 되었음
+
 정신을 차리고 개발자 도구를 열어보면 다음과 같은 에러가 나온다.
 
 ![Imgur](http://i.imgur.com/GnSDE7y.png)
@@ -165,3 +187,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     )
                     .frameOptions().sameOrigin()    // 여기도 추가!!
 ```
+
