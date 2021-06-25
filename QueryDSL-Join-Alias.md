@@ -1,4 +1,4 @@
-# QueryDsl Join Alias
+# QueryDSL Join Alias
 
 동일한 테이블을 사용하는 1차 카테고리와 그 하위인 2차 카테고리 엔티티가 있다.
 
