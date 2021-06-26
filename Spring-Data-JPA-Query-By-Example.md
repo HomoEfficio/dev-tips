@@ -63,7 +63,7 @@ ExampleMatcher matcher = ExampleMatcher.matchingAny()  // 모든 matcher를 or �
 Example<Member> example = Example.of(member, matcher);
 ```
 
-`dept.name`과 같이 단순 String 뿐만 아니라 다른 객체에 포함된 필드도 `.` 를 통해 지정할 수 있으므로 편리하다.
+단순 String 뿐만 아니라 `dept.name`과 같이 다른 객체에 포함된 필드도 `.` 를 통해 지정할 수 있으므로 편리하다.
 
 위와 같이 만들면 다음 조건을 만족하는 Member를 검색 쿼리가 만들어 진다.
 
