@@ -28,3 +28,18 @@ Could not resolve all dependencies for configuration ':dashboard-api:detachedCon
 
 `.idea/`, `.gradle/` 두 디렉터리 지우고 다시 임포트, 지우고 다시 임프토 몇 번 하다보면 된다. 운 좋으면 몇 번이면 될테고 운 나쁘면 한 시간..
 
+
+---
+2021-08-20 추가
+
+멀티 모듈 프로젝트에서 모듈 추가하다가 아래와 같이 빌드 실패 메시지 나오면,
+
+```
+Task 'wrapper' not found in project ':creator:lib'.
+```
+
+아래와 같이 루트에 추가돼있던 서브 모듈을 삭제하면 된다.
+
+[Imgur](https://i.imgur.com/jbf75Nl.png)
+
+
