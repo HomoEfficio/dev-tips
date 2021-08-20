@@ -40,6 +40,6 @@ Task 'wrapper' not found in project ':creator:lib'.
 
 아래와 같이 루트에 추가돼있던 서브 모듈을 삭제하면 된다.
 
-[Imgur](https://i.imgur.com/jbf75Nl.png)
+![Imgur](https://i.imgur.com/jbf75Nl.png)
 
 
