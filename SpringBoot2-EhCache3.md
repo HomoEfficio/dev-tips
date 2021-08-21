@@ -76,7 +76,7 @@ spring:
         </listeners>
         <resources>
             <heap>100</heap>
-            <offheap unit="MB">3</offheap>
+            <offheap unit="MB">1</offheap>
 <!--            <disk persistent="true" unit="MB">20</disk>-->
         </resources>
     </cache-template>
@@ -84,7 +84,7 @@ spring:
     <cache alias="category1" uses-template="default">
         <value-type>java.util.ArrayList</value-type>
         <expiry>
-            <ttl unit="seconds">3</ttl>
+            <ttl unit="minutes">3</ttl>
         </expiry>
     </cache>
 
