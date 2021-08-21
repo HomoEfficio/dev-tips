@@ -104,7 +104,7 @@ ehcache 설정 파일 상세 내용은 [레퍼런스 문서](https://www.ehcache
 
 ### `<persistence>`
 
-주석처리한 `<persistence>`는 어딘가 예제에 지정돼 있어서 마치 반드시 있어야 하는 것처럼 돼 있는데, 지속성 있는 Persistent Cache 를 사용할 때만 필요하고 그냥 휘발성 메모리 캐시를 사용할 때는 지정하지 않아도 된다. `<disk>`도 마찬가지로 휘발성 메모리 캐시를 사용할 때는 지정하지 않아도 된다.
+주석처리한 `<persistence>`는 어딘가 예제에 지정돼 있어서 마치 반드시 있어야 하는 것처럼 돼 있는데, 지속성 있는 Persistent Cache 를 사용할 때만 필요하고 그냥 휘발성 메모리 캐시를 사용할 때는 지정하지 않아도 된다.
 
 
 ### `<cache-template>`
@@ -130,6 +130,17 @@ class CacheLogger : CacheEventListener<Any, Any> {
 }
 
 ```
+
+### `<resources>`
+
+캐시 저장에 사용할 자원을 설정한다. `<heap>`, `<offheap>`, `<disk>`는 ehcache 에서 storage tier 라는 개념으로 정의한 항목들이다. 쉽게 말해 레지스터, L1, L2, ... 캐시가 있는 것과 비슷한 개념이다.  
+자세한 내용은 [EhCache 문서](https://www.ehcache.org/documentation/3.8/caching-concepts.html#storage-tiers) 를 참고하고 간단하게 정리하면 다음과 같다.
+
+- heap: JVM heap 메모리를 의미하며 GC 대상이고, 접근 속도가 가장 빠르다.
+- offheap: JVM 외부의 메모리이며 사용할 때 결국 heap을 거치게 되므로 heap 보다는 느리지만 더 많은 용량을 사용할 수 있다.
+- disk: 디스크이므로 속도는 느리고 용량은 크다. disk 를 사용하려면 접근 속도가 빠른 디스크를 사용하는 것이 좋다.
+- 1개의 tier 로 구성하면 해당 tier에만 데이터가 캐시된다.
+- 2개 이상의 tier 로 구성하면 자주 조회되는 데이터는 near cache(2개 이상 중에서 빠른 tier들)에 저장되고 자주 조회되지 않는 데이터는 authority cache(2개 이상 중에서 가장 느린 1개의 tier)에 저장된다.
 
 ### `<cache>`
 
