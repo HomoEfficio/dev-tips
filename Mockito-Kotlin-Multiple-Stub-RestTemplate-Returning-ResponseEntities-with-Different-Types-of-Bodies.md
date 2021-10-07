@@ -35,5 +35,18 @@ given(
         bodyWithTypeAAA,
         bodyWithTypeBBB,
     )
+    
+
+@Suppress("UNCHECKED_CAST")
+fun <T> anyMatching(): T {
+    Mockito.any<T>()
+    return null as T
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T> argMatching(matcher: ArgumentMatcher<T>): T {
+    Mockito.argThat(matcher)
+    return null as T
+}
 ```
 
