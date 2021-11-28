@@ -233,3 +233,6 @@ https://www.reactive-streams.org/ 의 첫 문장에 다음과 같이 나와있�
 결국 위 코드 사례처럼 선형적인 처리가 아니라 여러 중첩된 처리 과정이 난무할 때, 그리고 배압 메커니즘이 필요 없을 때, 그러니까 사실 상 대부분의 일반적인 웹 서비스의 경우에는 코루틴을 사용하는 것이 편리하다고 본다.
 
 그리고 머지 않아(한 2년 이내?) Virtual Thread이 나온다는 것을 감안하면 Reactive Streams를 사용한 코드는 많은 경우 부담스러운 레거시로 남을 가능성이 크다.
+
+이미 Reactive Streams로 작성되어 있어 피할 수 없거나, 또는 비동기 스트림 처리와 배압이 정말로 필요한 상황이라서 써야만 한다면, https://homoefficio.github.io/2021/04/14/Reactive-Streams-with-Sequence-Diagram/ 여기에서 시작해보자.
+
