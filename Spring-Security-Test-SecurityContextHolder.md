@@ -19,3 +19,38 @@ authentication 에 커스텀 객체를 저장하고 이를 SecurityContextHolder
     }
 ```
 
+## Reactive version
+
+```kotlin
+    private val context = ReactiveSecurityContextHolder.withAuthentication(
+        TestingAuthenticationToken(
+            AuthenticationUser( // principals 자리에 커스텀 객체 저장,
+                "id-tester",
+                "login-tester",
+                "password-tester",
+                AuthProvider.LOCAL,
+                listOf(SimpleGrantedAuthority("ROLE_USER"))
+            ),
+            null,  // credentials 은 상황에 따라 null 도 가능
+        )
+    )
+    
+    //...
+    
+    @Test
+    fun `xxx test`() {
+        // given
+        // ...  
+        
+        // when then
+        StepVerifier.create(
+            xxxService.yyyMethod(...)
+                .subscriberContext(context)  // 여기!!
+        )
+            .expectNextMatches {
+                it.zzz == false
+            }
+            .verifyComplete()
+    }
+```
+
