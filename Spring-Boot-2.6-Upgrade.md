@@ -3,6 +3,7 @@
 ## 검토 사항
 
 - 스프링 부트 공식 문서: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.6-Release-Notes
+- 스프링 클라우드 버전: https://spring.io/projects/spring-cloud
 
 ## 업그레이드 절차
 
@@ -13,6 +14,9 @@
 plugins {    
     id("org.springframework.boot") version "2.6.1"
     // ...
+}
+// ...
+extra["springCloudVersion"] = "2021.0.0"
 // ...
 ```
 
