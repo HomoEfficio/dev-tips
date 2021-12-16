@@ -18,7 +18,6 @@
 
 `instances` 바로 하위에 있는 `instanceA`은 코드에 적용할 서킷 브레이커 인스턴스 이름을 가리키며 `@CircuitBreaker(name = "instanceA")`와 같은 형식으로 사용된다.
 
-설정하지 않은 인스턴스 이름을 지정해도, 예를 들어 `@CircuitBreaker(name = "XXYYZZ")`와 같이 사용해도 에러가 발생하지는 않는다. 다만 `XXYYZZ`라는 이름의 서킷 브레이커 인스턴스가 존재하지 않기 때문에 `bufferedCalls`, `failedCalls`가 저장될 곳이 없고, 따라서 OPEN, HALF_OPEN, CLOSED 같은 상태를 판별할 수 없으므로 결국 서킷 브레이커는 의도대로 동작하지 않는다.
 
 ```yml
 resilience4j.circuitbreaker:
@@ -43,13 +42,35 @@ management:
       enabled: true
 ```
 
+## 적용
+
+설정하지 않은 인스턴스 이름을 지정해도, 예를 들어 `@CircuitBreaker(name = "XXYYZZ")`와 같이 사용해도 에러가 발생하지는 않는다. 다만 `XXYYZZ`라는 이름의 서킷 브레이커 인스턴스가 존재하지 않기 때문에 `bufferedCalls`, `failedCalls`가 저장될 곳이 없고, 따라서 OPEN, HALF_OPEN, CLOSED 같은 상태를 판별할 수 없으므로 결국 서킷 브레이커는 의도대로 동작하지 않는다.
+
+```kotlin
+    @CircuitBreaker(name = "instanceA", fallbackMethod = "fallbackForInstanceA")
+    fun testForResilience4j(num: Int): String {
+
+        if (num > 5) {
+            throw RuntimeException("failed")
+        }
+        println("===== num: $num")
+
+        return "CoreUserInfo $num"
+    }
+
+    private fun fallbackForInstanceA(num: Int, t: Throwable): String {
+        t.printStackTrace()
+        return "Fallback for InstanceA: $num"
+    }
+```
+
 ## 결론 먼저
 
 ### fallback 메서드
 
->- 일단 서킷 브레이커를 적용한 메서드에서 에러가 발생하면 서킷 브레이커 상태와 무관하게 무조건 fallback 메서드가 실행된다.
->- fallback 메서드는 여러 개일 수 있으며 파라미터로 전달된 예외 타입에 가장 가까운 fallback 메서드가 실행된다.
->- OPEN 상태에서는 `io.github.resilience4j.circuitbreaker.CallNotPermittedException` 예외가 발생하므로 무조건 fallback 메서드가 실행된다.
+>- 서킷 브레이커를 적용 시 `fallbackMethod`를 지정했다면 서킷 브레이커가 적용된 메서드에서 예외 발생 시 발생된 예외가 fallback 메서드의 파라미터로 지정한 예외의 서브타입이면 서킷 브레이커의 상태(OPEN/HALF_OPEN/CLOSED)와 무관하게 fallback 메서드가 실행된다.
+>- fallback 메서드는 여러 개일 수 있으며 예외 타입에 맞는 fallback 메서드가 실행된다.
+>- OPEN 상태에서는 무조건 `io.github.resilience4j.circuitbreaker.CallNotPermittedException` 예외가 발생하므로, `CallNotPermittedException`를 파라미터에 포함한 fallback 메서드를 정의해두면 OPEN 상태에 대해 fallback 처리를 할 수 있다.
 
 ### 서킷 브레이커 진행 흐름
 
