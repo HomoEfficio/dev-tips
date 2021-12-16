@@ -44,6 +44,10 @@ management:
 
 ## 적용
 
+기본적으로는 `@CircuitBreaker(name = "instanceA", fallbackMethod = "fallbackForInstanceA")`와 같은 애너테이션을 붙이면 서킷 브레이커가 적용된다.
+
+아래와 같이 `testForResilience4j()`, `testForOtherResilience4j()` 두 개의 메서드에 동일한 서킷 브레이커 인스턴스 이름을 지정하면, 두 메서드가 각각 호출될 때 `instanceA`라는 동일한 하나의 객체에 저장되는 `bufferedCalls`, `failedCalls` 등의 값이 변경된다. 즉 **서킷 브레이커 인스턴스 설정은 단순히 읽어서 사용할 불변값을 지정하기만 하는 일반적인 설정 정보와는 다르게 변경되는 상태를 저장하는 역할도 한다**는 특징이 있다.
+
 설정하지 않은 인스턴스 이름을 지정해도, 예를 들어 `@CircuitBreaker(name = "XXYYZZ")`와 같이 사용해도 에러가 발생하지는 않는다. 다만 `XXYYZZ`라는 이름의 서킷 브레이커 인스턴스가 존재하지 않기 때문에 `bufferedCalls`, `failedCalls`가 저장될 곳이 없고, 따라서 OPEN, HALF_OPEN, CLOSED 같은 상태를 판별할 수 없으므로 결국 서킷 브레이커는 의도대로 동작하지 않는다.
 
 ```kotlin
@@ -61,6 +65,17 @@ management:
     private fun fallbackForInstanceA(num: Int, t: Throwable): String {
         t.printStackTrace()
         return "Fallback for InstanceA: $num"
+    }
+
+    @CircuitBreaker(name = "coreUserInfo", fallbackMethod = "fallbackForCoreUserInfo")
+    fun testForOtherResilience4j(num: Int): String {
+
+        if (num > 5) {
+            throw RuntimeException("failed")
+        }
+        println("===== num: $num")
+
+        return "CoreUserInfo $num"
     }
 ```
 
