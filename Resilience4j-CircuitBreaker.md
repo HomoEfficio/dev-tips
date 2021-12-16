@@ -1,5 +1,15 @@
 # Resilience4j-CircuitBreaker 실험
 
+## circuit breaker
+
+서킷 브레이커 관련 자료 대부분이 개념과 간단한 코드 예제는 잘 다루고 있지만, 여러가지 설정값이 구체적으로 어떤 효과를 발휘하는지 자세히 설명하는 자료가 별로 없어서 어쩔 수 없이 직접 해보고 정리해봤다.
+
+개념적으로는 **OPEN 이 문제 있는 상태, CLOSED 가 문제 없는 상태라는 것만 용어에서 느껴지는 직관과 반대인 것만 주의**하면 되고, 그 외는 그냥 이 그림만으로도 충분하다고 생각한다.
+
+![Imgur](https://i.imgur.com/Pt7tH33.jpg)
+
+출처: https://resilience4j.readme.io/docs/circuitbreaker
+
 ## 설정
 
 아래와 같이 management 설정을 위와 같이 추가하면 `/actuator/health` 호출 결과에 circuit breaker 상태가 포함돼서 표시된다.
@@ -30,6 +40,14 @@ management:
 ```
 
 ## 결론 먼저
+
+### fallback 메서드
+
+>- 일단 서킷 브레이커를 적용한 메서드에서 에러가 발생하면 서킷 브레이커 상태와 무관하게 무조건 fallback 메서드가 실행된다.
+>- fallback 메서드는 여러 개일 수 있으며 파라미터로 전달된 예외 타입에 가장 가까운 fallback 메서드가 실행된다.
+>- OPEN 상태에서는 `io.github.resilience4j.circuitbreaker.CallNotPermittedException` 예외가 발생하므로 무조건 fallback 메서드가 실행된다.
+
+### 서킷 브레이커 진행 흐름
 
 >1. 최초 CLOSED 상태에서 최초 요청이 들어오면 `bufferedCalls`가 1 증가하고, 요청이 실패하면 `failedCalls`도 1 증가한다.
 >2. `bufferedCalls` 값이 `slidingWindowSize`에 도달하면 `failedCalls / bufferedCalls * 100%`를 통해 `failureRate`가 계산된다.  
