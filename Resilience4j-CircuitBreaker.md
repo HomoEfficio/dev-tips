@@ -16,7 +16,7 @@
 
 `instances` 바로 하위에 있는 `instanceA`은 코드에 적용할 서킷 브레이커 인스턴스 이름을 가리키며 `@CircuitBreaker(name = "instanceA")`와 같은 형식으로 사용된다.
 
-설정하지 않은 인스턴스 이름을 지정해도, 예를 들어 `@CircuitBreaker(name = "XXYYZZ")`와 같이 사용해도 에러가 발생하지는 않는다. 다만 `XXYYZZ`라는 이름의 서킷 브레이커 인스턴스가 존재하지 않기 때문에 `bufferedCalls`, `failedCalls`가 저장될 곳이 없으므로 OPEN, HALF_OPEN, CLOSED 같은 상태를 판별할 수 없고 결국 서킷 브레이커는 의도대로 동작하지 않는다.
+설정하지 않은 인스턴스 이름을 지정해도, 예를 들어 `@CircuitBreaker(name = "XXYYZZ")`와 같이 사용해도 에러가 발생하지는 않는다. 다만 `XXYYZZ`라는 이름의 서킷 브레이커 인스턴스가 존재하지 않기 때문에 `bufferedCalls`, `failedCalls`가 저장될 곳이 없고, 따라서 OPEN, HALF_OPEN, CLOSED 같은 상태를 판별할 수 없으므로 결국 서킷 브레이커는 의도대로 동작하지 않는다.
 
 ```yml
 resilience4j.circuitbreaker:
