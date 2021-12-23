@@ -101,7 +101,7 @@ management:
 >3.1 이후 요청이 들어오면 최초에 들어왔던 요청이 버퍼에서 빠져나가면서 `bufferedCalls`가 1 감소하지만 새로 들어온 요청에 의해 1 증가해서 결국 10으로 그대로 유지된다.  
 >3.2 빠져나간 요청이 성공한 요청이었다면 `failedCalls` 값도 그대로 유지되고, 빠져나간 요청이 실패한 요청이었다면 `failedCalls` 값도 1 감소한다. 그리고 새로 들어온 요청이 실패라면 `failedCalls` 값이 1 증가하고, 이 값을 기준으로 `failureRate` 값이 새로 계산된다. 계산 결과 `failureRateThreshold` 이하이면 3번 과정과 동일하다.
 >4. 계산 결과 `failureRateThreshold` 이상이면 서킷 브레이커 상태가 OPEN 으로 변경되고,  
->4.1 OPEN 상태에서 `waitDurationInOpenState` 동안 들어오는 요청은 성공/실패와 무관하게 `bufferedCalls`도 `failedCalls`도 증가시키지 않고, `io.github.resilience4j.circuitbreaker.CallNotPermittedException`가 발생하면서 `notPermittedCalls` 값만 1씩 증가한다.  
+>4.1 OPEN 상태에서 `waitDurationInOpenState` 동안은 요청이 들어와도 외부 서비스를 호출하지 않고 `io.github.resilience4j.circuitbreaker.CallNotPermittedException`가 발생하며, 그래서 `bufferedCalls`도 `failedCalls`도 증가시키지 않고, `notPermittedCalls` 값만 1씩 증가한다.  
 >4.2 `waitDurationInOpenState`이 지나서 요청이 들어오면 HALF_OPEN 으로 상태가 변경되고 10이었던 `bufferedCalls` 값이 1로 변경된다. 요청이 성공하면 `failedCalls`은 0, 실패하면 1로 변경된다.
 >5. HALF_OPEN 상태에서 `bufferedCalls` 값이 `permittedNumberOfCallsInHalfOpenState`에 도달하면 `failureRate`가 계산되는데 이 값이,  
 >5.1 `failureRateThreshold` 값 미만이면 상태가 CLOSED 로 변경되고 `bufferedCalls`, `failedCalls` 모두 0으로 초기화된다. 이후 과정은 1번 과정과 동일하다.  
