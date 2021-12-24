@@ -122,7 +122,7 @@ internal class Resilience4jTest {
     }
 
     @Test
-    internal fun `나중에 지정한 컴포넌트가 먼저 적용되고, 컴포넌트에 등록된 fallback는 먼저 등록된 것이 먼저 적용된다`() {
+    internal fun `나중에 지정한 컴포넌트가 먼저 적용되고, 컴포넌트에 등록된 fallback는 예외 조건이 같다면 먼저 등록된 것이 먼저 적용된다`() {
         val decoratedSupplier = Decorators.ofSupplier(testSupplier)
             .withCircuitBreaker(testCircuitBreaker)
             .withFallback { throwable ->
