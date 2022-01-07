@@ -43,7 +43,7 @@ tasks.jacocoTestReport {
 
 tasks.jacocoTestCoverageVerification {
     violationRules {
-        rule {  // element 를 지정하지 않으면 프로젝트 전체 대상
+        rule {  // https://docs.gradle.org/current/javadoc/org/gradle/testing/jacoco/tasks/rules/JacocoViolationRule.html 참고. element 를 지정하지 않으면 프로젝트 전체 대상
             limit {
                 minimum = "0.10".toBigDecimal()
             }
