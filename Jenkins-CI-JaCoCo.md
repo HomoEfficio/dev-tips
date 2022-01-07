@@ -27,10 +27,12 @@ tasks.withType<Test> {
 
 // 아래 내용도 추가!!
 
+// jacoco 버전 명시
 jacoco {
     toolVersion = "0.8.7"
 }
 
+// jacoco 리포트 설정
 tasks.jacocoTestReport {
     dependsOn("test")
     reports {
@@ -41,22 +43,28 @@ tasks.jacocoTestReport {
     finalizedBy("jacocoTestCoverageVerification")
 }
 
+// 코드 커버리지가 기준치 이하면 빌드 실패 처리
 tasks.jacocoTestCoverageVerification {
     violationRules {
-        rule {  // https://docs.gradle.org/current/javadoc/org/gradle/testing/jacoco/tasks/rules/JacocoViolationRule.html 참고. element 를 지정하지 않으면 프로젝트 전체 대상
+        // https://docs.gradle.org/current/javadoc/org/gradle/testing/jacoco/tasks/rules/JacocoViolationRule.html
+        rule {  
             limit {
                 minimum = "0.10".toBigDecimal()
             }
         }
         rule {
+            // https://www.eclemma.org/jacoco/trunk/doc/api/org/jacoco/core/analysis/ICoverageNode.ElementType.html
             element = "CLASS"
             enabled = true
-            limit {  // 클래스에서 라인 수 기준 커버리지가 minimum 이하면 빌드 실패 처리
+            // https://docs.gradle.org/current/javadoc/org/gradle/testing/jacoco/tasks/rules/JacocoLimit.html
+            limit {
+                // https://www.eclemma.org/jacoco/trunk/doc/api/org/jacoco/core/analysis/ICoverageNode.CounterEntity.html
                 counter = "LINE"
+                // https://www.eclemma.org/jacoco/trunk/doc/api/org/jacoco/core/analysis/ICounter.CounterValue.html
                 value = "COVEREDRATIO"
                 minimum = "0.00".toBigDecimal()
             }
-            limit {  // 클래스에서 메서드 수 기준 커버리지가 minimum 이하면 빌드 실패 처리
+            limit {
                 counter = "METHOD"
                 value = "COVEREDRATIO"
                 minimum = "0.00".toBigDecimal()
@@ -65,7 +73,6 @@ tasks.jacocoTestCoverageVerification {
     }
 }
 
-}
 //...
 ```
 
