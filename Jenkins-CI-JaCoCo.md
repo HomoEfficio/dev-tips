@@ -110,4 +110,9 @@ Jenkins > Plugin Manager 에서 JaCoCo 플러그인 설치
   - ![Imgur](https://i.imgur.com/iMOBQ9t.png)
 
 
+## 후속 작업
+
+- 결과 리포트에 보면 코드 커버리지 측정 대상이 아닌 디럭터리나 파일이 눈에 보일 것이다.
+- https://docs.gradle.org/current/userguide/jacoco_plugin.html 를 참고해서 gradle task 수준에서 `exclude` 항목으로 제외할 대상을 설정해준다.
+- 현재 상태를 감안해서 코드 커버리지 기준 수치 등을 결정하고 설정한다.
 
