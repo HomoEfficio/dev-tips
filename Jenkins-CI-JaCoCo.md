@@ -22,7 +22,7 @@ plugins {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    finalizedBy("jacocoTestReport")  // 추가!!
+    finalizedBy(tasks.jacocoTestReport)  // 추가!!
 }
 
 // 아래 내용도 추가!!
@@ -34,20 +34,38 @@ jacoco {
 
 // jacoco 리포트 설정
 tasks.jacocoTestReport {
-    dependsOn("test")
+    dependsOn(tasks.test)
     reports {
         html.isEnabled = true
-        xml.isEnabled = true
-        csv.isEnabled = true
+        xml.isEnabled = false
+        csv.isEnabled = false
     }
-    finalizedBy("jacocoTestCoverageVerification")
+    // 리포트에서 제외할 디렉터리 및 파일 설정
+    classDirectories.setFrom(sourceSets.main.get().output.asFileTree.matching {
+        exclude(listOf(
+            "**/generated",
+            "**/resources",
+            "**/jib",
+            "**/config",
+        ))
+    })
+    finalizedBy(tasks.jacocoTestCoverageVerification)
 }
 
-// 코드 커버리지가 기준치 이하면 빌드 실패 처리
+// 코드 커버리지 강제: 기준치 이하면 빌드 실패 처리
 tasks.jacocoTestCoverageVerification {
     violationRules {
         // https://docs.gradle.org/current/javadoc/org/gradle/testing/jacoco/tasks/rules/JacocoViolationRule.html
-        rule {  
+        rule {
+            // 코드 커버리지 강제 처리에서 제외할 디렉터리 및 파일 설정
+            excludes {
+                [
+                    "**/generated",
+                    "**/resources",
+                    "**/jib",
+                    "**/config",
+                ]
+            }  
             limit {
                 minimum = "0.10".toBigDecimal()
             }
@@ -75,6 +93,11 @@ tasks.jacocoTestCoverageVerification {
 
 //...
 ```
+
+### 실행 확인
+
+- gradle > Tasks > verification > test 실행
+- 리포트 저장 위치 기본값: build/reports/jacoco
 
 
 ## JUnit 플러그인 설치
@@ -119,7 +142,7 @@ Jenkins > Plugin Manager 에서 JaCoCo 플러그인 설치
 
 ## 후속 작업
 
-- 결과 리포트에 보면 코드 커버리지 측정 대상이 아닌 디럭터리나 파일이 눈에 보일 것이다.
-- https://docs.gradle.org/current/userguide/jacoco_plugin.html 를 참고해서 gradle task 수준에서 `exclude` 항목으로 제외할 대상을 설정해준다.
+- 결과 리포트에 보면 코드 커버리지 측정 대상이 아닌 디렉터리나 파일이 눈에 보일 것이다.
+- 위 gradle 설정 샘플을 참고해서 `excludes` 항목으로 제외할 대상을 설정해준다.
 - 현재 상태를 감안해서 코드 커버리지 기준 수치 등을 결정하고 설정한다.
 
