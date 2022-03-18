@@ -2,7 +2,7 @@
 
 [helm](https://helm.sh/)은 k8s 패키지 매니저다.
 
-그런데 문서가 영 마음에 들지 않아서 따로 핵심만 추려서 정리해본다.
+공식 문서에 흔한 그림 하나 없고 이래저래 영 마음에 들지 않아서 개념적으로 이해하는 데 필요 이상의 노력이 드는 것 같아서 어쩔 수 없이 따로 핵심만 추려서 정리해본다.
 
 
 # 동작 구조
@@ -115,6 +115,15 @@ install 에 의해 생성된 helm release의 내용 변경
 형식: helm upgrade -n k8sNamespace release이름 사용할chart이름 -f 사용할valuesyaml파일경로
 예제: helm upgrade -n my-namespace my-release my-repo/my-chart -f deploy/values-my-other-values.yaml
 ```
+
+
+# 실무 사용 참고
+
+- 소스 코드에서 컨테이너 이미지를 만들어 컨테이너 레지스트리에 업로드 하는 일은 보통 jenkins 등 CI 도구를 사용해서 처리한다.
+- 소스 코드가 공개 repo에 있다면 ArgoCD 를 k8s 클러스터 내부에 구성해서 편리하게 배포할 수 있다.
+- 소스 코드가 비공개 repo에 있다면 이 비공개 repo에 접근할 수 있는 곳에 CI용 jenkins를 두고, k8s 클러스터 내부에 CD용 jenkins를 둬서, CI용 jenkins가 이미지를 컨테이너 레지스트리에 올린 후에 CD용 jenkins를 호출(HTTP API)해서 배포할 수 있다.
+- 소스 코드가 변경됐다면 그에 따른 image 만 변경하면 되므로 CI-CD만 하면 되고, helm 작업(install 또는 upgrade)은 다시 할 필요가 없다.
+- 소스 코드는 변경이 없는데 helm chart나 values.yaml 파일만 변경됐다면 helm upgrade만 다시 하면 배포까지 되고 CI-CD 작업은 다시 할 필요가 없다.
 
 
 # helm chart 작성
