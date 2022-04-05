@@ -116,6 +116,9 @@ Query OK, 1671168 rows affected (1 min 35.54 sec)
 따라서 이런 동작을 미리 알아두고 상황에 맞게 계획을 수립하고 진행하는 것이 좋다.
 
 
+## 기타
+
+- https://severalnines.com/database-blog/alter-table-mysql-friend-or-foe 여기에도 마이그레이션 관련 좋은 팁이 설명돼있다.
 
 
 
