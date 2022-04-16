@@ -1,0 +1,92 @@
+# QueryDsl MySQL Join Case Sum GroupBy
+
+데이터를 특정 기준에 따른 카운트 합계를 구할 때 case 구문을 잘 사용하면 여러 번의 쿼리를 날려야 할 상황에서도 한 번의 쿼리로 처리할 수 있다.
+
+예를 들어 심사(review) 업무를 담당하는 심사자(reviewer)의 심사 실적을 구해야하는 요구사항이 있다고 하자.
+
+심사자는 심사 대상을 승인(Approved)하거나 기각(Rejectred) 할 수 있다.
+
+심사 대상은 zzz라고 부르며, 일반 zzz가 있고, 프리미엄 zzz가 있다.
+
+심사 대상이 승인되면 출시(Published)되고, 기각되면 기각(Rejected)되고, 심사 과정에 문제가 있는채로 승인 됐다면 출시 이후에도 사용금지(Forbidden) 될 수 있으며 사용금지 된 것은 심사 실적에 포함하지 않는다.
+
+특정 기간(날짜 기준)에 특정 심사자가 수행한 심사 건수를 Approved, Rejected, Forbidden 별로 구하되 zzz가 일반일 때와 프리미엄일 때를 구분해서 구해야 한다면 어떻게 해야할까?
+
+## case 사용하지 않을 때
+
+쉽게 생각나는 것은 특정 기간, 특정 심사자에 대해
+- 심사 대상이 일반일 때
+  - Approved인 건수를 구하고, 
+  - Rejected인 건수를 구하고,
+  - Forbidden인 건수를 구하고,
+- 심사 대상이 프리미엄일 때
+  - Approved인 건수를 구하고, 
+  - Rejected인 건수를 구하고,
+  - Forbidden인 건수를 구한다.
+
+이렇게 구하려면 대략 다음과 같은 쿼리를 파라미터를 바꿔가면서 6회 수행해야 한다.
+
+```sql
+select date_format(r.end_time, '%Y-%m-%d') as review_date,
+       r.count(1)
+from review r
+inner join zzz z on r.zzz_oid = z.oid
+where r.reviewer_uid = '특정 심사자 ID'
+  and z.is_premium = 'N'  # 또는 true
+  and r.status = 'APPROVED'  # 또는 'REJECTED'
+  and z.status in ('PUBLISHED', 'REJECTED')  # 또는 z.status = 'FORBIDDEN'
+  and r.end_time between '기간 시작일' and '기간 종료일'
+group by review_date
+order by review_date asc
+```
+
+## case 사용할 때
+
+case와 sum을 사용하면 한 번의 쿼리로 6개 항목을 모두 구할 수 있다.
+
+```sql
+select date_format(r.end_time, '%Y-%m-%d') as review_date,
+
+       sum(case when r.status = 'APPROVED' and r.is_premium = 'N' then 1 else 0 end) as approved_normal,
+       sum(case when r.status = 'REJECTED' and r.is_premium = 'N' then 1 else 0 end) as rejected_normal,
+       sum(case when z.status = 'FORBIDDEN' and r.is_premium = 'N' then 1 else 0 end) as forbidden_normal,
+
+       sum(case when r.status = 'APPROVED' and r.is_premium = 'Y' then 1 else 0 end) as approved_premium,
+       sum(case when r.status = 'REJECTED' and r.is_premium = 'Y' then 1 else 0 end) as rejected_premium,
+       sum(case when z.status = 'FORBIDDEN' and r.is_premium = 'Y' then 1 else 0 end) as forbidden_premium,
+from review r
+inner join zzz z on r.zzz_oid = z.oid
+where r.reviewer_uid = '특정 심사자 ID'
+  and r.end_time between '기간 시작일' and '기간 종료일'
+group by review_date
+order by review_date asc
+```
+
+## case 를 QueryDsl로 작성
+
+살짝 생소하지만 다음과 같이 작성하면 된다.
+
+```kotlin
+val reviewDate = formattedDate(qReview.endTime)
+return from(qReview)
+    .innerJoin(qZzz).on(qReview.zzzOid.eq(qZzz.oid))
+    .where(qReview.reviewerUid.eq(reviewerUid))
+    .where(qReview.endTime.between(range.lowerBound.value.get(), range.upperBound.value.get()))
+    .groupBy(reviewdDate)
+    .orderBy(reviewdDate.asc())
+    .select(
+        QCountsByDateProjection(
+            reviewDate,
+            CaseBuilder().`when`(qReview.status.eq(Review.Status.APPROVED).and(qZzz.isPremium.eq(false))).then(1L).otherwise(0L).sum(),
+            CaseBuilder().`when`(qReview.status.eq(Review.Status.REJECTED).and(qZzz.isPremium.eq(false))).then(1L).otherwise(0L).sum(),
+            CaseBuilder().`when`(qZzz.status.eq(Zzz.Status.FORBIDDEN).and(qZzz.isPremium.eq(false))).then(1L).otherwise(0L).sum(),
+
+            CaseBuilder().`when`(qReview.status.eq(Review.Status.APPROVED).and(qZzz.isPremium.eq(true))).then(1L).otherwise(0L).sum(),
+            CaseBuilder().`when`(qReview.status.eq(Review.Status.REJECTED).and(qZzz.isPremium.eq(true))).then(1L).otherwise(0L).sum(),
+            CaseBuilder().`when`(qZzz.status.eq(Zzz.Status.FORBIDDEN).and(qZzz.isPremium.eq(true))).then(1L).otherwise(0L).sum(),
+        )
+    )
+    .fetch()
+```
+
+
