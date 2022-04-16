@@ -67,26 +67,43 @@ order by review_date asc
 살짝 생소하지만 다음과 같이 작성하면 된다.
 
 ```kotlin
-val reviewDate = formattedDate(qReview.endTime)
-return from(qReview)
-    .innerJoin(qZzz).on(qReview.zzzOid.eq(qZzz.oid))
-    .where(qReview.reviewerUid.eq(reviewerUid))
-    .where(qReview.endTime.between(range.lowerBound.value.get(), range.upperBound.value.get()))
-    .groupBy(reviewdDate)
-    .orderBy(reviewdDate.asc())
-    .select(
-        QCountsByDateProjection(
-            reviewDate,
-            CaseBuilder().`when`(qReview.status.eq(Review.Status.APPROVED).and(qZzz.isPremium.eq(false))).then(1L).otherwise(0L).sum(),
-            CaseBuilder().`when`(qReview.status.eq(Review.Status.REJECTED).and(qZzz.isPremium.eq(false))).then(1L).otherwise(0L).sum(),
-            CaseBuilder().`when`(qZzz.status.eq(Zzz.Status.FORBIDDEN).and(qZzz.isPremium.eq(false))).then(1L).otherwise(0L).sum(),
+fun performancesByDateAndZccType(
+        range: Range<ZonedDateTime>,
+        reviewerUid: String,
+): List<CountsByDateProjection> {
+    val reviewDate = formattedDate(qReview.endTime)
+    return from(qReview)
+        .innerJoin(qZzz).on(qReview.zzzOid.eq(qZzz.oid))
+        .where(qReview.reviewerUid.eq(reviewerUid))
+        .where(qReview.endTime.between(range.lowerBound.value.get(), range.upperBound.value.get()))
+        .groupBy(reviewdDate)
+        .orderBy(reviewdDate.asc())
+        .select(
+            QCountsByDateProjection(
+                reviewDate,
+                CaseBuilder().`when`(qReview.status.eq(Review.Status.APPROVED).and(qZzz.isPremium.eq(false))).then(1L).otherwise(0L).sum(),
+                CaseBuilder().`when`(qReview.status.eq(Review.Status.REJECTED).and(qZzz.isPremium.eq(false))).then(1L).otherwise(0L).sum(),
+                CaseBuilder().`when`(qZzz.status.eq(Zzz.Status.FORBIDDEN).and(qZzz.isPremium.eq(false))).then(1L).otherwise(0L).sum(),
 
-            CaseBuilder().`when`(qReview.status.eq(Review.Status.APPROVED).and(qZzz.isPremium.eq(true))).then(1L).otherwise(0L).sum(),
-            CaseBuilder().`when`(qReview.status.eq(Review.Status.REJECTED).and(qZzz.isPremium.eq(true))).then(1L).otherwise(0L).sum(),
-            CaseBuilder().`when`(qZzz.status.eq(Zzz.Status.FORBIDDEN).and(qZzz.isPremium.eq(true))).then(1L).otherwise(0L).sum(),
+                CaseBuilder().`when`(qReview.status.eq(Review.Status.APPROVED).and(qZzz.isPremium.eq(true))).then(1L).otherwise(0L).sum(),
+                CaseBuilder().`when`(qReview.status.eq(Review.Status.REJECTED).and(qZzz.isPremium.eq(true))).then(1L).otherwise(0L).sum(),
+                CaseBuilder().`when`(qZzz.status.eq(Zzz.Status.FORBIDDEN).and(qZzz.isPremium.eq(true))).then(1L).otherwise(0L).sum(),
+            )
         )
-    )
-    .fetch()
+        .fetch()
+}
+    
+data class CountsByDateProjection @QueryProjection constructor(
+    val date: String,
+
+    val approvedNormal: Long,
+    val rejectedNormal: Long,
+    val forbiddentNormal: Long,
+
+    val approvedPremium: Long,
+    val rejectedPremium: Long,
+    val forbiddenPremium: Long,
+)
 ```
 
 
