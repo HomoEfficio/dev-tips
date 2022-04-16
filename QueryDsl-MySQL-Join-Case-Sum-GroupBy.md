@@ -67,7 +67,7 @@ order by review_date asc
 살짝 생소하지만 다음과 같이 작성하면 된다.
 
 ```kotlin
-fun performancesByDateAndZccType(
+fun reviewCountsByDate(
         range: Range<ZonedDateTime>,
         reviewerUid: String,
 ): List<CountsByDateProjection> {
