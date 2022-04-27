@@ -10,7 +10,9 @@
 
 ## 사전 요건
 
-간단하다. MongoDB 설정 시 다음과 같은 Reactive Transaction 관련 빈을 만들어주기만 하면 끝.
+간단하다. MongoDB 설정 시 다음과 같은 Reactive Transaction 관련 빈을 만들어주기만 하면 끝.  
+이 아니고 **Mongodb 가 Standalone 이 아니어야 한다. 즉, mongodb가 replica set 또는 shard cluster로 구성돼 있어야 한다.**  
+이유는 MongoDB는 oplogs를 이용해서 트랜잭션을 관리하는데, Standalone 모드에서는 oplog가 저장되지 않기 때문이다.
 
 ```kotlin
 @Configuration
