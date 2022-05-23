@@ -12,6 +12,8 @@
 
 ![Imgur](https://i.imgur.com/YV8wrwl.png)
 
+Monterey 에서는 Fn 키를 눌러도 환경설정으로는 불가능 -> https://andrewpage.tistory.com/95 참고
+
 ### CTRL-Command 전환
 
 ![Imgur](https://i.imgur.com/l5nEvbz.png)
