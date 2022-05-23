@@ -80,7 +80,10 @@ git --version
 
 ### alias
 
+vi ~/.gitconfig 후 아래 내용 붙여넣기
+
 https://github.com/HomoEfficio/dev-tips/blob/master/Git-alias.md
+
 
 ### global .gitignore
 
