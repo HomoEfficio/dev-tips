@@ -58,6 +58,12 @@ $ vi DefaultKeyBinding.dict
 
 참고: https://osxdaily.com/2011/08/04/enable-key-repeat-mac-os-x-lion/
 
+### F기능키
+
+아래와 같이 해줘야 인텔리제이 Alt+F12 같은 명령이랑 충돌이 발생하지 않는다
+
+![Imgur](https://i.imgur.com/HmeKLuH.png)
+
 
 ## 캡처 
 
