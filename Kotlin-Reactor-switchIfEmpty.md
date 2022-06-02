@@ -20,7 +20,7 @@ xxxRepository.findAllByYyy(zzz)
     // 이하 생략
 ```
 
-참고로 위에 나온 `switchIfEmpty(aaa)`와 `switchIfEmpty { aaa }`는 다른 함수다.
+이런 차이가 나는 이유는 `switchIfEmpty(aaa)`와 `switchIfEmpty { aaa }`는 다른 함수다.
 
 `switchIfEmpty(aaa)`는 Reactor Core에 있는 함수이며 다음과 같이 정의돼 있다.
 
@@ -38,5 +38,7 @@ fun <T> Mono<T>.switchIfEmpty(s: () -> Mono<T>): Mono<T> = this.switchIfEmpty(Mo
 
 
 따라서 **늘 `switchIfEmpty()`를 쓸 게 아니라 상황에 따라 `switchIfEmpty {}`를 사용해야 한다.**
+
+그런데 `switchIfEmpty(aaa)`에 들어가는 것도 결국 Mono라서 실제 값이 없을 때만 aaa 가 subscribe 될테고, subscribe 될때만 aaa가 실행되므로 사실 상 lazy하게 처리되는 모양새라, 굳이 `switchIfEmpty {}`를 사용하지 않아도 되는 것 같기도.. 이건 더 조사가 필요.
 
 참고로 자바의 Optional 에도 이와 비슷한 상황이 있으니 참고하자: https://github.com/HomoEfficio/dev-tips/blob/master/Java-Optional-바르게-쓰기.md#2-orelsenew--대신-orelseget---new-
