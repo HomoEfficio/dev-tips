@@ -45,9 +45,12 @@ Enumerating objects: 59175, done.
 Counting objects: 100% (59175/59175), done.
 Delta compression using up to 10 threads
 Compressing objects: 100% (18432/18432), done.
+Writing objects: 100% (59175/59175), done.
+Total 59175 (delta 17561), reused 59154 (delta 17561), pack-reused 0
+Completely finished after 2.08 seconds.
 ```
 
-실행하는 데 3초도 채 안 걸린 것 같다.
+두 작업 모두 2초 정도에 수행됐는데 `git filter-branch`를 사용했다면 수십 초에서 분 단위까지 걸렸을 것이다.
 
 아래의 `git filter-branch`는 이제는 떠나 보내주자.
 
