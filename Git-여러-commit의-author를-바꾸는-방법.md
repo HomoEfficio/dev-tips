@@ -17,7 +17,8 @@
 author 이름을 바꾸려면 아래와 같이 하면 된다.
 
 ```
-git-filter-repo --force --name-callback 'return name.replace(b"OLD NAME", b"NEW NAME")'        ⏎ ✭
+git-filter-repo --force --name-callback 'return name.replace(b"OLD NAME", b"NEW NAME")'
+
 Parsed 2457 commits
 New history written in 0.32 seconds; now repacking/cleaning...
 Repacking your repo and cleaning out old unneeded objects
@@ -37,6 +38,7 @@ author 이메일을 바꾸려면 아래와 같이 하면 된다.
 
 ```
 git-filter-repo --force --email-callback 'return email.replace(b"OLD EMAIL", b"NEW EMAIL")'
+
 Parsed 2457 commits
 New history written in 0.31 seconds; now repacking/cleaning...
 Repacking your repo and cleaning out old unneeded objects
