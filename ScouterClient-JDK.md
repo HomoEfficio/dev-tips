@@ -8,7 +8,7 @@ Java 14에서 잘 동작하던 Scouter Client가 JDK 17을 설치하고 난 후 
 
 ![scouter-client-pkg-info](https://user-images.githubusercontent.com/17228983/180632463-05cc2f19-8c35-4d04-bcfe-171fbce2e023.png)
 
-info.plist 파일을 열고 vm 옵션으로 JDK를 지정하면 된다. 설치된 JDK 위치는 `/usr/libexec/java_home -V`로 확인할 수 있다.
+info.plist 파일을 열고 vm 옵션으로 사용 가능한 JDK를 지정하면 된다. 설치된 JDK 위치는 `/usr/libexec/java_home -V`로 확인할 수 있다.
 
 ![scouter-client-resolve-jdk](https://user-images.githubusercontent.com/17228983/180632540-0b2c7e17-aa10-45fd-ad2c-360c4db04195.png)
 
