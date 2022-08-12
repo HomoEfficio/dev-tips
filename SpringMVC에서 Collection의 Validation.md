@@ -260,6 +260,41 @@ Client에게는 `400` Bad Request 코드만 반환하고, Error log에 아래와
 ![Imgur](http://i.imgur.com/OTPCxD6.png)
 
 ----
+## Kotlin 버전
+
+```kotlin
+@RestController
+@RequestMapping(path = ["/api/zzz"])
+class ZzzController(
+    private val collectionValidator: CollectionValidator,
+) {
+
+    @PutMapping("/{zzzOid}/testers", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun saveTesters(
+        @PathVariable("zzzOid") zzzOid: Long,
+        @Valid @RequestBody testers: List<TesterIn>,
+        bindingResult: BindingResult,
+    ): ResponseEntity<List<TesterOut>> {
+    
+        collectionValidator.validate(testers, bindingResult)
+
+        if (bindingResult.hasErrors()) {
+            throw MethodArgumentNotValidException(
+                MethodParameter(
+                    object{}.javaClass.enclosingMethod,  // saveTesters 메서드
+                    1  // validation 대상인 파라미터 testers는 2번째 파라미터이므로 인덱스로는 1
+                ),
+                bindingResult
+            )
+        }
+
+        ...
+    }
+```
+
+
+
+----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
 
 <a href='https://www.facebook.com/hanmomhanda' target='_blank'>HomoEfficio</a>가 작성한 이 저작물은
