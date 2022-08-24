@@ -292,6 +292,41 @@ class ZzzController(
     }
 ```
 
+---
+## `List<@Size(max = 10) String>` + `-Xemit-jvm-type-annotations`
+
+컴파일 옵션 `-Xemit-jvm-type-annotations`을 사용하면 Collection의 bracket 안에 validation annotation을 사용할 수 있다.
+
+build.gradle.kts 파일에 다음과 같이 컴파일 옵션을 추가하면,
+
+```kotlin
+// build.gradle.kts
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = listOf(
+            "-Xjsr305=strict",
+            "-Xemit-jvm-type-annotations",  // 여기!!
+        )
+        jvmTarget = "11"
+    }
+}
+```
+
+아래와 같이 `@Size(max = 10)` 애너테이션을 `List<>` 안에 넣어서, List 안에 들어있는 각 String의 길이가 10자를 초과하면 validation exception이 발생하게 할 수 있다.
+
+물론 Custom Validator와 Custom Annotation도 동일한 방식으로 사용 가능하다.
+
+```kotlin
+class Xxx(
+    val testers: List<@Size(max = 10) String>  // 여기!!
+)
+
+// conroller class
+@PostMapping("/xxx")
+fun save(@Valid @RequestBody xxx: Xxx): ResponseEntity<Xxx> {
+    // ...
+}
+```
 
 
 ----
