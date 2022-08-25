@@ -293,6 +293,11 @@ class ZzzController(
 ```
 
 ---
+## 기타
+
+CustomValidator 에 사용되는 payload 사용법은 https://docs.jboss.org/hibernate/validator/5.0/reference/en-US/html/validator-customconstraints.html 에서 payload 를 검색하면 나온다.
+
+---
 ## `List<@Size(max = 10) String>` + `-Xemit-jvm-type-annotations`
 
 컴파일 옵션 `-Xemit-jvm-type-annotations`을 사용하면 Collection의 bracket 안에 validation annotation을 사용할 수 있다.
