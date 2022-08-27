@@ -167,7 +167,7 @@ spring:
                 class: org.springframework.kafka.support.serializer.JsonDeserializer
 ```
 
-결국 ErrorHandlingDeserializer로 JsonDeserializer를 감싸서, 에러가 있으면 ErrorHandler에게 넘기고, 에러가 없으면 JsonDeserializer에게 넘기는 구조다.
+결국 **ErrorHandlingDeserializer로 JsonDeserializer를 감싸서, 에러가 있으면 ErrorHandler에게 넘기고, 에러가 없으면 JsonDeserializer에게 넘기는 구조다.**
 
 
 ### ErrorHandler
@@ -218,12 +218,13 @@ dead-letter topic 관련은 https://docs.spring.io/spring-kafka/reference/html/#
 >- StringDeserializer를 사용하면 역직렬화 실패 가능성은 매우 낮아지지만, 실제 비즈니스에서 사용하려면 역직렬화한 문자열을 다시 업무에 사용하는 데이터 타입으로 변환해줘야 한다.
 >- 이 과정을 JSON으로 한 번에 해주는 게 JsonDeserializer
 >- 하지만 JsonDeserializer를 날로 그냥 먹으면 심각한 식중독에 걸릴 수 있다.
->- **JsonDeserializer 등 primitive 타입이 아닌 타입이 개입되는 Deserializer 사용 시에는 반드시 ErrorHandlingDeserializer를 사용한다.**
+>- **JsonDeserializer 사용 등 역직렬화 오류가 발생할 수 있는 상황에서는 반드시 ErrorHandlingDeserializer를 사용해야 Poison Pill로 인한 장애를 막을 수 있다.**
 
 ## 참고
 
 - https://docs.spring.io/spring-kafka/reference/html/#error-handling-deserializer
 - https://www.confluent.io/ko-kr/blog/spring-kafka-can-your-kafka-consumers-handle-a-poison-pill/
+
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
