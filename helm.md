@@ -117,6 +117,14 @@ install 에 의해 생성된 helm release의 내용 변경
 예제: helm upgrade -n my-namespace my-release my-repo/my-chart -f deploy/values-my-other-values.yaml
 ```
 
+## helm list
+
+install 에 의해 생성된 helm release 의 목록 조회
+
+```
+helm list
+```
+
 
 # 실무 사용 참고
 
