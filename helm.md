@@ -68,6 +68,7 @@
   - 서로 다른 values.yaml 을 적용해서 내용적으로 다른 여러 helm release 를 만들 수도 있고,
   - 동일한 values.yaml 을 적용하되 release 이름을 다르게 지정해서 내용적으로는 동일한 여러 helm release 를 만들 수도 있다.
 - helm chart 및 values.yaml 파일의 내용 변경을 k8s 자원에 반영해야 할 때 `helm upgrade` 명령을 통해 release 의 내용을 변경할 수 있다.
+  - values.yaml 파일 변경 시 `helm upgrade`만 하면 되지만, deployment.yaml 파일이 변경됐을 때는 `helm push`로 차트 먼저 리포지토리에 푸시해둬야 한다.
 
 
 # 주요 명령
@@ -124,6 +125,7 @@ install 에 의해 생성된 helm release의 내용 변경
 - 소스 코드가 비공개 repo에 있다면 이 비공개 repo에 접근할 수 있는 곳에 CI용 jenkins를 두고, k8s 클러스터 내부에 CD용 jenkins를 둬서, CI용 jenkins가 이미지를 컨테이너 레지스트리에 올린 후에 CD용 jenkins를 호출(HTTP API)해서 배포할 수 있다.
 - 소스 코드가 변경됐다면 그에 따른 image 만 변경하면 되므로 CI-CD만 하면 되고, helm 작업(install 또는 upgrade)은 다시 할 필요가 없다.
 - 소스 코드는 변경이 없는데 helm chart나 values.yaml 파일만 변경됐다면 helm upgrade만 다시 하면 배포까지 되고 CI-CD 작업은 다시 할 필요가 없다.
+  - values.yaml 파일 변경 시 `helm upgrade`만 하면 되지만, deployment.yaml 파일이 변경됐을 때는 `helm push`로 차트 먼저 리포지토리에 푸시해둬야 한다.
 
 
 # helm chart 작성
