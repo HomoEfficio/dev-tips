@@ -484,6 +484,28 @@ binding parameter [1] as [BIGINT] - [2]
 
 오! 처음에 원했던 그대로 delete 만 2회 실행될 뿐 아무런 오버헤드도 발생하지 않는다!
 
+## 그래도 일대다 단방향이 비즈 로직에는 딱인데..
+
+딱이긴 한데 상황에 따라 위와 같은 치명적인 단점이 있으니 양방향으로 하는 게 좋다.
+
+그래도 미련이 남는다면 아래와 같은 위로를 전해줄 수 있다.
+
+Child에 있는 Parent에 대한 참조인 parent가 아래와 같이 private으로 선언돼 있고,  
+
+```
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Parent parent;  // private 이라능!!
+```
+
+Child 클래스에 parent에 대한 getter/setter 같은 공개 메서드를 정의하지 않으면,  
+바깥에서 볼 때는 Child가 Parent에 대해 전혀 모르는 것처럼 행동하고, 
+Parent만 Child에 대해 아는 것처럼 행동하므로,  
+코드 작성 관점에서는 일대다 단방향이라고 해도 괜찮지 않을까?
+
+물론 Child를 생성할 때 Parent를 넣어줘야 한다는 사실은 잊지 말자.  
+결국 양방향이지만 단방향에 대한 미련을 조금이라도 달래줄수 있지 않을까 해서 덧붙이는 설명이다.
+
 
 # 정리
 
