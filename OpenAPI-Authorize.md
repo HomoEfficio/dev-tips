@@ -22,6 +22,38 @@ OpenAPI 문서에 다음 내용을 추가하면 OpenAPI UI 에 위에서 봤던 
 
 ![Imgur](https://i.imgur.com/FXWkoZx.png)
 
+또는 OpenAPI yaml 문서 대신 아래와 같이 소스 코드를 통해 설정할 수도 있다.
+
+```kotlin
+@Configuration
+@OpenAPIDefinition(
+    servers = [
+        Server(url = "/any-context-root")
+    ],
+    security = [
+        SecurityRequirement(name = "Bearer"),
+    ]
+)
+@SecuritySchemes(
+    SecurityScheme(
+        type = SecuritySchemeType.HTTP,
+        name = "Bearer",
+        description = "JWT Bearer Token 입력",
+        scheme = "bearer",
+        bearerFormat = "JWT"
+    ),
+)
+class OpenApiConfig {
+}
+
+```
+`security`가 배열로 정의돼 있고, `@SecuritySchemes`도 복수의 `@SecurityScheme`을 가질 수 있으므로,  
+예를 들어 사용자 인증과 서버간 인증이 별도로 존재할 때 2개의 인증 방식을 사용할 수도 있다.
+
+복수개로 구성 후 Authorize 버튼을 누르면 다음과 같이 2가지가 함께 표시된다.
+
+![Imgur](https://i.imgur.com/jO3Q7L9.png)
+
 
 ## JWT 생성 API 추가
 
