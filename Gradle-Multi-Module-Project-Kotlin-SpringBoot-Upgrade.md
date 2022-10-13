@@ -90,8 +90,189 @@ dependencies {
 
 그럼 스프링을 사용하지 않으면서 buildSrc 폴더를 사용하는 Gradle 멀티 모듈 프로젝트의 코틀린 언어 버전 업그레이드는 어떻게 하나?
 
-몰라. 끗.
+몰라. 끗. 이 아니네..
 
 
+## springdoc-openapi
+
+스프링 부트와 플러그인 업그레이드해서 실행해보면 잘 되다가 아래와 같은 스프링 부트 Failure Analyzer 내용이 표시된다.
+
+```
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2022-10-14 00:36:55.598 ERROR [CreatorCommand,,] 28469 --- [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+An attempt was made to call a method that does not exist. The attempt was made from the following location:
+
+    org.webjars.WebJarAssetLocator.scanForWebJars(WebJarAssetLocator.java:183)
+
+The following method did not exist:
+
+    'io.github.classgraph.ClassGraph io.github.classgraph.ClassGraph.acceptPaths(java.lang.String[])'
+
+The calling method's class, org.webjars.WebJarAssetLocator, was loaded from the following location:
+
+    jar:file:/Users/user/.gradle/caches/modules-2/files-2.1/org.webjars/webjars-locator-core/0.50/d1ae68f5fea4f8e36e1d9adfd1ac02463c43894a/webjars-locator-core-0.50.jar!/org/webjars/WebJarAssetLocator.class
+
+The called method's class, io.github.classgraph.ClassGraph, is available from the following locations:
+
+    jar:file:/Users/user/.gradle/caches/modules-2/files-2.1/io.github.classgraph/classgraph/4.8.69/6bd8c9033563e162b5c12de12b139724dbf71f48/classgraph-4.8.69.jar!/io/github/classgraph/ClassGraph.class
+
+The called method's class hierarchy was loaded from the following locations:
+
+    io.github.classgraph.ClassGraph: file:/Users/user/.gradle/caches/modules-2/files-2.1/io.github.classgraph/classgraph/4.8.69/6bd8c9033563e162b5c12de12b139724dbf71f48/classgraph-4.8.69.jar
+
+
+Action:
+
+Correct the classpath of your application so that it contains compatible versions of the classes org.webjars.WebJarAssetLocator and io.github.classgraph.ClassGraph
+
+```
+
+찾아보니 https://stackoverflow.com/questions/72397763/error-starting-springboot-when-update-version-to-2-7-0-an-attempt-was-made-to-c 이런 자료가 나오는데,  
+결국 구 버전의 springdoc-openapi 를 사용하고 있으면 springdoc-openapi 내부적으로 사용하는 WebJarAssetLocator, ClassGraph 관련 에러가 난다는 얘기다.
+
+springdoc-openapi 1.5.9에서는 위와 같은 에러가 났었고 아래와 같이 최신 버전 1.6.11 로 변경하니까,
+
+```
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.11")
+    implementation("org.springdoc:springdoc-openapi-data-rest:1.6.11")
+    implementation("org.springdoc:springdoc-openapi-security:1.6.11")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.11")
+```
+
+드디어 성공..
+
+
+## Spring Cloud
+
+하는 줄 알았더니 이번에는 Spring Cloud 관련 에러가..
+
+```
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2022-10-14 01:01:40.048 ERROR [CreatorCommand,,] 31734 --- [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Your project setup is incompatible with our requirements due to following reasons:
+
+- Spring Boot [2.7.4] is not compatible with this Spring Cloud release train
+
+
+Action:
+
+Consider applying the following actions:
+
+- Change Spring Boot version to one of the following versions [2.4.x, 2.5.x] .
+You can find the latest Spring Boot versions here [https://spring.io/projects/spring-boot#learn]. 
+If you want to learn more about the Spring Cloud Release train compatibility, you can visit this page [https://spring.io/projects/spring-cloud#overview] and check the [Release Trains] section.
+If you want to disable this check, just set the property [spring.cloud.compatibility-verifier.enabled=false]
+
+
+```
+
+Spring Boot 버전과 Spring Cloud 버전이 안 맞는다는 얘기인 것 같다.
+
+둘 사이의 궁합표는 https://spring.io/projects/spring-cloud 에서 살짝 스크롤 내려보면 'Release train Spring Boot compatibility'에 나와 있다.
+
+Spring Boot 2.7.4 는 Spring Cloud 2021.0.x 와 맞고, 최신인 2021.0.4 를 적용해보자.
+
+```
+// submodule/build.gradle.kts
+
+extra["springCloudVersion"] = "2021.0.4"
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+    }
+}
+
+```
+
+이번에는 되겠지. 짠!
+
+
+## P6Spy
+
+짠하네..
+
+```
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2022-10-14 01:13:12.656 ERROR [CreatorCommand,,] 35168 --- [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'p6SpyDataSourceDecorator', defined in class path resource [org/springframework/cloud/sleuth/autoconfig/instrument/jdbc/P6SpyConfiguration.class], could not be registered. A bean with that name has already been defined in class path resource [com/github/gavlyukovskiy/boot/jdbc/decorator/p6spy/P6SpyConfiguration.class] and overriding is disabled.
+
+Action:
+
+Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+
+```
+
+이번에는 실행되는 쿼리를 편하게 볼 수 있는 P6Spy와 Spring Cloud Sleuth가 충돌이 있는 것 같다.
+
+P6SpyConfiguration 클래스가 com/github/gavlyukovskiy/boot/jdbc/decorator/p6spy/P6SpyConfiguration.class 에도 있고,  
+com/github/gavlyukovskiy/cloud/sleuth 에도 있고,
+org/springframework/cloud/sleuth/autoconfig/instrument/jdbc/P6SpyConfiguration.class 에도 있다.
+
+https://github.com/gavlyukovskiy/spring-boot-data-source-decorator#spring-cloud-sleuth-deprecated 이걸 보고 아래와 같이 조치한다. 
+
+1. properties(yml) 파일에서 `decorator.datasource.`를 `spring.sleuth.jdbc.`로 일괄 변경
+2. build.gradle.kts 파일에서 `implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter")`를 `implementation("p6spy:p6spy")`로 일괄 변경.. 하면 p6spy 를 못 찾는다고 하니 `implementation("p6spy:p6spy:3.9.1")`로 일괄 변경
+
+
+## QueryDsl
+
+Spring Boot 2.7 에서는 QueryDsl 도 5.0.0 을 사용해야 하는 모양이다.
+
+아래와 같이 지정해주면 된다.
+
+```
+// submodule/build.gradle.kts
+
+extra["queryDslVersion"] = "5.0.0"
+
+dependencies {
+    implementation("com.querydsl:querydsl-jpa:${property("queryDslVersion")}")
+    kapt("com.querydsl:querydsl-apt:${property("queryDslVersion")}:jpa")
+
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+}
+
+```
+
+
+## 성공
+
+이제 드디어!!
+
+```
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v2.7.4)
+
+2022-10-14 01:45:52.562  INFO [CreatorCommand,,] 39888 --- [  restartedMain] m.z.s.w.c.c.CreatorCommandApplicationKt  : Starting CreatorCommandApplicationKt using Java 14.0.2 on abcde
+2022-10-14 01:45:52.564 DEBUG [CreatorCommand,,] 39888 --- [  restartedMain] m.z.s.w.c.c.CreatorCommandApplicationKt  : Running with Spring Boot v2.7.4, Spring v5.3.23
+```
 
 
