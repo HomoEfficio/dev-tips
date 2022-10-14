@@ -320,8 +320,7 @@ tasks.test {
 `testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")`에서 버전 번호를 삭제하면 드디어..
 
 
-
-## 성공
+## 로컬 성공
 
 이제 드디어!!
 
@@ -337,5 +336,37 @@ tasks.test {
 2022-10-14 01:45:52.562  INFO [CreatorCommand,,] 39888 --- [  restartedMain] m.z.s.w.c.c.CreatorCommandApplicationKt  : Starting CreatorCommandApplicationKt using Java 14.0.2 on abcde
 2022-10-14 01:45:52.564 DEBUG [CreatorCommand,,] 39888 --- [  restartedMain] m.z.s.w.c.c.CreatorCommandApplicationKt  : Running with Spring Boot v2.7.4, Spring v5.3.23
 ```
+
+
+
+## Jenkins, JaCoCo
+
+드디어 로컬에서는 성공!
+
+그런데 Jenkins를 돌려보니 에러
+
+```
+// Jenkins Job Console Log
+
+java.lang.IllegalStateException: Unexpected SMAP line: *S KotlinDebug
+    at org.jacoco.core.internal.analysis.filter.KotlinInlineFilter.getFirstGeneratedLineNumber(KotlinInlineFilter.java:98)
+    at org.jacoco.core.internal.analysis.filter.KotlinInlineFilter.filter(KotlinInlineFilter.java:44)
+    at org.jacoco.core.internal.analysis.filter.Filters.filter(Filters.java:59)
+    at org.jacoco.core.internal.analysis.ClassAnalyzer.addMethodCoverage(ClassAnalyzer.java:119)
+    at org.jacoco.core.internal.analysis.ClassAnalyzer.access$100(ClassAnalyzer.java:33)
+    at org.jacoco.core.internal.analysis.ClassAnalyzer$1.accept(ClassAnalyzer.java:108)
+    at org.jacoco.core.internal.flow.ClassProbesAdapter$2.visitEnd(ClassProbesAdapter.java:91)
+    at org.objectweb.asm.ClassReader.readMethod(ClassReader.java:1492)
+    at org.objectweb.asm.ClassReader.accept(ClassReader.java:718)
+    at org.objectweb.asm.ClassReader.accept(ClassReader.java:401)
+    at org.jacoco.core.analysis.Analyzer.analyzeClass(Analyzer.java:116)
+    at org.jacoco.core.analysis.Analyzer.analyzeClass(Analyzer.java:132)
+```
+
+검색 해 보니, https://blog.leocat.kr/notes/2021/06/13/jacoco-Unexpected-SMAP-line-S-KotlinDebug-kotlin-1.5 요런 게 나오는데, Jenkins JaCoCo 플러그인 버전을 3.2.0 이상으로 올려야 한단다. 그러려면 Jenkins도 2.277.1 이상으로 올려야 한단다.
+
+그래서 그냥 Job 설정에서 JaCoCo 플러그인 실행 부분을 그냥 삭제했다. 나중에 Jenkins 업그레이드 하게 되면 그때나 적용해보기로..
+
+
 
 
