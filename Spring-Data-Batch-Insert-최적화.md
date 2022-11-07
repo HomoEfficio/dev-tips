@@ -204,6 +204,17 @@ public class ItemJdbcRepositoryImpl implements ItemJdbcRepository {
 }
 ```
 
+## rewriteBatchedStatements
+
+`jdbcTemplate.batchUpdate()`를 실행하면 메서드 이름에 Batch가 들어가 있으니 `insert into table (``colA``, ``colB``) values ('v1', 'v2'), ('v3', 'v4'), ('v5', 'v6'), ...`와 같은 Batch Insert DML을 만들어 줄 것 같지만 애석하게도 그렇지 않다.
+
+batchUpdate()를 하면 여러 개의 `insert`문을 하나의 DB 연결 세션에서 몰아서 실행할 뿐, Batch Insert DML을 만들어서 실행하지는 않는다.
+
+Batch Insert DML을 만들어 실행하는 것은 JDBC Driver의 도움을 받아야 한다. 그래서 JDBC URL에 다음과 같이 `rewriteBatchedStatements=true`를 추가해야 `insert into table (``colA``, ``colB``) values ('v1', 'v2'), ('v3', 'v4'), ('v5', 'v6'), ...`와 같은 Batch Insert DML이 실행되어 진정한 Batch Insert 최적화가 완성된다.
+
+참고로 JDBC URL에 `&profileSQL=true&logger=Slf4JLogger`를 추가하면 p6spy 같은 도구 없이도 MySQL Driver가 실제 DB로 전송한 쿼리를 로그로 출력해준다.
+
+
 # 실험 결과
 
 어느 방식이 가장 빠를까?
@@ -239,6 +250,11 @@ public class ItemJdbcRepositoryImpl implements ItemJdbcRepository {
 
 MySQL에는 Sequence가 없으므로 SEQUENCE 방식을 지정했다고 하더라도 사실 상 TABLE 방식으로 동작했다는 것을 감안하면, **Sequence가 지원되는 DB에서는 TABLE 방식보다 채번 부하가 더 적은 SEQUENCE 방식을 Batch 스타일로 사용하면 Spring Data JDBC 방식과 비슷한 성능을 보일 것 같다.**
 
+참고로 위 비교표의 `JDBC(A)`는 `rewriteBatchedStatements=true`를 추가하지 않고 실행한 결과다.  
+`rewriteBatchedStatements=true`를 나중에 알게 돼서 위 실험 당시에는 추가하지 못 했다.
+
+실무에서 약 1300건의 데이터를 batchSize를 200으로 해서 `jdbc.batchUpdate()` 방식으로 입력할 때 약 64초가 걸렸는데,  
+`rewriteBatchedStatements=true` 적용 후에는 1.7초 만에 완료됐다.
 
 # 마무리
 
