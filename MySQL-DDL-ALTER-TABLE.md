@@ -85,7 +85,13 @@ alter table tmptmp
 
 컬럼 타입 변경은 INPLACE로도 안 되는데 INSTANT를 썼으니 안 된다는 얘기다. 그러면 COPY로만 가능하다는 얘기 같은데 마지막에는 애매하게 ALGORITHM=COPY/INPLACE 로 해보라고 한다. 무슨 뜻일까?
 
-실험해보니 varchar(255) 였던 컬럼을 varchar(1000) 으로 변경할 때는 INPLACE 도 성공한다.
+실험해보니 varchar(255) 였던 컬럼을 varchar(1000) 으로 크기를 늘릴 때는 INPLACE 도 성공한다.
+
+하지만 varchar(1000) 였던 컬럼을 varchar(255) 로 줄일 때는 다음과 같이 COPY로만 가능하다는 에러가 메시지가 표시된다. 아마 varchar 크기를 줄일 때는 기존에 저장된 값이 축소된 컬럼 길이에 맞게 잘릴 수도 있고, 이 경우 값이 변경돼야 하므로 COPY로만 가능한 것으로 보인다.
+
+```
+[0A000][1846] ALGORITHM=INPLACE is not supported. Reason: Cannot change column type INPLACE. Try ALGORITHM=COPY.
+```
 
 에러 메시지뿐 아니라 성공 메시지에서도 여러 정보를 미리 알아낼 수 있다.
 
