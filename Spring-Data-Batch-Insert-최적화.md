@@ -250,8 +250,8 @@ Batch Insert DML을 만들어 실행하는 것은 JDBC Driver의 도움을 받�
 
 MySQL에는 Sequence가 없으므로 SEQUENCE 방식을 지정했다고 하더라도 사실 상 TABLE 방식으로 동작했다는 것을 감안하면, **Sequence가 지원되는 DB에서는 TABLE 방식보다 채번 부하가 더 적은 SEQUENCE 방식을 Batch 스타일로 사용하면 Spring Data JDBC 방식과 비슷한 성능을 보일 것 같다.**
 
-참고로 위 비교표의 `JDBC(A)`는 `rewriteBatchedStatements=true`를 추가하지 않고 실행한 결과다.  
-`rewriteBatchedStatements=true`를 나중에 알게 돼서 위 실험 당시에는 추가하지 못 했다.
+참고로 위 비교표의 `JDBC(A)`는 `rewriteBatchedStatements=true`를 적용하지 않고 실행한 결과다.  
+`rewriteBatchedStatements=true`를 나중에 알게 돼서 위 실험 당시에는 적용하지 못 했다.
 
 실무에서 약 1300건의 데이터를 batchSize를 200으로 해서 `jdbc.batchUpdate()` 방식으로 입력할 때 약 64초가 걸렸는데,  
 `rewriteBatchedStatements=true` 적용 후에는 1.7초 만에 완료됐다.
