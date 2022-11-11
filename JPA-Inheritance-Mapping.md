@@ -147,9 +147,15 @@ otherEntity.sub1List 에는 Sub1 타입의 엘레먼트 2개만 들어있고,
 otherEntity.sub2List 에는 Sub2 타입의 엘레먼트 3개가 들어있을 것 같지만,
 실제로는 sub1List 에도 엘레먼트 5개, sub2List 에도 엘레먼트 5개가 들어있다.
 
-이유는 위에 쓴 것처럼 DB 서버에 전달되는 쿼리의 where 조건에 `type` = 'Sub1' 또는 `type` = 'Sub2' 같은 조건이 포함돼 있지 않기 때문이다.  
+저렇게 동작하는 이유는 아마도 sub1List에 대한 mappedBy의 값과 sub2List에 대한 mappedBy의 값이 모두 otherEntity로 동일하기(동일한 컬럼이기) 때문인 것으로 추정된다.
 
-그래서 sub1List를 의미대로 Sub1 타입만 포함하는 컬렉션으로 사용하고 싶다면, 응용단에서 필터링 해서 재구성해주는 수 밖에는 없다.
+하지만 동일한 컬럼을 사용한다고 하더라도 DB 서버에 전달되는 쿼리의 where 조건에 `type` = 'Sub1' 또는 `type` = 'Sub2' 같은 조건이 포함되면 `type`별로 조회할 수 있는데,  
+Hibernate 5.6.9.Final은 where 조건에 `type`을 포함하지 않는다.
+
+그래서 sub1List를 의미대로 Sub1 타입만 포함하는 컬렉션으로 사용하고 싶다면,
+
+- 애초부터 mappedBy 를 각각 구성하거나(이러면 Sub 타입이 추가될 때마다 nullable 컬럼이 추가돼야 하는데 좋은 방향 같지는 않다)
+- mappedBy는 동일한 값을 사용하되, 다음과 같이 응용단에서 타입별로 필터링 해서 재구성해서 사용해야 한다.
 
 ```kotlin
 @Entity
