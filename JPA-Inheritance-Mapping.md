@@ -78,7 +78,115 @@ Super - (Sub1, Sub2, Sub3) 관계인 도메인 엔티티가 있다.
 - 각 Sub 마다 고유의 필드가 많다면 정규화의 장점을 살릴 수 있는 JOINED가 적합
 - 각 Sub 마다 고유의 필드가 적다면 한 테이블에서 조회 효율을 높일 수 있는 SINGLE_TABLE이 적합
 
+
 ## 참고
 
 - https://thorben-janssen.com/complete-guide-inheritance-strategies-jpa-hibernate/
+
+---
+## 마무리 하려고 했는데 이상한 점이..
+
+2022년 11월 현재 Spring Data JPA 2.7.5(Hibernate 5.6.9.Final) 에서는,  
+아래와 같이 `DiscriminatorColumn(name = "type")`을 지정해도, 실제 조회 시 날라가는 쿼리를 보면 where 조건에 `type`이 포함돼 있지 않다.
+
+```kotlin
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type")
+```
+
+더 구체적으로는 아래와 같은 관계에서
+
+```kotlin
+@Entity
+@Table
+class OtherEntity(
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val oid: Long? = null,
     
+    @OneToMany(mappedBy = "otherEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val sub1List: MutableList<Super> = mutableListOf(),
+    
+    @OneToMany(mappedBy = "otherEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val sub2List: MutableList<Super> = mutableListOf(),
+}
+
+@Entity
+@Table
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type")
+abstract class Super(
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val oid: Long? = null,
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "other_entity_oid")
+    private var otherEntity: OtherEntity? = null,
+)
+
+@Entity
+@DiscriminatorValue("Sub1")
+class Sub1(
+    oid: Long? = null,
+    otherhEntity: OtherEntity?,
+) : Super(
+    otherEntity = otherEntity
+)
+
+@Entity
+@DiscriminatorValue("Sub2")
+class Sub2(
+    oid: Long? = null,
+    otherhEntity: OtherEntity?,
+) : Super(
+    otherEntity = otherEntity
+)
+```
+
+otherEntity 하나에 Sub1 타입의 엘레먼트가 2개, Sub2 타입의 엘레먼트가 3개라면,
+otherEntity.sub1List 에는 Sub1 타입의 엘레먼트 2개만 들어있고,
+otherEntity.sub2List 에는 Sub2 타입의 엘레먼트 3개가 들어있을 것 같지만,
+실제로는 sub1List 에도 엘레먼트 5개, sub2List 에도 엘레먼트 5개가 들어있다.
+
+이유는 위에 쓴 것처럼 DB 서버에 전달되는 쿼리의 where 조건에 `type` = 'Sub1' 또는 `type` = 'Sub2' 같은 조건이 포함돼 있지 않기 때문이다.  
+
+그래서 sub1List를 의미대로 Sub1 타입만 포함하는 컬렉션으로 사용하고 싶다면, 응용단에서 필터링 해서 재구성해주는 수 밖에는 없다.
+
+```kotlin
+@Entity
+@Table
+class OtherEntity(
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val oid: Long? = null,
+    
+    // private val 로 변경해서 Sub1, Sub2 타입을 모두 포함하는 sub1List가 외부로 공개되지 않게 감춘다
+    @OneToMany(mappedBy = "otherEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    private val sub1List: MutableList<Super> = mutableListOf(),
+    
+    // private val 로 변경해서 Sub1, Sub2 타입을 모두 포함하는 sub1List가 외부로 공개되지 않게 감춘다
+    @OneToMany(mappedBy = "otherEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    private val sub2List: MutableList<Super> = mutableListOf(),
+} {
+    // 외부에서는 sub1List 대신 sub1List() 사용
+    fun sub1List(): MutableList<Sub1> {
+        return sub1List.filter {
+            it.getType() == MyType.Sub1
+        }.map { it as Sub1 }.toMutableList()
+    }
+    
+    // 외부에서는 sub2List 대신 sub2List() 사용
+    fun sub2List(): MutableList<Sub2> {
+        return sub2List.filter {
+            it.getType() == MyType.Sub2
+        }.map { it as Sub2 }.toMutableList()
+    }
+}
+```
+
+
+----
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+<a href='https://www.facebook.com/hanmomhanda' target='_blank'>HomoEfficio</a>가 작성한 이 저작물은
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">크리에이티브 커먼즈 저작자표시-비영리-동일조건변경허락 4.0 국제 라이선스</a>에 따라 이용할 수 있습니다.
+
