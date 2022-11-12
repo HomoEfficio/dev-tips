@@ -188,6 +188,42 @@ class OtherEntity(
 }
 ```
 
+### 해결!
+
+신동민 님이 알려주신 모범 답안!
+
+Super 쪽에 `@DiscriminatorOptions(force = true)`를 추가하고,  
+OtherEntity 쪽에서 다음과 같이 Sub 타입 별로 컬렉션을 구성하면,  
+
+```kotlin
+    @OneToMany(mappedBy = "otherEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val sub1List: MutableList<Sub1> = mutableListOf(),
+    
+    @OneToMany(mappedBy = "otherEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val sub2List: MutableList<Sub2> = mutableListOf(),
+```
+
+where 조건에 `type = 'Sub1'`, `type = 'Sub2'`와 같이 딱 원하는대로 동작한다.
+
+참고로 `@DiscriminatorOptions(force = true)`가 없는 상태에서 위와 같이 Sub 타입 별로 리스트를 구성하면,  
+`WrongClassException`이 발생한다.
+
+실무적으로 `@DiscriminatorOptions(force = true)`를 하지 않아야 하는 경우가 잘 없을 것 같은데 `force`의 기본값이 `true`가 아닌 것은 살짝 의아하다.
+
+다른 참고로 `@DiscriminatorOptions(force = true)`는 있지만 아래와 같이 Super 타입으로 컬렉션을 구성하면,
+
+```kotlin
+    @OneToMany(mappedBy = "otherEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val sub1List: MutableList<Super> = mutableListOf(),
+    
+    @OneToMany(mappedBy = "otherEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val sub2List: MutableList<Super> = mutableListOf(),
+```
+
+where 조건에 `type in ('Sub1', 'Sub2')`와 같이 포함되어 null 필터링만 가능할 뿐 Sub 타입별 컬렉션 구성이 되지 않고, sub1List 에 Sub1, Sub2 모두 포함, sub2List 에도 Sub1, Sub2 가 모두 포함된다.
+
+이렇게 상속 관계 매핑 조회에서 핵심적인 역할을 하는 `@DiscriminatorOptions(force = true)`를 보지 못했다.  
+특정 기술 관련 문제에서 있을 법한테 인터넷 쉽게 뒤지는 걸로 나오지 않으면, 그냥 없다고 생각하기 전에 공식 문서도 한 번 찾아봐야 한다는 기본 중의 기본을 다시 되새기게 된다.
 
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
