@@ -225,6 +225,27 @@ where 조건에 `type in ('Sub1', 'Sub2')`와 같이 포함되어 null 필터링
 이렇게 상속 관계 매핑 조회에서 핵심적인 역할을 하는 `@DiscriminatorOptions(force = true)`를 보지 못했다.  
 특정 기술 관련 문제에서 있을 법한테 인터넷 쉽게 뒤지는 걸로 나오지 않으면, 그냥 없다고 생각하기 전에 공식 문서도 한 번 찾아봐야 한다는 기본 중의 기본을 다시 되새기게 된다.
 
+### 아직 남은 이슈
+
+QueryDSL 관련 이슈가 남아있다.
+
+Q클래스 생성 시 QSub1, QSub2 가 생성되고 그 안에 type 필드도 생긴다.
+
+그래서 조회 시 다음과 같이 조인 문을 사용할 수 있는데,
+
+```kotlin
+  .innerJoin(qSub1).on(
+      qOtherEntity.oid.eq(qSub1.otherEntity.oid)
+          .and(qSub1.type.eq(MyType.SUB1))
+``
+
+실제 실행해 보면 Sub1 클래스에 type 이라는 프로퍼티가 없다는 에러가 발생한다.
+
+type은 `@DiscriminatorColumn`에 의해 생겨났을뿐 소스 코드의 프로퍼티로 명시적으로 정의한 게 아니기 때문인 것 같다.
+
+이 문제 해결 방법을 알 수 없어 결국 type이 아닌 다른 값에 의존해서 조건을 사용할 수 밖에 없었다.
+
+
 ----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
 
