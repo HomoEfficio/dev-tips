@@ -25,3 +25,22 @@
 - 가볍다고 막 쓰면 연동된 다른 시스템에 과부하 전파 우려
   - 적절한 스로틀링 필요
 - 리액터의 자원 효율성은 대체할 수 있지만 백프레셔를 대체하지는 못함
+
+## 스프링은 어떻게 지원할까?
+
+[여기](https://spring.io/blog/2022/10/11/embracing-virtual-threads) 나온 내용을 보면 대략 다음과 같이 기존 `AsyncTaskExecutor`를 통해 사용할 수 있을 것 같다.
+
+```java
+@Bean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)
+public AsyncTaskExecutor asyncTaskExecutor() {
+  return new TaskExecutorAdapter(Executors.newVirtualThreadPerTaskExecutor());
+}
+
+@Bean
+public TomcatProtocolHandlerCustomizer<?> protocolHandlerVirtualThreadExecutorCustomizer() {
+  return protocolHandler -> {
+    protocolHandler.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
+  };
+}
+```
+
