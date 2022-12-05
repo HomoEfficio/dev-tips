@@ -22,6 +22,8 @@ Resetta 2를 설치하고, Intel x86_64 용 homebrew를 따로 설치하면 Inte
 
 ## Rosetta 2 설치
 
+인텔 기준 명령어로 만들어진 패키지도 Rosetta 2를 통해 Mac 실리콘 칩 시스템에서 실행될 수 있다. https://support.apple.com/ko-kr/guide/security/secebb113be1/web
+
 ```bash
 ~ 🦑🍺 ❯ /usr/sbin/softwareupdate --install-rosetta
 I have read and agree to the terms of the software license agreement. A list of Apple SLAs may be found here: http://www.apple.com/legal/sla/
