@@ -1,6 +1,6 @@
 # Mac M# 에서 Intel x86_64 패키지 설치하기
 
-M1 칩 Mac에서 `brew install` 명령으로 패키지를 설치하면 아래와 같이 x86_64 용 패키지는 설치할 수 없다는 에러가 날 때가 있다.
+Silicon(M#) 칩 Mac에서 `brew install` 명령으로 패키지를 설치하면 아래와 같이 x86_64 용 패키지는 설치할 수 없다는 에러가 날 때가 있다.
 
 ```bash
 ~ 🦑🍺 ❯ brew install making/tap/rsc
