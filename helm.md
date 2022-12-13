@@ -120,7 +120,7 @@ Installed plugin: cm-push
 Pushing my-chart-0.1.0.tgz to my-repo...
 Done.
 ```
-
+push 후 `helm repo update` 명령 실행 후 `helm search repo my-repo`를 실행하면 push 한 차트를 확인할 수 있다.
 
 ## helm install
 
