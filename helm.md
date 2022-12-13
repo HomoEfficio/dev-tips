@@ -87,17 +87,23 @@ helm chart를 helm repository에 저장
 예제: helm push deploy/my-chart my-repo
 ```
 
-helm v3.8.0 부터는 위와 같이 `helm push` 명령을 싫행하면 아래와 같이 에러 발생
+helm v3.8.0 부터는 위와 같이 `helm push deploy/my-chart my-repo` 명령을 싫행하면 아래와 같이 에러가 발생한다.  
 
 ```bash
 ❯ helm push deploy/my-chart my-repo --debug
 
 Error: scheme prefix missing from remote (e.g. "oci://")
 helm.go:84: [debug] scheme prefix missing from remote (e.g. "oci://")
-
 ```
 
-아래와 같이 plugin을 설치하고
+이유는 https://helm.sh/docs/topics/registries/ 에 나와 있는데, 결론적으로 v3.8.0 부터는 `helm push` 명령은 아래와 같은 형식으로만 사용 가능하다.
+
+```bash
+helm push mychart-0.1.0.tgz oci://localhost:5000/helm-charts
+```
+tgz 파일은 `helm package deploy/my-chart` 명령으로 만들 수 있는데, oci 지원 리포지토리는 담당하는 곳에서 따로 구성해주지 않으면 어쩔 도리가 없다.
+
+그래서 결국에는 아래와 같이 plugin을 설치하고
 
 ```bash
 ❯ helm plugin install https://github.com/chartmuseum/helm-push
@@ -105,7 +111,6 @@ helm.go:84: [debug] scheme prefix missing from remote (e.g. "oci://")
 Downloading and installing helm-push v0.10.3 ...
 https://github.com/chartmuseum/helm-push/releases/download/v0.10.3/helm-push_0.10.3_darwin_arm64.tar.gz
 Installed plugin: cm-push
-
 ```
 
 아래와 같이 push 대신 cm-push 를 사용하면 된다.
@@ -114,7 +119,6 @@ Installed plugin: cm-push
 
 Pushing my-chart-0.1.0.tgz to my-repo...
 Done.
-
 ```
 
 
