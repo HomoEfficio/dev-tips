@@ -576,7 +576,7 @@ class DailyStat(
     }
 ```
 
-### Bulk Write 하는 함수
+### Bulk Write 함수
 
 ```kotlin
 override fun bulkSaveOrUpdate(dailyStats: List<DailyStat>): Mono<BulkWriteResult> {
@@ -610,7 +610,7 @@ override fun bulkSaveOrUpdate(dailyStats: List<DailyStat>): Mono<BulkWriteResult
 
 ```
 
-### 100개씩 BulkWrite 하는 함수
+### 100개씩 묶어 BulkWrite를 호출하는 함수
 
 ```kotlin
 // 주입받은 의존 관계
