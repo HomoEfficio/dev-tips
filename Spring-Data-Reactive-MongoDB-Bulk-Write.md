@@ -1,4 +1,4 @@
-# Spring Data MongoDB Reactive Bulk Write
+# Spring Data Reactive MongoDB Bulk Write
 
 건 수가 굉장히 많은 데이터를 한 건 한 건 쓰는 것에 비해 여러 건을 묶어서 쓰는 Bulk Write(insert/update/delete)는 성능 향상 효과가 굉장히 크다.
 
