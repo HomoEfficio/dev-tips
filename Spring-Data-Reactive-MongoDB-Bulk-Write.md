@@ -522,21 +522,14 @@ data class ReceivedDailyStats(
     val duration_time: Long,
 ) {
 
-    fun getLongStatOf(statName: StatName): Long {
-        return when (statName) {
-            StatName.ACTIVE_USER -> active_user
-            StatName.NEW_USER -> new_user
-            StatName.TOTAL_USER -> total_user            
-            StatName.DURATION_TIME -> duration_time
-            else -> throw RuntimeException("Value is not Long")
-        }
-    }
-
     fun getDoubleStatOf(statName: StatName): Double {
-        return when (statName) {            
+        return when (statName) {
+            StatName.ACTIVE_USER -> active_user.toDouble()
+            StatName.NEW_USER -> new_user.toDouble()
+            StatName.TOTAL_USER -> total_user.toDouble()
+            StatName.DURATION_TIME -> duration_time.toDouble()
             StatName.AVG_DURATION_TIME_PER_USER -> avg_duration_time_per_user
             StatName.AVG_DURATION_TIME_PER_CONNECT -> avg_duration_time_per_connect
-            else -> throw RuntimeException("Value is not Double")
         }
     }
 }
@@ -570,7 +563,7 @@ class DailyStat(
     var statDate: Instant,
 
     @Field("stat_value")
-    var statValue: Long,
+    var statValue: Double,
 
 ) : Serializable {
 
@@ -579,7 +572,7 @@ class DailyStat(
             .append("map_id", BsonString(mapId))
             .append("stat_name", BsonString(statName.name))
             .append("stat_date", BsonDateTime(statDate.toEpochMilli()))
-            .append("stat_value", BsonInt64(statValue))
+            .append("stat_value", BsonDouble(statValue))
     }
 ```
 
