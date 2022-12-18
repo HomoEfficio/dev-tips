@@ -389,7 +389,7 @@ Process finished with exit code 0
 ```
 
 71 - 100 까지의 데이터는 Upsert 에 의해 insert 됐음이 실제 데이터에서 확인됨에도 불구하고 Inserted가 0으로 찍히는 점이 아쉬운데,  
-다르 예제로 확인해보니 InsertOneModel이 아니라 UpdateOneModel을 사용했기 때문에 Inserted가 0으로 찍힌다.
+다른 예제로 확인해보니 InsertOneModel이 아니라 UpdateOneModel을 사용했기 때문에 Inserted가 0으로 찍히는 것이다.
 
 
 ## 복잡 시나리오
