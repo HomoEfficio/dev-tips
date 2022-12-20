@@ -391,6 +391,8 @@ Process finished with exit code 0
 71 - 100 까지의 데이터는 Upsert 에 의해 insert 됐음이 실제 데이터에서 확인됨에도 불구하고 Inserted가 0으로 찍히는 점이 아쉬운데,  
 다른 예제로 확인해보니 InsertOneModel이 아니라 UpdateOneModel을 사용했기 때문에 Inserted가 0으로 찍히는 것이다.
 
+(추가) Upsert 된 카운트도 `Upserted: ${bulkResult.upserts.size}`를 통해 확인할 수 있다.
+
 
 ## 복잡 시나리오
 
@@ -659,6 +661,8 @@ override fun saveDailyStats(fromDate: LocalDate, toDate: LocalDate): Mono<Boolea
 실제 저장된 데이터가 234건이고 100개씩 묶어서 Bulk Write 했으니 아래와 같이 3번 실행되는 것까지는 확인이 되는데,  
 앞서 살펴본 것처럼 UpdateOneModel을 사용했기 때문에 Inserted는 0이라고 나오는 점이 아쉽다.
 
+(추가) `${bulkResult.upserts.size}`를 통해 Upsert 된 카운트도 확인할 수 있다.
+
 ```
 [ctor-http-nio-1] : DailyStat BulkWrite
 [ctor-http-nio-1] : DailyStat BulkWrite
@@ -675,6 +679,24 @@ Updated : 0
 ```
 
 ## 한 걸음 더
+
+### limitRate()로 조회 갯수 지정
+
+리액티브가 진정한 가치를 뽐내는 지점은 Consumer 자신이 스스로 처리할 수 있을만큼만 Producer 쪽에 요청할 수 있는 BackPressure다.
+
+위 예제에 BackPressure를 적용하려면 어떻게 해야하까?  
+여러가지 방법이 있겠지만 `limitRate()`를 사용하는 방법이 가장 직관적이다.
+
+```kotlin
+    return statsApiClient.getDailyStats(
+        startDate = fromDate.format(DateTimeFormatter.ISO_LOCAL_DATE),
+        endDate = toDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+    )  // Flux<ReceivedDailyStats> 반환
+        .limitRate(50)  //// 여기!! - 최대 50개 들어있는 Flux<ReceivedDailyStat> 반환
+        .map { dailyStats: ReceivedDailyStats ->
+```
+
+### 실제 동작 분석
 
 InsertOneModel로 바꿔서 실해해보면 결과가 다음과 같이 Inserted 카운트가 표시된다.
 
