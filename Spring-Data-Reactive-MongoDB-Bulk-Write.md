@@ -745,7 +745,7 @@ timestamp 기준으로 보면 이번에는 100, 27, 73, 34로 묶여있다.
 
 ```kotlin
             .bufferTimeout(100, Duration.ofSeconds(1))  // bulkWrite()이 List를 인자로 받으므로 window 사용하면 안 되고 buffer 사용해야 함
-            .concatMap { it ->. ////// flatMap 대신 concatMap!!
+            .concatMap { it ->  ////// flatMap 대신 concatMap!!
                 dailyProjectStatRepository.bulkSaveOrUpdate(it)
                     .publishOn(Schedulers.single())  //// 여기에 단일 스레드 지정!!
             }
