@@ -741,6 +741,16 @@ Updated : 0
 
 timestamp 기준으로 보면 이번에는 100, 27, 73, 34로 묶여있다.
 
+그런데 **순서를 보장하는 가장 좋은 방법은 flatMap 대신 concatMap 을 사용**하는 것이다.
+
+```kotlin
+            .bufferTimeout(100, Duration.ofSeconds(1))  // bulkWrite()이 List를 인자로 받으므로 window 사용하면 안 되고 buffer 사용해야 함
+            .concatMap { it ->. ////// flatMap 대신 concatMap!!
+                dailyProjectStatRepository.bulkSaveOrUpdate(it)
+                    .publishOn(Schedulers.single())  //// 여기에 단일 스레드 지정!!
+            }
+```
+
 ### BackPressure
 
 리액티브가 진정한 가치를 뽐내는 지점은 복잡하고 현란한 리액티브 연산자가 아니라 **Consumer 자신이 스스로 처리할 수 있을 만큼만 Producer 쪽에 요청할 수 있는 BackPressure**다.
@@ -771,11 +781,4 @@ timestamp 기준으로 보면 이번에는 100, 27, 73, 34로 묶여있다.
         .bufferTimeout(100, Duration.ofSeconds(1))  // Flux<DailyStat> -> 100개씩 묶어서 Flux<List<DailyStat>> 반환. bulkWrite()이 List를 인자로 받으므로 window 사용하면 안 되고 buffer 사용해야 함
 ```
 
-이렇게 하면 50개씩만 조회 요청을 보내서 50개씩만 받은 후에 이후 로직을 처리한다.
-
-라고 생각하겠지만 아니다!
-
-맨 아래에 보면 buferTimeOut()으로 100개씩만 저장하게 돼 있는데,  
-위 `StatName.values()`, 즉 통계 항목의 갯수가 6개라서,  
-100개를 저장하려면 100/6 = 16.67 개씩만 조회하면 되며,  
-그래서 실제로도 `limitRate()`에서 정한 50개씩 요청하지 않고 그보다 더 작은 16개 또는 17개씩만 조회한다.
+이렇게 하면 최대 50개씩만 조회 요청을 보내서 50개씩만 받은 후에 이후 로직을 처리한다.
