@@ -4,6 +4,8 @@ Docker Desktop 이 유료화되어 대체재가 필요해졌다.
 
 맥에서 어떤 대체제가 있나 찾아보니 minikube + hyperkit 조합이 편리해보인다.
 
+(추가) Mi Mac에서는 hyperkit을 설치할 수 없어서 이 조합을 사용할 수 없다. 대신에 colima를 사용해야 한다. [여기](https://github.com/HomoEfficio/dev-tips/blob/master/colima-alternative-to-docker-desktop-on-m1-mac.md)를 참고하자.
+
 minikube 는 로컬에서 k8s 클러스터를 만들고 사용할 수 있게 해주는 도구다.
 
 hyperkit 는 맥에서 사용할 수 있는 hypervisor 도구다.
