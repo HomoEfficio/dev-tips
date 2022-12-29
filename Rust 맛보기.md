@@ -317,7 +317,7 @@ fn my_fun<'a>(r: &'a i32) -> &'a i32 {
 ```
 
 - `'a`(tick A라고 읽는다)는 함수 my_fun의 lifetime parameter라고 한다.
-- `r`은 임의의 liftime `a`를 갖는 i32형 참조를 나타낸다.
+- `r`은 임의의 lifetime `a`를 갖는 i32형 참조를 나타낸다.
 - 반환되는 참조의 lifetime도 input 파라미터의 lifetime과 동일하다.
 
 
