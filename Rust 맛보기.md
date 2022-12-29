@@ -263,7 +263,7 @@ error[E0502]: cannot borrow `str` as immutable because it is also borrowed as mu
 
 ## Rc, Arc
 
-Rust에서는 **Owner는 단 하나** 원칙을 지키기 위해 Copy 타입이 아닌 변수는 할당, 인자 전달, 반환에서 복사가 아니라 이동된다. 하지만 필요하다면 `Rc<T>`, `Arc<T>`를 사용해서, 이동이 아니라 파이썬처럼 Reference count를 통해 다수의 Owner를 허용할 수도 있다. `Arc`는 Atomic Reference Count이며 Thread-safe를 보장한다.
+Rust에서는 **Owner는 단 하나** 원칙을 지키기 위해 Copy 타입이 아닌 변수는 할당, 인자 전달, 반환에서 복사가 아니라 Ownership이 이동된다. 하지만 필요하다면 `Rc<T>`, `Arc<T>`를 사용해서, 이동이 아니라 파이썬처럼 Reference count를 통해 다수의 Owner를 허용할 수도 있다. `Arc`는 Atomic Reference Count이며 Thread-safe를 보장한다.
 
 다음 코드에서 t, u는 `clone()`을 통해 생성되지만 인스턴스 자체가 복제되는 게 아니라 `Rc<string>`에 대한 참조만 복제된다. 따라서 s, t, u는 모두 힙에 생성된 동일한 `Rc<string>` 타입 인스턴스를 가리키며, 이 인스턴스의 Reference count는 3이 되고, 0이 되면 이 인스턴스는 메모리에서 사라진다.
 
