@@ -593,6 +593,13 @@ Rust의 클로저는 가비지 컬렉션되지 않으며, Box나 Vec 또는 다�
     - 각 crate 폴더 아래에 있던 cargo.lock 파일과 target 디렉터리를 지우면, workspace 루트 바로 아래에 전체 workspace를 아우르는 cargo.lock 파일과 target 디렉터리가 생성된다.
 
 
+----
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+<a href='https://www.facebook.com/hanmomhanda' target='_blank'>HomoEfficio</a>가 작성한 이 저작물은
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">크리에이티브 커먼즈 저작자표시-비영리-동일조건변경허락 4.0 국제 라이선스</a>에 따라 이용할 수 있습니다.
+
 
 
 
