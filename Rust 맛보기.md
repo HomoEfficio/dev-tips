@@ -501,20 +501,58 @@ Rust에는 GC가 없으며, 자유 변수를 힙에 생성하지 않는다. 그�
 Rust에는 앞에서 살펴본 것처럼 변수의 라이프사이클에 소유권 개념이 있다. 상위 스코프에서 클로저를 사용할 때 `move` 키워드를 사용해서 자유 변수의 소유권을 클로저에 명시적으로 넘겨주면, 클로저는 자유 변수를 자기 스택으로 가져온다. 자유 변수가 Copy 타입이면 값을 자기 스택으로 복사해오고, non-Copy 타입이면 힙에 생성된 자료 구조를 가리키던 non-Copy 값을 자기 스택으로 가져와서, 상위 스코프가 종료되어 스택이 사라지더라도 클로저는 자기 스택에 보유하고 있는 자유 변수를 통해 힙에 생성된 자료 구조를 사용할 수 있다. 코드는 다음과 같다.
 
 ```rust
-fn start_sorting_thread(mut cities: Vec<City>, stat: Statistic)
-    -> thread::JoinHandle<Vec<City>>
-{
-    let key_fn = move |city: &City| -> i64 { -city.get_statistic(stat) };
-
-    // 클로저 앞에 move 키워드를 붙여주면 자유 변수인 cities의 소유권이 클로저로 넘어가는 방식으로 capture가 일어난다.
-    thread::spawn(move || {  
-        cities.sort_by_key(key_fn);
-        cities
-    })
+fn main() {
+    let hello = String::from("  Hello  ");
+    
+    {
+        let trimmer = move |param: String| -> String { param.trim().to_owned() };
+        
+        println!("Trimmed by trimmer closure: [{:?}]", trimmer(hello));
+    }
 }
+
+
+//-----
+Trimmed by trimmer closure: ["Hello"]
 ```
 
-소유권이 클로저로 넘겨진 후에 non-Copy 타입인 `cities`는 상위 스코프에서 더 이상 사용될 수 없게 된다. 따라서 자유 변수는 공유되지 않으며 Rust가 자랑하는 안전성을 계속 유지할 수 있다.
+아래와 같이 hello 를 다시 사용하면 컴파일 에러가 발생한다.
+
+```rust
+fn main() {
+    let hello = String::from("  Hello  ");
+    
+    {
+        let trimmer = move |param: String| -> String { param.trim().to_owned() };
+        
+        println!("Trimmed by trimmer closure: [{:?}]", trimmer(hello));
+    }
+    
+    println!("hello: {:?}", hello);  // 여기!! hello 를 다시 사용 시도
+}
+
+//-----
+   Compiling playground v0.0.1 (/playground)
+error[E0382]: borrow of moved value: `hello`
+  --> src/main.rs:10:29
+   |
+2  |     let hello = String::from("  Hello  ");
+   |         ----- move occurs because `hello` has type `String`, which does not implement the `Copy` trait
+...
+7  |         println!("Trimmed by trimmer closure: [{:?}]", trimmer(hello));
+   |                                                                ----- value moved here
+...
+10 |     println!("hello: {:?}", hello);
+   |                             ^^^^^ value borrowed here after move
+   |
+   = note: this error originates in the macro `$crate::format_args_nl` which comes from the expansion of the macro `println` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `playground` due to previous error
+```
+
+따라서 자유 변수는 공유되지 않으며 Rust가 자랑하는 안전성을 계속 유지할 수 있다.
+
 
 ## 함수의 타입과 클로저의 타입
 
