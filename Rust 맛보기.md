@@ -104,13 +104,40 @@ Rust의 컴파일 에러 메시지는 상당히 구체적이고 친절하다.
             
             let t1 = (23, "Jordan");  // "Jordan"은 힙에 생성되지 않음
             let t2 = t1;  // 스택 안에서 값이 통째로 복사
-            let t1_1_len = t1.1.len();  // t1 튜플의 두 번째(첫 번째는 0) 원소의 길이
+            let t1_1_len = t1.1.len();  // t1 튜플의 두 번째(튜플 인덱스는 0부터 시작) 원소의 길이
 
             println!("t1_1_len() is {}", t1_1_len);
             println!("t2.1.len() is {}", t2.1.len());
         }
         ```
+        
+- Non Copy Type인 String이 포함된 튜플은 Non Copy Type이 된다.
 
+    ```rust
+    fn main() {
+        let t1 = (23, String::from("Jordan"));  // String::from("Jordan")은 힙에 생성되는 Non Copy Type -> 이를 포함하는 튜플도 Non Copy Type
+        let t2 = t1;  // t1이 Non Copy Type이므로 값 복사가 아니라 Ownership이 이전
+        let t1_0 = t1.0;  // Ownership이 이전되어 Uninitialized된 t1 튜플을 참조하면서 컴파일 에러 발생
+
+        println!("t1_0 is {}", t1_0);
+        println!("t2 is {:?}", t2);
+    }
+
+
+       Compiling playground v0.0.1 (/playground)
+    error[E0382]: use of moved value: `t1`
+     --> src/main.rs:4:16
+      |
+    2 |     let t1 = (23, String::from("Jordan"));  // String::from("Jordan")은 힙에 생성되는 Non Copy Type -> 이를 포함하는 튜플도 Non Copy Type             ...
+      |         -- move occurs because `t1` has type `(i32, String)`, which does not implement the `Copy` trait
+    3 |     let t2 = t1;  // t1이 Non Copy Type이므로 값 복사가 아니라 Ownership이 이전
+      |              -- value moved here
+    4 |     let t1_0 = t1.0;  // Ownership이 없어 Uninitialized된 t1 튜플을 참조하면서 컴파일 에러 발생
+      |                ^^^^ value used here after move
+
+    For more information about this error, try `rustc --explain E0382`.
+    error: could not compile `playground` due to previous error
+    ```
 
 - **다른 변수에 할당할 때뿐아니라 함수에 인자로 넘길 때도, 함수에서 값을 반환할 때도 Ownership이 넘어간다.** 그래서 아래와 같이 함수에 인자로 넘기면서 이미 Ownership을 잃은 변수 name1을 다시 사용하는 코드는 컴파일 에러가 발생한다.  
 Rust의 컴파일 에러 메시지는 볼 수록 매력적이다.
