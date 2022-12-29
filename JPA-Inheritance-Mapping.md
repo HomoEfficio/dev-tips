@@ -237,13 +237,34 @@ Q클래스 생성 시 QSub1, QSub2 가 생성되고 그 안에 type 필드도 �
   .innerJoin(qSub1).on(
       qOtherEntity.oid.eq(qSub1.otherEntity.oid)
           .and(qSub1.type.eq(MyType.SUB1))
-``
+```
 
 실제 실행해 보면 Sub1 클래스에 type 이라는 프로퍼티가 없다는 에러가 발생한다.
 
 type은 `@DiscriminatorColumn`에 의해 생겨났을뿐 소스 코드의 프로퍼티로 명시적으로 정의한 게 아니기 때문인 것 같다.
 
 이 문제 해결 방법을 알 수 없어 결국 type이 아닌 다른 값에 의존해서 조건을 사용할 수 밖에 없었다.
+
+(추가) 해결 방법은 매우매우매우매우 간단하다. `@DiscriminatorColumn`으로 지정한 이름의 컬럼을 수퍼클래스 쪽에 명시적으로 필드로 정의하면 된다.
+
+```kotlin
+@Entity
+@Table
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type")
+abstract class Super(
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val oid: Long? = null,
+    
+    // 여기!! @DiscriminatorColumn(name = "type") 에서 정한 'type' 컬럼에 대한 필드를 명시적으로 지정!!
+    @Column(name = "type", insertable = false, updatable = false)
+    val myType: MyType,
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "other_entity_oid")
+    private var otherEntity: OtherEntity? = null,
+)
+```
 
 
 ----
