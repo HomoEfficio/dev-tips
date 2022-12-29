@@ -302,7 +302,7 @@ fn main() {
 
 따라서 **함수(또는 메서드, struct, trait 등)의 정의에 lifetime 파라미터가 붙어있고 컴파일이 성공되었다면, 그 함수(또는 메서드, struct, trait 등)에서는 dangling reference가 발생하지 않음을 컴파일러가 보장해준다는 것이 lifetime 파라미터의 효용**이라고 볼 수 있다.
 
-lifetime parameter도 **제네릭 타입 파라미터처럼 `<'a>`와 같은 형식으로 표기**되는데, 제네릭으로 타입을 알려주는 것이 아니라 **제네릭으로 lifetime을 알려주는 것이다.**
+lifetime parameter도 **제네릭 타입 파라미터처럼 꺽쇠를 써서 `<'a>`와 같은 형식으로 표기**되는데, 제네릭으로 타입을 알려주는 것이 아니라 **제네릭으로 lifetime을 알려주는 것이다.**
 
 lifetime parameter는 C, C++, Java 등 다른 언어에 없는 개념이라 금방 와닿지가 않는다. 먼저 함수에 명시하는 lifetime parameter를 통해 감을 잡아보자.
 
