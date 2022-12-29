@@ -345,7 +345,11 @@ fn main() {
 
 함수 my_fun의 인자로 static 참조인 `STATIC` 참조를 넘기면 `'a`가 실질적으로는 `'static`이므로 `result`에는 static 참조가 할당되고 따라서 my_fun()이 호출되는 블록이 종료된 후에도 `result`는 dangling reference가 아니며 안전한 값을 가지고 있다.
 
-하지만 다음과 같이 lifetime이 `'static`이 아닌 참조를 인자로 넘기면, 반환값의 lifetime도 `'static`이 아니므로, my_fun()이 호출되는 블록이 종료되면 `result`는 dangling reference가 되며 컴파일에 실패한다.
+하지만 다음과 같이 lifetime이 `'static`이 아닌 참조를 인자로 넘기면, 반환값의 lifetime도 `'static`이 아니라 인자로 받은 참조와 동일한 lifetime을 갖게 된다.  
+my_fun()의 인자인 `&input`이 가리키는 값의 Owner인 `input`을 감싸고 있는 lexicl 블록이 종료되면,
+- `input`이 소멸되고
+- my_fun()의 반환값을 `rv`라고 할 때, my_fun()이 인자로 받은 `&input`과 동일한 lifetime을 갖는 `rv`도 사용될 수 없게 되므로,
+- `rv`를 할당받은 `result`는 lexical 블록 종료 이후에는 dangling reference가 되며 dangling reference인 `result`가 사용되면 컴파일 에러가 발생한다.
 
 ```rust
 fn my_fun<'a>(r: &'a i32) -> &'a i32 {
