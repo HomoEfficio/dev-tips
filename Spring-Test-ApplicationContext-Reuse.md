@@ -15,7 +15,7 @@
 - 기본적으로 개별 테스트 클래스마다 각각 ApplicationContext를 만들어서 사용
 - **ApplicationContext 생성 비용이 크므로 내용적으로 동일한 ApplicationContext를 반복적으로 재생성하지 말고 캐시에 저장해두고 재사용할 수 있으면 테스트 실행 속도 개선 가능**
 - Spring Test에서 제공하는 테스트 컨텍스트 캐시는 테스트에 사용되는 ApplicationContext를 캐시하며 테스트 스위트가 실행되는 JVM의 static 영역에 존재
-  - **다른 테스트 클래스에서 내용적으로 동일한 ApplicationContext를 사용하면 새로 생성하지 않고 캐시에서 읽어온 ApplicationContext를 재사용**
+  - **테스트 클래스에서 사용할 ApplicationContext와 내용적으로 동일한 ApplicationContext가 이미 캐시에 있으면 ApplicationContext를 새로 생성하지 않고 캐시에서 읽어온 ApplicationContext를 재사용**
 - 여기에서 말하는 테스트 스위트(Test Suite)란 동일한 JVM 프로세스에서 실행되는 테스트 모음을 뜻함
   - 예를 들어 IntelliJ > Gradle > A submodule > Tasks > verification > test 를 실행할 때 ATest, BTest, CTest 가 모두 실행된다면, ATest, BTest, CTest는 모두 하나의 테스트 스위트에서 실행되는 테스트임
 - 따라서 **동일한 테스트 스위트에서 실행되면서 내용적으로 동일한 ApplicationContext를 사용되는 테스트 클래스가 많을 수록 ApplicationContext 생성 횟수가 줄어들게 되므로 테스트 실행 속도 개선 가능**
