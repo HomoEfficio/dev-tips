@@ -20,7 +20,7 @@ xxxRepository.findAllByYyy(zzz)
     // 이하 생략
 ```
 
-이런 차이가 나는 이유는 `switchIfEmpty(aaa)`와 `switchIfEmpty { aaa }`는 다른 함수다.
+이런 차이가 나는 이유는 `switchIfEmpty(aaa)`와 `switchIfEmpty { aaa }`는 서로 다른 함수기 때문이다.
 
 `switchIfEmpty(aaa)`는 Reactor Core에 있는 함수이며 다음과 같이 정의돼 있다.
 
