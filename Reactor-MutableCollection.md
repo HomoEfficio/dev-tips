@@ -89,6 +89,9 @@ fun changeMutableInReactorFlow(): Mono<List<Item>> {
 }
 ```
 
+`Collections.synchronizedXXX()` 메서드를 통해 반환되는 Thread-Safe 컬렉션을 사용할 때 [주의할 점](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collections.html#synchronizedCollection(java.util.Collection))이 있으니 꼭 확인해보자.
+
+
 ## Functional Style
 
 Thread-Safe 하지 않는 MutableCollection을 아예 사용하지 않고 함수형 스타일로 새로 작성하면 다음과 같다. 16초 정도 걸린다.
