@@ -63,7 +63,7 @@ fun testChangeMutableInReactorFlow(testInfo: TestInfo) {
 
 ## 나한테 왜 이래?
 
-![Imgur](https://i.imgur.com/B2kImVg.png)
+![Imgur](https://i.imgur.com/mkFG43i.png)
 
 이유는 **코틀린의 MutableCollection는 Thread-Safe 하지 않고, Reactor의 Flux.flatMap은 비동기로 여러 스레드에서 병렬 실행되기 때문**이다.
 
@@ -111,7 +111,7 @@ fun changeMutableInReactorFlow(): Mono<List<Item>> {
 }
 ```
 
-flatMap 안에 있는 `if-else` 식이 보기 싫으면 다음과 같이 더 깔끔해 보이게 작성할 수 있다. 다만 수행 시간은 좀 길어져서 20초 정도 걸린다.
+flatMap 안에 있는 `if-else` 식이 보기 싫으면 다음과 같이 `filterWhen`을 사용해서 조금 더 깔끔해 보이게 작성할 수 있다. 다만 수행 시간은 좀 길어져서 20초 정도 걸린다.
 
 ```kotlin
 fun changeMutableInReactorFlow(): Mono<List<Item>> {
