@@ -72,7 +72,7 @@ fun testChangeMutableInReactorFlow(testInfo: TestInfo) {
 
 ## Thread-Safe Collection 사용
 
-가장 단순한 해법이다. 1000회 수행 시 17초 정도 걸린다.
+가장 단순한 해법이다. [Thread Safety를 보장하기 위해 Intinsic Lock이 사용되므로](https://www.baeldung.com/java-synchronized-collections#synchronized-vs-concurrent-collections-1) 불가피한 성능 손실이 발생할 수 있다. 1000회 수행 시 17초 정도 걸린다.
 
 ```kotlin
 fun changeMutableInReactorFlow(): Mono<List<Item>> {
