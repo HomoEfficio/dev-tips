@@ -121,3 +121,7 @@ fun changeMutableInReactorFlow(): Mono<List<Item>> {
         .collectList()
 }
 ```
+
+## Coroutine을 쓴다면?
+
+https://kotlinlang.org/docs/shared-mutable-state-and-concurrency.html 여기에 더 다양한 해법이 있다.
