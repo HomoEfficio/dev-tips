@@ -32,8 +32,7 @@ enum class Item {
 
 우리가 가장 두려워하는 그 이름 **간헐적 오류**
 
->![Imgur](https://i.imgur.com/4TtCgaJ.jpg)
->
+
 >니가 있다 없으니까 숨을 쉴 수 없어  
 >곁에 없으니까 머물 수도 없어  
 >나는 죽어가는데 너는 지금 없는데 없는데 없는데
@@ -41,6 +40,8 @@ enum class Item {
 >니가 있다 없으니까 웃을 수가 없어  
 >곁에 없으니까 망가져만 가는 내 모습이  
 >너무 싫어 난 난 이제 기댈 곳 조차 없어
+>
+>![Imgur](https://i.imgur.com/4TtCgaJ.jpg)
 
 다음과 같이 1000회 반복 테스트를 해보면 대략 3번 정도 테스트가 실패한다.
 
@@ -56,6 +57,8 @@ fun testChangeMutableInReactorFlow(testInfo: TestInfo) {
     .verifyComplete()
 }
 ```
+
+그러니 실제 운영 상황에서 대부분 오류가 나지 않겠지만 아주 간간이 발생하면서 숨을 쉴 수 없고 웃을 수가 없게 된다.
 
 
 ## 나한테 왜 이래?
