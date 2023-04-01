@@ -42,7 +42,7 @@ enum class Item {
 >곁에 없으니까 망가져만 가는 내 모습이  
 >너무 싫어 난 난 이제 기댈 곳 조차 없어
 
-다음과 같이 1000회 반복 테스트를 해보면 10번 정도 테스트가 실패한다.
+다음과 같이 1000회 반복 테스트를 해보면 대략 3번 정도 테스트가 실패한다.
 
 ```kotlin
 @RepeatedTest(value = 1000, name = "Reactor Mutable 테스트: {currentRepetition}/{totalRepetitions}")
