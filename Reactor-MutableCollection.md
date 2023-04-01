@@ -62,9 +62,9 @@ fun testChangeMutableInReactorFlow(testInfo: TestInfo) {
 
 ![Imgur](https://i.imgur.com/B2kImVg.png)
 
-이유는 코틀린의 MutableCollection는 Thread-Safe 하지 않고, Reactor의 Flux.flatMap은 비동기로 여러 스레드에서 병렬 실행되기 때문이다.
+이유는 **코틀린의 MutableCollection는 Thread-Safe 하지 않고, Reactor의 Flux.flatMap은 비동기로 여러 스레드에서 병렬 실행되기 때문**이다.
 
-여러 가지 방식으로 해결할 수 있지만 두 가지만 살펴보자.
+여러 가지 방식으로 해결할 수 있겠지만 두 가지만 살펴보자.
 
 
 ## Thread-Safe Collection 사용
