@@ -48,10 +48,8 @@ private fun returnImmediatelyAndDoSomethingInBackground(
 private fun doSomething(param: AnyThing): Mono<SomeResult> =
     // 생략
 
-private fun postProcess(result: SomeResult): Mono<FinalResult> {
+private fun postProcess(result: SomeResult): Mono<FinalResult> =
     // 생략
-}
-
 ```
 
 테스트 코드는 대략 다음 패턴을 따라 작성한다.
