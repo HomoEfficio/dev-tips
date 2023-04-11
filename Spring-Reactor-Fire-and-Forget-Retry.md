@@ -40,7 +40,7 @@ private fun returnImmediatelyAndDoSomethingInBackground(
         .doOnError {
             log.error("Do Something with param $param failed due to $it")
         }
-        .subscribe { finalResult ->  // 반드시 별도로 subscribe 해야 의도대로 동작한다
+        .subscribe { finalResult ->  // 반드시 별도로 subscribe 해야 의도대로 nonblocking하게 동작한다
             log.info("Do Something Succeeded with $finalResult")
         }
 }
@@ -51,6 +51,13 @@ private fun doSomething(param: AnyThing): Mono<SomeResult> =
 private fun postProcess(result: SomeResult): Mono<FinalResult> =
     // 생략
 ```
+
+위에 표시한 것처럼 명시적으로 `subscribe`를 반드시 해줘야 의도한대로 nonblocking하게 동작한다.
+
+별도의 `subscribe`가 없으면 `Mono.fromCallable`에서 수행되는 내용 포함 앞뒤에 있는 모든 내용이 웹플럭스에서 `subscribe`하는 하나의 Reactor flow에서 실행되므로,  
+retry까지 모두 실행된 다음에 클라이언트에게 반환되며 그 시간동안 blocking 된다.
+
+별도의 `subscribe`가 있으면 하나의 Reactor flow가 아니라 두 개의 Reactor flow를 통해 별개로(blocking 발생 없이) 실행된다.
 
 테스트 코드는 대략 다음 패턴을 따라 작성한다.
 
