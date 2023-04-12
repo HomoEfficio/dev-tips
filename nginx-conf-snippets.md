@@ -7,9 +7,11 @@ error_log  /var/log/nginx/error.log debug;
 
 http {
 
-    log_format  main  escape=none '$remote_addr - $remote_user [$time_local] "$request"'
+    log_format  main escape=none '$remote_addr - $remote_user [$time_local] "$request"'
                       ' $status $body_bytes_sent "$http_referer"'
-                      ' "$http_user_agent" "$http_x_forwarded_for" "$content_type" "$request_body"';
+                      ' [request body: $request_body]'
+                      ' rt=$request_time uct="$upstream_connect_time" uht="$upstream_header_time" urt="$upstream_response_time"'
+                      ' "$http_user_agent" "$http_x_forwarded_for"';
 ```
 
 - error_log 의 로그 포맷으로 debug 를 지정하면 아래와 같이 rewritten 정보 등 추가 정보 확인 가능
