@@ -28,8 +28,12 @@
 다르게 얘기하면 코루틴 A는 B 스레드가 suspend 할 수 있고, C 스레드가 resume 할 수 있다.
 
 코루틴도 OS 관점에서는 결국 어떤 OS 스레드 상에서 실행되지만,  
-실행이 보류(suspend)되는 동안 자신이 실행된 스레드를 blocking 상대로 만들지 않으며,  
+실행이 보류(suspend)되는 동안 OS 스레드에서 제거되어 메모리에 저장되며,  
+자신이 실행된 스레드를 blocking 상대로 만들지 않는다.
+그동안 OS 스레드는 다른 작업에 의해 자유롭게 점유될 수 있으며,
 보류 후 재개될 때는 다른 스레드에서 실행될 수도 있다.  
+
+코루틴은 스레드 위에서 실행되며 일시 중단될 수 있습니다. 코루틴이 일시 중단되면 해당 계산이 일시 중지되고 스레드에서 제거되어 메모리에 저장됩니다. 그 동안 스레드는 다른 작업에 의해 자유롭게 점유될 수 있습니다:
 
 코루틴은 실행 흐름이면서도 스레드보다 가볍다는 관점에서 light-weight 스레드라고 할 수 있지만 스레드와는 많이 다르다.
 
@@ -258,6 +262,22 @@ suspend fun doWorld() = coroutineScope {
 
 `launch`는 `Job`을 반환하며, `Job`은 실행 취소(cancel)될 수 있다.
 
+`Job` launch된 핸들 역할을 하며 다음과 같이 완료를 명시적으로 기다릴 수 있다.
+
+```kotlin
+val job = launch { // launch a new coroutine and keep a reference to its Job
+    delay(1000L)
+    println("World!")
+}
+println("Hello")
+job.join() // wait until child coroutine completes
+println("Done") 
+
+//---
+Hello
+World!
+Done
+```
 
 CoroutineScope는 위계 구조로 실행될 수 있으며, 하위 코루틴이 완료되기 전에는 상위 코루틴도 완료될 수 없다.
 
