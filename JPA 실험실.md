@@ -2,7 +2,7 @@
 
 대충 어설프게 알고 쓰고 있는 JPA. 실험해보며 알아보자.
 
-## 단방향 `@OneToMany`은 특별한 경우가 아니라면 쓰지 않는 것이 좋다.
+## 조인테이블 방식의 단방향 `@OneToMany`은 특별한 경우가 아니라면 쓰지 않는 것이 좋다.
 
 아래 코드를 보면 알겠지만 객체 관계 관점에서만 바라보면 아주 직관적이고 깔끔 단순한 모델이다. 
 
@@ -21,7 +21,7 @@ public class Order {
     
     ...
     
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
     
     ...
@@ -71,12 +71,12 @@ public class OrderItem {
        foreign key (order_order_id) 
        references orders (order_id)    
     ```
-- 원했던 것은 단순한 `ORDERS`:`ORDER_ITEM` = 1:N 이었지만, 실제로는 `ORDERS`:`ORDERS_ORDER_ITEMS`:`ORDER_ITEMS` = 1:N:1 관계가 형성된다.
+- 원했던 것은 단순한 `ORDERS`:`ORDER_ITEM` = 1:N 이었지만, 실제로는 `ORDERS`:`ORDERS_ORDER_ITEMS` = 1:N, `ORDERS_ORDER_ITEMS`:`ORDER_ITEMS` = 1:N 관계가 형성된다.
 - 이렇게 되면 CUD를 할 때 `ORDERS_ORDER_ITEMS`에 대해서도 CUD를 해야하므로 불필요한 오버헤드가 생긴다.
 
 ### 정리
 
-> **결국 단방향 `@OneToMany`을 통해 얻고자 했던 단순함도 얻지 못하고 불필요한 오버헤드만 발생하므로 단방향 `@OneToMany`은 별로 좋은 점이 없다.**
+> **결국 단방향 `@OneToMany`을 통해 얻고자 했던 단순함도 얻지 못하고 불필요한 오버헤드만 발생하므로 조인테이블 방식의 단방향 `@OneToMany`은 별로 좋은 점이 없다.**
 
 
 ## 테스트 메서드에서는 `XXXRepository.save()`만으로는 `flush`가 유발되지 않는다.
@@ -344,6 +344,58 @@ Hibernate:
 >**테스트 메서드에서는 반드시 명시적으로 `flush()`를 호출해주거나, commit, JPQL 쿼리 실행으로 `flush`를 유발해야 한다.**
 
 
+## flush는 commit 까지 실행하지는 않는다.
+
+`flush()`가 영속성 컨텍스트에 저장된 변경 내용을 DB에 반영하긴 하지만 그렇다고 commit 까지 실행되는 것은 아니다. 이 내용은 아쉽게도 [Spring Data JPA의 API 문서](https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/JpaRepository.html#flush--)에도 제대로 설명되어 있지 않고, 다만 [Baeldung 블로그](https://www.baeldung.com/spring-data-jpa-save-saveandflush)에 다음과 같이 비슷한 설명이 나온다.
+
+>Normally, we use this method when our business logic needs to read the saved changes at a later point during the same transaction **but before the commit.**
+
+변경 사항을 commit 전에 DB에 반영한다는 얘기인데 그렇다고 `flush()`가 커밋을 유발하지 않는다는 얘기는 아니므로 실제 실험으로 확인해보자.
+
+```java
+@Entity
+public class A {
+    @OneToMany(mappedBy = "a", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<B> children = new ArrayList<>();
+}
+```
+
+`CascadeType.ALL`과 `orphanRemove = true`로 설정되었으므로 children를 지우고 새로운 값으로 세팅하려면 다음과 같이 clear(), addAll()을 사용해야 한다.
+
+```java
+a.getChildren().clear();
+a.getChildren().addAll(newBs);
+```
+
+그런데 이렇게만 하면 `a.getChildren().clear()`를 호출해도 DB에 delete 를 날리지 않기도 한다. 그러면 delete를 안 한 상태에서 `addAll()`에 의해 insert 가 실행되므로 Duplicate Key 관련 에러가 발생할 수 있다.
+
+이 때 확실하게 delete 를 날리게 하려면 JpaRepository의 `saveAndFlush()`를 호출해주면 된다.
+
+```java
+a.getChildren().clear();
+aRepository.saveAndFlush(a);  // <= 이거!!
+a.getChildren().addAll(newChildren);
+```
+
+이 때 flush 가 발생하면서 commit 이 실행되면, 그 후에 예외가 발생해도 delete 된 내용을 돌이킬 수 없게 되어 문제가 된다. 하지만 다행스럽게도 **flush는 commit을 유발하지 않는다.** 다음 코드를 통해 확인할 수 있다.
+
+```java
+a.getChildren().clear();
+aRepository.saveAndFlush(a);  // <= 이거!!
+if (1 == 1) {
+    throw new RuntimeException("TEST");
+}
+```
+
+이 코드를 실행하면 delete가 실행되지만 그 후에 발생한 예외에 의해 delete 된 내용이 rollback 된다. 직접 DB를 보면 children이 delete 되지 않은 것을 확인할 수 있다.
+
+### 정리
+
+>JPA의 **flush는 commit을 유발하지 않는다.**
+>
+>따라서 컬렉션의 내용을 모두 지우고 새 컬렉션으로 변경할 때 collection.clear() 과 collection.addAll(newChildren) 사이에 해당 컬렉션을 가진 엔티티 a에 대해 **`aRepository.saveAndFlush(a)`를 실행해주면 collection.clear()에 의한 delete가 확실히 실행되고 필요한 경우 rollback 도 되므로 안전하게 사용할 수 있다.**
+
+
 ## 하나의 repository에서만 `flush()`를 호출하면 다른 repository에서의 변경 사항까지 모두 함께 `flush` 된다.
 
 TODO
@@ -394,4 +446,72 @@ class TeamService {
 >이를 해결하려면 Team을 조회한 후에도 세션이 살아있게 해야하며, 스프링 데이터 JPA에서는 `@Transactional(readOnly = true)`를 이용해서 쉽게 해결할 수 있다.
 
 
+## orphanRemoval = true 인 컬렉션 수정
+
+컬렉션을 수정할 때 하나하나 비교 후 수정하는 것보다 그냥 기존 컬렉션을 모두 지우고 새 컬렉션으로 값을 저장할 때가 있다.
+
+다음과 같이 A 엔티티가 `orphanRemoval = true`로 설정된 복수의 B 엔티티를 가지는 경우,
+
+```java
+@Entity
+public class A {
+    @OneToMany(mappedBy = "a", orphanRemoval = true)
+    private List<B> bs = new ArrayList<>();
+}
+```
+
+JPA를 통해 bs를 지우고 새로운 값으로 세팅하려면 다음과 같이 clear(), addAll()을 사용해야 한다.
+
+```java
+a.getBs().clear();
+a.getBs().addAll(newBs);
+```
+
+`addAll()`을 사용하지 않고 새로운 값으로 다음과 같이 set을 하면,
+
+```java
+a.setBs(newBs);
+```
+
+아래와 같은 JPA Exception이 발생한다.
+
+```
+A collection with cascade="all-delete-orphan" was no longer referenced by the owning entity instance: a
+```
+
+그리고 `list.clear()`와 `list.addAll(newList)`를 한 트랜잭션에서 실행하면 `list.clear()`를 호출해도 실제 DB에서 delete 가 실행되지 않아서 Duplicate Key 관련 예외가 발생할 수 있다. 이 때는 `list.clear()` 호출 후에 `ARepository.saveAndFlush(a)`를 해주면 확실하게 delete 가 실행된다. 그리고 flush 는 변경사항을 DB에 반영하지만 그렇다고 commit 까지 실행하지는 않는다. 따라서 flush 후에 어떤 예외가 발생하면 rollback 되므로 안심하고 사용해도 된다.
+
+### 정리
+
+>`orphanRemoval = true` 로 설정해둔 컬렉션을 삭제하고 새 값으로 설정하려면,  
+>list.clear(), ARepository.saveAndFlush(a), list.addAll(newList) 를 사용해야 한다.  
+>안 그러면 A collection with cascade="all-delete-orphan" was no longer referenced by the owning entity instance 발생
+
+
+## XXXRepository.findLast5ByYYY(param) vs XXXRepository.findFirst5ByYYYOrderByIDDesc(param)
+
+둘다 사용된 단어로만 봐서는 **YYY 필드값이 param인 놈 중 ID 기준 최근(내림차순) 5건의 XXX를 가져오라**는 의도의 메서드 같다.  
+실행해보면 두 메서드 모두 에러가 발생하지 않고 잘 실행된다.
+
+그런데 결과는 다르다.
+
+결론부터 말하면 `findLast~~`는 [레퍼런스 문서](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/)에 없다.  
+하지만 에러 없이 실행은 되고, 의도와는 다르게 **YYY 필드값이 param인 놈 전부를 가져온다**.
+
+다시 말하지만 `findLast~~`는 에러 없이 `특정 필드값에 해당하는 전부를 가져온다.` **상황에 따라 OOM을 유발할 수도 있으니 조심해야 한다.**
+
+ID 기준 최근 몇 건을 가져오려면 반드시 `findFirstN~~OrderByIDDesc`나 `findTopN~~OrderByIDDesc`를 사용하자.  
+Spring Data Repository 메서드가 매우 편리하긴 하지만 레퍼런스에 없는 방식으로 잘못 사용하면 단순한 에러보다 더 큰 재난을 만날 수 있다.
+
+## 1:N 페치 조인과 페이징을 함께 쓰면 성능 이슈 발생 가능
+
+예를 들어 EntityA:EntityB = 1:N 페치 조인을 하면 1개의 A와 N개의 B가 필요하지만, 실제 DB 상에서는 N개의 행이 조회되며 이 때 A도 N행으로 표시된다. 이 문제 발생을 막으려면 JPQL에 `distinct`를 추가하면 된다. 이렇게하면 쿼리에도 `distinct`가 추가되고(추가되더라도 A가 아니라 A-B 조인 결과가 distinct의 기준이 된다.), DB에서 가져온 결과 중에 중복되는 데이터를 애플리케이션에서 제거해줘야 한다.
+
+낱개의 A를 기준으로 페이징 하고 싶지만, DB 조회 결과 자체가 낱개의 A를 포함하는 것이 아니라 N개의 A를 포함하므로, A 기준 페이징은 제대로 동작할 수 없다. 
+
+게다가 다음과 같이 In Memory에서 페이징 처리를 한다는 WARN 로그가 뜨는데, 예를 들어 A가 1만 건이고, A:B가 평균 1:100 인 상태에서 In Memory에서 페이징처리를 하면 실제로 A, B가 100만건 조회되고, 페이징 처리를 위해 모든 결과를 메모리에 담아야 하는 역설이 발생하고, OOM 이 발생할 수도 있다.
+
+## 복합키 컬럼 여러 개와 연관관계를 맺다가 특정 연결 컬럼 중복
+
+https://medium.com/@SlackBeck/중첩된-fk-foreign-key-를-jpa로-연관-관계-매핑-하기-216ba5f2b8ed
 

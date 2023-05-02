@@ -260,6 +260,84 @@ Client에게는 `400` Bad Request 코드만 반환하고, Error log에 아래와
 ![Imgur](http://i.imgur.com/OTPCxD6.png)
 
 ----
+## Kotlin 버전
+
+```kotlin
+@RestController
+@RequestMapping(path = ["/api/zzz"])
+class ZzzController(
+    private val collectionValidator: CollectionValidator,
+) {
+
+    @PutMapping("/{zzzOid}/testers", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun saveTesters(
+        @PathVariable("zzzOid") zzzOid: Long,
+        @Valid @RequestBody testers: List<TesterIn>,
+        bindingResult: BindingResult,
+    ): ResponseEntity<List<TesterOut>> {
+    
+        collectionValidator.validate(testers, bindingResult)
+
+        if (bindingResult.hasErrors()) {
+            throw MethodArgumentNotValidException(
+                MethodParameter(
+                    object{}.javaClass.enclosingMethod,  // saveTesters 메서드
+                    1  // validation 대상인 파라미터 testers는 2번째 파라미터이므로 인덱스로는 1
+                ),
+                bindingResult
+            )
+        }
+
+        ...
+    }
+```
+
+---
+## `List<@Size(max = 10) String>` + `-Xemit-jvm-type-annotations`
+
+컴파일 옵션 `-Xemit-jvm-type-annotations`을 사용하면 Collection의 bracket 안에 validation annotation을 사용할 수 있다.
+
+build.gradle.kts 파일에 다음과 같이 컴파일 옵션을 추가하면,
+
+```kotlin
+// build.gradle.kts
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = listOf(
+            "-Xjsr305=strict",
+            "-Xemit-jvm-type-annotations",  // 여기!!
+        )
+        jvmTarget = "11"
+    }
+}
+```
+
+아래와 같이 `@Size(max = 10)` 애너테이션을 `List<>` 안에 넣어서, List 안에 들어있는 각 String의 길이가 10자를 초과하면 validation exception이 발생하게 할 수 있다.
+
+Custom Annotation도 동일한 방식으로 `List<>` 안에 지정하면 Custom Validator가 실행된다.
+
+```kotlin
+class Xxx(
+    val testers: List<@Size(max = 10) String>,  // 여기!!
+    val other1: OtherType1,
+    val other2: OtherType2,
+)
+
+// conroller class
+@PostMapping("/xxx")
+fun save(@Valid @RequestBody xxx: Xxx): ResponseEntity<Xxx> {
+    // ...
+}
+```
+
+---
+## 기타
+
+CustomValidator 에 사용되는 payload 사용법은 https://docs.jboss.org/hibernate/validator/5.0/reference/en-US/html/validator-customconstraints.html 에서 payload 를 검색하면 나온다.
+
+하지만 애너테이션에 애트리뷰트를 추가해서 필요한 값을 주입받을 수 있으므로, payload를 사용해야만 할 일은 아마도 없을 듯.
+
+----
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
 
 <a href='https://www.facebook.com/hanmomhanda' target='_blank'>HomoEfficio</a>가 작성한 이 저작물은

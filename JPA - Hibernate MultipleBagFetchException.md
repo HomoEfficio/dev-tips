@@ -102,7 +102,7 @@ Process finished with exit code 0
 
 ## 해결
 
-두 가지 해법이 있다.
+세 가지 해법이 있다.
 
 ### Lazy로 가져오기
 
@@ -136,11 +136,26 @@ Lazy로 가져오면 `FETCH JOIN`을 하지 않고 2번의 쿼리를 통해 가�
 
 ![Imgur](https://i.imgur.com/nHFDIUO.png)
 
+### Hibernate의 `@LazyCollection(LazyCollectionOption.FALSE)` 사용
+
+다음과 같이 Hibernate에서 제공하는 `@LazyCollection(LazyCollectionOption.FALSE)`를 사용해도 에러 없이 동시에 2개의 List 값을 가져올 수 있다.
+
+```java
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Long> parentTaskIds = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @LazyCollection(LazyCollectionOption.FALSE)    
+    private List<Long> childTaskIds = new ArrayList<>();
+```
+
 ## 정리
 
 JPA(Hibernate)에서 `List`를 `FetchType.EAGER`로 가져오면 `MultipleBagFetchException`이 발생한다. 이를 우회하려면,
 
 > `FetchType.LAZY`로 가져오거나,
 >
-> `List` 대신 `Set`을 사용한다.
+> `List` 대신 `Set`을 사용하거나,
+>
+> `@LazyCollection(LazyCollectionOption.FALSE)`를 사용한다.
 

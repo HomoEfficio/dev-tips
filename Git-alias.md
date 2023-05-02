@@ -14,4 +14,5 @@
         rb = rebase
         psod = push origin develop
         psom = push origin master
+        ca = commit --amend
 ```

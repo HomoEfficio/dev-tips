@@ -141,7 +141,7 @@ Hibernate:
 
 ### SQL 문에도 타임스탬프 표시
 
-아래와 같이 `logging.level.org.hibernate.SQL: DEGUB`를 추가하면 된다.
+아래와 같이 `logging.level.org.hibernate.SQL: DEBUG`를 추가하면 된다.
 
 ```yml
 spring:

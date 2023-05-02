@@ -62,3 +62,30 @@ public class ApiControllerTest {
                 .build();
     }
 ```
+
+위 방법은 `WebApplicationContext`를 주입 받아야하므로 `@SpringBootTest`에서만 사용가능하다.
+
+`@WebMvcTest`에서는 다음과 같이 지정할 수 있다.
+
+```kotlin
+@WebMvcTest(WorldController::class)
+@Import(HttpEncodingAutoConfiguration::class)
+internal class WorldControllerTest {
+
+    @Autowired lateinit var mvc: MockMvc
+    
+    //...
+}
+```
+
+```yaml
+# test/resources/application.yml
+server:
+  servlet:
+    encoding:
+      force-response: true
+```
+
+test의 application.yml 에서 저렇게 response만 따로 true로 설정해줘야 하는 이유는 Response 에 대해서는 기본값이 false 이기 때문이다.
+
+![Imgur](https://i.imgur.com/qg3yHEA.png)

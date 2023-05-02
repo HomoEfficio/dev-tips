@@ -1,6 +1,6 @@
-# Java/Spring Asynchronous Programming
+# Java/Spring Thread Programming
 
->Blocking/Nonblocking 과 Sync/Async 는 http://homoefficio.github.io/2017/02/19/Blocking-NonBlocking-Synchronous-Asynchronous/ 를 참고한다.
+>Blocking/Nonblocking 과 Sync/Async 는 https://homoefficio.github.io/2017/02/19/Blocking-NonBlocking-Synchronous-Asynchronous/ 를 참고한다.
 
 ## Java 스레드 풀 관리 및 사용
 
@@ -31,17 +31,38 @@
     - `maxPoolSize`: 풀의 최대 사이즈. 기본값 없음
     - `keepAliveTime`: `corePoolSize`를 넘는 스레드나 `allowCoreThreadTimeOut`이 true 일 때 `corePoolSize` 이내의 idle 스레드는 `keepAliveTime`이 지나면 TimeOut 된다.
     - `allowCoreThreadTimeOut`: true이면 `corePoolSize`를 넘지 않는 스레드도 idle 상태이면 TimeOut 시킨다.
-- Thread 생성 기본 전략
-    - 풀의 활성화 된 스레드 수가 corePoolSize 보다 작은 상태에서 execute() 호출 시 스레드 새로 생성
+- Thread 생성 기본 전략    
+    - 풀의 활성화 된 스레드 수가 corePoolSize 보다 작은 상태에서 execute() 또는 submit() 호출 시 스레드 새로 생성
     - 풀의 활성화 된 스레드 수가 corePoolSize와 maxPoolSize 사이에 있으면서 큐가 꽉 차있지 않으면 새 스레드를 생성하지 않고 태스크를 큐로 전송
     - 풀의 활성화 된 스레드 수가 corePoolSize와 maxPoolSize 사이에 있으면서 큐가 꽉 차있으면 스레드 새로 생성
     - 큐도 꽉 차있고 활성 스레드 수가 `maxPoolSize`에 도달해있는 상태에서 태스크가 또 들어오면 에러 발생
     - `corePoolSize`와 `maxPoolSize`를 같게 하면 결국 고정 크기 스레드 풀을 생성하게 된다.
+    - 한 마디로 **corePoolSize 만큼 스레드를 채우고, Queue 를 채우고, maxPoolSize 만큼 채운다.**
+    
+### ScheduledThreadPoolExecutor
+
+- Java 5 에서 도입
+- `ThreadPoolExecutor`를 상속하며 `ScheduledExecutorService`의 실질적 구현체
+- ThreadPoolExecutor 의 기능에 일정 시간 이후에 실행할 수 있는 스케줄링 기능 추가
+- 실제로는 corePoolSize 만 지정되고 이를 넘으면 maxPoolSize 와 무관하게 큐에 추가되는 고정 크기 큐처럼 동작
+- 따라서 maxPoolSize를 조정하는 것은 아무런 효과도 없음
+  - Netflix 에서 만든 [ScheduledThreadPoolExectuorWithDynamicSize](https://github.com/Netflix/ribbon/blob/master/ribbon-archaius/src/main/java/com/netflix/utils/ScheduledThreadPoolExectuorWithDynamicSize.java)가 있었지만 Deprecated 상태
+- ScheduledExecutorService 에는 스레드 이름 지정 메서드가 없어 ThreadFactory 를 사용해서 이름 지정 필요
+    ```java
+    private final ScheduledExecutorService ses = Executors.newScheduledThreadPool(3, new ThreadFactory() {
+        private final AtomicInteger threadCount = new AtomicInteger(1);
+        @Override
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "seg-transfer-" + threadCount.getAndIncrement());  // Thread 이름 지정
+        }
+    });
+    ```
 
 ### Executors
 
 - Java 5 에서 도입
 - static 메서드로 `ForkJoinPool` 또는 `ThreadPoolExecutor` 기반의 다양한 `ExecutorService` 구현체 생성 기능 제공하는 팩토리 클래스
+
 
 ### ForkJoinPool
 

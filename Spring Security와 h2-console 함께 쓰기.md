@@ -94,6 +94,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 ## 3. X-Frame-Options 면제 처리
 
+2021-06-24 추가 시작
+
+아래 내용은 Deprecated 되었으며,
+
+```
+new XFrameOptionsHeaderWriter(
+    new WhiteListedAllowFromStrategy(Arrays.asList("localhost"))    // 여기!
+)
+```
+
+대신에 아래와 같이 하면 맨 아래에 있는 sameOrigin 이슈까지 함께 해결해서 h2-console 을 spring-security 와 함께 사용할 수 있다.
+
+```
+.and()
+.headers().addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
+.and()
+```
+
+2021-06-24 추가 끝
+
+아래 내용은 Deprecated 되었음
+
 정신을 차리고 개발자 도구를 열어보면 다음과 같은 에러가 나온다.
 
 ![Imgur](http://i.imgur.com/GnSDE7y.png)
@@ -104,7 +126,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 `X-Frame-Options`의 값이 `DENY`로 되어 있고, 왼쪽에 `heaer.jsp`, `tables.do`, `query.jsp`, `help.jsp` 등이 빨간색으로 표시되어 나온다.
 
-`X-Frame-Options`에 sameOrigin으로 인식되 해주면 더이상 에러가 발생하지 않는다.
+`X-Frame-Options`에 sameOrigin으로 인식되게 해주면 더이상 에러가 발생하지 않는다. Thanks to csbok.
 
 ```java
 @Configuration
@@ -122,7 +144,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf()
                     .ignoringAntMatchers("/h2-console/**")
-                .and().headers().frameOptions().sameOrigin()
+                .and().headers().frameOptions().sameOrigin()  // 여기!
                 .and()
                 .formLogin()
                     .loginPage("어쩌구")

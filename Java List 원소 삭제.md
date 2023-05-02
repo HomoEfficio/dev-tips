@@ -22,7 +22,7 @@ while (iterator.hasNext()) {
 }
 ```
 
-Java8 에서는 다음과 같이 간단하게 삭제할 수 있다.
+Java8 에서는 다음과 같이 간단하게 삭제할 수 있다. removeIf()는 바로 위에 있는 Iterator 방식으로 구현되어 있으므로, Iterator 방식의 편리한 버전이라고 보면 된다.
 
 ```java
 elements.removeIf(e -> 어쩌구조건);

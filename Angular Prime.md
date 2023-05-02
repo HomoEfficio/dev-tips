@@ -1,6 +1,6 @@
 # Angular Prime
 
-[Angular Essential](https://www.rubypaper.co.kr/82) 요약
+[Angular Essential](https://www.rubypaper.co.kr/82) 요약 + 개발하다 알게된 것들
 
 # 구동 흐름
 
@@ -280,7 +280,238 @@ C 컴포넌트의 물리적 파일 위치는 C 컴포넌트를 사용하는 D �
 ### ngSwitch
 
 
+# 개발 팁
+
+## html 에서 typescript enum 접근 하기
+
+getter를 통해 html에 참조를 제공할 수 있다. `UserAdminAction`이라는 enum이 있다고 하면 component.ts 파일에서 다음과 같이 getter를 제공하면,
+
+```typescript
+  get userAdminAction() {
+    return UserAdminAction;
+  }
+```
+
+html 에서는 다음과 같이 참조할 수 있다.
+
+```
+  <button class="btn btn-block btn-danger"
+          type="button"
+          (click)="action({'action': userAdminAction.DELETE}, row, $event)">삭제</button>
+```
+
+### `*ngFor` 에서 enum 사용
+
+`*ngFor`는 `let .. of ..` 구문으로 사용되는데 enum 은 `let .. of ..` 가 아니라 `let .. in ..`으로 iterate 할 수 있다. 따라서 `*ngFor`에서는 직접적으로 enum 을 사용할 수 없고 다음과 같이 array 로 변환한 값을 사용하면 된다.
+
+```typescript
+public options = Object.values(UserAdminAction);
+```
+
+```html
+<select>
+    <option *ngFor="let option of options" [value]="option">{{option}}</option>
+</select>
+```
+
+### 값에 해당하는 enum 구하기
+
+`Enum클래스이름[값]`으로 enum 을 구할 수 있다. 값에는 string, number 모두 올 수 있다.
+
+```typescript
+this.authKeyForm.get('authKeyType').patchValue(AuthKeyType[$event.value]);
+```
+
+## RadioButton 사용 시 주의 사항
+
+https://www.ngxfoundation.com/components/buttons 여기보고 따라하면 되는데 잊지 말아야 할 것은 링크의 Usage에 나와있는 것처럼 `ButtonsModule.forRoot()`를 모듈의 import에 추가해야 한다는 점이다. 추가하지 않으면 다음과 같은 에러가 난다.
+
+```
+No value accessor for form control with name:
+```
+
+https://github.com/valor-software/ngx-bootstrap/issues/1648 참고
+
+또한 `btnRadio`에 단순 텍스트만 지정할 수 있는 것 같지만 아래와 같이 `{{ }}`로 변수를 넣어주면 변수를 사용할 수도 있다. `btnRadio`의 값은 항목마다 달라야 한다.
+
+```typescript
+<div class="btn-group" btnRadioGroup [(ngModel)]="companySite.userRoleId">
+        <label *ngFor="let userRole of userRoles; index as j" class="btn btn-success"
+               btnRadio="{{ userRole }}" tabindex="0" role="button" [(ngModel)]="companySite.userRoleId">{{ userRole }}</label>
+      </div>
+</div>
+```
+
+## Reactive Form Group의 데이터에서 모델 객체 생성
+
+Reactive Form Group에 속한 폼 컨트롤러 들의 formControllerName 과 모델 객체의 프로퍼티 이름이 같다면 다음과 같이 `Partial`과 `Object.assign()`을 활용해서 쉽게 모델 객세 생성 가능
+
+```typescript
+// 모델
+export class UserAdminDetail {
+
+  public id: string;
+  public email: string;
+  public name: string;
+  public password1: string;
+  public password2: string;
+  public company: Company;
+  public userSites: UserSite[];
+  public deptName: string;
+  public jobPosition: string;
+  public job: string;
+  public userId: string;
+
+  public constructor(init?: Partial<UserAdminDetail>) {
+    Object.assign(this, init);
+  }
+}
+
+// 컴포넌트
+const userDetail = new UserAdminDetail(this.userForm.value);  // userForm이 Form Group 타입의 Reactive Form Group 임
+```
+
+
+## Reactive 방식으로 외부 데이터 조회 후 Child에 데이터 전달
+
+Child 컴포넌트에 데이터를 전달하려면,
+
+- Parent HTML에서 `<child [child에서 사용할 변수]="parent에 정의된 변수">`로 전달하고,
+- Child의 컴포넌트에서 `@Input('child에서 사용할 변수') public 변수명`으로 받으면 된다.
+
+그런데 Parent가 외부에서 Reactive 방식으로 받아온 데이터를 Child에 전달하면, 외부에서 데이터를 받아오는 동안에 Child가 이미 렌더링되고, 이 시점에서는 Parent에서 받아온 값이 없으므로 Child의 `@Input` 변수는 `undefined`상태가 된다.
+
+이 때는 Child 컴포넌트를 다음과 같이 `OnChanges`를 구현하게 하고, `ngOnChanges(changes: SimpleChanges): void {}` 안에서 changes를 통해 데이터를 받아서 사용하면 된다.
+
+```typescript
+export class UserSiteRoleComponent extends BaseComponent implements OnInit, OnChanges {
+
+  @Input('companySites')
+  public companySites: CompanySite[];
+
+  @Input('userSites')
+  public userSites: UserSite[];
+  
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log('in user-site-role.ngOnChanges, changes:', changes);
+    console.log('in user-site-role.ngOnChanges, companySites:', this.companySites);
+    console.log('in user-site-role.ngOnChanges, userSites:', this.userSites);
+  }
+```
+
+
+## Reactive Form Group 방식으로 외부 데이터 조회 후 배열인 변수에 데이터 설정
+
+회사(company) 목록을 ng-select selectbox 에 담아서 보여주는 화면을 생각해보자. selectbox에 바인딩 되는 데이터는 다음과 같이 배열이다.
+
+```typescript
+this.companies: Company[] = [];
+```
+
+constructor에서 아래와 같은 initForm 메서드를 호출해서 Reactive Form Group을 설정한다.
+
+```typescript
+private initForm() {
+  this.userForm = this.formBuilder.group({
+    email: ['', [Validators.required]],
+    name: ['', [Validators.required]],
+    password1: ['', [Validators.required]],
+    password2: ['', [Validators.required]],
+    companyName: [''],  // <-- 배열을 품고 있는 selectbox
+    deptName: [''],
+    jobPosition: [''],
+    job: ['']
+  });
+}
+```
+companyName의 Form은 다음과 같다.
+
+```html
+<ng-select formControlName="companyName"  id="companyList"
+          [items]="companies"
+          bindLabel="companyName"
+          bindValue="companyId"
+          (change)="selectCompany($event)">
+  <ng-template ng-option-tmp let-item="item">{{item.companyName}}</ng-template>
+</ng-select>
+```
+
+ngOnInit에서 company의 목록을 외부에서 다음과 같이 조회해서 `companies`에 push 메서드를 통해 데이터를 채우면,
+
+```typescript
+this.companyService.getCompanies()
+  .do((response) => {
+    if (response['code'] !== PocAPIStatusCode.OK) {
+      this.toastrService.error('회사 리스트 정보를 가져오는데 실패하였습니다. 다시 시도해주세요.');
+    }
+  })
+  .map((data) => data['result'])
+  .map(result => result['companies'])
+  .subscribe((companies: Company[]) => {
+    companies.forEach(company => this.companies.push(new Company(company)));    
+    console.log('this.companies:', this.companies);
+  });
+```
+
+화면의 selectbox에 회사 목록이 표시되지 않는다.
+
+push로 이미 바인딩 된 배열에 데이터를 채우지 말고, 다음과 같이 아예 새로운 배열을 할당하면 selectbox에 회사 목록이 표시된다.
+
+```typescript
+this.companyService.getCompanies()
+  .do((response) => {
+    if (response['code'] !== PocAPIStatusCode.OK) {
+      this.toastrService.error('회사 리스트 정보를 가져오는데 실패하였습니다. 다시 시도해주세요.');
+    }
+  })
+  .map((data) => data['result'])
+  .map(result => result['companies'])
+  .subscribe((companies: Company[]) => {
+    const tmpCompanies: Company[] = [];
+    companies.forEach(company => tmpCompanies.push(new Company(company)));
+    this.companies = tmpCompanies;  // <-- 새로 할당!!
+    console.log('this.companies:', this.companies);    
+  });
+```
+
+push를 통해 이미 바인딩 되어 있는 배열에 원소를 채워도 ng-select에서 변경 감지를 못하는 것으로 보인다.
+
+## Binding object({"code":"ROLE_LEVEL_DEVELOPER","name":"DEVELOPER"}) with bindValue is not allowed.
+
+https://github.com/HomoEfficio/dev-tips/blob/master/Angular%20Prime.md#multiple-assets-emit-to-the-same-filename-commonjs 참고
+
+## ReactiveForms에 있는 데이터를 서버에 전송하는 방법
+
+- 엄밀하게 TypeScript를 쓴다면 서비스 메서드에 전달할 때 `new XXX(this.formGroup.value)`로 생성하고, FormGroup 안에 중첩되어 있는 객체도 모두 `new YYY(this.formGroup.get('yyy').value)`와 같이 생성하고 전달해야 정확한 타입 정보가 유지되지만,
+- 서비스 메서드 이후로는 그냥 서버에 전송하는 일 밖에 없으므로 사실 상 타입 정보가 필요 없고, 서버에 전송될 때는 어차피 직렬화되어 전송되므로,
+- 서비스 메서드 호출 시 그냥 `this.formGroup.value`으로 전달해도 나쁘지 않을 것 같다.
+
+## JSON 객체를 클래스 인스턴스로 Mapping
+
+- https://github.com/typestack/class-transformer 참고
+- `npm install class-transformer --save`
+- `npm install reflect-metadata --save`
+- 소스에서 다음과 같이 사용
+    ```typescript
+    import { plainToClass } from 'class-transformer';
+    ...
+    const jobInfoResponse = plainToClass(JobInfoResponse, result);
+    ```
+
+## `mat-checkbox` 사용
+
+- 기본으로 체크되어 있도록: `<mat-checkbox [checked]=true (change)="filterChart(ExecutionType.BATCH, $event)">배치 작업</mat-checkbox>`
+- `(click)`이 아니라 `(change)` 이벤트 핸들러를 등록해야 `MatCheckboxChange` 이벤트가 인자로 넘겨지며 `.checked`로 쉽게 체크 여부를 읽을 수 있다.
+
+
+## `@ViewChild`로 지정한 자식 컴포넌트의 사용 가능 시점
+
+- `@ViewChild tree: TreeComponent` 와 같이 `@ViewChild`로 지정한 변수 `tree`는 일반적으로 `ngAfterViewInit` 라이프사이클 이전에 초기화 된다.
+- 즉, 일반적인 경우에는 `ngOnChanges()`나 `ngOnInit()` 훅 메서드 내에서는 `tree`가 undefined 이지만, `ngAfterViewInit()` 훅 메서드 내에서 `tree`를 참조하면 undefined가 아닌 제대로 된 값이 들어가있다.
+
+
 # 기타 이슈
+
 
 ## Circular dependency detected
 
@@ -315,6 +546,10 @@ export class CompanySiteTableComponent extends DataTableComponent {
 ## Multiple assets emit to the same filename common.js
 
 다른 모듈에 존재하는 Service를 `provider`로 지정하고 가져와서 사용하면 발생
+
+또는 이름이 같은 파일이 있을 때 발생하기도 한다.
+
+일단 개발 중인 애플리케이션을 껐다 다시 켜봐서 컴파일 되면 good, 컴파일 안 되면 정말 오류가 있는 거니 아래와 같이 조치해야 한다.
 
 아래와 같이 `SiteService`를 `providers`에 지정하고 생성자 주입을 통해 사용하면,
 
@@ -409,7 +644,165 @@ export class CompanyEditComponent extends BaseComponent implements OnInit {
 
 그런데 충격적인 것은 이제 `@Inject`를 제외해도 컴파일 에러가 발생하지 않는다.. 뭥미..
 
+## ngx-datatable 3.1.3 사용 시 overflow: hidden 해제하기
+
+테이블 만들 때 [ngx-datatable](https://github.com/swimlane/ngx-datatable) 을 사용하면 아주 편리하다. 그런데 한 가지 골치 아픈 문제가 있는데 아래와 같이 모든 cell에 `overflow-x: hidden`이 먹어서 드랍다운 박스 같은 걸 쓸 수가 없다는 점이다.
+
+![Imgur](https://i.imgur.com/XZvlE34.png)
+
+[공식 문서](https://github.com/swimlane/ngx-datatable/blob/master/demo/basic/css.component.ts)를 참고해서 시도해봤지만, 최종 생성되는 html 파일에서 ngx-datatable이 만들어내는 css 파일이 항상 최하단에 위치하기 때문에 내가 지정한 custom css는 ngx-datatable의 css에 의해 덮어써져서 효과가 없다.
+
+이 문제는 https://github.com/swimlane/ngx-datatable/issues/937 에도 이슈로 올라가 있는데 아직 해결되진 않은 것 같아서 일단 임시스러운 해결책을 올렸다.
+
+https://github.com/swimlane/ngx-datatable/issues/937#issuecomment-484879030
+
+아래와 같이 `ngAfterInit()` 훅을 이용해서 DOM을 직접 수정해서 해결은 했지만 좋은 방법은 아닌 것 같다.
+
+```html
+<ngx-datatable-column name="good" cellClass="overflow-visible">
+...
+</ngx-datatable-column>
+```
+```typescript
+  public ngAfterViewInit() {
+    this.cellOverflowVisible();
+  }
+
+  private cellOverflowVisible() {
+    const cells = document.getElementsByClassName('datatable-body-cell overflow-visible');
+    for (let i = 0, len = cells.length; i < len; i++) {
+      cells[i].setAttribute('style', 'overflow: visible !important');
+    }
+  }
+```
+
+어쨌든 DOM 직접 수정해서 다음과 같이 제대로 나오게 했다.
+
+![Imgur](https://i.imgur.com/jgnJfp3.png)
+
+## ModalComponent 관련
+
+### Modal 창 띄우기
+
+TODO
+
+### ModalComponent에서 ModalComponent를 호출한 Component의 메서드 호출하기
+
+편의상 ModalComponent를 호출한 Component를 parent라고 하고 ModalComponent를 modal이라고 하자.  
+예를 들어 다음과 같이 사용자 목록 화면이 있고, '신규 등록'이나 '수정'을 클릭하면 회원 정보를 편집할 수 있는 Modal창을 띄우는 상황을 생각해보자. 
+
+![Imgur](https://i.imgur.com/drsztKo.png)
+
+이런 UI에서 '신규 등록'이나 '수정' 화면을 별도의 페이지로 가져가지 않고 팝업으로 처리해서 얻는 장점은, 별도의 페이지로 만들면 회원 정보 변경 후에 parent의 검색 결과, 페이지 이동 결과가 유지되지 않지만(유지되게 하려면 여러가지 처리가 필요), 팝업으로 처리하면 간단하게 그대로 유지할 수 있다는 점이다.
+
+하지만 '신규 등록' 후에는 새로 등록한 회원의 정보를 서버에서 받아서 목록에 표시해야하므로, 서버에서 회원 정보를 받아오는 역할을 담당하는 parent의 메서드를 호출해야 한다.  
+그런데 parent와 modal은 그냥 BsModalService로 호출될 수 있을 뿐, modal의 컴포넌트를 parent의 html에서 표시하지 않으므로 이벤트로 전달할 수도 없다. 어떻게 하면 modal에서 parent의 메서드를 호출할 수 있을까?
+
+다음과 같이 parent에서 modal을 호출할 때 config에 parent의 메서드를 화살표 함수를 통해 modal에 전달하면,
+
+```typescript
+// parent 쪽 코드
+
+  public openUserEditModal(userId: number) {
+    const initialState = {
+      userId: +userId,
+      closeModal: () => {  // 이렇게 화살표 함수로 전달
+        this.closeUserEditModal();
+      },
+      refreshUserList: () => {  // 이렇게 화살표 함수로 전달
+        this.initUsers();
+      }
+    };
+    this.bsModalRef = this.modalService.show(
+      UserEditModalComponent,
+      { initialState, class: 'modal-lg' });
+  }
+
+  public closeUserEditModal() {
+    this.bsModalRef.hide();
+  }
+```
+
+modal에서는 다음과 같이 parent의 메서드를 호출할 수 있다.
+
+```typescript
+// modal 쪽 코드
+
+  // parent로부터 전달받은 변수
+  public userId: string;
+  public closeModal;  // parent에서 전달한 화살표 함수
+  public refreshUserList;  // parent에서 전달한 화살표 함수
+
+  ...
+
+  this.closeModal();
+
+  ...
+
+  this.refreshUserList();
+```
+
+## module '***.module.ts' is not a module
+
+대략 다음과 같은 에러가 날 때가 있다.
+
+```
+ERROR in Source file not found: '/Users/XXX/gitRepo/my-app/src/app/member/user-agree/user-agree.component.ts'.
+ℹ ｢wdm｣: Failed to compile.
+ERROR in src/app/app.module.ts(72,33): error TS2306: File '/Users/XXX/gitRepo/my-app/src/app/member/user-agree/user-agree.module.ts' is not a module.
+src/app/dashboard/dashboard.module.ts(9,33): error TS2306: File '/Users/XXX/gitRepo/my-app/src/app/member/user-agree/user-agree.module.ts' is not a module.
+```
+
+아버지를 아버지라 부를 수 없고 모듈이 모듈이 아니라는 소린데..  
+
+실제 물리적 위치가 잘못돼 있다면 정정하면 되고, 물리적 위치가 맞다면, 실행 중이던 `npm watch`를 종료하고 재실행하면 에러가 사라진다.
 
 
+## ReactiveForms, formGroup, formControl 관련
 
+항상도 아니고 가끔 다음과 같은 에러가 발생한다.
 
+`Cannot find control with path: ... -> ...`
+
+![Imgur](https://i.imgur.com/Y6Rj6I9.png)
+
+이유는 정확히 모르지만, 라이프사이클과 관련이 있는 것으로 추정된다.
+
+```typescript
+this.targetForm = this.formBuilder.group({
+    ...
+});
+```
+위와 같이 form을 초기화 하는 로직을 `ngOnInit()` 훅 내에서 하면 위와 같은 에러가 간혹 발생한다.
+
+form 초기화 로직을 `ngOnInit()`에 앞서 실행되는 `constructor()` 내부에서 실행하면 위와 같은 에러가 발생하지 않는다.
+
+## mat-radio Readonly 처리
+
+radio는 HTML 수준에서 readonly를 지원하지 않는다.
+
+`disable`을 붙이면 변경은 안 되지만, 값이 아예 전달이 안 되므로 의미없는 짓이다.
+
+`onclick="return false;"`로도 가능하지만 조건에 따라 readonly 를 주고 싶을 때는 이 방법으로도 안 된다.
+
+그럴 때는 다른 방법이 없다. 기존 선택값을 보관하고 있다가, 변경이 발생하면 강제로 기존 선택값으로 되돌리는 방법으로 readonly 같은 효과를 낼 수 밖에..
+
+```javascript
+oldValue = getInitialOldValueFromServerOrWhatEver();
+
+onChange(event: MatRadioChange, oldValue: someType) {
+  if (someCondition) {
+    this.yourForm.get('yourRadioGroupFormControlName').patchValue(event.value);
+  } else {
+    this.yourForm.get('yourRadioGroupFormControlName').patchValue(oldValue);
+    // provide some info
+    alert('This can not be changed');    
+  }
+}
+```
+
+```html
+<mat-radio-group formControlName="yourRadioGroupFormControlName" (change)="onChange($event, oldValue)">
+```
+
+StackOverflow에 답을 다 달아보네.. ㅋㅋ https://stackoverflow.com/a/62325965/11747632

@@ -27,6 +27,48 @@ RDB의 한계의 대칭
 
 >분산과 유연성 확보를 위해 일관성을 양보
 
+## Schemaless 가 가능한 이유
+
+### RDB 
+
+PK  | name | group 
+--- | ---  | ---  
+101 | Jenny | BlackPink 
+102 | Yuji | Bestie 
+
+성별을 추가한다면?
+
+PK  | name | group | gender
+--- | ---  | ---  | ---
+101 | Jenny | BlackPink | F 
+102 | Yuji  | Bestie    | F
+
+위와 같이 `gender` 컬럼을 추가해야 하며 테이블 스키마가 변경됨
+
+
+### NoSQL
+
+PK  | column | value
+--- | ---      | ---    
+101 | name     | Jenny 
+101 | group    | BlackPink 
+102 | name     | Yuji 
+102 | group    | Bestie 
+
+성별을 추가한다면?
+
+PK  | column | value
+--- | ---      | ---    
+101 | name     | Jenny 
+101 | group    | BlackPink 
+102 | name     | Yuji 
+102 | group    | Bestie 
+101 | gender   | F
+102 | gender   | F
+
+위와 같이 그냥 `column` 컬럼의 값이 `gender`인 행을 추가하면 되며 테이블 스키마는 변경되지 않음
+
+
 ## 바탕 이론
 
 ### BASE

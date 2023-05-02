@@ -17,3 +17,29 @@ Could not resolve all dependencies for configuration ':dashboard-api:detachedCon
 한참 검색해도 못 찾아서 https://github.com/HomoEfficio/dev-tips/blob/master/Gradle%20Wrapper%20버전%20변경.md 을 참고해서 gradle wrapper의 버전을 4.10.2 로 업그레이드하니 위 문제가 해결되었다.
 
 다시 검색해보니 https://github.com/gradle/gradle/issues/3065#issuecomment-364086504 여기에도 버전을 올려서 해결했다고 나온다.
+
+---
+
+2020-06-15 추가
+
+인텔리제이 2020.1, Gradle 4.5.1, Java 8 에서 gradle 프로젝트를 임포트하면 의존 라이브러리들을 다운로드 하다가 끝까지 받지 못 하고 중간에 멈추면서 결국 build error 가 나는 현상이 있다.
+
+어처구니 없지만 복불복인 것 같다.
+
+`.idea/`, `.gradle/` 두 디렉터리 지우고 다시 임포트, 지우고 다시 임프토 몇 번 하다보면 된다. 운 좋으면 몇 번이면 될테고 운 나쁘면 한 시간..
+
+
+---
+2021-08-20 추가
+
+멀티 모듈 프로젝트에서 모듈 추가하다가 아래와 같이 빌드 실패 메시지 나오면,
+
+```
+Task 'wrapper' not found in project ':creator:lib'.
+```
+
+아래와 같이 루트에 추가돼있던 서브 모듈을 삭제하면 된다.
+
+![Imgur](https://i.imgur.com/jbf75Nl.png)
+
+
