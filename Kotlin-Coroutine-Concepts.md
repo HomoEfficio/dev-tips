@@ -254,7 +254,7 @@ suspend fun doWorld() = coroutineScope {
 ```
 
 `delay`는 suspending 함수로서 일정 시간 동안 코루틴의 실행을 보류/연기/유보(suspend)한다.
-보류/연기/유보되는 동안 해당 코루틴 코드가 실행되던 스레드 A는 blocking 되고 해방되어 다른 일을 수행할 수 있다.
+보류/연기/유보되는 동안 해당 코루틴 코드가 실행되던 스레드 A는 blocking 되지 않고 해방되어 다른 일을 수행할 수 있다.
 
 `launch`는 `Job`을 반환하며, `Job`은 실행 취소(cancel)될 수 있다.
 
