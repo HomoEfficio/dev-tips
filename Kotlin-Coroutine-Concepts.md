@@ -51,6 +51,11 @@
 
 - https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/run-blocking.html
 - GlobalScope에서 실행될 수 있는 코루틴 생성
+- `runBlocking`은 일반 함수와 suspend 함수 사이 또는 blocking과 non-blocking을 이어주는 다리 역할
+- 주로 `main()` 함수나 테스트에서 사용하기 위해 만들어진 코루틴 빌더
+  ```kotlin
+  fun main() = runBlocking { ... }
+  ```
 
 ### fun launch
 
@@ -69,7 +74,8 @@
 - https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-scope/index.html
 - 코루틴이 실행될 수 있는 영역/범위
   - 코루틴은 스코프 내에서만 실행될 수 있고, 아무런 스코프가 없는 곳에서는 실행될 수 없다
-- 모든 스코프는 결국 GlobalScope를 뿌리로 해서 생겨나며 따라서 모든 스코프는 GlobalScope의 하위 스코프다
+- 일반적으로 모든 스코프는 결국 GlobalScope를 뿌리로 해서 생겨나며 따라서 일반적인 스코프는 모두 GlobalScope의 하위 스코프다
+  - 예외적으로 `GlobalScope.async`나 `GlobalScope.launch`를 사용해서 각각 독립적인 최상위 스코프를 생성해서 사용할 수도 있다.
 - 하위 스코프에서 생성된 코루틴이 완료되기 전에는 상위 스코프의 코루틴도 완료될 수 없다
 - CoroutineContext는 CoroutineScope의 property 속성이다
 
@@ -139,6 +145,20 @@
 
 - UI 객체가 사용되는 main 스레드에서 실행/재개
 - 보통 싱글 스레드 환경에서 사용
+
+
+
+# Structured Concurrency
+
+스코프의 위계구조에 따라 자동으로 wait, cancel 할 수 있는 장점이 있는데 이를 가능하게 하는 것이 Structured Concurrency
+
+- 스코프A 안에서 스코프B가 생성되면 스코프A는 parent, 스코프B는 child
+- 스코프A는 그 안에서 생성된 모든 코루틴들이 완료될 때까지 자동으로 기다리며, parent 코루틴은 child 코루틴이 모두 완료될 때까지 완료되지 않는다.
+- 스코프A에 에러가 발생하거나 또는 개발자의 의도에 따라 그 안에서 생성된 코루틴도 자동으로 cancel 할 수 있다.
+
+`GlobalScope.launch`, `GlobalScope.async`와 같이 글로벌 최상위 스코프를 새로 만들어 사용하면 Structured Concurrency의 장점을 누릴 수 없다.  
+글로벌 스코프에서 시작된 코루틴은 모두 각각 독립적이며 lifetime도 전체 애플리케이션의 lifetime에 의해 정해진다.  
+글로벌 스코프에서 시작된 코루틴에 대한 참조를 저장하는 것이 가능하고 이를 통해 명시적으로 wait/cancel이 가능하지만 Structured Concurrency에서처럼 자동으로 동작하지는 않는다.
 
 
 
@@ -262,7 +282,7 @@ suspend fun doWorld() = coroutineScope {
 
 `launch`는 `Job`을 반환하며, `Job`은 실행 취소(cancel)될 수 있다.
 
-`Job` launch된 핸들 역할을 하며 다음과 같이 완료를 명시적으로 기다릴 수 있다.
+`Job` launch된 코루틴에 대한 핸들 역할을 하며 다음과 같이 `join()` 메서드를 사용해서 완료를 명시적으로 기다릴 수 있다.
 
 ```kotlin
 val job = launch { // launch a new coroutine and keep a reference to its Job
@@ -282,4 +302,15 @@ Done
 CoroutineScope는 위계 구조로 실행될 수 있으며, 하위 코루틴이 완료되기 전에는 상위 코루틴도 완료될 수 없다.
 
 ### async
+
+코루틴 빌더이며 `Deferred` 객체를 반환한다. `Deferred` 객체는 Future나 Promise라는 이름으로 불리기도 하는 개념이다.  
+연산을 저장하지만 결과를 받을 수 있는 시점을 뒤로 미룬다.
+
+>**Deferred** object **promise**s the result sometime in the **future**.
+
+`launch`는 특별한 결과값을 반환하지 않아도 되는 연산에 사용하는 반면에, `async`는 반환값이 있는 연산에 사용한다.
+
+`Deferred`는 `Job`을 상속받는 제네릭 타입이며, `async` 호춮 결과 `Deferred<Int>`나 `Deferred<CustomType>`이 반환된다.
+
+`Deferred` 객체의 `await()` 메서드를 호출하면 코루틴 연산 결괏값을 얻을 수 있다. `await()`이 호출된 코루틴은 suspend된다.
 
