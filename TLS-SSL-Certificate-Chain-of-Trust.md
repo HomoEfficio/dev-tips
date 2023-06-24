@@ -161,7 +161,10 @@ Server Address란에 your.server.name을 입력하고 Check Server를 클릭하�
 
 ![Imgur](https://i.imgur.com/H8ZAmZ0.png)
 
-위에서 살펴본 것처럼 ICA 인증서와 RCA 인증서를 차례로 EE 인증서 아래에 붙여주면 Chained Certificate 파일이 된다. 서버를 재시작하면 올바른 Chained Certificate 파일이 인식되므로 연결 문제도 없어진다.
+위에서 살펴본 것처럼 ICA 인증서와 RCA 인증서를 차례로 EE 인증서 아래에 붙여주면 Chained Certificate 파일이 된다.  
+서버를 재시작하면 올바른 Chained Certificate 파일이 인식되며, 다시 digicert 사이트에서 확인해보면 다음과 같이 정상임을 확인할 수 있다.
+
+![Imgur](https://i.imgur.com/mxIWABf.png)
 
 ICA 인증서와 RCA 인증서는 아마도 회사내 어디엔가 있겠지만, 정 찾기 어렵다면 이 글 맨 위에 있는 것처럼 인증서 보기의 내보내기 기능을 통해 ICA 인증서와 RCA 인증서를 내려받아 사용하면 된다.
 
