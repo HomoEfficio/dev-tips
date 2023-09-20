@@ -105,8 +105,8 @@ https://learn.microsoft.com/ko-kr/azure/architecture/reference-architectures/sag
 # 마무리
 
 >- Transactional Outbox Pattern과 Saga Pattern은 일관성 보장에 사용한다는 공통점이 있다.
->- Transactional Outbox Pattern은 하나의 Boundary Context 안에서 메시지 브로커로 메시지를 발행할 때 필요한 일관성을 보장해주며, 여러 Boundary Context 사이의 데이터 일관성을 보장해주지는 못한다.
->- Saga Pattern은 보상 트랜잭션을 사용해서 여러 Boundary Context 사이의 데이터 일관성을 결과적 일관성(eventual consistency) 방식으로 보장해주며, 
->    - 결과적 일관성 보장 과장 중에 메시지 브로커를 사용한다면 Boundary Context마다 Transactional Outbox Pattern을 사용해서 각 Boundary Context의 메시지 발행 일관성을 보장할 수 있다.
+>- Transactional Outbox Pattern은 하나의 Bounded Context 안에서 메시지 브로커로 메시지를 발행할 때 필요한 일관성을 보장해주며, 여러 Bounded Context 사이의 데이터 일관성을 보장해주지는 못한다.
+>- Saga Pattern은 보상 트랜잭션을 사용해서 여러 Bounded Context 사이의 데이터 일관성을 결과적 일관성(eventual consistency) 방식으로 보장해주며, 
+>    - 결과적 일관성 보장 과장 중에 메시지 브로커를 사용한다면 Bounded Context마다 Transactional Outbox Pattern을 사용해서 각 Bounded Context의 메시지 발행 일관성을 보장할 수 있다.
 >- Process Manager는 데이터 일관성 보장과는 크게 관련이 없으며 여러 단계를 가진 프로세스를 관리한다는 관점에서 Orchestration 방식의 Saga에 사용되는 Orchestrator가 일종의 Process Manager라고 볼 수 있다.
 >    - Orchestrator는 여러 단계를 가진 프로세스 관리도 하면서 데이터 일관성 보장에 더 중점을 둔다.
