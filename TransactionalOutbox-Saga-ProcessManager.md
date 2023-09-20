@@ -1,4 +1,4 @@
-# Transactional Outbox, Saga, Process Manager
+# Transactional Outbox Pattern, Saga Pattern, Process Manager Pattern
 
 [도메인 주도 설계 첫걸음](https://wikibook.co.kr/lddd/)(원서:
 [Learning Domain Driven Design](https://www.amazon.com/Learning-Domain-Driven-Design-Aligning-Architecture/dp/1098100131/))의 '9장 커뮤니케이션 패턴 > 애그리것(책에는 애그리게이트라고 나와있으나 잘못된 발음) 연동'에 '아웃박스, 사가, 프로세스 관리자'가 한 데 묶여서 나온다.
