@@ -144,7 +144,7 @@ install 에 의해 생성된 helm release를 삭제하고 k8s에 생성됐던 de
 
 ## helm upgrade
 
-install 에 의해 생성된 helm release의 내용 변경
+install 에 의해 생성된 helm release의 내용 변경, pod 재배포 된다.
 
 ```
 형식: helm upgrade -n k8sNamespace release이름 사용할chart이름 -f 사용할valuesyaml파일경로
