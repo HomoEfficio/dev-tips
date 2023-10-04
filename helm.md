@@ -144,7 +144,7 @@ install 에 의해 생성된 helm release를 삭제하고 k8s에 생성됐던 de
 
 ## helm upgrade
 
-install 에 의해 생성된 helm release의 내용 변경, pod 재배포 된다.
+install 에 의해 생성된 helm release의 내용 중 values 내용을 지정한 파일 values 파일 내용으로 변경하고 관련 k8s 자원을 재배포 한다.
 
 ```
 형식: helm upgrade -n k8sNamespace release이름 사용할chart이름 -f 사용할valuesyaml파일경로
@@ -167,7 +167,7 @@ helm list
 - 소스 코드가 비공개 repo에 있다면 이 비공개 repo에 접근할 수 있는 곳에 CI용 jenkins를 두고, k8s 클러스터 내부에 CD용 jenkins를 둬서, CI용 jenkins가 이미지를 컨테이너 레지스트리에 올린 후에 CD용 jenkins를 호출(HTTP API)해서 배포할 수 있다.
 - 소스 코드가 변경됐다면 그에 따른 image 만 변경하면 되므로 CI-CD만 하면 되고, helm 작업(install 또는 upgrade)은 다시 할 필요가 없다.
 - 소스 코드는 변경이 없는데 helm chart나 values.yaml 파일만 변경됐다면 helm upgrade만 다시 하면 배포까지 되고 CI-CD 작업은 다시 할 필요가 없다.
-  - values.yaml 파일 변경 시 `helm upgrade`만 하면 되지만, deployment.yaml 파일이 변경됐을 때는 `helm push`로 차트 먼저 리포지토리에 푸시해둬야 한다.
+  - values.yaml 파일 변경 시 `helm upgrade`만 하면 되지만, deployment.yaml 파일이 변경됐을 때는 `helm push`로 차트 먼저 리포지토리에 푸시해둔 후에 `helm upgrade`를 실행해야 한다.
 
 
 # helm chart 작성
