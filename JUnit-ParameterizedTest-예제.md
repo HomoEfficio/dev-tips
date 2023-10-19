@@ -1,3 +1,27 @@
+# JUnit5 ParamenterizedTest 의 테스트 이름에 파라미터 사용하기
+
+## `@Parameterized(name = "xxx {0} yyy {1}")` 방식
+
+### 예제 코드
+
+```kotlin
+@ParameterizedTest(name = "첫 출시가 예약 출시이고 출시 알림이 {0}이면 TaskType {1} 로 동작한다")
+@CsvSource(value = [
+    "true, PUBLISH_AND_SEND_NOTIFICATION",
+    "false, PUBLISH",
+])
+fun releaseTest(isReleaseNotificationOn: Boolean, taskType: TaskType) {
+    ...
+}
+```
+
+### 실행 결과
+
+![Imgur](https://i.imgur.com/wsyErG3.png)
+
+
+## `@Parameterized.Parameters` 방식
+
 `@Parameterized.Parameters`에 `name` 속성으로 테스트 이름을 지정할 수 있어 편리하다.
 
 ```java
