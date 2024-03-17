@@ -22,7 +22,7 @@
 <div class="g-recaptcha mb-2" data-sitekey="발급받은 사이트키"></div>
 ```
 
-4. 리캡차 컴포넌트 자바스크림트 임포트
+4. 리캡차 컴포넌트 자바스크립트 임포트
 
 ```html
 <script src="https://www.google.com/recaptcha/api.js"></script>
