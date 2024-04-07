@@ -45,7 +45,7 @@
     fi
     exit 0
     ```
-  - `/etc/logrotate.conf` 안에 `include /etc/logrotate.d`라고 지정돼 있으므로 `/etc/logrotate.d` 폴더 아래에 logrotate 설정 파일을 추가하면 daily 기반으로 실행된다
+  - `/etc/logrotate.conf` 안에 `include /etc/logrotate.d`라고 지정돼 있으므로, 결국 **`/etc/logrotate.d` 폴더 아래에 logrotate 설정 파일을 추가하면 daily 기반으로 실행된다**
     ```
     $ sudo cat /etc/logrotate.conf
     # see "man logrotate" for details
@@ -88,25 +88,25 @@
 - 더 자세한 내용은 https://blog.o3g.org/server/logrotate를-활용하여-로그-관리하기/ 참고    
 
 ## 설정
-
-- 설정 옵션은 man 페이지에 잘 나와있는데 openresty nginx 라면 대략 다음과 같이 지정하면 된다
-  ```
-  /usr/local/openresty/nginx/logs/*log {
-      daily
-      dateext # 아카이브 된 파일명에 -yyyyMMdd 추가
-      dateyesterday # 아카이브 된 파일명에 사용되는 날짜를 아카이브 수행 날짜가 아닌 전날(실제 로그가 적재된 날짜) 날짜 사용
-      missingok
-      notifempty
-      rotate 30
-      compress
-      delaycompress
-      copytruncate
-      create 600 root root
-      postrotate # logrotate 작업 이후 아카이브된 파일 말고 새 파일에 로그 적재
-          /bin/kill -USR1 `cat /usr/local/openresty/nginx/logs/nginx.pid 2>/dev/null` 2>/dev/null || true
-      endscript
-  }
-  ```
+- `/etc/logrotate.d/nginx` 파일에 다음과 같이 작성하면 된다
+  - 설정 옵션은 man 페이지에 잘 나와있는데 openresty nginx 라면 대략 다음과 같이 지정하면 된다
+    ```
+    /usr/local/openresty/nginx/logs/*log {
+        daily
+        dateext # 아카이브 된 파일명에 -yyyyMMdd 추가
+        dateyesterday # 아카이브 된 파일명에 사용되는 날짜를 아카이브 수행 날짜가 아닌 전날(실제 로그가 적재된 날짜) 날짜 사용
+        missingok
+        notifempty
+        rotate 30
+        compress
+        delaycompress
+        copytruncate
+        create 600 root root
+        postrotate # logrotate 작업 이후 아카이브된 파일 말고 새 파일에 로그 적재
+            /bin/kill -USR1 `cat /usr/local/openresty/nginx/logs/nginx.pid 2>/dev/null` 2>/dev/null || true
+        endscript
+    }
+    ```
 
 ## 실행
 
@@ -125,5 +125,5 @@
     log does not need rotating (log has been already rotated)considering log /usr/local/openresty/nginx/logs/host.access.log
     log does not need rotating (log has been already rotated)
   ```
-- `/etc/logrotate.d` 폴더에 추가해두면 cron 에 의해 다음날 실행되지만 바로 실행하고 싶다면 `-f` 옵션을 사용하면 된다
+- `/etc/logrotate.d` 폴더에 추가해두면 cron 에 의해 다음날 실행되지만 지금 바로 실행하고 싶다면 `-f` 옵션을 사용해서 `/usr/sbin/logrotate -f /etc/logrotate.d/nginx`를 실행하면 된다.
 
