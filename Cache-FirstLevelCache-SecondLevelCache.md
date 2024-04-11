@@ -51,7 +51,9 @@ entityManager.find(Xxx:class.java, 111L)  // 여기에서는 DB에 접근하지 
 
 - 검색하면 많이 나옴
   - 하이버네이트 문서: https://docs.jboss.org/hibernate/orm/6.4/userguide/html_single/Hibernate_User_Guide.html#caching
-  - 스프링 부트 3, 하이버네이트 6 설정: https://howtodoinjava.com/hibernate/configuring-ehcache-3-with-hibernate-6/
+  - 스프링 부트 3, 하이버네이트 6 설정
+    - https://thorben-janssen.com/hibernate-ehcache/
+    - https://howtodoinjava.com/hibernate/configuring-ehcache-3-with-hibernate-6/
 
 ### 2차 캐시 주의할 점
 
