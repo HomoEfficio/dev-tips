@@ -57,6 +57,8 @@ entityManager.find(Xxx:class.java, 111L)  // 여기에서는 DB에 접근하지 
 
 ### 2차 캐시 주의할 점
 
+#### 애너테이션 사용
+
 - 컬렉션 데이터를 캐시할 때 컬렉션의 원소가 
   - int 같은 기본 타입이거나, 원소가 기본 타입이 아니지만 `@ElementCollection`을 사용한다면 컬렉션을 이루는 객체 자체가 캐시되지만,
   - 기본 타입이 아니면서 `@OneToMany`나 `@ManyToOne`를 사용한다면 컬렉션의 원소인 객체의 식별자만 캐시된다.
@@ -88,6 +90,36 @@ entityManager.find(Xxx:class.java, 111L)  // 여기에서는 DB에 접근하지 
 - 그렇다고 컬렉션의 원소가 되는 클래스에만 `@Cache`를 붙이고, 컬렉션쪽에 `@Cache`를 붙이지 않아도 되냐하면 그건 아니다.
   - 컬렉션쪽에 `@Cache`를 붙이지 않으면, 캐시된 식별자가 없으므로 대략. `select col1, col2, ... from yyy where xxx_id = ?`와 같은 쿼리가 항상 실행되므로 캐시 효과를 볼 수 없게 된다.
     - `select col1, col2, ... from yyy where xxx_id = ?` 의 결과인 yyy 들은 각각 캐시에 저장되겠지만 컬렉션으로서 yyys를 불러올 때는 항상 쿼리가 실행되므로 캐시가 없는 것과 마찬가지다.
+
+#### 캐시에서 가져온 값을 Deserialize 과정에서 발생하는 문제
+
+- 처음 캐시에 저장할 때는 에러가 발생하지 않지만, 동일한 데이터를 다시 조회해서 캐시에서 읽어오면 다음과 같은 에러 발생
+  - `Caused by: java.lang.IllegalArgumentException: Can not set a.b.c.MyClass field a.b.c.myField to a.b.c.MyClass`
+- 에러 발생 위치
+    - jdk.internal.reflect.UnsaveObjectFieldAccessoImpl.set() 내부 아래 위치에서 예외 던짐
+		```
+        public void set(Object obj, Object value)
+            throws IllegalArgumentException, IllegalAccessException
+        {
+            ensureObj(obj);
+            if (isFinal) {
+                throwFinalFieldIllegalAccessException(value);
+            }
+            if (value != null) {
+                if (!field.getType().isAssignableFrom(value.getClass())) {  // 여기!! 결과가 false 라서 throwSetIllegalArgumentException 발생
+                    throwSetIllegalArgumentException(value);
+                }
+            }
+            unsafe.putReference(obj, fieldOffset, value);
+        }
+		```
+- **클래스 자체는 동일하나 캐시에 저장할 때의 MyClass를 로딩한 클래스로더와 Deser 할 때 MyClass를 로딩한 클래스로더가 달라서 isAssignableFrom() 이 false 반환**
+  - 애플리케이션 구동 시 RegionFactory, DomainDataStorageAccess 를 로딩하는 클래스로더: RestartClassLoader, parent: AppClassLoader
+  - Deser 할 때 생성하는 객체의 field: field.getType().classLoader: RestartClassLoader, parent: AppClassLoader
+  - 캐시에서 가져온 값 value: value.getClass().classLoader: AppClassLoader, parent: PlatformClassLoader
+- 캐시에 저장할 때는 애플리케이션을 통해 저장되므로 AppClassLoader 에 의해 로딩된 클래스로 저장되고,
+- 캐시에서 가져와서 Deser 해서 객체를 생성할 때는 RegionFactory, DomainDataStorageAccess 를 로딩한 RestartClassLoader 에 의해 로딩된 클래스를 로딩
+- **RestartClassLoader는 Spring Boot Dev Tools 사용 시에만 사용되는 클래스로더이며, Spring Boot Dev Tools를 비활성화하면 위 타입에러는 발생하지 않음**
 
 ### 2차 캐시 한계
 
