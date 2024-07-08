@@ -5,7 +5,7 @@
   - RDB 쿼리 핸들링에 초점을 맞춰야 한다면 MyBatis, JOOQ가 RDB, NoSQL을 모두 지원하느라 추상 계층이 더 추가된 QueryDSL 보다는 낫고
   - type safety를 고려하면 MyBatis 보다는 JOOQ 가 더 적합하다
 - QueryDSL은 JPA와 함께 사용하기 좋다
-- type safety를 보장해주는 JOOQ와 QueryDSL은 모두 별도의 파일 생성 과정이 필요하다
-  - JOOQ는 RDB 스키마를 기반으로 type safety check에 사용할 Java 클래스 생성
-  - QueryDSL은 Java 클래스를 기반으로 type safety check에 사용할 Java Q 클래스 생성
+- type safety를 보장해주는 JOOQ와 QueryDSL은 모두 별도의 Java 파일 생성 과정이 필요하다
+  - JOOQ는 RDB 스키마를 기반으로 Java 클래스 생성
+  - QueryDSL은 Java 클래스를 기반으로 Java Q 클래스 생성
 - 여기에 아주 잘 정리돼 있다 - https://keencho.github.io/posts/jooq/
