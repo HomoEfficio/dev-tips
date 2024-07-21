@@ -21,7 +21,7 @@ ZoneId.getAvailableZoneIds()
 참고로 [ZoneOffset](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/ZoneOffset.html)의 validation에 걸리지 않는 valid range는 `[-18:00, +18:00]`이지만,  
 2008년에 확장된 것 기준 실제로 Offset 데이터가 존재하는 actual range는 `[-12:00, +14:00]`이다.
 
-결과
+Time-Zone Offset 별 ZoneId 목록 출력 결과는 다음과 같다.
 
 ```
 UTC-12:00:00 [Etc/GMT+12]
@@ -64,3 +64,25 @@ UTC+13:00:00 [Pacific/Fakaofo, Pacific/Enderbury, Pacific/Apia, Pacific/Kanton, 
 UTC+14:00:00 [Pacific/Kiritimati, Etc/GMT-14]
 ```
 
+그런데 JDBC URL에 `Etc/GMT+12`을 사용하면 아래와 같은 예외가 발생한다.
+
+```
+Caused by: java.time.DateTimeException: Invalid ID for region-based ZoneId, invalid format: Etc/GMT 12
+	at java.base/java.time.ZoneRegion.checkName(ZoneRegion.java:152)
+	at java.base/java.time.ZoneRegion.ofId(ZoneRegion.java:117)
+	at java.base/java.time.ZoneId.of(ZoneId.java:410)
+	at java.base/java.time.ZoneId.of(ZoneId.java:358)
+	at com.mysql.cj.protocol.a.NativeProtocol.configureTimeZone(NativeProtocol.java:2255)
+	at com.mysql.cj.protocol.a.NativeProtocol.initServerSession(NativeProtocol.java:2282)
+	at com.mysql.cj.jdbc.ConnectionImpl.initializePropsFromServer(ConnectionImpl.java:1269)
+	at com.mysql.cj.jdbc.ConnectionImpl.connectOneTryOnly(ConnectionImpl.java:946)
+```
+
+에러 메시지에 `Etc/GMT+12`가 아니라 `Etc/GMT 12`로 표시된 것에서 짐작할 수 있겠지만,  
+다음과 같이 `+` 대신에 URL Encoding 한 값인 `%2B`를 사용해야 한다.
+
+```kotlin
+"jdbc:mysql://localhost:3306/study?connectionTimeZone=${connectionTimeZone.replace("GMT+", "GMT%2B")}"
+```
+
+물론 `Etc/GMT-12`에 사용된 `-`는 URL Encoding 하지 않아도 되므로 에러 없이 실행된다.
