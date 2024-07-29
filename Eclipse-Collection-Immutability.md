@@ -38,7 +38,7 @@ for (int i = 0; i < 10; i++) {
 
 // 가변 해시맵으로부터 불변 맵 생성
 ImmutableMap<String, String> immutableMap = Maps.immutable.of(mutableHashMap);
-immutableMap.forEach((k, v) -> System.out.println(k + ": " + v));
+immutableMap.forEachKeyValue((k, v) -> System.out.println(k + ": " + v));
 immutableMap.remove("k1");  // UnsupportedOperationException
 
 // 불변 맵을 가변 맵으로 캐스팅
