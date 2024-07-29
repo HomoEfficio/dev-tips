@@ -10,6 +10,8 @@ java.util.Collection 인터페이스에 포함돼 있는 `add(), addAll(), remov
 이유는 ImmutableMap를 실제로 생성할 때 사용하는 AbstractImmutableMap 클래스가 immutable 메서드를 포함하고 있는 java.util.Map 인터페이스를 구현하고 있기 때문이다.
 하지만 mutable 메서드의 구현체는 모두 UnsupportedOperationException를 던지게 돼 있어서 런타임에는 불변성이 보장된다.
 
+다만 아래 사례 중 마지막 사례를 보면, ImmutableCollection이나 ImmutableMap이 중첩된 컬렉션이나 맵을 포함하는 경우, 포함된 컬렉션이나 맵의 실질 타입에 따라 내부 불변성은 유지되지 않을 수도 있음에 유의해야 한다. 내부 불변성까지 완전하게 유지하려면 포함되는 컬렉션이나 맵도 불변이어야 한다.
+
 홈페이지에 있는 것 외에 아주 간단한 사용 사례를 남겨본다.
 
 ```java
@@ -35,13 +37,29 @@ for (int i = 0; i < 10; i++) {
 }
 
 // 가변 해시맵으로부터 불변 맵 생성
-ImmutableUnifiedMap<String, String> immutableMap = new ImmutableUnifiedMap<>(mutableHashMap);
+ImmutableMap<String, String> immutableMap = Maps.immutable.of(mutableHashMap);
 immutableMap.forEach((k, v) -> System.out.println(k + ": " + v));
 immutableMap.remove("k1");  // UnsupportedOperationException
 
 // 불변 맵을 가변 맵으로 캐스팅
 Map<String, String> castedMap = immutableMap.castToMap();
 castedMap.remove("k1");  // Map으로 타입변환해도 UnsupportedOperationException 발생하며 런타임 Immutability 보장
+
+
+// 중첩된 맵이 불변맵이면 ImmutableMap 에 저장되었다가 get 으로 읽어와도 불변
+Map<String, String> innerMap11 = Map.of("m1k1", "m1v1", "m1k2", "m1v2");
+ImmutableMap<String, Map<String, String>> immutableMap11 = Maps.immutable.of("k1", innerMap11);
+Map<String, String> innerMap12 = immutableMap11.get("k1");  // innerMap11 과 동일한 참조, ImmutableCollections$MapN 타입
+innerMap12.put("m12k2", "m12k2");  // UnsupportedOperationException
+
+// 중첩된 맵이 가변맵이면 ImmutableMap 에 저장되었다가 get 으로 읽어오면 원래대로 가변이며 ImmutableMap 도 실질적으로 불변성을 유지하지 못함
+Map<String, String> innerMap21 = new HashMap<>();
+innerMap21.put("m1k1", "m1v1");
+innerMap21.put("m1k2", "m1v2");
+ImmutableMap<String, Map<String, String>> immutableMap21 = Maps.immutable.of("k1", innerMap21);
+Map<String, String> innerMap22 = immutableMap21.get("k1");  // innerMap21 과 동일한 참조, HashMap 타입
+innerMap22.put("m22k2", "m12k2");  // 추가됨
+
 ```
 
 반면 구글의 [Guava ImmutableCollection](https://guava.dev/releases/33.2.1-jre/api/docs/com/google/common/collect/ImmutableCollection.html)은 java.util.Collection 인터페이스를 상속받고 있어서 컴파일 타임 불변성이 보장되지 않는다.
