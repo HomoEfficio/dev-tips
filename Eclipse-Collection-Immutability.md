@@ -6,9 +6,10 @@ Eclipse Collection의 ImmutableCollection 인터페이스는 java.util.Collectio
 java.util.Collection 인터페이스에 포함돼 있는 `add(), addAll(), remove(), removeAll(), removeIf()` 등과 같은 mutable 메서드가 아예 없다.
 그래서 컴파일 타임에 컬렉션의 불변성(Immutability)이 보장된다.
 
-~하지만 Eclipse Collection의 ImmutableMap은 컴파일 타임에는 불변성이 보장되지 않는다.~
+~하지만 Eclipse Collection의 ImmutableMap은 컴파일 타임에는 불변성이 보장되지 않는다.~  
 Eclipse Collection의 ImmutableMap은 컴파일 타임에 불변성이 보장되는 것이 있고 보장되지 않는 것이 있다.
-ImmutableUnifiedMap을 사용하면 ImmutableUnifiedMap이 상속받고 있는 AbstractImmutableMap 클래스가 immutable 메서드를 포함하고 있는 java.util.Map 인터페이스를 구현하고 있어서 컴파일 타임에 mutable 메서드를 호출할 수 있어서 컴파일 타임 불변성은 보장되지 않는다. 물론 호출하면 모두 UnsupportedOperationException를 던지게 돼 있어서 런타임 불변성은 보장된다.
+
+ImmutableUnifiedMap을 사용하면 ImmutableUnifiedMap이 상속받고 있는 AbstractImmutableMap 클래스가 immutable 메서드를 포함하고 있는 java.util.Map 인터페이스를 구현하고 있어서 컴파일 타임에 mutable 메서드를 호출할 수 있어서 컴파일 타임 불변성은 보장되지 않는 대신, java.util.Map과 호환되므로 java.util.Map 타입 변수에 할당할 수 있다. java.util.Map과 호환되어 mutable 메서드를 호출할 수는 있지만, 호출하면 모두 UnsupportedOperationException를 던지게 돼 있어서 런타임 불변성은 보장된다.
 
 `Maps.immutable.ofAll(mutableMap)`을 사용해서 ImmutableMap 을 만들면 AbstractImmutableMap 클래스를 사용하지 않아 java.util.Map 인터페이스를 구현하고 있지 않으므로 컴파일 타임에 mutable 메서드를 호출할 수 없어서 컴파일 타임 불변성이 보장되며,
 이렇게 만들어진 ImmutableMap 은 java.util.Map 인터페이스를 구현하고 있지 않으므로 당연히 java.util.Map에 할당할 수 없다.
