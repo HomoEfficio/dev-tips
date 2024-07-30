@@ -6,9 +6,12 @@ Eclipse Collection의 ImmutableCollection 인터페이스는 java.util.Collectio
 java.util.Collection 인터페이스에 포함돼 있는 `add(), addAll(), remove(), removeAll(), removeIf()` 등과 같은 mutable 메서드가 아예 없다.
 그래서 컴파일 타임에 컬렉션의 불변성(Immutability)이 보장된다.
 
-하지만 Eclipse Collection의 ImmutableMap은 컴파일 타임에는 불변성이 보장되지 않는다.
-이유는 ImmutableMap를 실제로 생성할 때 사용하는 AbstractImmutableMap 클래스가 immutable 메서드를 포함하고 있는 java.util.Map 인터페이스를 구현하고 있기 때문이다.
-하지만 mutable 메서드의 구현체는 모두 UnsupportedOperationException를 던지게 돼 있어서 런타임에는 불변성이 보장된다.
+~하지만 Eclipse Collection의 ImmutableMap은 컴파일 타임에는 불변성이 보장되지 않는다.~
+Eclipse Collection의 ImmutableMap은 컴파일 타임에 불변성이 보장되는 것이 있고 보장되지 않는 것이 있다.
+ImmutableUnifiedMap을 사용하면 ImmutableUnifiedMap이 상속받고 있는 AbstractImmutableMap 클래스가 immutable 메서드를 포함하고 있는 java.util.Map 인터페이스를 구현하고 있어서 컴파일 타임에 mutable 메서드를 호출할 수 있어서 컴파일 타임 불변성은 보장되지 않는다. 물론 호출하면 모두 UnsupportedOperationException를 던지게 돼 있어서 런타임 불변성은 보장된다.
+
+`Maps.immutable.ofAll(mutableMap)`을 사용해서 ImmutableMap 을 만들면 AbstractImmutableMap 클래스를 사용하지 않아 java.util.Map 인터페이스를 구현하고 있지 않으므로 컴파일 타임에 mutable 메서드를 호출할 수 없어서 컴파일 타임 불변성이 보장되며,
+이렇게 만들어진 ImmutableMap 은 java.util.Map 인터페이스를 구현하고 있지 않으므로 당연히 java.util.Map에 할당할 수 없다.
 
 다만 아래 사례 중 마지막 사례를 보면, ImmutableCollection이나 ImmutableMap이 중첩된 컬렉션이나 맵을 포함하는 경우, 포함된 컬렉션이나 맵의 실질 타입에 따라 내부 불변성은 유지되지 않을 수도 있음에 유의해야 한다. 내부 불변성까지 완전하게 유지하려면 포함되는 컬렉션이나 맵도 불변이어야 한다.
 
@@ -36,14 +39,19 @@ for (int i = 0; i < 10; i++) {
     mutableHashMap.put("k" + i, "v" + i);
 }
 
-// 가변 해시맵으로부터 불변 맵 생성
-ImmutableMap<String, String> immutableMap = Maps.immutable.of(mutableHashMap);
-immutableMap.forEachKeyValue((k, v) -> System.out.println(k + ": " + v));
-immutableMap.remove("k1");  // UnsupportedOperationException
+// 가변 해시맵으로부터 ImmutableUnifiedMap 생성
+ImmutableMap<String, String> immutableUnifiedMap = new ImmutableUnifiedMap<>(mutableHashMap);
+immutableUnifiedMap.forEach((k, v) -> System.out.println(k + ": " + v));
+immutableUnifiedMap.remove("k1");  // UnsupportedOperationException
 
 // 불변 맵을 가변 맵으로 캐스팅
-Map<String, String> castedMap = immutableMap.castToMap();
+Map<String, String> castedMap = immutableUnifiedMap.castToMap();
 castedMap.remove("k1");  // Map으로 타입변환해도 UnsupportedOperationException 발생하며 런타임 Immutability 보장
+
+// 가변 해시맵으로부터 ImmutableMap 생성
+ImmutableMap<String, String> immutableMap = Maps.immutable.of(mutableHashMap);
+immutableMap.forEachKeyValue((k, v) -> System.out.println(k + ": " + v));
+immutableMap.remove  // 자동완성도 되지 않고 컴파일 에러
 
 
 // 중첩된 맵이 불변맵이면 ImmutableMap 에 저장되었다가 get 으로 읽어와도 불변
