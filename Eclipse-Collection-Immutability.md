@@ -44,6 +44,8 @@ for (int i = 0; i < 10; i++) {
 ImmutableMap<String, String> immutableUnifiedMap = new ImmutableUnifiedMap<>(mutableHashMap);
 immutableUnifiedMap.forEach((k, v) -> System.out.println(k + ": " + v));
 immutableUnifiedMap.remove("k1");  // UnsupportedOperationException
+// java.util.Map 타입 변수에 할당될 수 있고, java.util.Map을 반환하는 메서드의 반환값으로 사용할 수 있다.
+Map<String, String> aMap = immutableUnifiedMap;
 
 // 불변 맵을 가변 맵으로 캐스팅
 Map<String, String> castedMap = immutableUnifiedMap.castToMap();
@@ -53,6 +55,7 @@ castedMap.remove("k1");  // Map으로 타입변환해도 UnsupportedOperationExc
 ImmutableMap<String, String> immutableMap = Maps.immutable.of(mutableHashMap);
 immutableMap.forEachKeyValue((k, v) -> System.out.println(k + ": " + v));
 immutableMap.remove  // 자동완성도 되지 않고 컴파일 에러
+Map<String, String> aMap = immutableMap;  // 할당되지 않고 컴파일 에러, java.util.Map을 반환하는 메서드의 반환값으로 사용할 수 없다.
 
 
 // 중첩된 맵이 불변맵이면 ImmutableMap 에 저장되었다가 get 으로 읽어와도 불변
