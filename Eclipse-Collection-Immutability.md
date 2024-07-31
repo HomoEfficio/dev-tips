@@ -84,7 +84,7 @@ innerMap22.put("m22k2", "m12k2");  // 추가됨
 
 `Lists.immutable.ofAll(mutableList)`나 `Maps.immutable.ofAll(mutableMap)`와 같이 **ImmutableCollection이나 ImmutableMap으로 만드는 과정은 일반적인 복사에 비해 성능에서 굉장히 불리할 수 있다**는 점에 유의하자.
 
-아래와 같이 테스트 해보면 무려 50배나 차이가.. ㄷㄷㄷ
+아래와 같이 테스트 해보면 리스트 원소가 100만개 일 때는 차이가 무려 500배까지도 난다. ㄷㄷㄷ
 
 ```java
 @Test
@@ -116,7 +116,7 @@ ns         %     Task name
 000505541  000%  normal copy
 ```
 
-흥미로운 것은 리스트의 갯수를 1천만개로 10배 늘리면 normal copy는 수행시간도 대략 10배가 걸리는데, to immutable 은 10%도 늘어나지 않는다.
+흥미로운 것은 리스트의 갯수를 1000만개로 10배 늘리면 normal copy는 수행시간도 대략 10배가 걸리는데, to immutable 은 10%도 늘어나지 않는다.
 ```
 StopWatch 'normal vs immutable': running time = 289116126 ns
 ---------------------------------------------
