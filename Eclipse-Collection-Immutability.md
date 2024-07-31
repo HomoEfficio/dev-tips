@@ -176,7 +176,7 @@ Seconds       %       Task name
 
 ```
 
-만약에 다음과 같이 List에 담기는 객체가 mutable인데 Lists.immutable.ofAll()을 통해 완전한 불변성을 확보했다고 하면 큰 착각이고 성능마저 굉장히 손해를 보는 최악의 선택이 될 수 있다.
+만약에 다음과 같이 List에 담기는 객체가 mutable인데 Eclipse Collection의 `Lists.immutable.ofAll()`을 통해 완전한 불변성을 확보했다고 하면 큰 착각이고 성능마저 굉장히 손해를 보는 최악의 선택이 될 수 있다.
 
 ```kotlin
     @Test
