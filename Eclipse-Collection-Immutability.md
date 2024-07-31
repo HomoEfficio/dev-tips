@@ -2,6 +2,8 @@
 
 자바에서 불변 컬렉션(Immutable Collection)을 만들 때 [Eclipse Collection](https://eclipse.dev/collections/)을 사용하면 편리하다.
 
+## Compile-time Immutability and Run-time Immutability
+
 Eclipse Collection의 ImmutableCollection 인터페이스는 java.util.Collection 인터페이스를 상속받지 않아서,  
 java.util.Collection 인터페이스에 포함돼 있는 `add(), addAll(), remove(), removeAll(), removeIf()` 등과 같은 mutable 메서드가 아예 없다.
 그래서 컴파일 타임에 컬렉션의 불변성(Immutability)이 보장된다.
@@ -13,8 +15,6 @@ ImmutableUnifiedMap을 사용하면 ImmutableUnifiedMap이 상속받고 있는 A
 
 `Maps.immutable.ofAll(mutableMap)`을 사용해서 ImmutableMap 을 만들면 AbstractImmutableMap 클래스를 사용하지 않아 java.util.Map 인터페이스를 구현하고 있지 않으므로 컴파일 타임에 mutable 메서드를 호출할 수 없어서 컴파일 타임 불변성이 보장되며,
 이렇게 만들어진 ImmutableMap 은 java.util.Map 인터페이스를 구현하고 있지 않으므로 당연히 java.util.Map에 할당할 수 없다.
-
-`Maps.immutable.ofAll(mutableMap)`은 `new ImmutableUnifiedMap<>(mutableMap)`에 비해 약 2-3배 정도 느리다.
 
 다만 아래 사례 중 마지막 사례를 보면, ImmutableCollection이나 ImmutableMap이 중첩된 컬렉션이나 맵을 포함하는 경우, 포함된 컬렉션이나 맵의 실질 타입에 따라 내부 불변성은 유지되지 않을 수도 있음에 유의해야 한다. 내부 불변성까지 완전하게 유지하려면 포함되는 컬렉션이나 맵도 불변이어야 한다.
 
@@ -80,3 +80,60 @@ innerMap22.put("m22k2", "m12k2");  // 추가됨
 
 아쉽지만 불변 객체를 만드는 데 유용한 [immutables](https://github.com/immutables/immutables) 라이브러리도 내부적으로 Guava Collection을 사용하고 있어서 컴파일 타임 불변성은 보장되지 않는다.
 
+## 성능
+
+`Lists.immutable.ofAll(mutableList)`나 `Maps.immutable.ofAll(mutableMap)`와 같이 **ImmutableCollection이나 ImmutableMap으로 만드는 과정은 일반적인 복사에 비해 성능에서 굉장히 불리할 수 있다**는 점에 유의하자.
+
+아래와 같이 테스트 해보면 무려 500배나 차이가.. ㄷㄷㄷ
+
+```java
+@Test
+void normal_copy_vs_immutable() {
+    List<Integer> integers = IntStream.rangeClosed(1, 1_000_000)
+            .boxed()
+            .collect(Collectors.toList());
+
+    StopWatch sw = new StopWatch("normal vs immutable");
+
+    sw.start("to immutable");
+    ImmutableList<Integer> immutableIntegers = Lists.immutable.ofAll(integers);
+    System.out.println(immutableIntegers.size());
+    sw.stop();
+
+    sw.start("normal copy");
+    List<Integer> mutableIntegersCopied = new ArrayList<>(integers);
+    System.out.println(mutableIntegersCopied.size());
+    sw.stop();
+    System.out.println(sw.prettyPrint());
+}
+
+=====
+StopWatch 'normal vs immutable': running time = 270367791 ns
+---------------------------------------------
+ns         %     Task name
+---------------------------------------------
+269862250  100%  to immutable
+000505541  000%  normal copy
+```
+
+흥미로운 것은 리스트의 갯수를 1천만개로 10배 늘리면 normal copy는 수행시간도 대략 10배가 걸리는데, to immutable 은 10%도 늘어나지 않는다.
+```
+StopWatch 'normal vs immutable': running time = 289116126 ns
+---------------------------------------------
+ns         %     Task name
+---------------------------------------------
+283223584  098%  to immutable
+005892542  002%  normal copy
+```
+
+하지만 1억개로 하면 to immutable 도 늘어난다.
+```
+StopWatch 'normal vs immutable': running time = 583402750 ns
+---------------------------------------------
+ns         %     Task name
+---------------------------------------------
+426178250  073%  to immutable
+157224500  027%  normal copy
+```
+
+이렇게 성능까지 살펴보니 이거 써도 되는 건가 싶기도.. =3=3
