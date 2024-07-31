@@ -86,6 +86,8 @@ innerMap22.put("m22k2", "m12k2");  // 추가됨
 
 아래와 같이 테스트 해보면 리스트 원소가 100만개 일 때는 차이가 무려 500배까지도 난다. ㄷㄷㄷ
 
+이하 모든 코드는 JDK 17을 사용했다.
+
 ```java
 @Test
 void normal_copy_vs_immutable() {
