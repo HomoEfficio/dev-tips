@@ -84,7 +84,7 @@ innerMap22.put("m22k2", "m12k2");  // 추가됨
 
 `Lists.immutable.ofAll(mutableList)`나 `Maps.immutable.ofAll(mutableMap)`와 같이 **ImmutableCollection이나 ImmutableMap으로 만드는 과정은 일반적인 복사에 비해 성능에서 굉장히 불리할 수 있다**는 점에 유의하자.
 
-아래와 같이 테스트 해보면 무려 500배나 차이가.. ㄷㄷㄷ
+아래와 같이 테스트 해보면 무려 50배나 차이가.. ㄷㄷㄷ
 
 ```java
 @Test
