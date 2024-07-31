@@ -14,6 +14,8 @@ ImmutableUnifiedMap을 사용하면 ImmutableUnifiedMap이 상속받고 있는 A
 `Maps.immutable.ofAll(mutableMap)`을 사용해서 ImmutableMap 을 만들면 AbstractImmutableMap 클래스를 사용하지 않아 java.util.Map 인터페이스를 구현하고 있지 않으므로 컴파일 타임에 mutable 메서드를 호출할 수 없어서 컴파일 타임 불변성이 보장되며,
 이렇게 만들어진 ImmutableMap 은 java.util.Map 인터페이스를 구현하고 있지 않으므로 당연히 java.util.Map에 할당할 수 없다.
 
+`Maps.immutable.ofAll(mutableMap)`은 `new ImmutableUnifiedMap<>(mutableMap)`에 비해 약 2-3배 정도 느리다.
+
 다만 아래 사례 중 마지막 사례를 보면, ImmutableCollection이나 ImmutableMap이 중첩된 컬렉션이나 맵을 포함하는 경우, 포함된 컬렉션이나 맵의 실질 타입에 따라 내부 불변성은 유지되지 않을 수도 있음에 유의해야 한다. 내부 불변성까지 완전하게 유지하려면 포함되는 컬렉션이나 맵도 불변이어야 한다.
 
 홈페이지에 있는 것 외에 아주 간단한 사용 사례를 남겨본다.
