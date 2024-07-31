@@ -153,26 +153,102 @@ sw.stop()
 ----------------------------------------------------
 Seconds       %       Task name
 ----------------------------------------------------
-0.2832045     99%     to immutable
-0.000469416   00%     normal copy
-0.003520333   01%     kotlin toList
+0.257979875   98%     to immutable
+0.000639708   00%     normal copy
+0.004159625   02%     kotlin toList
 
 1000만개
 ----------------------------------------------------
 Seconds       %       Task name
 ----------------------------------------------------
-0.31721575    93%     to immutable
-0.010477667   03%     normal copy
-0.011790084   03%     kotlin toList
+0.278435583   93%     to immutable
+0.008188959   03%     normal copy
+0.011311666   04%     kotlin toList
 
 
 1억개
 ----------------------------------------------------
 Seconds       %       Task name
 ----------------------------------------------------
-0.543201667   57%     to immutable
-0.213487792   22%     normal copy
-0.20021875    21%     kotlin toList
+0.53591875    54%     to immutable
+0.225812667   23%     normal copy
+0.230502708   23%     kotlin toList
 
 ```
+
+만약에 다음과 같이 List에 담기는 객체가 mutable인데 Lists.immutable.ofAll()을 통해 완전한 불변성을 확보했다고 하면 큰 착각이고 성능마저 굉장히 손해를 보는 최악의 선택이 될 수 있다.
+
+```kotlin
+    @Test
+    fun normal_copy_vs_eclipse_immutable_vs_kotlin_immutable() {
+        val kvList: MutableList<KeyValue> = IntStream.rangeClosed(1, 10_000_000)
+            .boxed()
+            .map { integer -> KeyValue("k$integer", integer) }
+            .collect(Collectors.toList())
+
+        val sw = StopWatch("normal vs eclipse immutable vs kotlin immutable")
+
+        sw.start("to eclipse immutable")
+        val immutableKeyValues: ImmutableList<KeyValue> = Lists.immutable.ofAll(kvList)
+        println(immutableKeyValues.size())
+        sw.stop()
+        println(immutableKeyValues[0].v)
+        immutableKeyValues[0].v = 111
+        println(immutableKeyValues[0].v)
+        println("---------------------------")
+
+        sw.start("normal copy")
+        val mutableIntegersCopied: ArrayList<KeyValue> = ArrayList(kvList)
+        println(mutableIntegersCopied.size)
+        sw.stop()
+        println(mutableIntegersCopied[0].v)
+        mutableIntegersCopied[0].v = 222
+        println(mutableIntegersCopied[0].v)
+        println("---------------------------")
+
+        sw.start("kotlin toList")
+        val kotlinxImmutableList: List<KeyValue> = kvList.toList();
+        println(kotlinxImmutableList.size)
+        sw.stop()
+        println(kotlinxImmutableList[0].v)
+        kotlinxImmutableList[0].v = 333
+        println(kotlinxImmutableList[0].v)
+        println("---------------------------")
+
+
+        println(sw.prettyPrint())
+    }
+
+    class KeyValue(
+        var k: String,
+        var v: Int,
+    )
+
+
+10000000
+1
+111
+---------------------------
+10000000
+111
+222
+---------------------------
+10000000
+222
+333
+---------------------------
+StopWatch 'normal vs eclipse immutable vs kotlin immutable': 0.286756167 seconds
+--------------------------------------------------------------------------------
+Seconds       %       Task name
+--------------------------------------------------------------------------------
+0.264592291   92%     to eclipse immutable
+0.010511459   04%     normal copy
+0.011652417   04%     kotlin toList
+```
+
+이쯤에서 결론을 내면 다음과 같다.
+
+>- 컬렉션이나 맵에서 완전한 불변성을 확보하려면 먼저 컬렉션이나 맵에 저장되는 객체가 불변이어야 한다.
+>- Eclipse ImmutableCollection/ImmutableMap 은 성능 손실이 생각보다 심하니 주의해서 사용해야 한다.
+>- 코틀린 컬렉션이 짱이다 =3=3
 
