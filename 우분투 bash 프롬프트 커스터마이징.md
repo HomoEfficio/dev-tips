@@ -8,7 +8,7 @@
 
 대충 감으로 해석해보면
 
-`\e`: 아마도 element로 추정되는데, 걍 구분자로 보면 될 듯
+`\e`: ~아마도 element로 추정되는데, 걍 구분자로 보면 될 듯~ - escape sequence(또는 Control Sequence Introducer) 라고 함 Thanks to ghost's [issue](https://github.com/HomoEfficio/dev-tips/issues/2)
 `[31m`: ANSI Color 값 - 나중에 추가
 `\u`: 로그인 사용자 이름
 
