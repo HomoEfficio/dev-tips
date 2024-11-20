@@ -14,7 +14,7 @@
 - adb 서버 종료
 
 
-## ADB 설치
+## PC에 ADB 설치
 
 - https://developer.android.com/tools/releases/platform-tools 에서 운영체제 별로 다운로드 및 압축 해제
 - 사용 편의를 위해 소프트링크 설정
