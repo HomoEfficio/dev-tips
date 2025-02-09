@@ -30,7 +30,7 @@ tasks.withType<Test> {
 ```
 
 다른 자료에 보면 `"TESTCONTAINERS_HOST_OVERRIDE"`의 값으로 `"$(colima ls -j | jq -r '.address')"` 이렇게 지정하라고 하는데,  
-그렇게해서 된다면 그렇게 하고, 안 되면 위와 같이 별도로 셸 명령을 시랭해서 host 값을 받아서 지정해주면 된다.
+그렇게해서 된다면 그렇게 하고, 안 되면 위와 같이 별도로 셸 명령을 실행해서 host 값을 받아서 지정해주면 된다.
 
 ## src/test/resources/application.yml
 
