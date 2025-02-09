@@ -58,7 +58,7 @@ public abstract class AbstractIntegrationTest {
     private static final String PASSWORD = "password";
     private static final String DATABASE_NAME = "edp";
 
-    @Container  // 수동으로 mySQLContainer.start(), mySQLContainer.stop() 할 필요 업게 해주는 애너테이션
+    @Container  // 수동으로 mySQLContainer.start(), mySQLContainer.stop() 할 필요 없게 해주는 애너테이션
     // MySQLContainer 가 AutoCloseable 인터페이스를 구현하고 있으므로
     // suppress 해주지 않으면 컴파일러 warning 발생
     // TestConainers 가 내부적으로 cleanup 을 해주므로 suppress만 해주면 된다
