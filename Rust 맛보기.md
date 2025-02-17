@@ -60,7 +60,7 @@ Rust에서는 개발자가 직접 하지도 않고, Garbage Collector도 존재�
 - 힙에 생성되는 변수를 다른 변수에 할당하면 Ownership은 복사되지 않고(Not Copy) 이동(Move)된다. 즉, **Owner는 언제나 1개다.**
     - Owner가 2개 이상이라면 동일한 힙 주소를 가리키는 변수가 2개 이상이라는 것이고,
     - Rust는 Owner를 기준으로 메모리를 해제하므로 Owner가 2개 이상이라면 동일한 힙 주소를 2번 이상 해제하게 되며,
-    - 이 과정에서 1번 회수한 메모리를 2번째 해제하기 위해 다시 참조하는 순간 unsafe behavior 가 일어나게 된다.
+    - 이 과정에서 1번 회수한 메모리를 2번째 해제하기 위해 다시 참조하는 순간 undefined behavior 가 일어나게 된다.
     - 따라서 Owner는 반드시 1개여야만 undefined behavior 가 발생하지 않고 따라서 safe 하다.
 - Ownership을 잃어버린 변수는 uninitialized 상태가 되며, 이 변수를 다시 초기화하지 않고 사용하면 컴파일 에러
 - 아래와 같이 힙에 문자열을 생성하는 `String::from()`을 통해 만든 문자열을 원소로 갖는 튜플의 Ownership은 복사되지 않고 이동되므로 아래와 같이 컴파일 에러가 발생한다.  
