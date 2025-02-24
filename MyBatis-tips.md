@@ -148,9 +148,10 @@
   
   ```xml
   <resultMap id="bookWithInfoMap" type="a.b.c.domain.BookWithInfo">
-    <association property="book" resultMap="bookMap"/>
+    <id property="oid" column="oid"/>
     <result property="authorName" column="author_name"/>
     <result property="publisherName" column="publisher_name"/>
+    <association property="book" resultMap="bookMap"/>  <!-- MyBatis xml 규약 상 association 은 result 다음에 와야 한다 -->
   </resultMap>
   ```
   
@@ -177,6 +178,7 @@
     
     ```xml
     <resultMap id="bookWithInfoMap" type="a.b.c.domain.BookWithInfo">
+      <id property="oid" column="oid"/>
       <association property="book" resultMap="bookMap"/>
       <association property="author" resultMap="authorMap"/>
       <association property="publisher" resultMap="publisherMap"/>
