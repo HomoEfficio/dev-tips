@@ -59,4 +59,5 @@ private List<MyValue> getMyValues(MyCacheKey cacheKey) {
 ## 기타
 
 - 카페인 캐시도 `@Cacheable` 같은 스프링 캐시 애너테이션을 사용할 수 있지만,
-- 위와 같이 `LoadingCache`를 사용해서 코딩하면, `@Cacheable`의 단점인 self invocation 시 캐시 기능이 동작하지 않는 단점을 피할 수 있다.
+  - 위와 같이 `LoadingCache`를 사용해서 코딩하면, `@Cacheable`의 단점인 self invocation 시 캐시 기능이 동작하지 않는 단점을 피할 수 있다.
+- nginx 도 refresh 와 비슷하게 비동기 캐시 업데이트를 지원한다: [proxy_cache_background_update on](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache_background_update)
