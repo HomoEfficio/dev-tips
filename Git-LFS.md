@@ -35,6 +35,23 @@ gif 같은 파일은 로컬에서 기본적으로 tracking 하지 않기 때문�
 
 git LFS의 설치부터 push 성공까지 구체적인 내용은 https://git-lfs.com/ 여기에 잘 나와있다.
 
+위 절차를 수행하고 push 하면 다음 메시가 출력되며 성공한다.
+
+```
+Locking support detected on remote "origin". Consider enabling it with:
+  $ git config lfs.https://YOUR-GIT-REPO/info/lfs.locksverify true
+Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
+remote: 
+remote: Create a pull request for 'YOUR-BRANCH' on GitHub by visiting:
+remote:      https://YOUR-GIT-REPO/pull/new/YOUR-BRANCH
+remote: 
+To https://YOUR-GIT-REPO
+ * [new branch]            YOUR-BRANCH -> YOUR-BRANCH
+
+```
+
+맨 위에 제안하고 있는 `git config lfs.https://YOUR-GIT-REPO/info/lfs.locksverify true`를 로컬에서 실행해주면 다음부터는 Lock support 관련 메시지가 표시되지 않는다.
+
 ## 기타
 
 반드시 발생하는 오류인지까지는 확인하지 못했지만,  
