@@ -39,7 +39,9 @@
   * daemon started successfully
   List of devices attached
   ```
-- USB로 PC-폰 유선 연결하면 폰에 뜨는 '휴대전화 데이터에 접근 허용' 팝업에서 '허용' 선택
+- USB로 PC-폰 유선 연결하면
+  - PC에 뜨는 팝업에서 '허용' 선택
+  - 폰에 뜨는 '휴대전화 데이터에 접근 허용' 팝업에서 '허용' 선택
 - PC 에서 다음 명령으로 유선 연결 확인
   ```
   adb devices
