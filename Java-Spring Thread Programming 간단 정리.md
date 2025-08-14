@@ -35,9 +35,9 @@
     - 풀의 활성화 된 스레드 수가 corePoolSize 보다 작은 상태에서 execute() 또는 submit() 호출 시 스레드 새로 생성
     - 풀의 활성화 된 스레드 수가 corePoolSize와 maxPoolSize 사이에 있으면서 큐가 꽉 차있지 않으면 새 스레드를 생성하지 않고 태스크를 큐로 전송
     - 풀의 활성화 된 스레드 수가 corePoolSize와 maxPoolSize 사이에 있으면서 큐가 꽉 차있으면 스레드 새로 생성
-    - 큐도 꽉 차있고 활성 스레드 수가 `maxPoolSize`에 도달해있는 상태에서 태스크가 또 들어오면 에러 발생
+    - 큐도 꽉 차있고 활성 스레드 수가 `maxPoolSize`에 도달해있는 상태에서 태스크가 또 들어오면 reject 에러 발생
     - `corePoolSize`와 `maxPoolSize`를 같게 하면 결국 고정 크기 스레드 풀을 생성하게 된다.
-    - 한 마디로 **corePoolSize 만큼 스레드를 채우고, Queue 를 채우고, maxPoolSize 만큼 채운다.**
+    - 한 마디로 **corePoolSize 만큼 스레드를 생성하고, Queue 를 채우고, maxPoolSize 만큼 스레드를 생성한다.**
     
 ### ScheduledThreadPoolExecutor
 
