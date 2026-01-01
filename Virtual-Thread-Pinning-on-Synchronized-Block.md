@@ -167,6 +167,8 @@ AFTER  0 - VirtualThread[#22]/runnable@ForkJoinPool-1-worker-6
 가상 스레드가 `format()`을 실행하면서 처음 만난 `synchronized` 블록을 실행하면서 캐리어 스레드에 고정됐기 때문에,  
 그 이후 예제 코드에서 만난 두 번째 `synchronized` 블록의 락 획득을 기다릴 때는 언마운트 되지 못 하고 캐리어 스레드를 점유한 채로 자원을 낭비하게 된다.
 
+## 마무리
+
 `synchronized` 블록에 의해 발생하는 낭비는 이처럼 쉽게 알아 차리기 어렵다.  
 다행스럽게도 [JEP 491](https://openjdk.org/jeps/491)이 적용된 Java 24에서 `synchronized` 블록에 의해 발생하는 낭비 문제가 해결됐다.
 
