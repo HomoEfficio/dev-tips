@@ -106,7 +106,8 @@ AFTER  7 - VirtualThread[#29]/runnable@ForkJoinPool-1-worker-8
 
 우연히 발견한 재미있는 현상이다.
 
-`System.out.println(MessageFormat.format("BEFORE {0} - {1}", index, Thread.currentThread()));` 이 너무 길어 보여서 짧게 줄인다고 `System.out.printf("BEFORE %d - %s%n", index, Thread.currentThread());`로 변경하고 다시 실행해봤다.
+`System.out.println(MessageFormat.format("BEFORE {0} - {1}", index, Thread.currentThread()));` 이 너무 길어 보여서,  
+짧게 줄인다고 `System.out.printf("BEFORE %d - %s%n", index, Thread.currentThread());`로 변경하고 다시 실행해봤다.
 
 이번에는 다음과 같이 모든 가상 스레드의 BEFORE/AFTER 가 동일하게 나온다.
 
