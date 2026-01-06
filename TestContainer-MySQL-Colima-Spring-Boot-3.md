@@ -1,38 +1,53 @@
-# Spring Boot 3 에서 MySQL TestContainer 사용
+# Spring Boot 3 + Colima 에서 MySQL TestContainer 사용
 
-- Docker 환경을 구성하기 위해 [Colima](https://github.com/abiosoft/colima)를 사용한다고 가정
+Docker 환경을 구성하기 위해 [Colima](https://github.com/abiosoft/colima)를 사용한다고 가정
 
-## build.gradle.kts
+간단히 요약하면 기본적으로 다음 3가지 설정이 필요하다.
+>- DOCKER_HOST
+>- TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE
+>- TESTCONTAINERS_HOST_OVERRIDE
+>- TESTCONTAINERS_REUSE_ENABLE
 
-```kotlin
-dependencies {
-    // ...
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.testcontainers:mysql")
-    // ...
-}
+## TestContainers 설정
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-    // ...
-    val colimaAddress = ByteArrayOutputStream().use { outputStream ->
-        exec {
-            commandLine("sh", "-c", "colima ls -j | jq -r '.address'")
-            standardOutput = outputStream
-        }
-        outputStream.toString().trim()
-    }
-    environment("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "/var/run/docker.sock")
-    environment("TESTCONTAINERS_HOST_OVERRIDE", colimaAddress)
-    environment("DOCKER_HOST", "unix:///<YOUR_HOME_DIRECTORY>/.colima/default/docker.sock")
-    environment("TESTCONTAINERS_REUSE_ENABLE", "true")  // 테스트 메서드마다 컨테이너 생성하지 않고 한 번 생성해서 재사용
-}
+`~/.zshrc` 파일에 다음과 같이 환경 변수를 등록하면 된다.
+
+```shell
+export DOCKER_HOST="unix://${HOME}/.colima/default/docker.sock"
+export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
+export TESTCONTAINERS_HOST_OVERRIDE=$(colima ls -j | jq -r '.address')
+export TESTCONTAINERS_REUSE_ENABLE=true
 ```
 
-다른 자료에 보면 `"TESTCONTAINERS_HOST_OVERRIDE"`의 값으로 `"$(colima ls -j | jq -r '.address')"` 이렇게 지정하라고 하는데,  
-그렇게해서 된다면 그렇게 하고, 안 되면 위와 같이 별도로 셸 명령을 실행해서 host 값을 받아서 지정해주면 된다.
+### 설정 위치
 
-## src/test/resources/application.yml
+설정값은 [TestContainers 문서](https://java.testcontainers.org/features/configuration/#configuration-locations)에 다음 우선 순위로 설정 위치를 지정할 수 있다고 한다.
+
+  >1. Environment variables
+  >2. `.testcontainers.properties` in user's home folder. Example locations:
+  >  - Linux: /home/myuser/.testcontainers.properties
+  >  - Windows: C:/Users/myuser/.testcontainers.properties
+  >  - macOS: /Users/myuser/.testcontainers.properties
+  >3. testcontainers.properties on the classpath.
+
+추가로 gradle 등 빌드 파일에서 임시 환경 변수를 등록할 수도 있다.
+
+`DOCKER_HOST`의 경우 다음과 같이 경로를 지정해야 하는데,
+
+```
+DOCKER_HOST="unix://${HOME}/.colima/default/docker.sock"
+```
+
+HOME 디렉터리를 `~/.zshrc` 파일에서는 위와 같이 `${HOME}`으로 간단히 구할 수 있지만,  
+`~/.testcontainers.properties` 파일이나 `classpath:testcontainers.properties` 파일에서는 하드코딩 밖에는 방법이 없고,  
+`build.gradle`에서는 구할 수는 있지만 번거로운 스크립트를 작성해야 한다.
+
+따라서 **다른 것은 몰라도 `DOCKER_HOST`는 `~/.zshrc`에서 환경 변수로 등록하는 것이 현실적으로 가장 편리하다.**  
+다른 값도 애플리케이션마다 다르게 지정할 이유가 사실 없으므로 그냥 모두 `~/.zshrc`에서 환경 변수로 등록하는 것이 좋다.
+
+## MySQL 설정
+
+### src/test/resources/application.yml
 
 ```yml
 spring:
