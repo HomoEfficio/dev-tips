@@ -2,7 +2,7 @@
 
 Docker 환경을 구성하기 위해 [Colima](https://github.com/abiosoft/colima)를 사용한다고 가정
 
-간단히 요약하면 기본적으로 다음 3가지 설정이 필요하다.
+간단히 요약하면 기본적으로 다음 4가지 설정이 필요하다.
 >- DOCKER_HOST
 >- TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE
 >- TESTCONTAINERS_HOST_OVERRIDE
