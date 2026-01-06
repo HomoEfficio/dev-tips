@@ -10,6 +10,8 @@ Docker 환경을 구성하기 위해 [Colima](https://github.com/abiosoft/colima
 
 ## TestContainers 설정
 
+### 가장 간단한 방법
+
 `~/.zshrc` 파일에 다음과 같이 환경 변수를 등록하면 된다.
 
 ```shell
@@ -19,7 +21,7 @@ export TESTCONTAINERS_HOST_OVERRIDE=$(colima ls -j | jq -r '.address')
 export TESTCONTAINERS_REUSE_ENABLE=true
 ```
 
-### 설정 위치
+### 설정 위치를 다르게 하려면
 
 설정값은 [TestContainers 문서](https://java.testcontainers.org/features/configuration/#configuration-locations)에 다음 우선 순위로 설정 위치를 지정할 수 있다고 한다.
 
