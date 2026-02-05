@@ -78,7 +78,7 @@ RCA 인증서
 -----END CERTIFICATE-----
 ```
 
-이처럼 RCA인증서-ICA인증서-RCA인증서가 연결된 인증서를 Chained Certificate이라고 부른다. 맨 위에 EE인증서가 있고 맨 아래에 RCA인증서가 있는 순서에 유의하자.
+이처럼 EE인증서-ICA인증서-RCA인증서가 연결된 인증서를 Chained Certificate이라고 부른다. 맨 위에 EE인증서가 있고 맨 아래에 RCA인증서가 있는 순서에 유의하자.
 
 서버가 저 Chained Certificate 파일을 인지할 수 있어야 하며, 예를 들어 nginx의 경우 nginx.conf 파일에 다음과 같이 지정해서 인증서를 설치한다.
 
