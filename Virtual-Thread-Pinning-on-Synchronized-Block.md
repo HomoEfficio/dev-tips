@@ -518,6 +518,46 @@ JEP 491 내용 중 `synchronized` 관련 내용을 요약하면 다음과 같다
 >- JEP 491에서는 가상 스레드도 `synchronized` 블록의 락을 획득/보유/반환할 수 있도록 `synchronized` 처리 로직을 변경해서,  
 >    - `synchronized` 블록 진입 전/후 모두에서 가상 스레드가 캐리어 스레드에 고정될 필요없이 언마운트 되어 자원 낭비를 방지할 수 있게 되었다.
 
+## 부록
+
+위 예제에서 `System.out.println("BEFORE " + index + " - " + Thread.currentThread())`와 같이 `println`을 사용하지 않고 `System.out.printf("%d BEFORE - %s%n", index, Thread.currentThread())`와 같이 `printf`를 사용하면 다음과 같이 사뭇 다른 결과가 나온다.
+
+```
+0 BEFORE - VirtualThread[#21]/runnable@ForkJoinPool-1-worker-1
+1 BEFORE - VirtualThread[#22]/runnable@ForkJoinPool-1-worker-6
+2 BEFORE - VirtualThread[#23]/runnable@ForkJoinPool-1-worker-5
+3 BEFORE - VirtualThread[#24]/runnable@ForkJoinPool-1-worker-4
+4 BEFORE - VirtualThread[#25]/runnable@ForkJoinPool-1-worker-3
+5 BEFORE - VirtualThread[#26]/runnable@ForkJoinPool-1-worker-2
+6 BEFORE - VirtualThread[#27]/runnable@ForkJoinPool-1-worker-8
+8 BEFORE - VirtualThread[#29]/runnable@ForkJoinPool-1-worker-9
+9 BEFORE - VirtualThread[#30]/runnable@ForkJoinPool-1-worker-7
+7 BEFORE - VirtualThread[#28]/runnable@ForkJoinPool-1-worker-10
+0 AFTER  - VirtualThread[#21]/runnable@ForkJoinPool-1-worker-1
+7 AFTER  - VirtualThread[#28]/runnable@ForkJoinPool-1-worker-10
+9 AFTER  - VirtualThread[#30]/runnable@ForkJoinPool-1-worker-7
+8 AFTER  - VirtualThread[#29]/runnable@ForkJoinPool-1-worker-9
+6 AFTER  - VirtualThread[#27]/runnable@ForkJoinPool-1-worker-8
+5 AFTER  - VirtualThread[#26]/runnable@ForkJoinPool-1-worker-2
+4 AFTER  - VirtualThread[#25]/runnable@ForkJoinPool-1-worker-3
+3 AFTER  - VirtualThread[#24]/runnable@ForkJoinPool-1-worker-4
+2 AFTER  - VirtualThread[#23]/runnable@ForkJoinPool-1-worker-5
+1 AFTER  - VirtualThread[#22]/runnable@ForkJoinPool-1-worker-6
+```
+
+동일한 `i`값에 대해서는 BEFORE의 worker-no 와 AFTER의 worker-no 가 모두 일치한다.
+
+따라서 위 결과만 보면 가상 스레드가 `synchronized` 블록을 만나서 락 획득을 기다릴 때 캐리어 스레드를 점유하면서 자원을 낭비하는 것처럼 보인다.
+
+왜 이런 일이 발생하는 걸까?
+
+이유는 콘솔에 출력하는 과정 중에도 `synchronized` 블록이 사용되는데,  
+
+>- 출력 전에 formatting이 필요 없는 `println`은 여러 가상 스레드가 `synchronized`(예제에 있는 블록이 아니라 콘솔에 출력하는 과정에 속해 있는 것)에 동시에 도달해서 락을 기다리면서 언마운트 될 가능성이 높고,  
+>- 출력 전에 formatting이 필요한 `printf`는 여러 가상 스레드가 각자 formatting 작업을 하느라 시간 차가 발생하고, 콘솔 출력 과정에 속해 있는 `synchronized`에 도달할 때도 시차가 발생하고, 도달 했을 때 이미 앞선 스레드의 출력이 끝나서 락이 반환돼 있는 상태라서 락 획득을 기다릴 필요가 없어서 언마운트 되지 않고 그대로 동일한 스레드에서 계속 실행될 가능성이 높기 때문이다.
+
+결국, **가상 스레드가 `synchronized` 블록의 락 획득을 기다릴 때 캐리어 스레드로부터 언마운트 되어 자원 낭비가 유발되지 않는다**는 사실에는 변함이 없다.
+
 ---
 
 ## 오류 정정 - 1
