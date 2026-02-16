@@ -11,7 +11,7 @@ synchronized (lock) {
 }
 ```
 
-## 캐리어 스레드를 점유/낭비한다
+## 락 획득을 기다리는 동안에는 캐리어 스레드를 점유하지 않는다
 
 아래의 코드로 확인해 볼 수 있다.
 
@@ -26,15 +26,14 @@ public class VirtualThreadPinningExample {
 
         List<Thread> threads = IntStream.range(0, 10)
                 .mapToObj(index -> Thread.ofVirtual().unstarted(() -> {
-                    String threadInfo = "BEFORE " + index + " - " + Thread.currentThread() + "\n";
+                    System.out.println("BEFORE " + index + " - " + Thread.currentThread());
 
                     synchronized (lock) {
                         // 시간은 오래 걸리지만 blocking은 없는 사례
                         getFibonacci(40);
                     }
-
-                    threadInfo += "AFTER  " + index + " - " + Thread.currentThread() + "\n";
-                    System.out.println(threadInfo);
+                    
+                    System.out.println("AFTER  " + index + " - " + Thread.currentThread());
                 }))
                 .toList();
 
@@ -72,63 +71,52 @@ public class VirtualThreadPinningExample {
 Java 21에서 `java VirtualThreadPinningExample.java` 명령으로 실행하면 다음과 같이 출력된다.
 
 ```
-BEFORE 6 - VirtualThread[#37]/runnable@ForkJoinPool-1-worker-7
-AFTER  6 - VirtualThread[#37]/runnable@ForkJoinPool-1-worker-7
-
-BEFORE 7 - VirtualThread[#38]/runnable@ForkJoinPool-1-worker-8
-AFTER  7 - VirtualThread[#38]/runnable@ForkJoinPool-1-worker-8
-
-BEFORE 8 - VirtualThread[#39]/runnable@ForkJoinPool-1-worker-9
-AFTER  8 - VirtualThread[#39]/runnable@ForkJoinPool-1-worker-9
-
-BEFORE 9 - VirtualThread[#40]/runnable@ForkJoinPool-1-worker-10
-AFTER  9 - VirtualThread[#40]/runnable@ForkJoinPool-1-worker-10
-
-BEFORE 0 - VirtualThread[#31]/runnable@ForkJoinPool-1-worker-1
-AFTER  0 - VirtualThread[#31]/runnable@ForkJoinPool-1-worker-1
-
-BEFORE 3 - VirtualThread[#34]/runnable@ForkJoinPool-1-worker-4
-AFTER  3 - VirtualThread[#34]/runnable@ForkJoinPool-1-worker-4
-
-BEFORE 2 - VirtualThread[#33]/runnable@ForkJoinPool-1-worker-3
-AFTER  2 - VirtualThread[#33]/runnable@ForkJoinPool-1-worker-3
-
-BEFORE 1 - VirtualThread[#32]/runnable@ForkJoinPool-1-worker-2
-AFTER  1 - VirtualThread[#32]/runnable@ForkJoinPool-1-worker-2
-
-BEFORE 5 - VirtualThread[#36]/runnable@ForkJoinPool-1-worker-6
-AFTER  5 - VirtualThread[#36]/runnable@ForkJoinPool-1-worker-6
-
-BEFORE 4 - VirtualThread[#35]/runnable@ForkJoinPool-1-worker-5
-AFTER  4 - VirtualThread[#35]/runnable@ForkJoinPool-1-worker-5
+BEFORE 9 - VirtualThread[#37]/runnable@ForkJoinPool-1-worker-10
+BEFORE 1 - VirtualThread[#29]/runnable@ForkJoinPool-1-worker-2
+BEFORE 7 - VirtualThread[#35]/runnable@ForkJoinPool-1-worker-8
+BEFORE 5 - VirtualThread[#33]/runnable@ForkJoinPool-1-worker-6
+BEFORE 6 - VirtualThread[#34]/runnable@ForkJoinPool-1-worker-7
+BEFORE 8 - VirtualThread[#36]/runnable@ForkJoinPool-1-worker-9
+BEFORE 0 - VirtualThread[#28]/runnable@ForkJoinPool-1-worker-1
+BEFORE 4 - VirtualThread[#32]/runnable@ForkJoinPool-1-worker-5
+BEFORE 3 - VirtualThread[#31]/runnable@ForkJoinPool-1-worker-4
+BEFORE 2 - VirtualThread[#30]/runnable@ForkJoinPool-1-worker-3
+AFTER  9 - VirtualThread[#37]/runnable@ForkJoinPool-1-worker-10
+AFTER  2 - VirtualThread[#30]/runnable@ForkJoinPool-1-worker-3
+AFTER  3 - VirtualThread[#31]/runnable@ForkJoinPool-1-worker-1
+AFTER  4 - VirtualThread[#32]/runnable@ForkJoinPool-1-worker-7
+AFTER  0 - VirtualThread[#28]/runnable@ForkJoinPool-1-worker-5
+AFTER  8 - VirtualThread[#36]/runnable@ForkJoinPool-1-worker-8
+AFTER  6 - VirtualThread[#34]/runnable@ForkJoinPool-1-worker-2
+AFTER  5 - VirtualThread[#33]/runnable@ForkJoinPool-1-worker-4
+AFTER  7 - VirtualThread[#35]/runnable@ForkJoinPool-1-worker-6
+AFTER  1 - VirtualThread[#29]/runnable@ForkJoinPool-1-worker-9
 ```
 
 먼저 출력 내용이 무엇을 뜻하는지 알아보자.
 
-예를 들어, `VirtualThread[#37]/runnable@ForkJoinPool-1-worker-7`의 각 부분이 의미하는 바는 다음과 같다.
+예를 들어, `VirtualThread[#37]/runnable@ForkJoinPool-1-worker-10`의 각 부분이 의미하는 바는 다음과 같다.
 
 - `#37`는 가상 스레드 식별자이고,
 - `runnable`은 가상 스레드의 상태
 - `ForkJoinPool-1`는 가상 스레드를 캐리어 스레드에 마운트하는 스케줄러
-- `worker-7`은 가상 스레드가 마운트 된 캐리어 스레드
+- `worker-10`은 가상 스레드가 마운트 된 캐리어 스레드
 
-`VirtualThread[#37]/runnable@ForkJoinPool-1-worker-7`는  
-`37번 가상 스레드가 ForkJoinPool-1 스케줄러에 의해 worker-7 캐리어 스레드에 마운트 되어 실행 중인 상태`를 나타낸다.
+`VirtualThread[#37]/runnable@ForkJoinPool-1-worker-10`은  
+`37번 가상 스레드가 ForkJoinPool-1 스케줄러에 의해 worker-10 캐리어 스레드에 마운트 되어 실행 중인 상태`를 나타낸다.
 
-위 결과를 다시 살펴보면 가상 스레드별 BEFORE/AFTER 값이 모두 동일한 것을 확인할 수 있다.  
-즉, 가상 스레드가 `synchronized` 블록에 들어가기 전에 마운트 돼 있던 캐리어 스레드와 `synchronized` 블록을 실행하고 빠져나온 후에 마운트 돼 있는 캐리어 스레드가 동일하다는 뜻이다. 10개만으로 부족해 보인다면 수를 늘려서 확인해도 결과는 마찬가지다.
+위 결과를 다시 살펴보면 가장 처음 실행된 `i == 9`일 때를 제외하면 가상 스레드별 BEFORE/AFTER의 캐리어 스레드가 변경된 것을 확인할 수 있다.
+
+즉, 가상 스레드가 `synchronized` 블록을 만나고, 다른 스레드가 이미 락을 가지고 있어 기다릴 때는 캐리어 스레드로부터 언마운트 된다.
 
 결국 다음과 같이 결론 지을 수 있다.
 
 :::info
-**가상 스레드는 `synchronized`의 락 획득을 기다리는 동안 언마운트 되지 못하고 캐리어 스레드를 점유하며 자원을 낭비한다.**
+**가상 스레드는 `synchronized`의 락 획득을 기다리는 동안에는 캐리어 스레드로부터 언마운트 되어 자원 낭비를 유발하지 않는다.**
 :::
 
 한편, 가상 스레드와 `synchronized` 얘기가 나오면 꼭 함께 따라나오는 용어가 있다.  
 바로 **가상 스레드 고정(pinning)** 이다.
-
-그렇다면 위와 같이 `synchronized`가 사용된 상황에서 `synchronized` 블록 전/후로 가상 스레드가 동일한 캐리어 스레드에 마운트 돼 있었다면 고정이 발생한 것일까? 발생한 것이라면 언제 고정이 되는 걸까?
-
 
 ## 고정 발생 시점
 
@@ -148,11 +136,6 @@ native 메서드나 foreign 함수는 잠시 제쳐두고 `synchronized` 부분�
 **가상 스레드는 `sychronized` 블록이나 메서드에 진입할 때 또는 진입한 직후에 고정 된다.**
 :::
 
-또한 다음 사실에도 유의해야 한다.
-
-:::warning
-**가상 스레드가 `synchronized`의 락 획득을 기다리는 동안 언마운트 되지 못하는 것은 `synchronized` 블록 진입 전에 해당하므로 가상 스레드 고정과는 무관하다.**
-:::
 
 ## 가상 스레드 고정 문제 진단
 
@@ -200,65 +183,56 @@ java -Djdk.tracePinnedThreads=full VirtualThreadPinningExample.java
 java -Djdk.tracePinnedThreads=full VirtualThreadPinningExample.java
 
 
-VirtualThread[#28]/runnable@ForkJoinPool-1-worker-1 reason:MONITOR
+BEFORE 7 - VirtualThread[#35]/runnable@ForkJoinPool-1-worker-8
+BEFORE 0 - VirtualThread[#28]/runnable@ForkJoinPool-1-worker-1
+BEFORE 5 - VirtualThread[#33]/runnable@ForkJoinPool-1-worker-6
+BEFORE 2 - VirtualThread[#30]/runnable@ForkJoinPool-1-worker-3
+BEFORE 4 - VirtualThread[#32]/runnable@ForkJoinPool-1-worker-5
+BEFORE 1 - VirtualThread[#29]/runnable@ForkJoinPool-1-worker-2
+BEFORE 3 - VirtualThread[#31]/runnable@ForkJoinPool-1-worker-4
+BEFORE 6 - VirtualThread[#34]/runnable@ForkJoinPool-1-worker-7
+BEFORE 9 - VirtualThread[#37]/runnable@ForkJoinPool-1-worker-10
+BEFORE 8 - VirtualThread[#36]/runnable@ForkJoinPool-1-worker-9
+VirtualThread[#35]/runnable@ForkJoinPool-1-worker-8 reason:MONITOR
     java.base/java.lang.VirtualThread$VThreadContinuation.onPinned(VirtualThread.java:199)
     java.base/jdk.internal.vm.Continuation.onPinned0(Continuation.java:393)
     java.base/java.lang.VirtualThread.parkNanos(VirtualThread.java:635)
     java.base/java.lang.VirtualThread.sleepNanos(VirtualThread.java:807)
     java.base/java.lang.Thread.sleep(Thread.java:507)
-    io.homoefficio.scratchpad.virtualthread.pinning.VirtualThreadPinningExample.lambda$main$0(VirtualThreadPinningExample.java:23) <== monitors:1
+    ca.bazlur.modern.concurrency.c02.VirtualThreadPinningExample.lambda$main$0(VirtualThreadPinningExample.java:22) <== monitors:1
     java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
-BEFORE 0 - VirtualThread[#28]/runnable@ForkJoinPool-1-worker-1
-AFTER  0 - VirtualThread[#28]/runnable@ForkJoinPool-1-worker-1
-
-BEFORE 1 - VirtualThread[#29]/runnable@ForkJoinPool-1-worker-2
-AFTER  1 - VirtualThread[#29]/runnable@ForkJoinPool-1-worker-2
-
-BEFORE 3 - VirtualThread[#31]/runnable@ForkJoinPool-1-worker-4
-AFTER  3 - VirtualThread[#31]/runnable@ForkJoinPool-1-worker-4
-
-BEFORE 7 - VirtualThread[#35]/runnable@ForkJoinPool-1-worker-8
 AFTER  7 - VirtualThread[#35]/runnable@ForkJoinPool-1-worker-8
-
-BEFORE 8 - VirtualThread[#36]/runnable@ForkJoinPool-1-worker-9
-AFTER  8 - VirtualThread[#36]/runnable@ForkJoinPool-1-worker-9
-
-BEFORE 6 - VirtualThread[#34]/runnable@ForkJoinPool-1-worker-7
-AFTER  6 - VirtualThread[#34]/runnable@ForkJoinPool-1-worker-7
-
-BEFORE 2 - VirtualThread[#30]/runnable@ForkJoinPool-1-worker-3
-AFTER  2 - VirtualThread[#30]/runnable@ForkJoinPool-1-worker-3
-
-BEFORE 5 - VirtualThread[#33]/runnable@ForkJoinPool-1-worker-6
-AFTER  5 - VirtualThread[#33]/runnable@ForkJoinPool-1-worker-6
-
-BEFORE 9 - VirtualThread[#37]/runnable@ForkJoinPool-1-worker-10
-AFTER  9 - VirtualThread[#37]/runnable@ForkJoinPool-1-worker-10
-
-BEFORE 4 - VirtualThread[#32]/runnable@ForkJoinPool-1-worker-5
-AFTER  4 - VirtualThread[#32]/runnable@ForkJoinPool-1-worker-5
+AFTER  8 - VirtualThread[#36]/runnable@ForkJoinPool-1-worker-6
+AFTER  9 - VirtualThread[#37]/runnable@ForkJoinPool-1-worker-5
+AFTER  6 - VirtualThread[#34]/runnable@ForkJoinPool-1-worker-4
+AFTER  3 - VirtualThread[#31]/runnable@ForkJoinPool-1-worker-3
+AFTER  1 - VirtualThread[#29]/runnable@ForkJoinPool-1-worker-10
+AFTER  4 - VirtualThread[#32]/runnable@ForkJoinPool-1-worker-7
+AFTER  2 - VirtualThread[#30]/runnable@ForkJoinPool-1-worker-2
+AFTER  5 - VirtualThread[#33]/runnable@ForkJoinPool-1-worker-9
+AFTER  0 - VirtualThread[#28]/runnable@ForkJoinPool-1-worker-1
 ```
 
 이번에는 다음 내용이 추가로 출력되었다.
 
 ```
-VirtualThread[#28]/runnable@ForkJoinPool-1-worker-1 reason:MONITOR
+VirtualThread[#35]/runnable@ForkJoinPool-1-worker-8 reason:MONITOR
     java.base/java.lang.VirtualThread$VThreadContinuation.onPinned(VirtualThread.java:199)
     java.base/jdk.internal.vm.Continuation.onPinned0(Continuation.java:393)
     java.base/java.lang.VirtualThread.parkNanos(VirtualThread.java:635)
     java.base/java.lang.VirtualThread.sleepNanos(VirtualThread.java:807)
     java.base/java.lang.Thread.sleep(Thread.java:507)
-    io.homoefficio.scratchpad.virtualthread.pinning.VirtualThreadPinningExample.lambda$main$0(VirtualThreadPinningExample.java:23) <== monitors:1
+    ca.bazlur.modern.concurrency.c02.VirtualThreadPinningExample.lambda$main$0(VirtualThreadPinningExample.java:22) <== monitors:1
     java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
 ```
 
-28번 가상 스레드가 `Thread.sleep()`을 호출하면서 `parkNanos()`를 호출하고 언마운트를 시도하지만,  
+35번 가상 스레드가 `Thread.sleep()`을 호출하면서 `parkNanos()`를 호출하고 언마운트를 시도하지만,  
 `synchronized` 블록의 락(MONITOR)를 가지고 `synchronized` 블록에 진입한 상태, 즉 이미 고정돼 있으므로 언마운트 될 수 없는 상황을 보여주고 있다.
 
 그런데 이상한 점이 하나 있다. 
 
-고정은 10개의 스레드 모두에서 발생하므로 위 로그도 10번 출력돼야 할 것 같은데 왜 1번만 출력되는 걸까?  
-혹시 고정이 1번만 발생한 것은 아닐까?
+고정은 10개의 스레드 모두에서 발생하므로 위 로그도 열 번 출력돼야 할 것 같은데 왜 한 번만 출력되는 걸까?  
+혹시 고정이 한 번만 발생한 것은 아닐까?
 
 ### JFR(JDK Flight Recorder)
 
@@ -275,7 +249,7 @@ JEP 444에서 [가상 스레드 관련해서 네 가지 JFR 이벤트가 추가]
 >
 >jdk.VirtualThreadPinned는 가상 스레드가 고정된 상태에서 park 되었음을, 즉 가상 스레드가 플랫폼 스레드를 놓아주지 못하고 점유하고 있음을 나타낸다. 이 이벤트는 기본으로 활성화 되며 임계값은 20ms이다.
 
-즉, 원래 park 되면 플랫폼 스레드(캐리어 스레드)를 놓아줘야 하지만 고정돼 있기 때문에 놓아주지 못하고 20ms 이상 점유하면 jdk.VirtualThreadPinned 이벤트가 발생한다는 얘기다.
+즉, **원래 park 되면 플랫폼 스레드(캐리어 스레드)를 놓아줘야 하지만 고정돼 있기 때문에 놓아주지 못하고 20ms 이상 점유하면 jdk.VirtualThreadPinned 이벤트가 발생한다**는 얘기다.
 
 이제 JFR을 사용해서 가상 스레드 고정으로 인한 문제를 진단해보자.
 
@@ -292,141 +266,141 @@ jfr print --events jdk.VirtualThreadPinned recording-sync-sleep-21.jfr
 
 
 jdk.VirtualThreadPinned {
-  startTime = 12:45:59.596 (2026-01-03)
-  duration = 45.0 ms
-  eventThread = "" (javaThreadId = 36, virtual)
-  stackTrace = [
-    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
-    java.lang.VirtualThread.parkNanos(long) line: 648
-    java.lang.VirtualThread.sleepNanos(long) line: 807
-    java.lang.Thread.sleep(long) line: 507
-    io.homoefficio.scratchpad.virtualthread.pinning.VirtualThreadPinningExample.lambda$main$0(int) line: 23
-    ...
-  ]
-}
-
-jdk.VirtualThreadPinned {
-  startTime = 12:45:59.642 (2026-01-03)
-  duration = 52.7 ms
-  eventThread = "" (javaThreadId = 34, virtual)
-  stackTrace = [
-    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
-    java.lang.VirtualThread.parkNanos(long) line: 648
-    java.lang.VirtualThread.sleepNanos(long) line: 807
-    java.lang.Thread.sleep(long) line: 507
-    io.homoefficio.scratchpad.virtualthread.pinning.VirtualThreadPinningExample.lambda$main$0(int) line: 23
-    ...
-  ]
-}
-
-jdk.VirtualThreadPinned {
-  startTime = 12:45:59.695 (2026-01-03)
-  duration = 54.7 ms
-  eventThread = "" (javaThreadId = 33, virtual)
-  stackTrace = [
-    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
-    java.lang.VirtualThread.parkNanos(long) line: 648
-    java.lang.VirtualThread.sleepNanos(long) line: 807
-    java.lang.Thread.sleep(long) line: 507
-    io.homoefficio.scratchpad.virtualthread.pinning.VirtualThreadPinningExample.lambda$main$0(int) line: 23
-    ...
-  ]
-}
-
-jdk.VirtualThreadPinned {
-  startTime = 12:45:59.750 (2026-01-03)
-  duration = 51.1 ms
-  eventThread = "" (javaThreadId = 38, virtual)
-  stackTrace = [
-    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
-    java.lang.VirtualThread.parkNanos(long) line: 648
-    java.lang.VirtualThread.sleepNanos(long) line: 807
-    java.lang.Thread.sleep(long) line: 507
-    io.homoefficio.scratchpad.virtualthread.pinning.VirtualThreadPinningExample.lambda$main$0(int) line: 23
-    ...
-  ]
-}
-
-jdk.VirtualThreadPinned {
-  startTime = 12:45:59.801 (2026-01-03)
-  duration = 56.9 ms
-  eventThread = "" (javaThreadId = 35, virtual)
-  stackTrace = [
-    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
-    java.lang.VirtualThread.parkNanos(long) line: 648
-    java.lang.VirtualThread.sleepNanos(long) line: 807
-    java.lang.Thread.sleep(long) line: 507
-    io.homoefficio.scratchpad.virtualthread.pinning.VirtualThreadPinningExample.lambda$main$0(int) line: 23
-    ...
-  ]
-}
-
-jdk.VirtualThreadPinned {
-  startTime = 12:45:59.858 (2026-01-03)
-  duration = 56.2 ms
-  eventThread = "" (javaThreadId = 39, virtual)
-  stackTrace = [
-    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
-    java.lang.VirtualThread.parkNanos(long) line: 648
-    java.lang.VirtualThread.sleepNanos(long) line: 807
-    java.lang.Thread.sleep(long) line: 507
-    io.homoefficio.scratchpad.virtualthread.pinning.VirtualThreadPinningExample.lambda$main$0(int) line: 23
-    ...
-  ]
-}
-
-jdk.VirtualThreadPinned {
-  startTime = 12:45:59.915 (2026-01-03)
-  duration = 51.7 ms
-  eventThread = "" (javaThreadId = 32, virtual)
-  stackTrace = [
-    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
-    java.lang.VirtualThread.parkNanos(long) line: 648
-    java.lang.VirtualThread.sleepNanos(long) line: 807
-    java.lang.Thread.sleep(long) line: 507
-    io.homoefficio.scratchpad.virtualthread.pinning.VirtualThreadPinningExample.lambda$main$0(int) line: 23
-    ...
-  ]
-}
-
-jdk.VirtualThreadPinned {
-  startTime = 12:45:59.969 (2026-01-03)
-  duration = 61.3 ms
+  startTime = 21:06:19.179 (2026-02-16)
+  duration = 39.2 ms
   eventThread = "" (javaThreadId = 41, virtual)
   stackTrace = [
     java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
     java.lang.VirtualThread.parkNanos(long) line: 648
     java.lang.VirtualThread.sleepNanos(long) line: 807
     java.lang.Thread.sleep(long) line: 507
-    io.homoefficio.scratchpad.virtualthread.pinning.VirtualThreadPinningExample.lambda$main$0(int) line: 23
+    ca.bazlur.modern.concurrency.c02.VirtualThreadPinningExample.lambda$main$0(int) line: 22
     ...
   ]
 }
 
 jdk.VirtualThreadPinned {
-  startTime = 12:46:00.032 (2026-01-03)
-  duration = 53.8 ms
+  startTime = 21:06:19.218 (2026-02-16)
+  duration = 54.7 ms
+  eventThread = "" (javaThreadId = 34, virtual)
+  stackTrace = [
+    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
+    java.lang.VirtualThread.parkNanos(long) line: 648
+    java.lang.VirtualThread.sleepNanos(long) line: 807
+    java.lang.Thread.sleep(long) line: 507
+    ca.bazlur.modern.concurrency.c02.VirtualThreadPinningExample.lambda$main$0(int) line: 22
+    ...
+  ]
+}
+
+jdk.VirtualThreadPinned {
+  startTime = 21:06:19.273 (2026-02-16)
+  duration = 50.7 ms
+  eventThread = "" (javaThreadId = 32, virtual)
+  stackTrace = [
+    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
+    java.lang.VirtualThread.parkNanos(long) line: 648
+    java.lang.VirtualThread.sleepNanos(long) line: 807
+    java.lang.Thread.sleep(long) line: 507
+    ca.bazlur.modern.concurrency.c02.VirtualThreadPinningExample.lambda$main$0(int) line: 22
+    ...
+  ]
+}
+
+jdk.VirtualThreadPinned {
+  startTime = 21:06:19.324 (2026-02-16)
+  duration = 58.6 ms
+  eventThread = "" (javaThreadId = 33, virtual)
+  stackTrace = [
+    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
+    java.lang.VirtualThread.parkNanos(long) line: 648
+    java.lang.VirtualThread.sleepNanos(long) line: 807
+    java.lang.Thread.sleep(long) line: 507
+    ca.bazlur.modern.concurrency.c02.VirtualThreadPinningExample.lambda$main$0(int) line: 22
+    ...
+  ]
+}
+
+jdk.VirtualThreadPinned {
+  startTime = 21:06:19.384 (2026-02-16)
+  duration = 54.7 ms
+  eventThread = "" (javaThreadId = 39, virtual)
+  stackTrace = [
+    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
+    java.lang.VirtualThread.parkNanos(long) line: 648
+    java.lang.VirtualThread.sleepNanos(long) line: 807
+    java.lang.Thread.sleep(long) line: 507
+    ca.bazlur.modern.concurrency.c02.VirtualThreadPinningExample.lambda$main$0(int) line: 22
+    ...
+  ]
+}
+
+jdk.VirtualThreadPinned {
+  startTime = 21:06:19.439 (2026-02-16)
+  duration = 53.4 ms
   eventThread = "" (javaThreadId = 37, virtual)
   stackTrace = [
     java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
     java.lang.VirtualThread.parkNanos(long) line: 648
     java.lang.VirtualThread.sleepNanos(long) line: 807
     java.lang.Thread.sleep(long) line: 507
-    io.homoefficio.scratchpad.virtualthread.pinning.VirtualThreadPinningExample.lambda$main$0(int) line: 23
+    ca.bazlur.modern.concurrency.c02.VirtualThreadPinningExample.lambda$main$0(int) line: 22
     ...
   ]
 }
 
 jdk.VirtualThreadPinned {
-  startTime = 12:46:00.087 (2026-01-03)
-  duration = 54.6 ms
+  startTime = 21:06:19.493 (2026-02-16)
+  duration = 51.0 ms
   eventThread = "" (javaThreadId = 40, virtual)
   stackTrace = [
     java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
     java.lang.VirtualThread.parkNanos(long) line: 648
     java.lang.VirtualThread.sleepNanos(long) line: 807
     java.lang.Thread.sleep(long) line: 507
-    io.homoefficio.scratchpad.virtualthread.pinning.VirtualThreadPinningExample.lambda$main$0(int) line: 23
+    ca.bazlur.modern.concurrency.c02.VirtualThreadPinningExample.lambda$main$0(int) line: 22
+    ...
+  ]
+}
+
+jdk.VirtualThreadPinned {
+  startTime = 21:06:19.545 (2026-02-16)
+  duration = 54.5 ms
+  eventThread = "" (javaThreadId = 38, virtual)
+  stackTrace = [
+    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
+    java.lang.VirtualThread.parkNanos(long) line: 648
+    java.lang.VirtualThread.sleepNanos(long) line: 807
+    java.lang.Thread.sleep(long) line: 507
+    ca.bazlur.modern.concurrency.c02.VirtualThreadPinningExample.lambda$main$0(int) line: 22
+    ...
+  ]
+}
+
+jdk.VirtualThreadPinned {
+  startTime = 21:06:19.600 (2026-02-16)
+  duration = 54.1 ms
+  eventThread = "" (javaThreadId = 36, virtual)
+  stackTrace = [
+    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
+    java.lang.VirtualThread.parkNanos(long) line: 648
+    java.lang.VirtualThread.sleepNanos(long) line: 807
+    java.lang.Thread.sleep(long) line: 507
+    ca.bazlur.modern.concurrency.c02.VirtualThreadPinningExample.lambda$main$0(int) line: 22
+    ...
+  ]
+}
+
+jdk.VirtualThreadPinned {
+  startTime = 21:06:19.655 (2026-02-16)
+  duration = 51.2 ms
+  eventThread = "" (javaThreadId = 35, virtual)
+  stackTrace = [
+    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
+    java.lang.VirtualThread.parkNanos(long) line: 648
+    java.lang.VirtualThread.sleepNanos(long) line: 807
+    java.lang.Thread.sleep(long) line: 507
+    ca.bazlur.modern.concurrency.c02.VirtualThreadPinningExample.lambda$main$0(int) line: 22
     ...
   ]
 }
@@ -434,13 +408,15 @@ jdk.VirtualThreadPinned {
 
 `jdk.VirtualThreadPinned` 이벤트가 정확히 10번 표시된다. 따라서 고정은 1번이 아니라 10번 발생했다는 사실을 알 수 있다.  
 
-하지만, **'고정이 10번 발생했다'는 해석은 정확하지 않다**는 점에 유의하자.
+#### `jdk.VirtualThreadPinned`의 진정한 의미
+
+하지만, `jdk.VirtualThreadPinned` 이벤트가 정확히 10번 표시되는 것을 **'고정이 10번 발생했다'라고 해석하는 것은 정확하지 않다**는 점에 유의하자.
 
 고정이 10번 발생한 것은 맞지만, 앞서 `jdk.VirtualThreadPinned`의 설명에서 살펴본 것처럼 **고정으로 인해 캐리어 스레드를 비효율적으로 점유하는 문제가 10번 발생했다**라고 해석해야 정확하다.
 
 그렇다면 고정이 되어도 그로 인해 캐리어 스레드를 비효율적으로 점유하는 문제가 발생하지 않으면 `jdk.VirtualThreadPinned` 이벤트는 발생하지 않는다는 얘긴가?
 
-이를 확인하기 위해 다시 `Thread.sleep()` 대신에, 비효율적 스레드 점유가 없는 피보나치 수 계산으로 되돌려서 JFR 이벤트가 어떻게 기록되는지 살펴보자.
+이를 확인하기 위해 다시 `Thread.sleep()` 대신에, 캐리어 스레드를 비효율적으로 점유하지 않는 피보나치 수 계산으로 되돌려서 JFR 이벤트가 어떻게 기록되는지 살펴보자.
 
 ```java
                     synchronized (lock) {
@@ -459,39 +435,30 @@ jdk.VirtualThreadPinned {
 ```
 java -Djdk.tracePinnedThreads=full -XX:StartFlightRecording=filename=recording-sync-fibo-21.jfr VirtualThreadPinningExample.java
 
-
-[0.208s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
-[0.208s][info][jfr,startup] 
-[0.208s][info][jfr,startup] Use jcmd 3033 JFR.dump name=1 to copy recording data to file.
+[0.270s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.270s][info][jfr,startup] 
+[0.270s][info][jfr,startup] Use jcmd 58808 JFR.dump name=1 to copy recording data to file.
 BEFORE 2 - VirtualThread[#34]/runnable@ForkJoinPool-1-worker-3
-AFTER  2 - VirtualThread[#34]/runnable@ForkJoinPool-1-worker-3
-
-BEFORE 9 - VirtualThread[#41]/runnable@ForkJoinPool-1-worker-10
-AFTER  9 - VirtualThread[#41]/runnable@ForkJoinPool-1-worker-10
-
-BEFORE 6 - VirtualThread[#38]/runnable@ForkJoinPool-1-worker-7
-AFTER  6 - VirtualThread[#38]/runnable@ForkJoinPool-1-worker-7
-
-BEFORE 0 - VirtualThread[#32]/runnable@ForkJoinPool-1-worker-1
-AFTER  0 - VirtualThread[#32]/runnable@ForkJoinPool-1-worker-1
-
-BEFORE 5 - VirtualThread[#37]/runnable@ForkJoinPool-1-worker-6
-AFTER  5 - VirtualThread[#37]/runnable@ForkJoinPool-1-worker-6
-
-BEFORE 4 - VirtualThread[#36]/runnable@ForkJoinPool-1-worker-5
-AFTER  4 - VirtualThread[#36]/runnable@ForkJoinPool-1-worker-5
-
-BEFORE 7 - VirtualThread[#39]/runnable@ForkJoinPool-1-worker-8
-AFTER  7 - VirtualThread[#39]/runnable@ForkJoinPool-1-worker-8
-
-BEFORE 3 - VirtualThread[#35]/runnable@ForkJoinPool-1-worker-4
-AFTER  3 - VirtualThread[#35]/runnable@ForkJoinPool-1-worker-4
-
-BEFORE 8 - VirtualThread[#40]/runnable@ForkJoinPool-1-worker-9
-AFTER  8 - VirtualThread[#40]/runnable@ForkJoinPool-1-worker-9
-
 BEFORE 1 - VirtualThread[#33]/runnable@ForkJoinPool-1-worker-2
+BEFORE 8 - VirtualThread[#40]/runnable@ForkJoinPool-1-worker-9
+BEFORE 4 - VirtualThread[#36]/runnable@ForkJoinPool-1-worker-5
+BEFORE 0 - VirtualThread[#32]/runnable@ForkJoinPool-1-worker-1
+BEFORE 9 - VirtualThread[#41]/runnable@ForkJoinPool-1-worker-10
+BEFORE 3 - VirtualThread[#35]/runnable@ForkJoinPool-1-worker-4
+BEFORE 5 - VirtualThread[#37]/runnable@ForkJoinPool-1-worker-6
+BEFORE 6 - VirtualThread[#38]/runnable@ForkJoinPool-1-worker-7
+BEFORE 7 - VirtualThread[#39]/runnable@ForkJoinPool-1-worker-8
+AFTER  2 - VirtualThread[#34]/runnable@ForkJoinPool-1-worker-3
+AFTER  7 - VirtualThread[#39]/runnable@ForkJoinPool-1-worker-9
+AFTER  6 - VirtualThread[#38]/runnable@ForkJoinPool-1-worker-8
+AFTER  5 - VirtualThread[#37]/runnable@ForkJoinPool-1-worker-5
+AFTER  3 - VirtualThread[#35]/runnable@ForkJoinPool-1-worker-1
+AFTER  9 - VirtualThread[#41]/runnable@ForkJoinPool-1-worker-7
+AFTER  0 - VirtualThread[#32]/runnable@ForkJoinPool-1-worker-10
+AFTER  4 - VirtualThread[#36]/runnable@ForkJoinPool-1-worker-6
+AFTER  8 - VirtualThread[#40]/runnable@ForkJoinPool-1-worker-4
 AFTER  1 - VirtualThread[#33]/runnable@ForkJoinPool-1-worker-2
+
 ```
 
 jfr 명령으로 출력해보면,
@@ -504,7 +471,14 @@ jfr print --events jdk.VirtualThreadPinned recording-sync-fibo-21.jfr
 아무것도 출력되지 않는다.
 
 즉, `synchronized`의 락을 획득하고 블록에 진입하면서 고정은 됐지만,  
-그 이후 블록 내 코드에서 자원을 낭비하는 문제는 발생하지 않기 때문에 아무런 `jdk.VirtualThreadPinned` 이벤트도 기록되지 않았다.
+그 이후 `synchronized` 블록 내 코드에서 캐리어 스레드를 비효율적으로 점유하며 자원을 낭비하는 문제는 발생하지 않기 때문에, 아무런 `jdk.VirtualThreadPinned` 이벤트도 기록되지 않았다.
+
+따라서 `jdk.VirtualThreadPinned`에 대해 다음과 같이 결론 지을 수 있다.
+
+:::info
+- `jdk.VirtualThreadPinned`는 **가상 스레드가 고정될 때 무조건 발생하는 이벤트가 아니라, 고정으로 인해 캐리어 스레드를 비효율적으로 점유하는 문제가 생길 때 발생하는 이벤트다.**
+    - 가상 스레드가 고정되더라도 고정 해제 전까지 캐리어 스레드를 비효율적으로 점유하지 않으면 `jdk.VirtualThreadPinned`는 발생하지 않는다.
+:::
 
 
 ## 마무리
@@ -512,11 +486,10 @@ jfr print --events jdk.VirtualThreadPinned recording-sync-fibo-21.jfr
 `synchronized`와 관련한 가상 스레드 이야기는 다음과 같이 정리할 수 있다.
 
 :::info
-- Java 21에서,
-- `synchronized` 블록에 진입하기 전에 락을 획득하기 위해 기다릴 때, 가상 스레드는 캐리어 스레드를 점유한 상태로 기다리면서 자원을 낭비한다.
-    - 이 때는 가상 스레드가 고정됐기 때문에 점유하는 것이 아니고,
-    - `synchronized` 키워드 처리 시 플랫폼 스레드만 락을 획득/보유/반환하는 주체로 작동하도록 되어 있기 때문이다.
+Java 21에서,
+- `synchronized` 블록에 진입하기 전에 락을 획득하기 위해 기다릴 때, 가상 스레드는 캐리어 스레드를 점유하지 않으며 자원을 낭비하지 않는다.
 - 고정되는 시점은 `synchronized` 락을 획득해서 블록에 진입할 때 또는 블록에 진입한 직후이다.
+  - 고정되는 이유는 `synchronized` 키워드 처리 시 플랫폼 스레드만 락을 획득/보유/반환하는 주체로 작동하도록 되어 있기 때문이다.
 - JEP 444에서 추가된 JFR 이벤트인 `jdk.VirtualThreadPinned`는 이름만 보면 고정이 될 때 발생하는 이벤트 같지만,
     - 실제로는 고정으로 인해 캐리어 스레드를 비효율적으로 점유할 때 발생한다.
 :::
@@ -528,11 +501,12 @@ jfr print --events jdk.VirtualThreadPinned recording-sync-fibo-21.jfr
 Java 21에서 `synchronized` 관련 자원 낭비는 다음과 같다.
 
 :::warning
-- `synchronized` 블록 진입 전에는
-    - 가상 스레드가 락 획득을 기다리는 중에 고정되지 않더라도 캐리어 스레드를 점유해서 자원을 낭비하고,
-- `synchronized` 블록 진입 후에는 
-    - 가상 스레드가 고정됐기 때문에 블로킹 연산 실행 시에도 언마운트 되지 못하고 캐리어 스레드를 점유한 채 블로킹 연산 완료를 기다리면서 자원을 낭비한다.
+- `synchronized` 블록 진입 후에는 가상 스레드가 고정됐기 때문에, 이 때 블로킹 연산을 실행하면 가상 스레드가 언마운트 되지 못하고 캐리어 스레드를 점유한 채 블로킹 연산 완료를 기다리면서 자원을 낭비한다.
 :::
+
+`synchronized` 대신에 `ReentrantLock`을 사용하면 고정 현상이 발생하지 않으므로, 블로킹 될 때 가상 스레드가 언마운트 될 수 있으므로 자원 낭비를 피할 수 있다.
+
+직접 작성하는 코드는 `ReentrantLock`을 사용하도록 바꾸면 되지만 사용하는 라이브러리에 있는 `synchronized` 블록은 어쩔 수가 없다.
 
 이런 단점 때문에 Java 21 가상 스레드를 실무에 적용하기엔 현실적으로 무리가 있었다.
 
@@ -544,6 +518,7 @@ JEP 491 내용 중 `synchronized` 관련 내용을 요약하면 다음과 같다
 >- JEP 491에서는 가상 스레드도 `synchronized` 블록의 락을 획득/보유/반환할 수 있도록 `synchronized` 처리 로직을 변경해서,  
 >    - `synchronized` 블록 진입 전/후 모두에서 가상 스레드가 캐리어 스레드에 고정될 필요없이 언마운트 되어 자원 낭비를 방지할 수 있게 되었다.
 
+---
 
 ## 오류 정정 - 1
 
@@ -606,3 +581,57 @@ AFTER  9 - VirtualThread[#40]/runnable@ForkJoinPool-1-worker-3
 본문에 설명한 것처럼 `jdk.VirtualThreadPinned` 이벤트는 가상 스레드가 고정되어 캐리어 스레드를 비효율적으로 점유하는 문제를 유발할 때 발생한다.
 
 고정은 블로킹이 있든 없든 발생하며, 고정된 상태에서 블로킹이 되고 이로 인해 문제가 될 때에만 `jdk.VirtualThreadPinned` 이벤트가 발생한다.
+
+## 오류 정정 - 3
+
+세 번째 버전에서도 큼지막한 오류가 있었다.
+
+`synchronized block을 만나서 락 획득을 기다릴 때 캐리어 스레드를 점유한다`는 완전히 잘못된 해석이다.
+
+예제 코드에서 아래와 같이 두 개의 문자열을 더해서 출력하고 있는데, 이 부분에서 잘못된 해석을 유발하는 요소가 있었다.
+
+```java
+        List<Thread> threads = IntStream.range(0, 10)
+                .mapToObj(index -> Thread.ofVirtual().unstarted(() -> {
+                    String threadInfo = "BEFORE " + index + " - " + Thread.currentThread() + "\n";  // 여기 (1) !!!
+
+                    synchronized (lock) {
+                        // 시간은 오래 걸리지만 blocking은 없는 사례
+                        getFibonacci(40);
+                    }
+
+                    threadInfo += "AFTER  " + index + " - " + Thread.currentThread() + "\n";  // 여기 (2) !!!
+                    System.out.println(threadInfo);  // 여기 (3) !!!
+                }))
+                .toList();
+```
+
+출력 결과를 눈으로 보기 편하도록 `threadInfo`를 하나로 합쳐서 출력을 하게 했는데, 이 부분에서 컴파일러의 코드 최적화가 동작하여 실제 코드와는 다르게 동작을 했다.
+
+(1)에서 사용한 `Thread.currentThread()`의 값이 즉시 평가되어 threadInfo 문자열에 확정될 것이라고 생각했지만,  
+실제로는 컴파일러 최적화에 의해 (1)에서 사용한 `Thread.currentThread()`의 값이 즉시 평가되지 않고 (2) 시점에 평가되어,  
+(3)에서 출력되는 시점에서는 (1)과 (2)에서의 `Thread.currentThread()` 값이 동일하게 출력됐다.
+
+이는 (1)에서 만들어진 `threadInfo` 문자열이 아무 곳에도 사용되지 않았기 때문에 발생한 현상이다.
+
+다음과 같이 (2) 이전에 `threadInfo` 문자열을 출력에 사용하면 (2) 이전에 `Thread.currentThread()` 값이 평가되어 `threadInfo` 문자열에 확정되며,  
+(1)과 (2)에서의 `Thread.currentThread()` 값이 각각 다르게 나온다.
+
+즉, synchronized 블록의 락을 기다릴 때 캐리어 스레드로부터 언마운트 된다.
+
+```java
+        List<Thread> threads = IntStream.range(0, 10)
+                .mapToObj(index -> Thread.ofVirtual().unstarted(() -> {
+                    String threadInfo = "BEFORE " + index + " - " + Thread.currentThread() + "\n";  // 여기 (1) !!!
+                    System.out.println(threadInfo);  // 여기 (1-1) !!!
+
+                    synchronized (lock) {
+                        // 시간은 오래 걸리지만 blocking은 없는 사례
+                        getFibonacci(40);
+                    }
+
+                    threadInfo += "AFTER  " + index + " - " + Thread.currentThread() + "\n";  // 여기 (2) !!!
+                    System.out.println(threadInfo);  // 여기 (3) !!!
+                }))
+                .toList();
+```
