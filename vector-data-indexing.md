@@ -30,7 +30,8 @@
 - 검색 요청이 들어오면 최상위 계층의 데이터 중 하나인 고정된 시작점(entry point)에서 출발하여 요청 벡터 데이터(query vector)에서 가장 가까운 지점을 선택하고,
 - 그 지점의 하위 계층에서 가장 가까운 지점을 선택하고, ... 를 반복하여 L0의 데이터 중에서 요청 벡터 데이터에 가까운 TopN 데이터 선택
 - <img width="1103" height="526" alt="vectordb-hnsw" src="https://github.com/user-attachments/assets/22deb49c-781c-4e88-bcc0-f1b2238acb64" />
-- 위 그림은 쉬운 이해를 위해 계층을 직선으로 표시했지만 실제로는 각 계층의 지점마다 연결돼 있는 그래프 구조
+- 위 그림은 쉬운 이해를 위해 계층을 직선으로 표시했지만, 더 정확하게는 아래와 같이 각 계층은 평면이며 지점끼리 연결돼 있는 그래프 구조
+- ![Milvus HNSW](https://milvus.io/docs/v2.6.x/assets/hnsw.png)
   - M(Max Degree): 계층 별 각 지점마다 m개 씩의 연결점을 가진다
   - ef(Exploration Factor): 계층 별 가까운 후보군의 개수
   - ef가 클 수록 정확도는 올라가지만 속도는 느려진다
